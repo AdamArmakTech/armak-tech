@@ -1,0 +1,3330 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --armak-red: #DC143C;
+  --armak-red-dark: #B0102F;
+  --armak-blue: #0066CC;
+  --armak-blue-dark: #003D7A;
+  --armak-white: #FFFFFF;
+  --shadow-red-idle: 0 0 0 1px rgba(220, 20, 60, .3), 0 0 24px rgba(220, 20, 60, .35), 0 6px 20px rgba(220, 20, 60, .18);
+  --shadow-red-active: 0 0 0 1px rgba(220, 20, 60, .55), 0 0 44px rgba(220, 20, 60, .7), 0 16px 40px rgba(220, 20, 60, .5);
+  --armak-off: #FAFAFA;
+  --armak-gray-100: #F4F4F7;
+  --armak-gray-300: #D8D8DE;
+  --armak-gray-500: #6E6E76;
+  --armak-gray-600: #4A4A52;
+  --armak-ink: #0A0E27;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+}
+
+html,
+body {
+  font-family: 'Manrope', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: var(--armak-ink);
+  background: var(--armak-white);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ============ ANIMATION PRIMITIVES ============ */
+.armak-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+  transition-delay: var(--delay, 0s);
+}
+
+.armak-reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .armak-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ============ TOP STRIPE + NAVBAR ============ */
+.armak-top-stripe {
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--armak-blue) 0 50%, var(--armak-red) 50% 100%);
+}
+
+.armak-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--armak-ink);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: box-shadow .3s var(--ease);
+}
+
+.armak-nav.scrolled {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.armak-nav-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 6px 6vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.armak-nav-logo {
+  opacity: 1;
+  transform: none;
+  transition: none;
+  pointer-events: auto;
+  text-decoration: none;
+}
+
+.armak-nav-logo img {
+  height: 88px;
+  width: auto;
+  display: block;
+}
+
+.armak-nav-cta {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--armak-white);
+  background: var(--armak-red);
+  padding: 10px 20px;
+  transition: background .25s ease, transform .3s var(--ease);
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.armak-nav-cta:hover {
+  background: var(--armak-red-dark);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 560px) {
+  .armak-nav-cta {
+    display: none;
+  }
+}
+
+.armak-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.armak-nav-links a {
+  font-family: 'Manrope', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--armak-white);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.45), 0 0 22px rgba(255, 255, 255, 0.18);
+  position: relative;
+  padding: 4px 0;
+  transition: color .2s ease, text-shadow .2s ease;
+}
+
+.armak-nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 1.5px;
+  background: var(--armak-red);
+  transition: width .35s var(--ease);
+}
+
+.armak-nav-links a:hover {
+  color: var(--armak-red);
+  text-shadow: 0 0 10px rgba(220, 20, 60, 0.55), 0 0 22px rgba(220, 20, 60, 0.25);
+}
+
+.armak-nav-links a:hover::after {
+  width: 100%;
+}
+
+@media (max-width: 560px) {
+  .armak-nav-links {
+    gap: 20px;
+  }
+
+  .armak-nav-links a {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+}
+
+/* ============ HERO ============ */
+.armak-hero {
+  position: relative;
+  padding: 40px 6vw 60px;
+  overflow: hidden;
+  background: #080c1a;
+}
+
+.armak-hero-bg {
+  position: absolute;
+  inset: -20% 0;
+  background: url('/structutedcabling5.png') center/cover no-repeat;
+  opacity: 0.22;
+  will-change: transform;
+  z-index: 0;
+}
+
+.armak-hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(8, 12, 26, 0.7) 0%, rgba(10, 14, 39, 0.5) 100%);
+}
+
+#heroParticles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.armak-hero-grid {
+  position: relative;
+  z-index: 2;
+}
+
+.armak-hero-grid {
+  max-width: 1480px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 2.2fr;
+  gap: 64px;
+  align-items: center;
+  position: relative;
+}
+
+.armak-hero h1 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(3rem, 7.5vw, 6.75rem);
+  line-height: 0.92;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  color: var(--armak-white);
+  margin-bottom: 32px;
+}
+
+.armak-hero h1 .accent {
+  color: var(--armak-red);
+  display: block;
+}
+
+.armak-hero p.lead {
+  font-size: clamp(1.15rem, 1.4vw, 1.3rem);
+  font-weight: 450;
+  color: rgba(255, 255, 255, 0.65);
+  max-width: 540px;
+  margin-bottom: 48px;
+  line-height: 1.6;
+}
+
+.armak-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 32px;
+}
+
+.armak-eyebrow::before {
+  content: '';
+  width: 36px;
+  height: 2px;
+  background: var(--armak-red);
+}
+
+.armak-ctas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.armak-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 19px 32px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 2px solid transparent;
+  transition: transform .35s var(--ease), background .25s var(--ease), color .25s var(--ease), box-shadow .35s var(--ease);
+  cursor: pointer;
+}
+
+.armak-btn-primary {
+  background: var(--armak-red);
+  color: var(--armak-white);
+  box-shadow: var(--shadow-red-idle);
+}
+
+.armak-btn-primary:hover {
+  background: var(--armak-red-dark);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-red-active);
+}
+
+.armak-btn-outline {
+  background: transparent;
+  color: var(--armak-blue);
+  border-color: var(--armak-blue);
+}
+
+.armak-btn-outline:hover {
+  background: var(--armak-blue);
+  color: var(--armak-white);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 102, 204, 0.22);
+}
+
+.armak-btn .arrow {
+  width: 18px;
+  height: 12px;
+  transition: transform .3s var(--ease);
+}
+
+.armak-btn:hover .arrow {
+  transform: translateX(4px);
+}
+
+.armak-hero-visual {
+  position: relative;
+  max-width: 560px;
+  justify-self: end;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.armak-hero-corner-tl,
+.armak-hero-corner-br {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  z-index: 2;
+}
+
+.armak-hero-corner-tl {
+  top: -2px;
+  left: -2px;
+  border-top: 4px solid var(--armak-red);
+  border-left: 4px solid var(--armak-red);
+  filter: drop-shadow(0 0 8px rgba(220, 20, 60, 0.45));
+}
+
+.armak-hero-corner-br {
+  bottom: -2px;
+  right: -2px;
+  border-bottom: 4px solid var(--armak-blue);
+  border-right: 4px solid var(--armak-blue);
+  filter: drop-shadow(0 0 8px rgba(0, 102, 204, 0.4));
+}
+
+.armak-hero-logo {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ============ STATS ============ */
+.armak-stats {
+  background: var(--armak-ink);
+  color: var(--armak-white);
+  padding: 20px 6vw;
+  position: relative;
+  overflow: hidden;
+}
+
+#statsCircuit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.32;
+}
+
+.armak-stats-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.armak-stats::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  z-index: 2;
+  background: linear-gradient(90deg, var(--armak-red) 0 50%, #1E80E5 50% 100%);
+}
+
+/* Progress bar under each stat — gradient fill + shimmer */
+.armak-stat-bar {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  margin-top: 14px;
+  overflow: hidden;
+  position: relative;
+  border-radius: 2px;
+}
+
+.armak-stat-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--armak-red), #1E80E5, var(--armak-blue));
+  background-size: 200% 100%;
+  box-shadow: 0 0 10px rgba(220, 20, 60, 0.55), 0 0 20px rgba(0, 102, 204, 0.3);
+  transition: width 1.6s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  animation: barShimmer 4s linear infinite;
+}
+
+@keyframes barShimmer {
+  0% {
+    background-position: 0% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===== 5 — DIAGONAL SECTION TRANSITIONS — subtle 1.5° cuts ===== */
+.armak-hero {
+  clip-path: polygon(0 0, 100% 0, 100% 97%, 0 100%);
+  padding-bottom: 100px;
+}
+
+.armak-stats {
+  clip-path: polygon(0 1.5%, 100% 0, 100% 98.5%, 0 100%);
+  margin-top: -30px;
+  padding-top: 34px;
+  padding-bottom: 34px;
+}
+
+.armak-trust {
+  clip-path: none;
+  margin-top: 0;
+  padding-top: 60px;
+  padding-bottom: 60px;
+}
+
+.armak-services {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  margin-top: 0;
+  padding-top: 90px;
+}
+
+.armak-about {
+  clip-path: polygon(0 0, 100% 1%, 100% 100%, 0 100%);
+  margin-top: -30px;
+}
+
+.armak-stats-grid {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+}
+
+.armak-stat-num {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.5rem, 5vw, 4.25rem);
+  line-height: 1;
+  color: var(--armak-white);
+  margin-bottom: 14px;
+  letter-spacing: -0.01em;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.25), 0 0 40px rgba(255, 255, 255, 0.12);
+}
+
+.armak-stat-num .plus {
+  color: var(--armak-red);
+  text-shadow: 0 0 14px rgba(220, 20, 60, 0.7), 0 0 28px rgba(220, 20, 60, 0.4);
+}
+
+.armak-stat-label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* ============ TRUST STRIP ============ */
+.armak-trust {
+  background: var(--armak-blue);
+  padding: 36px 6vw;
+  border-bottom: none;
+  position: relative;
+  overflow: hidden;
+}
+
+#trustSignal {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+.armak-trust-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+.armak-trust-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--armak-white);
+}
+
+.armak-trust-item svg {
+  width: 22px;
+  height: 22px;
+  color: rgba(255, 255, 255, 0.85);
+  flex-shrink: 0;
+}
+
+.armak-trust-item.red svg {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+@media (max-width: 760px) {
+  .armak-trust-inner {
+    justify-content: flex-start;
+    gap: 20px 32px;
+  }
+
+  .armak-trust-item {
+    font-size: 12px;
+  }
+}
+
+/* ============ SERVICES ============ */
+.armak-services {
+  padding: 90px 6vw 140px;
+  background: var(--armak-ink);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Animated blueprint grid background */
+.armak-services::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 102, 204, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 102, 204, 0.06) 1px, transparent 1px),
+    linear-gradient(rgba(0, 102, 204, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 102, 204, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+  background-position: 0 0;
+  pointer-events: none;
+  z-index: 0;
+  animation: gridDrift 60s linear infinite;
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 90%);
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 90%);
+}
+
+@keyframes gridDrift {
+  from {
+    background-position: 0 0, 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: 24px 24px, -24px -24px, 120px 120px, -120px -120px;
+  }
+}
+
+/* Color washes — subtle */
+.armak-services::after {
+  content: '';
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(220, 20, 60, 0.08), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 85% 90%, rgba(0, 102, 204, 0.10), transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  animation: bgPulse 14s ease-in-out infinite alternate;
+}
+
+@keyframes bgPulse {
+  from {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* Live circuit canvas */
+#servicesCircuit {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.28;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .armak-services::before,
+  .armak-services::after {
+    animation: none;
+  }
+}
+
+.armak-services-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.armak-section-head {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: end;
+  margin-bottom: 80px;
+}
+
+.armak-section-eyebrow {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--armak-red);
+  margin-bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+}
+
+.armak-section-eyebrow::before {
+  content: '';
+  width: 36px;
+  height: 2px;
+  background: var(--armak-red);
+}
+
+/* 7 — Animated underline draws left to right on scroll-in */
+.armak-section-eyebrow::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--armak-red);
+  transition: width .8s var(--ease);
+}
+
+.armak-section-eyebrow.in-view::after,
+.in-view .armak-section-eyebrow::after,
+.armak-section-eyebrow:not(.armak-reveal)::after {
+  width: 100%;
+}
+
+.armak-section-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.5rem, 4.75vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  color: var(--armak-white);
+}
+
+.armak-section-desc {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.7;
+}
+
+/* ============ SERVICE DECKS — 3 stacked decks ============ */
+.armak-services-decks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 36px;
+}
+
+.svc-deck-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.svc-deck-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 0 4px;
+}
+
+.svc-deck-label-num {
+  font-family: 'Oswald', sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--armak-red);
+  line-height: 1;
+  text-shadow: 0 0 14px rgba(220, 20, 60, 0.45);
+}
+
+.svc-deck-label-text {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--armak-white);
+  line-height: 1.1;
+  padding-top: 4px;
+}
+
+.svc-deck {
+  position: relative;
+  height: 360px;
+  perspective: 1500px;
+}
+
+.svc-card {
+  position: absolute;
+  inset: 0;
+  padding: 32px 28px;
+  background: linear-gradient(140deg, #0a4a9c 0%, var(--armak-blue) 60%, #003d7a 100%);
+  color: #000;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 24px 56px rgba(10, 14, 39, 0.32), 0 6px 20px rgba(10, 14, 39, 0.2);
+  cursor: pointer;
+  transition: transform 1.1s cubic-bezier(.22, 1, .36, 1),
+    opacity 0.9s cubic-bezier(.22, 1, .36, 1),
+    box-shadow 0.6s ease;
+  transform-origin: center;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  will-change: transform;
+}
+
+.svc-card::after {
+  content: none;
+}
+
+/* Stack positions — top, then offset/rotated cards behind. Subtler offsets. */
+.svc-card[data-pos="0"] {
+  transform: translate(0, 0) rotate(0) scale(1);
+  z-index: 10;
+  opacity: 1;
+}
+
+.svc-card[data-pos="1"] {
+  transform: translate(5px, 7px) rotate(-1.2deg) scale(0.985);
+  z-index: 9;
+  opacity: 0.78;
+}
+
+.svc-card[data-pos="2"] {
+  transform: translate(10px, 14px) rotate(-2.2deg) scale(0.97);
+  z-index: 8;
+  opacity: 0.55;
+}
+
+.svc-card[data-pos="3"],
+.svc-card[data-pos="4"],
+.svc-card[data-pos="5"] {
+  transform: translate(14px, 20px) rotate(-3deg) scale(0.955);
+  z-index: 7;
+  opacity: 0.28;
+}
+
+.svc-deck:hover .svc-card[data-pos="0"] {
+  box-shadow: 0 32px 70px rgba(10, 14, 39, 0.4), 0 10px 28px rgba(220, 20, 60, 0.28);
+  transform: translate(0, -3px) rotate(0) scale(1);
+}
+
+/* Red corner accent on top card */
+.svc-card[data-pos="0"]::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 42px;
+  height: 42px;
+  border-top: 3px solid var(--armak-red);
+  border-left: 3px solid var(--armak-red);
+  filter: drop-shadow(0 0 10px rgba(220, 20, 60, 0.6));
+  pointer-events: none;
+  z-index: 2;
+}
+
+.svc-card-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 5;
+}
+
+.svc-card-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.svc-card-tag {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #000;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  position: relative;
+  z-index: 5;
+  text-shadow: none;
+}
+
+.svc-card-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: #000;
+  line-height: 1.05;
+  margin: 0 0 14px;
+  position: relative;
+  z-index: 5;
+  text-shadow: none;
+}
+
+.svc-card-body {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #000;
+  line-height: 1.6;
+  margin: 0;
+  flex: 1;
+  position: relative;
+  z-index: 5;
+  text-shadow: none;
+}
+
+.svc-card-footer {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  position: relative;
+  z-index: 5;
+}
+
+.svc-card-meta {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: #000;
+  text-shadow: none;
+}
+
+.svc-card-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  color: #000;
+  transition: transform .35s var(--ease);
+}
+
+.svc-card-arrow svg {
+  width: 22px;
+  height: 22px;
+}
+
+.svc-deck:hover .svc-card[data-pos="0"] .svc-card-arrow {
+  transform: translateX(5px);
+}
+
+@media (max-width: 960px) {
+  .armak-services-decks {
+    grid-template-columns: 1fr;
+    gap: 80px;
+  }
+
+  .svc-deck {
+    height: 340px;
+  }
+}
+
+.armak-services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* 3D Flip Card */
+.armak-service-card {
+  position: relative;
+  min-height: 320px;
+  perspective: 1400px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.armak-service-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  transition: transform .8s var(--ease);
+  transform-style: preserve-3d;
+}
+
+/* Flip driven by JS .is-flipped class */
+.armak-service-card.is-flipped .armak-service-inner {
+  transform: rotateY(180deg);
+}
+
+/* On true pointer devices, also keep CSS hover working */
+@media (hover: hover) and (pointer: fine) {
+
+  .armak-service-card:hover .armak-service-inner,
+  .armak-service-card:focus-within .armak-service-inner {
+    transform: rotateY(180deg);
+  }
+}
+
+/* Mobile: flatten cards — show front + back stacked */
+@media (max-width: 640px) {
+  .armak-service-card {
+    perspective: none;
+    min-height: unset;
+  }
+
+  .armak-service-inner {
+    transform: none !important;
+    transform-style: flat;
+    min-height: unset;
+  }
+
+  .armak-service-front {
+    position: static;
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+  }
+
+  .armak-service-back {
+    position: static;
+    transform: none;
+    backface-visibility: visible;
+    -webkit-backface-visibility: visible;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+.armak-service-front,
+.armak-service-back {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  padding: 52px 38px 48px;
+  display: flex;
+  flex-direction: column;
+}
+
+.armak-service-front {
+  background: var(--armak-ink);
+}
+
+.armak-service-back {
+  background: #060810;
+  color: var(--armak-white);
+  transform: rotateY(180deg);
+}
+
+.armak-service-back::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  background: var(--armak-red);
+}
+
+.armak-service-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  margin-bottom: 30px;
+  color: var(--armak-blue);
+  flex-shrink: 0;
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease), background .35s var(--ease);
+}
+
+.armak-service-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.armak-service-card:hover .armak-service-icon {
+  transform: scale(1.12);
+  box-shadow: 0 0 18px rgba(0, 102, 204, 0.4);
+  background: rgba(0, 102, 204, 0.12);
+}
+
+/* Red top border slides in on hover */
+.armak-service-front::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 3px;
+  background: var(--armak-red);
+  transition: width .5s var(--ease);
+  z-index: 2;
+}
+
+.armak-service-card:hover .armak-service-front::before {
+  width: 100%;
+}
+
+/* Watermark number — subtle on dark */
+.armak-service-front::after {
+  content: attr(data-num);
+  position: absolute;
+  bottom: -10px;
+  right: 4px;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 6.5rem;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.04);
+  letter-spacing: -0.06em;
+  pointer-events: none;
+  z-index: 0;
+  transition: color .4s var(--ease), transform .5s var(--ease);
+}
+
+.armak-service-card:hover .armak-service-front::after {
+  color: rgba(255, 255, 255, 0.07);
+  transform: translateX(-5px) translateY(2px);
+}
+
+.armak-service-icon,
+.armak-service-num,
+.armak-service-title,
+.armak-service-desc {
+  position: relative;
+  z-index: 1;
+}
+
+.armak-service-num {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: rgba(255, 255, 255, 0.35);
+  margin-bottom: 18px;
+  text-transform: uppercase;
+}
+
+.armak-service-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 1.55rem;
+  letter-spacing: -0.005em;
+  margin-bottom: 16px;
+  color: var(--armak-white);
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.armak-service-desc {
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.65;
+  font-size: 1.05rem;
+  font-weight: 450;
+}
+
+/* Back of card */
+.armak-service-back-tag {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--armak-red);
+  margin-bottom: 18px;
+  margin-top: 8px;
+}
+
+.armak-service-back-title {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 1.55rem;
+  letter-spacing: -0.005em;
+  margin-bottom: 24px;
+  color: var(--armak-white);
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.armak-service-back-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.armak-service-back-list li {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.98rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 10px 0 10px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  position: relative;
+}
+
+.armak-service-back-list li:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.armak-service-back-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 2px;
+  background: var(--armak-red);
+}
+
+.armak-services-cta {
+  margin-top: 64px;
+  display: flex;
+  justify-content: center;
+}
+
+.armak-services-toggle {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: gap .35s var(--ease), color .25s ease, border-color .25s ease;
+}
+
+.armak-services-toggle:hover {
+  gap: 20px;
+  color: var(--armak-white);
+  border-color: var(--armak-white);
+}
+
+.armak-services-toggle .chev {
+  transition: transform .4s var(--ease);
+}
+
+.armak-services-toggle .label-hide {
+  display: none;
+}
+
+.armak-services-toggle[aria-expanded="true"] .chev {
+  transform: rotate(180deg);
+}
+
+.armak-services-toggle[aria-expanded="true"] .label-show {
+  display: none;
+}
+
+.armak-services-toggle[aria-expanded="true"] .label-hide {
+  display: inline;
+}
+
+/* Extra services grid (hidden until expanded) */
+.armak-services-extra {
+  border-top: 0;
+  margin-top: -1px;
+  /* merge with main grid border */
+  overflow: hidden;
+  transition: opacity .5s var(--ease);
+}
+
+.armak-services-extra[hidden] {
+  display: none;
+}
+
+.armak-services-extra.opening {
+  animation: armakSlideDown .55s var(--ease) both;
+}
+
+@keyframes armakSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============ ABOUT / WHY US ============ */
+#aboutParticles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.7;
+}
+
+.armak-about {
+  padding: 90px 6vw 140px;
+  background: var(--armak-gray-100);
+  position: relative;
+  overflow: hidden;
+}
+
+.armak-about::before {
+  content: none;
+}
+
+.armak-about-grid {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 64px;
+  align-items: start;
+  position: relative;
+  z-index: 1;
+}
+
+/* Left column wrapper: title on top, visual below */
+.armak-about-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  align-items: stretch;
+}
+
+.armak-about-left {
+  position: static;
+}
+
+.armak-about-left .armak-section-eyebrow {
+  margin-bottom: 20px;
+}
+
+.armak-about-bottom {
+  max-width: 1320px;
+  margin: 56px auto 0;
+  position: relative;
+  z-index: 1;
+}
+
+.armak-about-visual {
+  position: relative;
+  aspect-ratio: 3/4;
+  width: 100%;
+  background: var(--armak-white);
+  border: 1px solid var(--armak-gray-300);
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(10, 14, 39, 0.06);
+  transition: transform .8s var(--ease), box-shadow .8s var(--ease);
+}
+
+.armak-about-visual:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 56px rgba(10, 14, 39, 0.1);
+}
+
+.armak-about-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 1px 1px, rgba(10, 14, 39, 0.06) 1px, transparent 0) 0 0/20px 20px;
+  z-index: 0;
+}
+
+.armak-about-logo-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  z-index: 1;
+}
+
+.armak-about-logo {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Partners grid (2x3) inside about visual */
+.armak-partners-label {
+  position: absolute;
+  top: 28px;
+  left: 32px;
+  z-index: 2;
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--armak-red);
+}
+
+.armak-partners-grid {
+  position: absolute;
+  inset: 60px 28px 28px 28px;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--armak-gray-300);
+  border: 1px solid var(--armak-gray-300);
+}
+
+.armak-partner-cell {
+  background: var(--armak-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  transition: background .35s var(--ease);
+}
+
+.armak-partner-cell:hover {
+  background: #FCFCFD;
+}
+
+.armak-partner-cell img {
+  max-width: 88%;
+  max-height: 60px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: grayscale(30%);
+  opacity: 0.9;
+  transition: filter .35s var(--ease), opacity .35s var(--ease);
+}
+
+.armak-partner-cell:hover img {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+.armak-partner-more {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--armak-gray-500);
+}
+
+.armak-about-corner-tl,
+.armak-about-corner-br {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  z-index: 3;
+}
+
+.armak-about-corner-tl {
+  top: -2px;
+  left: -2px;
+  border-top: 4px solid var(--armak-red);
+  border-left: 4px solid var(--armak-red);
+  filter: drop-shadow(0 0 8px rgba(220, 20, 60, 0.45));
+}
+
+.armak-about-corner-br {
+  bottom: -2px;
+  right: -2px;
+  border-bottom: 4px solid var(--armak-blue);
+  border-right: 4px solid var(--armak-blue);
+  filter: drop-shadow(0 0 8px rgba(0, 102, 204, 0.4));
+}
+
+.armak-about h2 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.5rem, 4.4vw, 4.4rem);
+  line-height: 1;
+  margin-bottom: 0;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  color: var(--armak-ink);
+}
+
+.armak-about h2 .accent {
+  color: var(--armak-red);
+  display: block;
+  margin-top: 6px;
+}
+
+.armak-about p {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--armak-gray-600);
+  line-height: 1.75;
+  margin-bottom: 18px;
+}
+
+.armak-about p strong {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--armak-ink);
+  display: block;
+  margin-bottom: -4px;
+}
+
+.armak-values {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  height: 260px;
+  margin: 0 auto;
+  perspective: 1200px;
+}
+
+.armak-value {
+  position: absolute;
+  width: 100%;
+  padding: 36px 32px 32px;
+  background: var(--armak-white);
+  border: 1px solid var(--armak-gray-300);
+  overflow: hidden;
+  transition: transform 0.7s var(--ease), box-shadow 0.7s var(--ease), border-color .35s var(--ease), opacity 0.7s var(--ease);
+  transform-origin: center center;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Deck stacking — front card on top */
+.armak-value[data-deck="0"] {
+  z-index: 4;
+  transform: translate(0, 0) rotate(0deg);
+  opacity: 1;
+  animation: cardFloat0 3.6s ease-in-out infinite;
+  box-shadow: 0 18px 44px rgba(10, 14, 39, 0.12), 0 6px 16px rgba(10, 14, 39, 0.06);
+}
+
+.armak-value[data-deck="1"] {
+  z-index: 3;
+  transform: translate(6px, 8px) rotate(-1.5deg);
+  opacity: 0.82;
+  animation: cardFloat1 4.0s ease-in-out infinite;
+  box-shadow: 0 14px 36px rgba(10, 14, 39, 0.09);
+}
+
+.armak-value[data-deck="2"] {
+  z-index: 2;
+  transform: translate(12px, 16px) rotate(-2.8deg);
+  opacity: 0.6;
+  animation: cardFloat2 4.4s ease-in-out infinite;
+  box-shadow: 0 10px 28px rgba(10, 14, 39, 0.07);
+}
+
+.armak-value[data-deck="3"] {
+  z-index: 1;
+  transform: translate(18px, 24px) rotate(-3.8deg);
+  opacity: 0.38;
+  animation: cardFloat3 4.8s ease-in-out infinite;
+  box-shadow: 0 8px 20px rgba(10, 14, 39, 0.05);
+}
+
+/* Floating bob keyframes — each card slightly different timing */
+@keyframes cardFloat0 {
+
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+
+  50% {
+    transform: translate(0, -8px) rotate(0deg);
+  }
+}
+
+@keyframes cardFloat1 {
+
+  0%,
+  100% {
+    transform: translate(6px, 8px) rotate(-1.5deg);
+  }
+
+  50% {
+    transform: translate(6px, 0px) rotate(-1.5deg);
+  }
+}
+
+@keyframes cardFloat2 {
+
+  0%,
+  100% {
+    transform: translate(12px, 16px) rotate(-2.8deg);
+  }
+
+  50% {
+    transform: translate(12px, 8px) rotate(-2.8deg);
+  }
+}
+
+@keyframes cardFloat3 {
+
+  0%,
+  100% {
+    transform: translate(18px, 24px) rotate(-3.8deg);
+  }
+
+  50% {
+    transform: translate(18px, 16px) rotate(-3.8deg);
+  }
+}
+
+/* Shuffle transition class — card flies up and to the back */
+.armak-value.deck-shuffling {
+  animation: none !important;
+  transition: transform 0.5s var(--ease), opacity 0.5s var(--ease), z-index 0s 0.25s;
+}
+
+.armak-value:hover {
+  border-color: var(--armak-ink);
+}
+
+/* Red top-left corner bracket with neon glow */
+.armak-value::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 40px;
+  height: 40px;
+  border-top: 4px solid var(--armak-red);
+  border-left: 4px solid var(--armak-red);
+  filter: drop-shadow(0 0 8px rgba(220, 20, 60, 0.7));
+  z-index: 2;
+  pointer-events: none;
+  transition: filter .35s var(--ease);
+}
+
+.armak-value:hover::before {
+  filter: drop-shadow(0 0 14px rgba(220, 20, 60, 1));
+}
+
+/* Blue bottom-right corner bracket with neon glow */
+.armak-value::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border-bottom: 4px solid var(--armak-blue);
+  border-right: 4px solid var(--armak-blue);
+  filter: drop-shadow(0 0 8px rgba(0, 102, 204, 0.65));
+  z-index: 2;
+  pointer-events: none;
+  transition: filter .35s var(--ease);
+}
+
+.armak-value:hover::after {
+  filter: drop-shadow(0 0 14px rgba(0, 102, 204, 0.95));
+}
+
+.armak-value-tag {
+  position: relative;
+  z-index: 1;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 800;
+  color: #000;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.armak-value-title {
+  position: relative;
+  z-index: 1;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 800;
+  font-size: 1.45rem;
+  color: #000;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  letter-spacing: -0.005em;
+  line-height: 1.1;
+}
+
+.armak-value-desc {
+  position: relative;
+  z-index: 1;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #000;
+  line-height: 1.55;
+}
+
+/* ============ CTA ============ */
+.armak-cta {
+  background: var(--armak-blue);
+  color: var(--armak-white);
+  padding: 72px 6vw;
+  position: relative;
+  overflow: hidden;
+}
+
+.armak-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--armak-red) 0 50%, var(--armak-white) 50% 100%);
+}
+
+.armak-cta::after {
+  content: '';
+  position: absolute;
+  right: -100px;
+  bottom: -100px;
+  width: 360px;
+  height: 360px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.armak-cta-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 80px;
+  align-items: center;
+  position: relative;
+}
+
+.armak-cta-eyebrow {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--armak-white);
+  margin-bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0.95;
+}
+
+.armak-cta-eyebrow::before {
+  content: '';
+  width: 36px;
+  height: 2px;
+  background: var(--armak-red);
+}
+
+.armak-cta h2 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.5rem, 5vw, 4.75rem);
+  line-height: 0.95;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  color: var(--armak-white);
+}
+
+.armak-cta h2 .accent {
+  color: var(--armak-white);
+  display: inline-block;
+  position: relative;
+  padding-bottom: 6px;
+}
+
+.armak-cta h2 .accent::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 5px;
+  background: var(--armak-red);
+  box-shadow: 0 0 18px rgba(220, 20, 60, 0.7), 0 0 36px rgba(220, 20, 60, 0.4);
+}
+
+.armak-cta p {
+  font-size: 1.2rem;
+  font-weight: 450;
+  opacity: 0.92;
+  line-height: 1.65;
+  max-width: 520px;
+}
+
+.armak-cta-side {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* Contact form */
+.armak-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 32px 28px;
+}
+
+.armak-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.armak-form input,
+.armak-form select,
+.armak-form textarea {
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--armak-white);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 14px 16px;
+  width: 100%;
+  transition: border-color .25s ease, background .25s ease, box-shadow .25s ease;
+  border-radius: 0;
+}
+
+.armak-form input::placeholder,
+.armak-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.armak-form input:focus,
+.armak-form select:focus,
+.armak-form textarea:focus {
+  outline: none;
+  border-color: var(--armak-white);
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
+.armak-form select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='white' d='M6 8L0 0h12z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 44px;
+}
+
+.armak-form select option {
+  color: var(--armak-ink);
+  background: var(--armak-white);
+}
+
+.armak-form textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.armak-form-submit {
+  background: var(--armak-red);
+  color: var(--armak-white);
+  padding: 18px 28px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 0;
+  cursor: pointer;
+  transition: background .25s var(--ease), transform .35s var(--ease), box-shadow .35s var(--ease);
+  box-shadow: var(--shadow-red-idle);
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.armak-form-submit:hover {
+  background: var(--armak-red-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-red-active);
+}
+
+.armak-form-note {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+}
+
+.armak-cta-btn {
+  background: var(--armak-red);
+  color: var(--armak-white);
+  padding: 22px 38px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  transition: background .25s var(--ease), transform .35s var(--ease), box-shadow .35s var(--ease);
+  box-shadow: var(--shadow-red-idle);
+}
+
+.armak-cta-btn:hover {
+  background: var(--armak-red-dark);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-red-active);
+}
+
+.armak-cta-btn .arrow {
+  transition: transform .3s var(--ease);
+}
+
+.armak-cta-btn:hover .arrow {
+  transform: translateX(4px);
+}
+
+.armak-contact-block {
+  display: grid;
+  gap: 18px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  width: 100%;
+}
+
+.armak-contact-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.armak-contact-row svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.armak-contact-row a {
+  color: var(--armak-white);
+  transition: color .2s ease;
+}
+
+.armak-contact-row a:hover {
+  color: #FFE5EC;
+}
+
+/* ============ FOOTER ============ */
+.armak-footer {
+  background: var(--armak-ink);
+  color: var(--armak-white);
+  padding: 40px 6vw 0;
+  position: relative;
+}
+
+.armak-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--armak-blue) 0 50%, var(--armak-red) 50% 100%);
+  box-shadow: 0 0 16px rgba(220, 20, 60, 0.25), 0 1px 8px rgba(0, 102, 204, 0.2);
+}
+
+.armak-footer-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.armak-footer-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr 1fr;
+  gap: 36px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.armak-footer-brand img {
+  height: 160px;
+  width: auto;
+  margin-bottom: 14px;
+  opacity: 0.95;
+}
+
+.armak-footer-brand p {
+  font-size: 0.95rem;
+  font-weight: 450;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+.armak-footer-col-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--armak-red);
+  margin-bottom: 14px;
+}
+
+.armak-footer-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.armak-footer-col li,
+.armak-footer-col a {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  transition: color .2s ease;
+  line-height: 1.5;
+}
+
+.armak-footer-col a:hover {
+  color: var(--armak-white);
+}
+
+.armak-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 16px 0 18px;
+}
+
+.armak-footer-copy {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.04em;
+}
+
+.armak-footer-license {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.armak-footer-license .badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-left: 10px;
+  font-size: 0.78rem;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 960px) {
+  .armak-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 56px;
+  }
+
+  .armak-hero-visual {
+    justify-self: start;
+    max-width: 360px;
+  }
+
+  .armak-section-head {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: start;
+    margin-bottom: 60px;
+  }
+
+  .armak-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .armak-services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .armak-about-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .armak-values {
+    max-width: 100%;
+    height: 260px;
+  }
+
+  .armak-cta-inner {
+    grid-template-columns: 1fr;
+    gap: 44px;
+  }
+
+  .armak-footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 560px) {
+  .armak-hero {
+    padding: 30px 6vw 50px;
+  }
+
+  .armak-services,
+  .armak-about {
+    padding: 70px 6vw 100px;
+  }
+
+  .armak-cta {
+    padding: 56px 6vw;
+  }
+
+  .armak-stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .armak-hero h1 {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+
+  .armak-values {
+    max-width: 100%;
+    height: 220px;
+  }
+
+  .armak-value {
+    padding: 28px 24px 24px;
+  }
+
+  .armak-footer {
+    padding: 32px 6vw 0;
+  }
+
+  .armak-footer-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-bottom: 24px;
+  }
+
+  .armak-footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .armak-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .armak-form {
+    padding: 24px 20px;
+  }
+}
+
+/* Hero trust note */
+.armak-hero-trust-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--armak-gray-500);
+  letter-spacing: 0.04em;
+  margin-top: 20px;
+}
+
+.armak-hero-trust-note svg {
+  flex-shrink: 0;
+  color: var(--armak-blue);
+}
+
+/* Form badge above the form */
+.armak-form-header {
+  margin-bottom: 16px;
+}
+
+.armak-form-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 14px;
+}
+
+.armak-form-badge svg {
+  flex-shrink: 0;
+}
+
+/* ============ CTA SCOPE + BUILD DESIGN ============ */
+.cta-crosshair-o {
+  height: 0.86em;
+  width: auto;
+  display: inline-block;
+  vertical-align: -0.1em;
+  overflow: visible;
+}
+
+.cta-build-svg {
+  height: 0.9em;
+  width: auto;
+  display: inline-block;
+  vertical-align: -0.06em;
+  overflow: visible;
+}
+
+/* Blueprint dimension marker under BUILD */
+.cta-build-word {
+  position: relative;
+  display: inline-block;
+}
+
+.cta-build-word::after {
+  content: '';
+  position: absolute;
+  bottom: -14px;
+  left: -10px;
+  right: -10px;
+  height: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cline x1='14' y1='7' x2='186' y2='7' stroke='%230066CC' stroke-width='1.5' stroke-dasharray='7,4'/%3E%3Cpolyline points='20,3 10,7 20,11' stroke='%230066CC' stroke-width='1.5' fill='none' stroke-linejoin='round'/%3E%3Cpolyline points='180,3 190,7 180,11' stroke='%230066CC' stroke-width='1.5' fill='none' stroke-linejoin='round'/%3E%3Cline x1='10' y1='2' x2='10' y2='12' stroke='%230066CC' stroke-width='1.5'/%3E%3Cline x1='190' y1='2' x2='190' y2='12' stroke='%230066CC' stroke-width='1.5'/%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+
+/* Scanning line under SCOPE */
+.cta-scope {
+  position: relative;
+  display: inline-block;
+}
+
+.cta-scope::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9), 0 0 16px rgba(255, 255, 255, 0.4);
+  animation: scopeScan 2.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes scopeScan {
+  0% {
+    left: 0;
+    width: 0;
+    opacity: 1;
+  }
+
+  35% {
+    left: 0;
+    width: 100%;
+    opacity: 1;
+  }
+
+  65% {
+    left: 0;
+    width: 100%;
+    opacity: 0.6;
+  }
+
+  99% {
+    left: 100%;
+    width: 0;
+    opacity: 0;
+  }
+
+  100% {
+    left: 0;
+    width: 0;
+    opacity: 0;
+  }
+}
+
+/* ===== 3 — PHOTO MARQUEE STRIP ===== */
+.armak-marquee {
+  overflow: hidden;
+  width: 100%;
+  height: 200px;
+  position: relative;
+  background: #000;
+  z-index: 10;
+  margin-top: -40px;
+}
+
+.armak-marquee-track {
+  display: flex;
+  height: 100%;
+  animation: marqueeScroll 38s linear infinite;
+  will-change: transform;
+}
+
+.armak-marquee:hover .armak-marquee-track {
+  animation-play-state: paused;
+}
+
+.armak-marquee-track img {
+  height: 100%;
+  width: auto;
+  flex-shrink: 0;
+  object-fit: cover;
+  opacity: 0.65;
+  filter: saturate(0.8) brightness(0.8) contrast(1.05);
+  transition: opacity .5s ease, filter .5s ease, transform .5s ease;
+}
+
+.armak-marquee-track img:hover {
+  opacity: 1;
+  filter: saturate(1.05) brightness(1) contrast(1);
+  transform: scale(1.02);
+}
+
+@keyframes marqueeScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.armak-marquee::before,
+.armak-marquee::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 140px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.armak-marquee::before {
+  left: 0;
+  background: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%);
+}
+
+.armak-marquee::after {
+  right: 0;
+  background: linear-gradient(-90deg, #000 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%);
+}
+
+/* =========================================================
+     UTILITY OVERLAY SYSTEM — every element earns its presence
+     ========================================================= */
+
+/* --- Page intro loader (one-time, real-event-driven) --- */
+.armak-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: var(--armak-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity .5s ease, visibility .5s ease;
+}
+
+.armak-loader.is-done {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.armak-loader.is-skip {
+  display: none;
+}
+
+.loader-inner {
+  width: min(380px, 76vw);
+  text-align: center;
+}
+
+.loader-label {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 16px;
+  transition: color .3s ease;
+}
+
+.loader-bar {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.loader-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--armak-red), #1E80E5, var(--armak-blue));
+  background-size: 200% 100%;
+  box-shadow: 0 0 12px rgba(220, 20, 60, 0.6), 0 0 20px rgba(0, 102, 204, 0.4);
+  transition: width .6s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: barShimmer 4s linear infinite;
+}
+
+.loader-pct {
+  margin-top: 14px;
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: 0.04em;
+  color: var(--armak-white);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Scroll progress bar pinned to top --- */
+.armak-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--armak-red), #1E80E5, var(--armak-blue));
+  box-shadow: 0 0 8px rgba(220, 20, 60, 0.6);
+  z-index: 9998;
+  transition: width .12s linear;
+}
+
+/* --- Section indicator dots (right edge) --- */
+.armak-section-dots {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease;
+}
+
+.armak-section-dots.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.section-dot {
+  position: relative;
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: rgba(10, 14, 39, 0.25);
+  border: 1.5px solid rgba(10, 14, 39, 0.55);
+  border-radius: 50%;
+  transition: all .3s ease;
+  cursor: pointer !important;
+  text-decoration: none;
+}
+
+.section-dot.is-active {
+  background: var(--armak-red);
+  border-color: var(--armak-red);
+  box-shadow: 0 0 12px rgba(220, 20, 60, 0.6);
+  transform: scale(1.25);
+}
+
+.section-dot::before {
+  content: attr(data-label);
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%) translateX(4px);
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--armak-ink);
+  background: var(--armak-white);
+  padding: 4px 10px;
+  border: 1px solid rgba(10, 14, 39, 0.1);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+.section-dot:hover::before {
+  opacity: 1;
+  transform: translateY(-50%) translateX(0);
+}
+
+/* Dots adapt to dark sections */
+body.on-dark .section-dot {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+body.on-dark .section-dot.is-active {
+  background: var(--armak-red);
+  border-color: var(--armak-red);
+}
+
+/* --- Live status pill in nav --- */
+.armak-nav-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 6px 12px;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.08);
+  margin-left: auto;
+  margin-right: 24px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.7);
+  position: relative;
+}
+
+.status-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 1.5px solid rgba(34, 197, 94, 0.5);
+  border-radius: 50%;
+  animation: statusPulse 2.4s ease-out infinite;
+}
+
+@keyframes statusPulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* --- Breadcrumb (visible only when scrolled) --- */
+.armak-nav-breadcrumb {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin-right: 24px;
+}
+
+.armak-nav.scrolled .armak-nav-breadcrumb {
+  display: inline-flex;
+}
+
+.armak-nav.scrolled .armak-nav-status {
+  display: none;
+}
+
+.bc-label {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.bc-divider {
+  width: 14px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.bc-current {
+  color: var(--armak-white);
+  transition: color .3s ease;
+}
+
+/* --- Hero seal (logo demoted to bottom-left badge) --- */
+.armak-hero-seal {
+  position: absolute;
+  bottom: 40px;
+  left: 6vw;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.85;
+  transition: opacity .3s ease, transform .3s ease;
+}
+
+.armak-hero-seal:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.armak-hero-seal img {
+  height: 56px;
+  width: auto;
+}
+
+/* =========================================================
+     SOCAL SERVICE MAP — interactive
+     ========================================================= */
+.armak-hero-map {
+  position: relative;
+  width: 100%;
+  background: transparent;
+  border: none;
+  overflow: visible;
+}
+
+.map-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 720/660;
+}
+
+.map-coast {
+  animation: coastDraw 8s ease-in-out infinite;
+}
+
+@keyframes coastDraw {
+
+  0%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-dashoffset: -22;
+  }
+}
+
+/* Radar sweep on the HQ */
+.map-radar {
+  transform-origin: 597.2px 286.4px;
+  animation: radarSpin 9s linear infinite;
+}
+
+@keyframes radarSpin {
+  0% {
+    transform: rotate(0deg);
+    opacity: 0.85;
+  }
+
+  100% {
+    transform: rotate(360deg);
+    opacity: 0.85;
+  }
+}
+
+/* City markers */
+.map-city {
+  cursor: pointer;
+}
+
+.city-dot {
+  fill: var(--armak-red);
+  filter: drop-shadow(0 0 4px rgba(220, 20, 60, 0.9));
+  transition: r .25s ease, fill .25s ease;
+}
+
+.city-dot.hq {
+  fill: var(--armak-white);
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9));
+}
+
+/* Pulse rings — triggered by JS when radar passes; hidden by default */
+.pulse-ring {
+  fill: none;
+  stroke: var(--armak-red);
+  stroke-width: 1.5;
+  transform-origin: center;
+  transform-box: fill-box;
+  opacity: 0;
+}
+
+.pulse-ring.is-pulsing {
+  animation: cityPulse 1.6s ease-out 1;
+}
+
+@keyframes cityPulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.95;
+  }
+
+  100% {
+    transform: scale(4.2);
+    opacity: 0;
+  }
+}
+
+.hq-ring-outer {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.4);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+  animation: hqOuterSpin 22s linear infinite;
+  transform-origin: 597.2px 286.4px;
+}
+
+.hq-ring-inner {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.6);
+  stroke-width: 1.2;
+  animation: hqInnerPulse 3s ease-in-out infinite;
+  transform-origin: 597.2px 286.4px;
+}
+
+@keyframes hqOuterSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes hqInnerPulse {
+
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.9;
+    transform: scale(1.1);
+  }
+}
+
+.city-label {
+  fill: rgba(255, 255, 255, 0.7);
+  font-family: 'Manrope', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  pointer-events: none;
+  transition: fill .25s ease;
+}
+
+.city-label.end {
+  text-anchor: end;
+}
+
+.city-label.hq {
+  fill: var(--armak-white);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.map-city:hover .city-dot {
+  r: 5.5;
+  fill: var(--armak-white);
+}
+
+.map-city:hover .city-label {
+  fill: var(--armak-white);
+}
+
+/* Signal lines — drawn by JS between HQ and cities */
+.map-signals line {
+  stroke: rgba(0, 140, 255, 0.5);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 4;
+  animation: signalDash 1s linear infinite;
+}
+
+@keyframes signalDash {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+/* =========================================================
+     CONTEXTUAL CUSTOM CURSOR
+     ========================================================= */
+.armak-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  margin: -16px 0 0 -16px;
+  pointer-events: none;
+  z-index: 10000;
+  opacity: 0;
+  transition: opacity .25s ease, transform .12s linear;
+  will-change: transform;
+  mix-blend-mode: difference;
+}
+
+.armak-cursor.is-active {
+  opacity: 1;
+}
+
+.armak-cursor svg {
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.95);
+  transition: transform .25s ease;
+}
+
+.armak-cursor[data-mode="card"] svg {
+  transform: scale(1.4);
+}
+
+.armak-cursor[data-mode="pause"] svg {
+  transform: scale(1.2);
+}
+
+.armak-cursor-label {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 8px 0 0 18px;
+  pointer-events: none;
+  z-index: 10000;
+  font-family: 'Manrope', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--armak-white);
+  background: rgba(10, 14, 39, 0.85);
+  padding: 4px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  opacity: 0;
+  transition: opacity .25s ease, transform .12s linear;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.armak-cursor-label.is-active {
+  opacity: 1;
+}
+
+/* Native cursor only — custom cursor disabled */
+body.has-custom-cursor,
+body.has-custom-cursor a,
+body.has-custom-cursor button,
+body.has-custom-cursor .armak-service-card,
+body.has-custom-cursor .map-city,
+body,
+body * {
+  cursor: auto;
+}
+
+a,
+button,
+.armak-service-card,
+.map-city,
+.armak-btn,
+.armak-nav-cta,
+.deck-card,
+.deck-card-arrow,
+.section-dot {
+  cursor: pointer !important;
+}
+
+.armak-cursor,
+.armak-cursor-label {
+  display: none !important;
+}
+
+/* =========================================================
+     MAGNETIC BUTTONS — subtle drift toward cursor
+     ========================================================= */
+.armak-btn-primary,
+.armak-form-submit,
+.armak-cta-btn,
+.armak-nav-cta {
+  will-change: transform;
+}
+
+/* ============ PARTNERS HOVER-EXPAND ============ */
+.partners-section {
+  margin: 96px -6vw 0;
+  padding: 0;
+  position: relative;
+}
+
+.partners-section-head {
+  max-width: 1320px;
+  margin: 0 auto 36px;
+  padding: 0 6vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.partners-title {
+  font-family: 'Manrope', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--armak-ink);
+  margin: 0;
+  padding-bottom: 12px;
+  position: relative;
+  display: inline-block;
+}
+
+.partners-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 2px;
+  background: var(--armak-red);
+}
+
+.partners-section-head .armak-section-eyebrow {
+  margin-bottom: 0;
+}
+
+.partners-section-tag {
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--armak-gray-600);
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+/* Hover-expand gallery */
+.partners-expand {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 6vw;
+}
+
+.partners-expand-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 240px;
+}
+
+.partner-strip {
+  position: relative;
+  height: 100%;
+  flex: 1 1 30px;
+  min-width: 24px;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--armak-white);
+  border: 1px solid var(--armak-gray-300);
+  transition: flex 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.35s var(--ease);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.partner-strip.active {
+  flex: 8 1 280px;
+  border-color: var(--armak-ink);
+  box-shadow: 0 18px 44px rgba(10, 14, 39, 0.14);
+}
+
+.partner-strip-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.25s ease 0.15s;
+}
+
+.partner-strip.active .partner-strip-inner {
+  opacity: 1;
+}
+
+.partner-strip-inner img {
+  max-width: 70%;
+  max-height: 55%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.partner-strip-name {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--armak-gray-600);
+  white-space: nowrap;
+}
+
+/* Collapsed indicator line */
+.partner-strip:not(.active)::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 40px;
+  background: var(--armak-gray-300);
+  border-radius: 1px;
+  transition: background 0.3s ease;
+}
+
+.partner-strip:not(.active):hover::after {
+  background: var(--armak-red);
+}
+
+/* Red accent bar on active */
+.partner-strip.active::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--armak-red);
+}
+
+@media (max-width: 1024px) {
+  .partners-expand-row {
+    height: 200px;
+    gap: 3px;
+  }
+
+  .partner-strip {
+    border-radius: 12px;
+  }
+
+  .partner-strip.active {
+    flex: 8 1 220px;
+  }
+}
+
+@media (max-width: 680px) {
+  .partners-expand-row {
+    height: 160px;
+    gap: 2px;
+  }
+
+  .partner-strip {
+    border-radius: 10px;
+    min-width: 16px;
+  }
+
+  .partner-strip.active {
+    flex: 8 1 160px;
+  }
+
+  .partner-strip-inner img {
+    max-width: 80%;
+    max-height: 50%;
+  }
+
+  .partner-strip-name {
+    font-size: 9px;
+  }
+}
+
+/* Text wordmark cards */
+
+@media (max-width: 768px) {
+  .partners-section {
+    margin-top: 64px;
+  }
+
+  .partners-section-tag {
+    font-size: 0.85rem;
+  }
+}
+
+
+
+.about-deck-wrap {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  width: 100%;
+}
+
+.about-deck {
+  position: relative;
+  flex: 1;
+  height: 360px;
+  perspective: 1500px;
+}
+
+.deck-card {
+  position: absolute;
+  inset: 0;
+  padding: 38px 34px;
+  background: var(--armak-blue);
+  color: #000;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 24px 56px rgba(10, 14, 39, 0.22), 0 6px 20px rgba(10, 14, 39, 0.14);
+  cursor: pointer;
+  transition: transform 0.7s cubic-bezier(.22, 1, .36, 1),
+    opacity 0.55s ease,
+    box-shadow 0.5s ease;
+  transform-origin: center;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  will-change: transform;
+}
+
+/* Overlay removed — was tinting text */
+.deck-card::after {
+  content: none;
+}
+
+/* Stack positions */
+.deck-card[data-pos="0"] {
+  transform: translate(0, 0) rotate(0) scale(1);
+  z-index: 3;
+  opacity: 1;
+}
+
+.deck-card[data-pos="1"] {
+  transform: translate(20px, 16px) rotate(-2.5deg) scale(0.97);
+  z-index: 2;
+  opacity: 0.65;
+}
+
+.deck-card[data-pos="2"] {
+  transform: translate(40px, 32px) rotate(-5deg) scale(0.94);
+  z-index: 1;
+  opacity: 0.4;
+}
+
+.deck-card[data-pos="0"]:hover {
+  box-shadow: 0 32px 70px rgba(10, 14, 39, 0.3), 0 10px 28px rgba(220, 20, 60, 0.22);
+  transform: translate(0, -3px) rotate(0) scale(1);
+}
+
+/* Red corner accent on top card only */
+.deck-card[data-pos="0"]::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 46px;
+  height: 46px;
+  border-top: 3px solid var(--armak-red);
+  border-left: 3px solid var(--armak-red);
+  filter: drop-shadow(0 0 10px rgba(220, 20, 60, 0.6));
+  pointer-events: none;
+  z-index: 2;
+}
+
+.deck-card-tag {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.32);
+  position: relative;
+  z-index: 5;
+}
+
+.deck-card-title {
+  font-family: 'Oswald', sans-serif;
+  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  line-height: 1.05;
+  margin: 0 0 18px;
+  position: relative;
+  z-index: 5;
+}
+
+.deck-card-body {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  line-height: 1.7;
+  margin: 0;
+  flex: 1;
+  position: relative;
+  z-index: 5;
+}
+
+.deck-card-meta {
+  font-family: 'Manrope', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: #000 !important;
+  -webkit-text-fill-color: #000 !important;
+  position: relative;
+  z-index: 5;
+}
+
+.deck-card-footer {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: relative;
+  z-index: 5;
+}
+
+.deck-card-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: #000 !important;
+  transition: transform .35s var(--ease);
+  cursor: pointer;
+}
+
+.deck-card-arrow svg {
+  width: 26px;
+  height: 26px;
+}
+
+.deck-card[data-pos="0"]:hover .deck-card-arrow {
+  transform: translateX(6px);
+}
+
+@media (max-width: 768px) {
+  .about-deck-wrap {
+    gap: 0;
+  }
+
+  .about-deck {
+    height: 400px;
+  }
+
+  .deck-card {
+    padding: 28px 24px;
+  }
+}
+
+
+@media (max-width: 960px) {
+  .armak-section-dots {
+    display: none;
+  }
+
+  .armak-nav-status {
+    display: none;
+  }
+
+  .armak-hero-seal {
+    bottom: 24px;
+  }
+
+  .armak-hero-seal img {
+    height: 40px;
+  }
+
+  .armak-cursor,
+  .armak-cursor-label {
+    display: none;
+  }
+
+  body.has-custom-cursor,
+  body.has-custom-cursor * {
+    cursor: auto !important;
+  }
+}

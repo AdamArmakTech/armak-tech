@@ -1,0 +1,140 @@
+<section class="armak-hero" id="home">
+  <div class="armak-hero-bg" id="heroParallaxBg"></div>
+  <canvas id="heroParticles"></canvas>
+  <div class="armak-hero-grid">
+    <div>
+      <div class="armak-eyebrow armak-reveal" style="--delay: 0.1s;">Trusted Since 1998 · Serving All of Southern California</div>
+      <h1 class="armak-reveal" style="--delay: 0.2s;">Engineered<span class="accent">to Last.</span></h1>
+      <p class="lead armak-reveal" style="--delay: 0.4s;">25 years building the infrastructure Southern California's most demanding facilities run on — from first conduit to final certification. Built for today. Engineered for what's next.</p>
+      <div class="armak-ctas armak-reveal" style="--delay: 0.55s;">
+        <a href="#contact" class="armak-btn armak-btn-primary">Request a Site Assessment
+          <svg class="arrow" viewBox="0 0 18 12" fill="none"><path d="M1 6h16m0 0L12 1m5 5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
+        </a>
+        <a href="#services" class="armak-btn armak-btn-outline">View Services</a>
+      </div>
+    </div>
+    <div class="armak-hero-visual armak-reveal" style="--delay: 0.7s;">
+      <div class="armak-hero-map" id="heroMap">
+        <svg class="map-svg" viewBox="200 100 720 660" preserveAspectRatio="xMidYMid meet" overflow="visible" style="overflow: visible;" xmlns="http://www.w3.org/2000/svg" aria-label="Southern California service area">
+          <defs>
+            <pattern id="topoGrid" width="44" height="44" patternUnits="userSpaceOnUse">
+              <path d="M 44 0 L 0 0 0 44" fill="none" stroke="rgba(0,180,255,0.12)" stroke-width="0.5"/>
+            </pattern>
+            <pattern id="topoGridMajor" width="220" height="220" patternUnits="userSpaceOnUse">
+              <path d="M 220 0 L 0 0 0 220" fill="none" stroke="rgba(0,200,255,0.20)" stroke-width="0.7"/>
+            </pattern>
+            <radialGradient id="hqGlow" cx="0.5" cy="0.5">
+              <stop offset="0%" stop-color="rgba(220,20,60,0.7)"/>
+              <stop offset="55%" stop-color="rgba(220,20,60,0.18)"/>
+              <stop offset="100%" stop-color="rgba(220,20,60,0)"/>
+            </radialGradient>
+            <linearGradient id="radarGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="rgba(220,20,60,0.95)"/>
+              <stop offset="100%" stop-color="rgba(220,20,60,0)"/>
+            </linearGradient>
+            <linearGradient id="landGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="rgba(0,90,180,0.10)"/>
+              <stop offset="100%" stop-color="rgba(0,60,140,0.18)"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Topo radar grid — transparent, blends with page -->
+          <rect x="200" y="100" width="720" height="660" fill="url(#topoGrid)"/>
+          <rect x="200" y="100" width="720" height="660" fill="url(#topoGridMajor)"/>
+
+          <g>
+            <!-- LAND MASS — fill only, no border (only coast path is stroked separately) -->
+            <path d="M 20.3,151.4 L 167.9,191.7 L 247.7,203.6 L 346.8,227.5 L 361.3,248.3 L 363.8,284.0 L 462.9,316.7 L 537.9,322.7 L 557.3,346.4 L 563.3,376.0 L 588.7,411.6 L 612.9,396.8 L 658.8,429.3 L 687.9,444.1 L 726.6,482.5 L 760.4,512.0 L 808.8,565.0 L 835.4,623.7 L 837.8,670.6 L 859.6,705.7 L 869.3,752.5 L 876.5,759.8 L 1070.0,759.8 L 1070.0,75.0 L 30.0,75.0 L 20.3,151.4 Z"
+              fill="url(#landGrad)" stroke="none"/>
+
+            <!-- Animated coastline (just the outline highlight) -->
+            <path class="map-coast" d="M 20.3,151.4 L 167.9,191.7 L 247.7,203.6 L 346.8,227.5 L 361.3,248.3 L 363.8,284.0 L 462.9,316.7 L 537.9,322.7 L 557.3,346.4 L 563.3,376.0 L 588.7,411.6 L 612.9,396.8 L 658.8,429.3 L 687.9,444.1 L 726.6,482.5 L 760.4,512.0 L 808.8,565.0 L 835.4,623.7 L 837.8,670.6 L 859.6,705.7 L 869.3,752.5 L 876.5,759.8"
+              fill="none" stroke="rgba(0,180,255,0.85)" stroke-width="1.8" stroke-dasharray="4 5"/>
+
+            <!-- Inland mountain ranges — Transverse + San Bernardinos -->
+            <path d="M 470,200 Q 560,210 650,225 Q 720,240 790,255" fill="none" stroke="rgba(0,140,255,0.32)" stroke-width="1.4" stroke-dasharray="3 7"/>
+            <path d="M 720,255 Q 800,275 870,295" fill="none" stroke="rgba(0,140,255,0.28)" stroke-width="1.2" stroke-dasharray="3 7"/>
+
+            <!-- (border line removed — no straight bordering lines) -->
+
+            <!-- Lat/Lon graticule labels — gives map context -->
+            <g font-family="JetBrains Mono, monospace" font-size="9" fill="rgba(0,180,255,0.5)" letter-spacing="0.05em">
+              <text x="220" y="115">34.85°N</text>
+              <text x="220" y="755">32.53°N</text>
+              <text x="850" y="115" text-anchor="end">119°W</text>
+              <text x="900" y="755" text-anchor="end">117°W</text>
+            </g>
+
+            <!-- Radar concentric range rings around HQ (Glendale 597.2, 286.4) -->
+            <g class="radar-rings" fill="none" stroke="rgba(220,20,60,0.22)" stroke-width="1" stroke-dasharray="2 4">
+              <circle cx="597.2" cy="286.4" r="80"/>
+              <circle cx="597.2" cy="286.4" r="160"/>
+              <circle cx="597.2" cy="286.4" r="260"/>
+              <circle cx="597.2" cy="286.4" r="380"/>
+            </g>
+            <!-- Radar crosshair guides through HQ -->
+            <g class="radar-crosshair" stroke="rgba(0,200,255,0.18)" stroke-width="0.8" stroke-dasharray="2 6">
+              <line x1="20" y1="286.4" x2="1080" y2="286.4"/>
+              <line x1="597.2" y1="20" x2="597.2" y2="780"/>
+            </g>
+
+            <!-- Radar sweep — reaches just past Chula Vista (~545px) -->
+            <g class="map-radar">
+              <polygon points="597.2,286.4 1142,278 1142,294" fill="url(#radarGrad)"/>
+              <line x1="597.2" y1="286.4" x2="1142" y2="286.4" stroke="rgba(220,20,60,0.95)" stroke-width="1.4"/>
+            </g>
+
+            <!-- HQ glow halo -->
+            <circle cx="597.2" cy="286.4" r="65" fill="url(#hqGlow)"/>
+
+            <!-- Cities — accurate Mercator-projected lat/lon -->
+            <g class="map-cities">
+              <g class="map-city" data-city="Santa Barbara"><circle class="pulse-ring" cx="248.2" cy="203.6" r="5"/><circle class="pulse-ring d2" cx="248.2" cy="203.6" r="5"/><circle class="city-dot" cx="248.2" cy="203.6" r="3.5"/><text class="city-label" x="258.2" y="207.6">SANTA BARBARA</text></g>
+              <g class="map-city" data-city="Ventura"><circle class="pulse-ring" cx="361.6" cy="246.8" r="5"/><circle class="pulse-ring d2" cx="361.6" cy="246.8" r="5"/><circle class="city-dot" cx="361.6" cy="246.8" r="3.5"/><text class="city-label end" x="351.6" y="244.8">VENTURA</text></g>
+              <g class="map-city" data-city="Oxnard"><circle class="pulse-ring" cx="374.2" cy="269.8" r="5"/><circle class="pulse-ring d2" cx="374.2" cy="269.8" r="5"/><circle class="city-dot" cx="374.2" cy="269.8" r="3.5"/><text class="city-label end" x="364.2" y="287.8">OXNARD</text></g>
+              <g class="map-city" data-city="Lancaster"><circle class="pulse-ring" cx="625.7" cy="123.8" r="5"/><circle class="pulse-ring d2" cx="625.7" cy="123.8" r="5"/><circle class="city-dot" cx="625.7" cy="123.8" r="3.5"/><text class="city-label" x="635.7" y="127.8">LANCASTER</text></g>
+              <g class="map-city" data-city="Palmdale"><circle class="pulse-ring" cx="630.8" cy="156.1" r="5"/><circle class="pulse-ring d2" cx="630.8" cy="156.1" r="5"/><circle class="city-dot" cx="630.8" cy="156.1" r="3.5"/><text class="city-label" x="640.8" y="160.1">PALMDALE</text></g>
+              <g class="map-city" data-city="Santa Clarita"><circle class="pulse-ring" cx="527.7" cy="212.3" r="5"/><circle class="pulse-ring d2" cx="527.7" cy="212.3" r="5"/><circle class="city-dot" cx="527.7" cy="212.3" r="3.5"/><text class="city-label end" x="517.7" y="208.3">SANTA CLARITA</text></g>
+              <g class="map-city" data-city="Burbank"><circle class="pulse-ring" cx="584.3" cy="275.1" r="5"/><circle class="pulse-ring d2" cx="584.3" cy="275.1" r="5"/><circle class="city-dot" cx="584.3" cy="275.1" r="3.5"/><text class="city-label end" x="574.3" y="267.1">BURBANK</text></g>
+              <g class="map-city is-hq" data-city="Glendale (HQ)"><circle class="hq-ring-outer" cx="597.2" cy="286.4" r="28"/><circle class="hq-ring-inner" cx="597.2" cy="286.4" r="16"/><circle class="city-dot hq" cx="597.2" cy="286.4" r="6"/><text class="city-label hq" x="597.2" y="248" text-anchor="middle">GLENDALE · HQ</text></g>
+              <g class="map-city" data-city="Pasadena"><circle class="pulse-ring" cx="650.0" cy="283.0" r="5"/><circle class="pulse-ring d2" cx="650.0" cy="283.0" r="5"/><circle class="city-dot" cx="650.0" cy="283.0" r="3.5"/><text class="city-label" x="660.0" y="279.0">PASADENA</text></g>
+              <g class="map-city" data-city="Beverly Hills"><circle class="pulse-ring" cx="562.1" cy="306.9" r="5"/><circle class="pulse-ring d2" cx="562.1" cy="306.9" r="5"/><circle class="city-dot" cx="562.1" cy="306.9" r="3.5"/><text class="city-label end" x="552.1" y="310.9">BEVERLY HILLS</text></g>
+              <g class="map-city" data-city="Malibu"><circle class="pulse-ring" cx="470.2" cy="320.9" r="5"/><circle class="pulse-ring d2" cx="470.2" cy="320.9" r="5"/><circle class="city-dot" cx="470.2" cy="320.9" r="3.5"/><text class="city-label end" x="460.2" y="324.9">MALIBU</text></g>
+              <g class="map-city" data-city="Los Angeles"><circle class="pulse-ring" cx="599.8" cy="313.2" r="5"/><circle class="pulse-ring d2" cx="599.8" cy="313.2" r="5"/><circle class="city-dot" cx="599.8" cy="313.2" r="4.5"/><text class="city-label" x="613.8" y="331.2">LOS ANGELES</text></g>
+              <g class="map-city" data-city="Long Beach"><circle class="pulse-ring" cx="612.2" cy="396.8" r="5"/><circle class="pulse-ring d2" cx="612.2" cy="396.8" r="5"/><circle class="city-dot" cx="612.2" cy="396.8" r="4.5"/><text class="city-label end" x="602.2" y="400.8">LONG BEACH</text></g>
+              <g class="map-city" data-city="Anaheim"><circle class="pulse-ring" cx="679.6" cy="377.2" r="5"/><circle class="pulse-ring d2" cx="679.6" cy="377.2" r="5"/><circle class="city-dot" cx="679.6" cy="377.2" r="3.5"/><text class="city-label" x="689.6" y="387.2">ANAHEIM</text></g>
+              <g class="map-city" data-city="Huntington Beach"><circle class="pulse-ring" cx="659.1" cy="429.6" r="5"/><circle class="pulse-ring d2" cx="659.1" cy="429.6" r="5"/><circle class="city-dot" cx="659.1" cy="429.6" r="3.5"/><text class="city-label end" x="649.1" y="433.6">HUNTINGTON BEACH</text></g>
+              <g class="map-city" data-city="Santa Ana"><circle class="pulse-ring" cx="691.0" cy="404.2" r="5"/><circle class="pulse-ring d2" cx="691.0" cy="404.2" r="5"/><circle class="city-dot" cx="691.0" cy="404.2" r="3.5"/><text class="city-label" x="701.0" y="408.2">SANTA ANA</text></g>
+              <g class="map-city" data-city="Irvine"><circle class="pulse-ring" cx="700.9" cy="421.9" r="5"/><circle class="pulse-ring d2" cx="700.9" cy="421.9" r="5"/><circle class="city-dot" cx="700.9" cy="421.9" r="3.5"/><text class="city-label" x="710.9" y="437.9">IRVINE</text></g>
+              <g class="map-city" data-city="San Bernardino"><circle class="pulse-ring" cx="830.6" cy="296.5" r="5"/><circle class="pulse-ring d2" cx="830.6" cy="296.5" r="5"/><circle class="city-dot" cx="830.6" cy="296.5" r="3.5"/><text class="city-label" x="840.6" y="300.5">SAN BERNARDINO</text></g>
+              <g class="map-city" data-city="Riverside"><circle class="pulse-ring" cx="804.9" cy="342.5" r="5"/><circle class="pulse-ring d2" cx="804.9" cy="342.5" r="5"/><circle class="city-dot" cx="804.9" cy="342.5" r="3.5"/><text class="city-label" x="814.9" y="336.5">RIVERSIDE</text></g>
+              <g class="map-city" data-city="Temecula"><circle class="pulse-ring" cx="864.9" cy="478.3" r="5"/><circle class="pulse-ring d2" cx="864.9" cy="478.3" r="5"/><circle class="city-dot" cx="864.9" cy="478.3" r="3.5"/><text class="city-label" x="874.9" y="482.3">TEMECULA</text></g>
+              <g class="map-city" data-city="Oceanside"><circle class="pulse-ring" cx="809.0" cy="566.1" r="5"/><circle class="pulse-ring d2" cx="809.0" cy="566.1" r="5"/><circle class="city-dot" cx="809.0" cy="566.1" r="3.5"/><text class="city-label end" x="799.0" y="570.1">OCEANSIDE</text></g>
+              <g class="map-city" data-city="Escondido"><circle class="pulse-ring" cx="879.9" cy="588.8" r="5"/><circle class="pulse-ring d2" cx="879.9" cy="588.8" r="5"/><circle class="city-dot" cx="879.9" cy="588.8" r="3.5"/><text class="city-label" x="889.9" y="592.8">ESCONDIDO</text></g>
+              <g class="map-city" data-city="San Diego"><circle class="pulse-ring" cx="861.8" cy="707.2" r="5"/><circle class="pulse-ring d2" cx="861.8" cy="707.2" r="5"/><circle class="city-dot" cx="861.8" cy="707.2" r="4.5"/><text class="city-label end" x="851.8" y="701.2">SAN DIEGO</text></g>
+              <g class="map-city" data-city="Chula Vista"><circle class="pulse-ring" cx="880.4" cy="729.1" r="5"/><circle class="pulse-ring d2" cx="880.4" cy="729.1" r="5"/><circle class="city-dot" cx="880.4" cy="729.1" r="3.5"/><text class="city-label" x="890.4" y="733.1">CHULA VISTA</text></g>
+            </g>
+          </g>
+
+          <!-- HUD frame removed -->
+
+          <!-- HUD readouts -->
+          <g font-family="JetBrains Mono, monospace" font-size="11" letter-spacing="0.15em" fill="rgba(0,180,255,0.7)">
+            <text x="220" y="125">SECTOR · SOCAL</text>
+            <text x="220" y="142" font-size="9" fill="rgba(0,180,255,0.45)">SCOPE: 33°N — 35°N · 120°W — 117°W</text>
+            <text x="900" y="125" text-anchor="end" fill="rgba(220,20,60,0.85)">● LIVE</text>
+            <text x="900" y="142" text-anchor="end" font-size="9" fill="rgba(0,180,255,0.45)">RNG: 380KM</text>
+          </g>
+
+          <!-- Signal layer (JS-driven traces between HQ and cities) -->
+          <g class="map-signals" id="mapSignals"></g>
+        </svg>
+      </div>
+      <img src="/armak-logo-color.png" alt="Armak Technologies" style="width:100%;max-width:560px;height:auto;margin-top:32px;display:block;" />
+    </div>
+  </div>
+  <!-- Logo seal at hero bottom -->
+  <a href="#" class="armak-hero-seal" aria-label="Armak Technologies">
+    <img src="/armak-logo.png" alt="" />
+  </a>
+</section>
