@@ -1,55 +1,58 @@
+/**
+ * Initializes the page preloader and handles session-based skipping.
+ */
 export function initLoader() {
-  const loader = document.getElementById('armakLoader');
-  const bar = document.getElementById('loaderBar');
-  const label = document.getElementById('loaderLabel');
-  const pct = document.getElementById('loaderPct');
-  if (!loader) return;
+  const loaderEl = document.getElementById('armakLoader');
+  const barEl = document.getElementById('loaderBar');
+  const labelEl = document.getElementById('loaderLabel');
+  const pctEl = document.getElementById('loaderPct');
+  if (!loaderEl) return;
 
-  // Skip on subsequent visits within session
+  // Skip on subsequent visits within the same session
   if (sessionStorage.getItem('armakLoaded')) {
-    loader.classList.add('is-skip');
+    loaderEl.classList.add('is-skip');
     return;
   }
 
   let progress = 0;
-  function set(p, text) {
+  function updateProgress(p, text) {
     progress = Math.max(progress, p);
-    bar.style.width = progress + '%';
-    pct.textContent = Math.round(progress) + '%';
-    if (text) label.textContent = text;
+    barEl.style.width = progress + '%';
+    pctEl.textContent = Math.round(progress) + '%';
+    if (text) labelEl.textContent = text;
   }
 
-  set(8, 'INITIALIZING');
+  updateProgress(8, 'INITIALIZING');
 
-  // Phase 1 — DOM ready
+  // DOM ready check
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => set(28, 'PARSING DOM'));
-  } else { set(28, 'PARSING DOM'); }
+    document.addEventListener('DOMContentLoaded', () => updateProgress(28, 'PARSING DOM'));
+  } else { updateProgress(28, 'PARSING DOM'); }
 
-  // Phase 2 — Fonts ready
+  // Font ready check
   if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => set(58, 'LOADING ASSETS'));
-  } else { setTimeout(() => set(58, 'LOADING ASSETS'), 300); }
+    document.fonts.ready.then(() => updateProgress(58, 'LOADING ASSETS'));
+  } else { setTimeout(() => updateProgress(58, 'LOADING ASSETS'), 300); }
 
-  // Phase 3 — Window load (images, scripts done)
+  // Window load (images/scripts ready)
   window.addEventListener('load', () => {
-    set(88, 'COMPILING');
+    updateProgress(88, 'COMPILING');
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        set(100, 'READY');
+        updateProgress(100, 'READY');
         setTimeout(() => {
-          loader.classList.add('is-done');
+          loaderEl.classList.add('is-done');
           sessionStorage.setItem('armakLoaded', '1');
         }, 380);
       });
     });
   });
 
-  // Failsafe — if window load never fires within 4s
+  // Failsafe: hide loader after 4s
   setTimeout(() => {
     if (progress < 100) {
-      set(100, 'READY');
-      setTimeout(() => loader.classList.add('is-done'), 300);
+      updateProgress(100, 'READY');
+      setTimeout(() => loaderEl.classList.add('is-done'), 300);
     }
   }, 4000);
 }
