@@ -1,35 +1,42 @@
+/**
+ * Initializes navbar scroll behavior, mobile toggle, and services dropdown expansion.
+ */
 export function initNav() {
-  const nav = document.getElementById('armakNav');
-  const toggle = document.getElementById('armakNavToggle');
-  if (nav) {
+  const navEl = document.getElementById('armakNav');
+  const navToggle = document.getElementById('armakNavToggle');
+  
+  if (navEl) {
     window.addEventListener('scroll', () => {
-      if (window.scrollY > 8) nav.classList.add('scrolled');
-      else nav.classList.remove('scrolled');
+      navEl.classList.toggle('scrolled', window.scrollY > 8);
     }, { passive: true });
   }
-  if (toggle && nav) {
-    toggle.addEventListener('click', () => nav.classList.toggle('open'));
-    nav.querySelectorAll('.armak-nav-links a').forEach(a => {
-      a.addEventListener('click', () => nav.classList.remove('open'));
+  
+  if (navToggle && navEl) {
+    navToggle.addEventListener('click', () => navEl.classList.toggle('open'));
+    navEl.querySelectorAll('.armak-nav-links a').forEach(link => {
+      link.addEventListener('click', () => navEl.classList.remove('open'));
     });
   }
 
-  // Services "See All" expandable — technically nav-related as it affects global scroll/nav
+  // Services "See All" expandable logic
   const servicesToggle = document.getElementById('armakServicesToggle');
   const servicesExtra = document.getElementById('armakServicesExtra');
+  
   function openServicesDropdown() {
     if (!servicesToggle || !servicesExtra) return;
     if (servicesToggle.getAttribute('aria-expanded') === 'true') return;
+    
     servicesExtra.hidden = false;
     servicesExtra.classList.remove('opening');
-    void servicesExtra.offsetWidth;
+    void servicesExtra.offsetWidth; // Force reflow for animation
     servicesExtra.classList.add('opening');
     servicesToggle.setAttribute('aria-expanded', 'true');
   }
+
   if (servicesToggle && servicesExtra) {
     servicesToggle.addEventListener('click', () => {
-      const expanded = servicesToggle.getAttribute('aria-expanded') === 'true';
-      if (expanded) {
+      const isExpanded = servicesToggle.getAttribute('aria-expanded') === 'true';
+      if (isExpanded) {
         servicesExtra.hidden = true;
         servicesExtra.classList.remove('opening');
         servicesToggle.setAttribute('aria-expanded', 'false');
@@ -39,6 +46,7 @@ export function initNav() {
     });
   }
 
+  // Smooth scroll trigger for Services
   document.querySelectorAll('a[href="#services"]').forEach(link => {
     link.addEventListener('click', () => {
       setTimeout(openServicesDropdown, 250);
