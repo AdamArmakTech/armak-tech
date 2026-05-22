@@ -6,6 +6,9 @@ export function initServices() {
   initFlipCards();
 }
 
+/**
+ * Animated PCB circuit effect for the Services background.
+ */
 function initCircuit() {
   const canvas = document.getElementById('servicesCircuit');
   if (!canvas || reduceMotion) return;
@@ -13,10 +16,18 @@ function initCircuit() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const section = canvas.parentElement;
 
-  let W, H, traces, pulses;
-  let trail = []; let ripples = []; let cardAnchors = [];
-  let revealT = 0; let inView = false; let breatheT = 0;
+  let canvasWidth, canvasHeight;
+  let traces = [];
+  let pulses = [];
+  let trail = [];
+  let ripples = [];
+  let cardAnchors = [];
+  
+  let revealProgress = 0;
+  let inView = false;
+  let breatheTime = 0;
 
+  // -- Utilities --
   function distToTrace(t, mx, my) {
     let min = Infinity;
     for (let i = 0; i < t.path.length - 1; i++) {
@@ -31,12 +42,14 @@ function initCircuit() {
     }
     return min;
   }
-  function traceTopY(t) {
-    let m = Infinity;
-    for (const p of t.path) if (p.y < m) m = p.y;
-    return m;
+
+  function getTraceTopY(t) {
+    let min = Infinity;
+    for (const p of t.path) if (p.y < min) min = p.y;
+    return min;
   }
 
+  // -- Event Listeners --
   section.querySelectorAll('.svc-card').forEach(card => {
     card.addEventListener('mouseenter', () => {
       const r = card.getBoundingClientRect(); const sr = section.getBoundingClientRect();
@@ -53,7 +66,7 @@ function initCircuit() {
   section.addEventListener('click', e => {
     const r = section.getBoundingClientRect();
     if (ripples.length >= 4) ripples.shift();
-    ripples.push({ x: e.clientX - r.left, y: e.clientY - r.top, radius: 0, maxRadius: Math.max(W, H), speed: 5.5, alpha: 0.8 });
+    ripples.push({ x: e.clientX - r.left, y: e.clientY - r.top, radius: 0, maxRadius: Math.max(canvasWidth, canvasHeight), speed: 5.5, alpha: 0.8 });
   });
 
   section.addEventListener('mousemove', e => {
@@ -65,29 +78,29 @@ function initCircuit() {
   });
 
   function size() {
-    W = section.offsetWidth; H = section.offsetHeight;
-    canvas.width = W * dpr; canvas.height = H * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); build();
+    canvasWidth = section.offsetWidth; canvasHeight = section.offsetHeight;
+    canvas.width = canvasWidth * dpr; canvas.height = canvasHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); buildTraces();
   }
 
-  function build() {
+  function buildTraces() {
     traces = []; const HSTEP = 90, VSTEP = 160;
-    for (let y = HSTEP / 2; y < H; y += HSTEP) {
+    for (let y = HSTEP / 2; y < canvasHeight; y += HSTEP) {
       let x = -20 + Math.random() * 50;
-      while (x < W) {
-        const len = Math.random() * 280 + 100; const xEnd = Math.min(x + len, W);
+      while (x < canvasWidth) {
+        const len = Math.random() * 280 + 100; const xEnd = Math.min(x + len, canvasWidth);
         const r = Math.random(); let path;
-        if (r < 0.25 && y + 50 < H) path = [{x, y}, {x: xEnd, y}, {x: xEnd, y: y + 50}];
+        if (r < 0.25 && y + 50 < canvasHeight) path = [{x, y}, {x: xEnd, y}, {x: xEnd, y: y + 50}];
         else if (r < 0.4 && y - 50 > 0) path = [{x, y}, {x: xEnd, y}, {x: xEnd, y: y - 50}];
         else path = [{x, y}, {x: xEnd, y}];
         traces.push({ path, top: 0 }); x = xEnd + 30 + Math.random() * 50;
       }
     }
-    for (let x = VSTEP / 2; x < W; x += VSTEP) {
-      const y0 = Math.random() * 60; const y1 = Math.min(y0 + 120 + Math.random() * 240, H);
+    for (let x = VSTEP / 2; x < canvasWidth; x += VSTEP) {
+      const y0 = Math.random() * 60; const y1 = Math.min(y0 + 120 + Math.random() * 240, canvasHeight);
       traces.push({ path: [{x, y: y0}, {x, y: y1}], top: 0 });
     }
-    traces.forEach(t => t.top = traceTopY(t));
+    traces.forEach(t => t.top = getTraceTopY(t));
     pulses = Array.from({ length: 22 }, spawnPulse);
   }
 
@@ -99,7 +112,7 @@ function initCircuit() {
     return { trace: t, progress: Math.random(), speed, color: Math.random() > 0.65 ? 'red' : 'blue' };
   }
 
-  function pointAt(trace, t) {
+  function getPointOnTrace(trace, t) {
     let total = 0; const segs = [];
     for (let i = 0; i < trace.path.length - 1; i++) {
       const a = trace.path[i], b = trace.path[i + 1]; const len = Math.hypot(b.x - a.x, b.y - a.y);
@@ -114,11 +127,14 @@ function initCircuit() {
   }
 
   function frame() {
-    ctx.clearRect(0, 0, W, H);
-    if (inView && revealT < 1) revealT = Math.min(1, revealT + 0.012);
-    const reveal = 1 - Math.pow(1 - revealT, 3); const revealY = reveal * H * 1.15;
-    breatheT += 0.009; const breathe = (Math.sin(breatheT) + 1) * 0.5;
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    if (inView && revealProgress < 1) revealProgress = Math.min(1, revealProgress + 0.012);
+    const revealEased = 1 - Math.pow(1 - revealProgress, 3); const revealY = revealEased * canvasHeight * 1.15;
+    breatheTime += 0.009; const breathe = (Math.sin(breatheTime) + 1) * 0.5;
+    
+    // Cleanup trails
     for (let i = trail.length - 1; i >= 0; i--) { trail[i].life -= 0.008; if (trail[i].life <= 0) trail.splice(i, 1); }
+    // Update anchors
     for (const a of cardAnchors) a.strength += (a.target - a.strength) * 0.08;
     cardAnchors = cardAnchors.filter(a => a.strength > 0.01 || a.target > 0);
 
@@ -136,7 +152,7 @@ function initCircuit() {
 
     for (const p of pulses) {
       p.progress += p.speed; if (p.progress > 1) Object.assign(p, spawnPulse(), { progress: 0 });
-      const pt = pointAt(p.trace, p.progress); if (pt.y > revealY) continue;
+      const pt = getPointOnTrace(p.trace, p.progress); if (pt.y > revealY) continue;
       const c = p.color === 'red' ? '220,20,60' : '0,140,255';
       const g = ctx.createRadialGradient(pt.x, pt.y, 0, pt.x, pt.y, 14); g.addColorStop(0, `rgba(${c},0.85)`); g.addColorStop(1, `rgba(${c},0)`);
       ctx.fillStyle = g; ctx.fillRect(pt.x - 14, pt.y - 14, 28, 28);
@@ -144,8 +160,8 @@ function initCircuit() {
     }
 
     for (const a of cardAnchors) {
-      if (a.strength < 0.02) continue;
-      const candidates = pulses.map(p => ({ pt: pointAt(p.trace, p.progress), p })).filter(c => c.pt.y < revealY).map(c => ({ ...c, d: Math.hypot(c.pt.x - a.x, c.pt.y - a.y) })).filter(c => c.d > 40 && c.d < 280).sort((x, y) => x.d - y.d).slice(0, 5);
+      if (a.strength < 0.05) continue;
+      const candidates = pulses.map(p => ({ pt: getPointOnTrace(p.trace, p.progress), p })).filter(c => c.pt.y < revealY).map(c => ({ ...c, d: Math.hypot(c.pt.x - a.x, c.pt.y - a.y) })).filter(c => c.d > 40 && c.d < 280).sort((x, y) => x.d - y.d).slice(0, 5);
       for (const c of candidates) {
         const fade = (1 - c.d / 280) * a.strength * 0.45; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(c.pt.x, c.pt.y);
         ctx.strokeStyle = `rgba(220,20,60,${fade})`; ctx.lineWidth = 0.7; ctx.stroke();
@@ -155,12 +171,11 @@ function initCircuit() {
     for (let i = ripples.length - 1; i >= 0; i--) {
       const rp = ripples[i]; rp.radius += rp.speed; rp.alpha *= 0.978;
       if (rp.radius > rp.maxRadius || rp.alpha < 0.01) { ripples.splice(i, 1); continue; }
-      ctx.beginPath(); ctx.arc(rp.x, rp.y, rp.radius, 0, Math.PI * 2); ctx.strokeStyle = `rgba(0,180,255,${rp.alpha * 0.45})`; ctx.lineWidth = 2.2; ctx.stroke();
-      ctx.beginPath(); ctx.arc(rp.x, rp.y, rp.radius - 4, 0, Math.PI * 2); ctx.strokeStyle = `rgba(220,20,60,${rp.alpha * 0.30})`; ctx.lineWidth = 1; ctx.stroke();
+      ctx.beginPath(); ctx.arc(rp.x, rp.y, rp.radius, 0, Math.PI * 2); ctx.strokeStyle = `rgba(0,180,255,${rp.alpha * 0.40})`; ctx.lineWidth = 2; ctx.stroke();
+      ctx.beginPath(); ctx.arc(rp.x, rp.y, rp.radius - 4, 0, Math.PI * 2); ctx.strokeStyle = `rgba(220,20,60,${rp.alpha * 0.25})`; ctx.lineWidth = 1; ctx.stroke();
     }
 
-    for (const tp of trail) { ctx.beginPath(); ctx.arc(tp.x, tp.y, 1.5 + tp.life * 1.5, 0, Math.PI * 2); ctx.fillStyle = `rgba(0,180,255,${tp.life * 0.18})`; ctx.fill(); }
-
+    for (const tp of trail) { ctx.beginPath(); ctx.arc(tp.x, tp.y, 1.5 + tp.life * 1.5, 0, Math.PI * 2); ctx.fillStyle = `rgba(0,180,255,${tp.life * 0.16})`; ctx.fill(); }
     requestAnimationFrame(frame);
   }
 
@@ -172,13 +187,11 @@ function initDecks() {
   const decks = document.querySelectorAll('.svc-deck[data-deck]');
   if (!decks.length) return;
   let anyHovered = false;
-  const deckStates = [];
-
+  
   decks.forEach(deck => {
     const cards = Array.from(deck.querySelectorAll('.svc-card'));
     if (cards.length < 2) return;
     const state = { deck, cards, topIndex: 0, busy: false, timer: null, inView: false };
-    deckStates.push(state);
 
     function reposition() {
       state.cards.forEach((card, i) => {
@@ -220,10 +233,10 @@ function initDecks() {
 }
 
 function initFlipCards() {
-  const isTouch = () => window.matchMedia('(hover: none)').matches;
+  const isTouchDevice = () => window.matchMedia('(hover: none)').matches;
   document.querySelectorAll('.armak-service-card').forEach(card => {
     card.addEventListener('click', () => {
-      if (!isTouch()) return;
+      if (!isTouchDevice()) return;
       const wasFlipped = card.classList.contains('is-flipped');
       document.querySelectorAll('.armak-service-card.is-flipped').forEach(c => {
         c.classList.remove('is-flipped'); c.setAttribute('aria-pressed', 'false');
