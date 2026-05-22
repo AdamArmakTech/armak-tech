@@ -1,16 +1,27 @@
+/**
+ * Initializes the scroll progress bar at the top of the viewport.
+ */
 export function initScrollProgress() {
-  const bar = document.getElementById('scrollProgress');
-  if (!bar) return;
-  let ticking = false;
+  const barEl = document.getElementById('scrollProgress');
+  if (!barEl) return;
+  
+  let isTicking = false;
+  
   function update() {
-    const h = document.documentElement;
-    const max = h.scrollHeight - h.clientHeight;
-    const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
-    bar.style.width = pct + '%';
-    ticking = false;
+    const docEl = document.documentElement;
+    const scrollTotal = docEl.scrollHeight - docEl.clientHeight;
+    const scrollPercent = scrollTotal > 0 ? (window.scrollY / scrollTotal) * 100 : 0;
+    
+    barEl.style.width = scrollPercent + '%';
+    isTicking = false;
   }
+  
   window.addEventListener('scroll', () => {
-    if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    if (!isTicking) {
+      requestAnimationFrame(update);
+      isTicking = true;
+    }
   }, { passive: true });
+  
   update();
 }

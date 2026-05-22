@@ -1,58 +1,73 @@
+/**
+ * Initializes section navigation dots and updates active states based on scroll position.
+ */
 export function initSectionDots() {
-  const dots = document.querySelectorAll('.section-dot');
+  const dotElements = document.querySelectorAll('.section-dot');
   const dotsNav = document.getElementById('sectionDots');
   const bcCurrent = document.getElementById('bcCurrent');
-  if (!dots.length) return;
+  
+  if (!dotElements.length) return;
 
-  const sections = ['home','services','about','contact'].map(id => {
+  const sections = ['home', 'services', 'about', 'contact'].map(id => {
     return document.getElementById(id) || document.querySelector(`#${id}, .armak-${id}, section[id="${id}"]`);
   }).filter(Boolean);
 
-  // Map section ids to readable labels
-  const labels = { home: 'Home', services: 'Services', about: 'About', contact: 'Contact' };
+  const sectionLabels = { home: 'Home', services: 'Services', about: 'About', contact: 'Contact' };
 
-  function update() {
-    const y = window.scrollY + window.innerHeight * 0.3;
-    let active = sections[0];
-    for (const s of sections) {
-      if (s.offsetTop <= y) active = s;
+  function updateActiveState() {
+    const scrollPosition = window.scrollY + window.innerHeight * 0.3;
+    let activeSection = sections[0];
+    
+    for (const section of sections) {
+      if (section.offsetTop <= scrollPosition) activeSection = section;
     }
-    const activeId = active.id || (active.className.match(/armak-(\w+)/) || [])[1] || 'home';
+    
+    const activeSectionId = activeSection.id || (activeSection.className.match(/armak-(\w+)/) || [])[1] || 'home';
 
-    dots.forEach(d => {
-      const target = d.getAttribute('href').replace('#','');
-      d.classList.toggle('is-active', target === activeId);
+    dotElements.forEach(dot => {
+      const targetId = dot.getAttribute('href').replace('#', '');
+      dot.classList.toggle('is-active', targetId === activeSectionId);
     });
-    if (bcCurrent) bcCurrent.textContent = labels[activeId] || activeId;
+    
+    if (bcCurrent) bcCurrent.textContent = sectionLabels[activeSectionId] || activeSectionId;
 
-    // Show dots after scrolling past hero
+    // Show navigation after scrolling past the hero
     if (window.scrollY > 200) dotsNav.classList.add('is-visible');
     else dotsNav.classList.remove('is-visible');
 
-    // Dark section detection by scanning what's at viewport center
-    const midEl = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
-    if (midEl) {
-      const dark = midEl.closest('.armak-stats, .armak-services, .armak-footer, .armak-loader');
-      document.body.classList.toggle('on-dark', !!dark);
+    // Update global dark/light theme
+    const elementUnderCursor = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
+    if (elementUnderCursor) {
+      const isDarkSection = !!elementUnderCursor.closest('.armak-stats, .armak-services, .armak-footer, .armak-loader');
+      document.body.classList.toggle('on-dark', isDarkSection);
     }
   }
 
-  let ticking = false;
+  let isTicking = false;
   window.addEventListener('scroll', () => {
-    if (!ticking) { requestAnimationFrame(() => { update(); ticking = false; }); ticking = true; }
+    if (!isTicking) {
+      requestAnimationFrame(() => { updateActiveState(); isTicking = false; });
+      isTicking = true;
+    }
   }, { passive: true });
-  update();
+  
+  updateActiveState();
 
-  // Smooth scroll on dot click
-  dots.forEach(d => d.addEventListener('click', e => {
+  // Smooth scroll behavior
+  dotElements.forEach(dot => dot.addEventListener('click', e => {
     e.preventDefault();
-    const href = d.getAttribute('href');
+    const href = dot.getAttribute('href');
+    
     if (href === '#home' || href === '#' || href === '#top') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
-    const target = document.querySelector(href);
-    if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-    else { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    
+    const targetEl = document.querySelector(href);
+    if (targetEl) {
+      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }));
 }
