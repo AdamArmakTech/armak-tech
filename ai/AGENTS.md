@@ -22,4 +22,6 @@ To minimize token waste and maximize focus, follow this priority sequence:
 1. **START HERE**: Read `PROJECT_STATE.md`. It defines the current high-level objective.
 2. **Operational Rules**: Read `AGENTS.md` (this file). Adhere strictly to these constraints.
 3. **Architecture**: Read `ARCHITECTURE.md` for system design details.
+4. **Planning**: Use `ai/plans/` for detailed implementation strategies before coding.
+
 

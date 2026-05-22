@@ -3,30 +3,32 @@
 PURPOSE: Technical system design and data flow of the Armak Technologies website.
 
 ## Overview
-A modular, high-performance static website built with Vite and EJS for component-based development without the overhead of a full frontend framework.
+A modular, high-performance static website built with Vite and EJS. The JS layer uses a "Contextual Loading" strategy where logic is partitioned by component and loaded lazily.
 
 ## System Components
 
 ### 1. Source Layer (`/src`)
-- **`index.html`**: The main template that orchestrates components using EJS includes.
-- **`components/`**: Modular HTML fragments (Hero, Nav, Services, etc.) written in EJS.
-- **`css/main.css`**: Global styles and utility classes.
-- **`js/main.js`**: Core interactivity logic, parallax effects, and particle systems.
+- **`index.html`**: Orchestrates EJS components.
+- **`components/`**: Modular HTML fragments.
+- **`css/main.css`**: Global styles.
+- **`js/`**:
+  - **`main.js`**: Central orchestrator and IntersectionObserver controller.
+  - **`core/`**: Critical modules loaded immediately (Nav, Loader).
+  - **`components/`**: Feature-heavy logic loaded only when the parent component is in viewport.
 
 ### 2. Asset Layer (`/public`)
-- Contains all static assets like images, logos, and webp files. These are served from the root path in the final build.
+- Static assets served from root.
 
 ### 3. Build & Tooling
-- **Vite**: Handles the development server, hot module replacement, and asset bundling.
-- **Vite-Plugin-EJS**: Enables component-based templates within the static HTML structure.
+- **Vite**: Handles HMR and automatic code-splitting for dynamic imports.
 
 ## Data Flow
-1. **Development**: `npm run dev` starts a local server that resolves EJS includes on-the-fly.
-2. **Build**: `npm run build` bundles CSS/JS and compiles EJS components into a single `dist/index.html`.
-3. **Deployment**: The contents of the `dist/` folder are deployed to any static hosting provider.
+1. **Critical Path**: `main.js` boots and immediately initializes `core/` modules.
+2. **Lazy Path**: As the user scrolls, `main.js` detects component intersection and dynamically imports the corresponding module from `js/components/`.
+3. **Runtime**: Each module exports an `init()` function that starts component-specific animations (Canvases, Particles) only when needed.
 
 ## AI Workspace Substrate
 This repository uses an AI-assisted engineering substrate located in `/ai`
 - **Cognition Layer**: State and tasks are tracked in `/ai/PROJECT_STATE.md`.
-- **Rules**: Agent constraints are defined in `AGENTS.md`.
-- **Flow**: Human Pilot -> AI Implementation -> `npm run build` verification.
+- **Detailed Plans**: Stored in `plans/` (e.g., `plans/js-optimization.md`).
+- **Rules**: Agent constraints in `AGENTS.md`.

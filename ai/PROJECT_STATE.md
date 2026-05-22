@@ -1,22 +1,24 @@
 # Project State
 
 ## Current Focus
-- [x] Initial codebase exploration and onboarding.
-- [x] Refactor `index.html` into a component-based structure using Vite + EJS.
-- [x] Finalize project configuration (ESM, gitignore).
+- [x] Implement component-centric JS modularization and lazy loading.
+- [x] Modernize `main.js` using ESM and dynamic imports.
+- [ ] Document the new development workflow for JS.
 
 ## Active Tasks
-- [x] Setup Vite and `vite-plugin-ejs`.
-- [x] Extract CSS and JS into separate files.
-- [x] Break down HTML into modular components in `src/components/`.
-- [x] Move assets to `public/` and fix paths.
-- [x] Verify build process (`npm run build`).
-- [x] Update `.gitignore` and `package.json`.
+- [x] Refactor `index.html` into a component-based structure using Vite + EJS.
+- [x] Finalize project configuration (ESM, gitignore).
+- [x] Split `main.js` into component-specific modules in `src/js/`.
+- [x] Implement `IntersectionObserver` orchestrator in `main.js`.
+- [x] Verify performance improvements and code-splitting via `npm run build`.
 
 ## Backlog
 - [ ] Clean up `index.html.legacy`.
 - [ ] Optimize images for better performance.
+- [ ] Implement automated verification/linting.
 
 ## Completed
-- [x] Initial discovery of `ai/` directory and markdown files.
+- [x] Initial discovery and onboarding.
 - [x] Successful transition to a modular static site architecture.
+- [x] Documentation sync (ARCHITECTURE.md, README.md).
+- [x] Modernization of JS layer with contextual lazy-loading.
