@@ -979,29 +979,77 @@
     color: var(--armak-ink); display: block; margin-bottom: -4px;
   }
   .armak-values {
-    display: flex; flex-direction: column;
-    align-items: center;
-    margin-top: 0;
     position: relative;
-  }
-  .armak-value {
-    position: sticky;
     width: 100%;
     max-width: 720px;
+    height: 260px;
+    margin: 0 auto;
+    perspective: 1200px;
+  }
+  .armak-value {
+    position: absolute;
+    width: 100%;
     padding: 36px 32px 32px;
     background: var(--armak-white);
     border: 1px solid var(--armak-gray-300);
     overflow: hidden;
-    transition: box-shadow .5s var(--ease), border-color .35s var(--ease);
-    transform-origin: top center;
-    z-index: 1;
+    transition: transform 0.7s var(--ease), box-shadow 0.7s var(--ease), border-color .35s var(--ease), opacity 0.7s var(--ease);
+    transform-origin: center center;
+    cursor: pointer;
+    user-select: none;
   }
-  .armak-value:nth-child(1) { top: 80px; z-index: 4; }
-  .armak-value:nth-child(2) { top: 100px; z-index: 3; }
-  .armak-value:nth-child(3) { top: 120px; z-index: 2; }
-  .armak-value:nth-child(4) { top: 140px; z-index: 1; }
+  /* Deck stacking — front card on top */
+  .armak-value[data-deck="0"] {
+    z-index: 4;
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+    animation: cardFloat0 3.6s ease-in-out infinite;
+    box-shadow: 0 18px 44px rgba(10, 14, 39, 0.12), 0 6px 16px rgba(10, 14, 39, 0.06);
+  }
+  .armak-value[data-deck="1"] {
+    z-index: 3;
+    transform: translate(6px, 8px) rotate(-1.5deg);
+    opacity: 0.82;
+    animation: cardFloat1 4.0s ease-in-out infinite;
+    box-shadow: 0 14px 36px rgba(10, 14, 39, 0.09);
+  }
+  .armak-value[data-deck="2"] {
+    z-index: 2;
+    transform: translate(12px, 16px) rotate(-2.8deg);
+    opacity: 0.6;
+    animation: cardFloat2 4.4s ease-in-out infinite;
+    box-shadow: 0 10px 28px rgba(10, 14, 39, 0.07);
+  }
+  .armak-value[data-deck="3"] {
+    z-index: 1;
+    transform: translate(18px, 24px) rotate(-3.8deg);
+    opacity: 0.38;
+    animation: cardFloat3 4.8s ease-in-out infinite;
+    box-shadow: 0 8px 20px rgba(10, 14, 39, 0.05);
+  }
+  /* Floating bob keyframes — each card slightly different timing */
+  @keyframes cardFloat0 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(0, -8px) rotate(0deg); }
+  }
+  @keyframes cardFloat1 {
+    0%, 100% { transform: translate(6px, 8px) rotate(-1.5deg); }
+    50% { transform: translate(6px, 0px) rotate(-1.5deg); }
+  }
+  @keyframes cardFloat2 {
+    0%, 100% { transform: translate(12px, 16px) rotate(-2.8deg); }
+    50% { transform: translate(12px, 8px) rotate(-2.8deg); }
+  }
+  @keyframes cardFloat3 {
+    0%, 100% { transform: translate(18px, 24px) rotate(-3.8deg); }
+    50% { transform: translate(18px, 16px) rotate(-3.8deg); }
+  }
+  /* Shuffle transition class — card flies up and to the back */
+  .armak-value.deck-shuffling {
+    animation: none !important;
+    transition: transform 0.5s var(--ease), opacity 0.5s var(--ease), z-index 0s 0.25s;
+  }
   .armak-value:hover {
-    box-shadow: 0 18px 44px rgba(10, 14, 39, 0.08);
     border-color: var(--armak-ink);
   }
   /* Red top-left corner bracket with neon glow */
@@ -1290,7 +1338,7 @@
     .armak-stats-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
     .armak-services-grid { grid-template-columns: 1fr; }
     .armak-about-grid { grid-template-columns: 1fr; gap: 48px; }
-    .armak-values { max-width: 100%; }
+    .armak-values { max-width: 100%; height: 260px; }
     .armak-cta-inner { grid-template-columns: 1fr; gap: 44px; }
     .armak-footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
   }
@@ -1300,12 +1348,8 @@
     .armak-cta { padding: 56px 6vw; }
     .armak-stats-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
     .armak-hero h1 { font-size: clamp(2.5rem, 12vw, 4rem); }
-    .armak-values { max-width: 100%; }
+    .armak-values { max-width: 100%; height: 220px; }
     .armak-value { padding: 28px 24px 24px; }
-    .armak-value:nth-child(1) { top: 64px; }
-    .armak-value:nth-child(2) { top: 78px; }
-    .armak-value:nth-child(3) { top: 92px; }
-    .armak-value:nth-child(4) { top: 106px; }
     .armak-footer { padding: 32px 6vw 0; }
     .armak-footer-grid { grid-template-columns: 1fr; gap: 24px; padding-bottom: 24px; }
     .armak-footer-bottom { flex-direction: column; align-items: flex-start; }
@@ -4201,28 +4245,82 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 </script>
 
 <script>
-/* ============ STICKY CARD STACK ============ */
+/* ============ FLOATING DECK SHUFFLE ============ */
 (function(){
-  var cards = document.querySelectorAll('.armak-value');
+  var cards = Array.from(document.querySelectorAll('.armak-value'));
   if (!cards.length) return;
-  var total = cards.length;
 
-  function update() {
-    cards.forEach(function(card, i) {
-      var rect = card.getBoundingClientRect();
-      var stickyTop = parseFloat(getComputedStyle(card).top) || 80;
-      var distFromTop = stickyTop - rect.top;
-      var progress = Math.max(0, Math.min(1, distFromTop / 200));
-      var scale = 1 - progress * 0.3;
-      scale = Math.max(0.7, Math.min(1, scale));
-      var rotation = progress * 5;
-      var brightness = 1 - progress * 0.15;
-      card.style.transform = 'scale(' + scale + ') rotate(' + rotation + 'deg)';
-      card.style.filter = 'brightness(' + brightness + ')';
+  // order[0] = index of front card, order[last] = back
+  var order = cards.map(function(_, i){ return i; });
+  var shuffling = false;
+  var hoverTimer = null;
+
+  function applyPositions() {
+    order.forEach(function(cardIdx, deckPos) {
+      cards[cardIdx].setAttribute('data-deck', deckPos);
+      cards[cardIdx].style.zIndex = cards.length - deckPos;
     });
-    requestAnimationFrame(update);
   }
-  update();
+
+  function shuffle() {
+    if (shuffling) return;
+    shuffling = true;
+
+    var frontIdx = order[0];
+    var frontCard = cards[frontIdx];
+
+    // Pause float animation, lift card up
+    frontCard.classList.add('deck-shuffling');
+    frontCard.style.transform = 'translate(0, -40px) rotate(3deg) scale(0.95)';
+    frontCard.style.opacity = '0.5';
+
+    setTimeout(function() {
+      // Move front to back in order
+      order.push(order.shift());
+      applyPositions();
+
+      // Reset inline styles so CSS takes over
+      frontCard.style.transform = '';
+      frontCard.style.opacity = '';
+
+      setTimeout(function() {
+        frontCard.classList.remove('deck-shuffling');
+        shuffling = false;
+      }, 700);
+    }, 350);
+  }
+
+  // Init positions
+  applyPositions();
+
+  // Hover: start 3s timer on front card
+  var valuesContainer = document.querySelector('.armak-values');
+  valuesContainer.addEventListener('mouseenter', function() {
+    clearTimeout(hoverTimer);
+    hoverTimer = setTimeout(function() {
+      shuffle();
+      // Keep cycling while hovering
+      hoverTimer = setInterval(shuffle, 3500);
+    }, 3000);
+  });
+  valuesContainer.addEventListener('mouseleave', function() {
+    clearTimeout(hoverTimer);
+    clearInterval(hoverTimer);
+    hoverTimer = null;
+  });
+
+  // Click: immediate shuffle
+  valuesContainer.addEventListener('click', function(e) {
+    // Reset hover timer on click
+    clearTimeout(hoverTimer);
+    clearInterval(hoverTimer);
+    shuffle();
+    // Restart hover timer if still hovering
+    hoverTimer = setTimeout(function() {
+      shuffle();
+      hoverTimer = setInterval(shuffle, 3500);
+    }, 3000);
+  });
 })();
 </script>
 
