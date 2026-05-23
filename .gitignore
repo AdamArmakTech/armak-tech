@@ -27,3 +27,4 @@ index.html.legacy
 *.njsproj
 *.sln
 *.sw?
+.env

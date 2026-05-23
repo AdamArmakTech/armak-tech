@@ -6,19 +6,21 @@
       <p class="armak-reveal" style="--delay: 0.3s;">Tell us what you're building. We'll assess the site, scope the infrastructure, and give you a clear plan — no guesswork, no surprises.</p>
     </div>
     <div class="armak-cta-side armak-reveal" style="--delay: 0.4s;">
-      <!-- 
-        IMPORTANT: To make this form actually deliver emails, sign up at https://formspree.io (free),
-        create a form, and replace YOUR_FORMSPREE_ID below with the ID they give you.
-        Until then, this form will just look pretty but won't send anything.
-      -->
-      <form class="armak-form" action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST">
+      <form class="armak-form" id="contactForm" action="https://api.web3forms.com/submit" method="POST">
+        <!-- Web3Forms config -->
+        <input type="hidden" name="access_key" value="<%= WEB3FORMSAPIKEY %>">
+        <input type="hidden" name="subject" value="New Site Assessment Inquiry — Armak Technologies">
+        <input type="hidden" name="from_name" value="Armak Website">
+        <!-- Honeypot spam protection -->
+        <input type="checkbox" name="botcheck" style="display:none">
+
         <div class="armak-form-row">
           <input type="text" name="name" placeholder="Your Name" required>
           <input type="text" name="company" placeholder="Company">
         </div>
         <div class="armak-form-row">
           <input type="email" name="email" placeholder="Email Address" required>
-          <input type="tel" name="phone" placeholder="Phone">
+          <input type="tel" name="phone" placeholder="Phone" required>
         </div>
         <select name="project_type" required>
           <option value="">Project Type…</option>
@@ -31,7 +33,10 @@
           <option value="Other">Other / Multiple Services</option>
         </select>
         <textarea name="message" placeholder="Tell us about your project — site location, scale, timeline." required></textarea>
-        <button type="submit" class="armak-form-submit">Request My Site Assessment
+        <div class="armak-form-feedback" id="formFeedback"></div>
+        <button type="submit" class="armak-form-submit" id="formSubmitBtn">
+          <span class="form-btn-text">Request My Site Assessment</span>
+          <span class="form-btn-loading" style="display:none;">Sending…</span>
           <svg class="arrow" viewBox="0 0 18 12" fill="none" width="18" height="12"><path d="M1 6h16m0 0L12 1m5 5l-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="square"/></svg>
         </button>
       </form>
