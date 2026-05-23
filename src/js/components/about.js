@@ -178,31 +178,138 @@ function initDeckCycling() {
   deck.querySelectorAll('.deck-card-arrow').forEach(arrow => { arrow.style.cursor = 'pointer'; });
 }
 
+/**
+ * Floating deck shuffle for value cards.
+ *
+ * Fix notes (v2):
+ *  1. Animation/transform conflict — CSS cardFloat animations are paused via
+ *     classList BEFORE any JS transform is applied, and only resumed after the
+ *     card has fully settled into its new deck position.
+ *  2. Timer leak — separate variables for the initial hover delay (setTimeout)
+ *     and the repeating cycle (setInterval) so each can be independently cleared.
+ *  3. z-index — controlled exclusively by CSS [data-deck] rules; no inline
+ *     style.zIndex from JS.
+ */
 function initFloatingShuffle() {
   const cards = Array.from(document.querySelectorAll('.armak-value'));
   if (!cards.length) return;
   let order = cards.map((_, i) => i);
-  let shuffling = false; let hoverTimer = null;
+  let shuffling = false;
+  let hoverDelay = null;      // setTimeout id  (initial 3s wait)
+  let shuffleInterval = null; // setInterval id  (3.5s repeating cycle)
 
-  function applyPositions() { order.forEach((cardIdx, deckPos) => { cards[cardIdx].setAttribute('data-deck', deckPos); cards[cardIdx].style.zIndex = cards.length - deckPos; }); }
-
-  function shuffle() {
-    if (shuffling) return; shuffling = true;
-    const frontIdx = order[0]; const frontCard = cards[frontIdx];
-    frontCard.classList.add('deck-shuffling'); frontCard.style.transform = 'translate(0, -40px) rotate(3deg) scale(0.95)'; frontCard.style.opacity = '0.5';
-    setTimeout(() => {
-      order.push(order.shift()); applyPositions();
-      frontCard.style.transform = ''; frontCard.style.opacity = '';
-      setTimeout(() => { frontCard.classList.remove('deck-shuffling'); shuffling = false; }, 700);
-    }, 350);
+  /** Sync every card's data-deck attribute to current order. CSS handles z-index. */
+  function applyPositions() {
+    order.forEach((cardIdx, deckPos) => {
+      cards[cardIdx].setAttribute('data-deck', deckPos);
+    });
   }
 
+  /** Clear both timers without leaking either. */
+  function clearTimers() {
+    clearTimeout(hoverDelay);
+    clearInterval(shuffleInterval);
+    hoverDelay = null;
+    shuffleInterval = null;
+  }
+
+  /** Start the repeating shuffle cycle (called after first shuffle fires). */
+  function startCycle() {
+    clearInterval(shuffleInterval);
+    shuffleInterval = setInterval(shuffle, 3500);
+  }
+
+  /**
+   * Shuffle: visibly cycle the front card to the back of the deck.
+   *
+   * The card must fully clear the deck before z-index flips — otherwise
+   * you see the layer change while cards overlap (the "hiccup").
+   *
+   * Sequence:
+   *   frame 1  — LIFT: card rises fully above the deck (translateY = -cardHeight - gap)
+   *   +450ms   — lift transition is done, card is completely separated
+   *   +450ms   — FLIP z-index (invisible because zero overlap)
+   *   +1 frame — DROP: card descends to back-of-deck position (now behind others)
+   *   +500ms   — SETTLE: reorder data-deck, clear inline styles, resume animation
+   */
+  function shuffle() {
+    if (shuffling) return;
+    shuffling = true;
+
+    const frontIdx = order[0];
+    const frontCard = cards[frontIdx];
+    const totalCards = cards.length;
+
+    // Measure the actual card height so lift clears it completely
+    const cardHeight = frontCard.offsetHeight;
+    const liftY = -(cardHeight + 20); // full card height + 20px gap
+
+    // Step 1: kill CSS float animation so JS transforms aren't overridden
+    frontCard.classList.add('deck-shuffling');
+
+    requestAnimationFrame(() => {
+      // Step 2 — LIFT: card rises fully above the deck, still on top z-index
+      frontCard.style.zIndex = totalCards + 1;
+      frontCard.style.transform = `translate(0, ${liftY}px) rotate(2deg) scale(0.97)`;
+      frontCard.style.opacity = '1';
+
+      // Step 3 — wait for lift to complete, THEN flip z-index
+      // The 450ms matches the CSS transition duration so the card
+      // is fully clear of the deck when the z-index changes
+      setTimeout(() => {
+        // FLIP: card is fully separated, z-index change is invisible
+        frontCard.style.zIndex = '0';
+
+        // Step 4 — DROP: immediately send card down to back-of-deck position
+        requestAnimationFrame(() => {
+          frontCard.style.transform = 'translate(18px, 24px) rotate(-3.8deg) scale(1)';
+          frontCard.style.opacity = '0.38';
+
+          // Step 5 — SETTLE: wait for drop transition, then reorder deck
+          setTimeout(() => {
+            order.push(order.shift());
+            applyPositions();
+
+            // Clear all inline overrides — CSS [data-deck] rules take over
+            frontCard.style.transform = '';
+            frontCard.style.opacity = '';
+            frontCard.style.zIndex = '';
+
+            // Re-enable float animation
+            setTimeout(() => {
+              frontCard.classList.remove('deck-shuffling');
+              shuffling = false;
+            }, 100);
+          }, 500);
+        });
+      }, 450);
+    });
+  }
+
+  // Initial layout
   applyPositions();
+
   const valuesContainer = document.querySelector('.armak-values');
   if (!valuesContainer) return;
-  valuesContainer.addEventListener('mouseenter', () => { clearTimeout(hoverTimer); hoverTimer = setTimeout(() => { shuffle(); hoverTimer = setInterval(shuffle, 3500); }, 3000); });
-  valuesContainer.addEventListener('mouseleave', () => { clearTimeout(hoverTimer); clearInterval(hoverTimer); hoverTimer = null; });
-  valuesContainer.addEventListener('click', () => { clearTimeout(hoverTimer); clearInterval(hoverTimer); shuffle(); hoverTimer = setTimeout(() => { shuffle(); hoverTimer = setInterval(shuffle, 3500); }, 3000); });
+
+  valuesContainer.addEventListener('mouseenter', () => {
+    clearTimers();
+    hoverDelay = setTimeout(() => {
+      shuffle();
+      startCycle();
+    }, 3000);
+  });
+
+  valuesContainer.addEventListener('mouseleave', () => {
+    clearTimers();
+  });
+
+  valuesContainer.addEventListener('click', () => {
+    clearTimers();
+    shuffle();
+    // Restart the auto-cycle after the click shuffle settles
+    hoverDelay = setTimeout(startCycle, 1200);
+  });
 }
 
 function initPartners() {
