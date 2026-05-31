@@ -242,7 +242,7 @@ function initFloatingShuffle() {
 
     // Measure the actual card height so lift clears it completely
     const cardHeight = frontCard.offsetHeight;
-    const liftY = -(cardHeight + 20); // full card height + 20px gap
+    const liftY = -(cardHeight); // full card height + 20px gap
 
     // Step 1: kill CSS float animation so JS transforms aren't overridden
     frontCard.classList.add('deck-shuffling');
@@ -250,7 +250,7 @@ function initFloatingShuffle() {
     requestAnimationFrame(() => {
       // Step 2 — LIFT: card rises fully above the deck, still on top z-index
       frontCard.style.zIndex = totalCards + 1;
-      frontCard.style.transform = `translate(0, ${liftY}px) rotate(2deg) scale(0.97)`;
+      frontCard.style.transform = `translate(0, ${liftY}px) scale(0.97)`;
       frontCard.style.opacity = '1';
 
       // Step 3 — wait for lift to complete, THEN flip z-index
@@ -262,7 +262,7 @@ function initFloatingShuffle() {
 
         // Step 4 — DROP: immediately send card down to back-of-deck position
         requestAnimationFrame(() => {
-          frontCard.style.transform = 'translate(18px, 24px) rotate(-3.8deg) scale(1)';
+          frontCard.style.transform = 'translate(18px, 24px) scale(1)';
           frontCard.style.opacity = '0.38';
 
           // Step 5 — SETTLE: wait for drop transition, then reorder deck
