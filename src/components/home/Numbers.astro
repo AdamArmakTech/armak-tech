@@ -1,0 +1,76 @@
+---
+import Label from '../ui/Label.astro';
+import Stat from '../ui/Stat.astro';
+import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../data/site';
+---
+
+<section class="section numbers" aria-labelledby="numbers-title">
+  <div class="container">
+    <div class="numbers__head">
+      <Label code="F-01">By the numbers</Label>
+      <h2 id="numbers-title" class="t-h3 numbers__title" data-reveal>
+        Measured, not claimed. <span class="t-muted">Since {FOUNDED}, across Southern California.</span>
+      </h2>
+    </div>
+
+    <div class="numbers__grid" data-reveal-stagger="90">
+      <div data-reveal>
+        <Stat value={yearsInBusiness} label="Years in business" detail={`Since ${FOUNDED}.`} />
+      </div>
+      <div data-reveal>
+        <Stat value={site.projectsDelivered} suffix="+" label="Projects delivered" />
+      </div>
+      <div data-reveal>
+        <Stat value="24/7" label="Emergency response" detail="For contracted clients." />
+      </div>
+      <div data-reveal>
+        <Stat value={serviceArea.length} label="Cities served" detail={`Across ${counties.length} counties.`} />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .numbers__head {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+    margin-bottom: var(--space-block);
+  }
+
+  .numbers__title {
+    max-width: 26ch;
+  }
+
+  .numbers__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3rem var(--col-gap);
+  }
+
+  /* Keep the big mono numerals inside narrow phone columns */
+  .numbers__grid :global(.stat__value) {
+    font-size: clamp(2.5rem, 1.6rem + 4.2vw, 6rem);
+  }
+
+  @media (min-width: 900px) {
+    .numbers__head {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: start;
+    }
+
+    .numbers__head > :global(.label) {
+      grid-column: 1 / span 3;
+      margin-top: 0.35rem;
+    }
+
+    .numbers__title {
+      grid-column: 4 / -1;
+    }
+
+    .numbers__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

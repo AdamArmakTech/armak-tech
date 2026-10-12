@@ -1,0 +1,99 @@
+---
+/** Compact "how we deliver" timeline built from `process` in content.ts. */
+import SectionHead from '../ui/SectionHead.astro';
+import { process as steps } from '../../data/content';
+
+interface Props {
+  code: string;
+  title?: string;
+  intro?: string;
+}
+
+const {
+  code,
+  title = 'Five steps, every job.',
+  intro = 'The same process from a single-rack retrofit to a multi-site rollout. Nothing is signed off until it has been tested and documented.',
+} = Astro.props;
+---
+
+<section class="section section--tight delivery">
+  <div class="container">
+    <SectionHead code={code} label="How we deliver" title={title} intro={intro} />
+
+    <ol role="list" class="delivery__steps" data-reveal-stagger="80">
+      {steps.map((step) => (
+        <li class="dstep" data-reveal>
+          <span class="dstep__num" aria-hidden="true">{step.code}</span>
+          <h3 class="t-h4 dstep__title"><span class="visually-hidden">Step {step.code}: </span>{step.title}</h3>
+          <p class="t-small t-muted dstep__body">{step.body}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .delivery {
+    background: var(--white);
+    border-block: 1px solid var(--hairline);
+  }
+
+  .delivery__steps {
+    display: grid;
+    counter-reset: step;
+  }
+
+  .dstep {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    gap: 0.4rem 0.75rem;
+    padding-block: 1.25rem 1.5rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .dstep__num {
+    grid-row: span 2;
+    font-family: var(--font-mono);
+    font-size: 1.75rem;
+    letter-spacing: -0.06em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--hairline-strong);
+    transition: color var(--dur) ease;
+  }
+
+  .dstep:hover .dstep__num {
+    color: var(--signal);
+  }
+
+  .dstep__body {
+    max-width: 32em;
+  }
+
+  @media (min-width: 1000px) {
+    .delivery__steps {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      border-top: 1px solid var(--ink);
+    }
+
+    .dstep {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.75rem;
+      align-content: start;
+      padding: 1.5rem 1.25rem 0.5rem;
+      border-top: 0;
+      border-left: 1px solid var(--hairline);
+    }
+
+    .dstep:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .dstep__num {
+      grid-row: auto;
+      font-size: clamp(2rem, 1.2rem + 1.4vw, 3rem);
+      margin-bottom: 1rem;
+    }
+  }
+</style>

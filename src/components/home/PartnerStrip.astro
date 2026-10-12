@@ -1,0 +1,94 @@
+---
+import { Image } from 'astro:assets';
+import Label from '../ui/Label.astro';
+import { partners } from '../../data/content';
+
+/** Optical sizing: wide wordmarks get shorter so every logo carries similar visual weight. */
+const heightFor = (w: number, h: number) => {
+  const aspect = w / h;
+  return Math.round(Math.min(44, Math.max(18, 58 / Math.sqrt(aspect))));
+};
+---
+
+<section class="partners" aria-labelledby="partners-title">
+  <div class="container">
+    <div class="partners__head">
+      <Label code="B-01">Platforms we install</Label>
+      <p id="partners-title" class="t-small t-muted">
+        Hardware from the manufacturers enterprise IT already trusts.
+      </p>
+    </div>
+    <ul role="list" class="partners__grid" data-reveal-stagger="40">
+      {partners.map((p) => {
+        const h = heightFor(p.logo.width, p.logo.height);
+        return (
+          <li class="partners__item" data-reveal>
+            <Image
+              src={p.logo}
+              alt={p.name}
+              height={h}
+              width={Math.round((p.logo.width / p.logo.height) * h)}
+              densities={[1, 2]}
+              loading="lazy"
+            />
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .partners {
+    padding-block: var(--space-block);
+    border-block: 1px solid var(--hairline);
+    background: var(--white);
+  }
+
+  .partners__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .partners__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--hairline);
+    border-left: 1px solid var(--hairline);
+  }
+
+  .partners__item {
+    display: grid;
+    place-items: center;
+    min-height: 104px;
+    padding: 1.25rem;
+    border-right: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .partners__item img {
+    width: auto;
+    opacity: 0.78;
+    transition: opacity var(--dur) ease;
+  }
+
+  .partners__item:hover img {
+    opacity: 1;
+  }
+
+  @media (min-width: 640px) {
+    .partners__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .partners__grid {
+      grid-template-columns: repeat(7, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,89 @@
+---
+/**
+ * Wide photo band under the service hero. Optionally overlays the sample certification card.
+ * Photos come from `servicePhotos` in src/data/services-detail.ts — TODO(photo) lives there.
+ */
+import { Image } from 'astro:assets';
+import TestCard from '../ui/TestCard.astro';
+import type { ServicePhoto } from '../../data/services-detail';
+
+interface Props {
+  photo: ServicePhoto;
+  testCard?: boolean;
+}
+
+const { photo, testCard = false } = Astro.props;
+---
+
+<div class:list={['band container', { 'band--card': testCard }]} data-reveal>
+  <figure class="band__frame">
+    <Image
+      src={photo.src}
+      alt={photo.alt}
+      widths={[640, 960, 1280, 1920]}
+      sizes="(min-width: 1360px) 1280px, 100vw"
+      loading="eager"
+    />
+    <span class="band__tag t-mono">{photo.tag}</span>
+  </figure>
+  {testCard && <TestCard class="band__card" />}
+</div>
+
+<style>
+  .band {
+    position: relative;
+  }
+
+  .band__frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--paper-sunken);
+  }
+
+  .band__frame img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .band__tag {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    padding: 0.35rem 0.55rem;
+    background: var(--paper);
+    border-radius: var(--radius);
+  }
+
+  /* Card is skipped on phones (it would dwarf the photo) and overlaps the photo from 700px */
+  .band :global(.band__card) {
+    display: none;
+  }
+
+  @media (min-width: 700px) {
+    .band__frame img {
+      aspect-ratio: 21 / 9;
+    }
+
+    .band :global(.band__card) {
+      display: grid;
+      position: relative;
+      width: min(330px, 88%);
+      margin: -6rem 1.5rem 0 auto;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .band :global(.band__card) {
+      position: absolute;
+      right: calc(var(--gutter) + 2.5rem);
+      bottom: -3rem;
+      margin: 0;
+    }
+
+    .band--card {
+      margin-bottom: 3rem;
+    }
+  }
+</style>

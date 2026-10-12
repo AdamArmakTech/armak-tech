@@ -1,0 +1,522 @@
+---
+/**
+ * Two-step site-assessment form (Web3Forms).
+ *
+ * Progressive enhancement: without JS both steps are visible and the form posts natively to
+ * Web3Forms. With JS it becomes a 2-step flow with inline validation and an in-page
+ * confirmation. `id` must be unique per page when the form is used more than once.
+ */
+import Button from '../ui/Button.astro';
+import { site, services } from '../../data/site';
+
+interface Props {
+  id?: string;
+  class?: string;
+}
+
+const { id = 'assessment', class: className } = Astro.props;
+
+// Server-side at build time only (from .env). Never log this value.
+const accessKey: string = import.meta.env.WEB3FORMSAPIKEY ?? '';
+const endpoint = 'https://api.web3forms.com/submit';
+const projectTypes = [...services.map((s) => s.name), 'Not sure yet'];
+const f = (name: string) => `${id}-${name}`;
+---
+
+<div class:list={['cform', className]} data-contact-form data-phone={site.phone}>
+  <form class="cform__form" action={endpoint} method="POST" data-cform-form>
+    <!-- Web3Forms config (same fields as the original site's form) -->
+    <input type="hidden" name="access_key" value={accessKey} />
+    <input type="hidden" name="subject" value="New Site Assessment Inquiry — Armak Technologies" />
+    <input type="hidden" name="from_name" value="Armak Website" />
+    <!-- Honeypot spam protection -->
+    <input type="checkbox" name="botcheck" class="cform__hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+    <!-- Step 1 -->
+    <div class="cform__step" data-step="1" role="group" aria-labelledby={f('s1-title')}>
+      <div class="cform__progress" data-js-only hidden>
+        <p class="t-mono cform__count">Step 1 of 2</p>
+        <span class="cform__bars" aria-hidden="true"><span class="is-on"></span><span></span></span>
+      </div>
+      <h3 class="t-h3 cform__title" id={f('s1-title')} tabindex="-1">What are you building?</h3>
+
+      <fieldset class="cform__chips" aria-describedby={f('type-error')}>
+        <legend class="field__label">Select all that apply</legend>
+        <div class="cform__chip-list">
+          {projectTypes.map((p) => (
+            <label class="chip">
+              <input type="checkbox" name="project_type" value={p} />
+              <span>{p}</span>
+            </label>
+          ))}
+        </div>
+        <p class="cform__error" id={f('type-error')} data-error-for="project_type" aria-live="polite"></p>
+      </fieldset>
+
+      <div class="cform__actions" data-js-only hidden>
+        <Button type="button" variant="ink" size="lg" data-next>Continue</Button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="cform__step" data-step="2" role="group" aria-labelledby={f('s2-title')}>
+      <div class="cform__progress" data-js-only hidden>
+        <p class="t-mono cform__count">Step 2 of 2</p>
+        <span class="cform__bars" aria-hidden="true"><span class="is-on"></span><span class="is-on"></span></span>
+      </div>
+      <h3 class="t-h3 cform__title" id={f('s2-title')} tabindex="-1">Where can we reach you?</h3>
+      <p class="t-mono t-muted cform__req-note"><span class="cform__req" aria-hidden="true">*</span> Required</p>
+
+      <div class="cform__fields">
+        <div class="field">
+          <label class="field__label" for={f('name')}>Name <span class="cform__req" aria-hidden="true">*</span></label>
+          <input class="field__control" id={f('name')} name="name" type="text" autocomplete="name" required placeholder="Jane Cooper" aria-describedby={f('name-error')} />
+          <p class="cform__error" id={f('name-error')} data-error-for="name"></p>
+        </div>
+        <div class="field">
+          <label class="field__label" for={f('company')}>Company</label>
+          <input class="field__control" id={f('company')} name="company" type="text" autocomplete="organization" placeholder="Company name" />
+        </div>
+        <div class="field">
+          <label class="field__label" for={f('email')}>Email <span class="cform__req" aria-hidden="true">*</span></label>
+          <input class="field__control" id={f('email')} name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" required placeholder="jane@company.com" aria-describedby={f('email-error')} />
+          <p class="cform__error" id={f('email-error')} data-error-for="email"></p>
+        </div>
+        <div class="field">
+          <label class="field__label" for={f('phone')}>Phone <span class="cform__req" aria-hidden="true">*</span></label>
+          <input class="field__control" id={f('phone')} name="phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="(818) 555-0100" aria-describedby={f('phone-error')} />
+          <p class="cform__error" id={f('phone-error')} data-error-for="phone"></p>
+        </div>
+        <div class="field cform__full">
+          <label class="field__label" for={f('message')}>Project details <span class="cform__req" aria-hidden="true">*</span></label>
+          <textarea class="field__control" id={f('message')} name="message" rows="4" required placeholder="Site location, scale, timeline." aria-describedby={f('message-error')}></textarea>
+          <p class="cform__error" id={f('message-error')} data-error-for="message"></p>
+        </div>
+      </div>
+
+      <div class="cform__actions">
+        <Button type="button" variant="outline" size="lg" icon="none" data-back data-js-only hidden>Back</Button>
+        <Button type="submit" variant="primary" size="lg" data-submit>Request my site assessment</Button>
+      </div>
+    </div>
+
+    <p class="cform__status" role="status" aria-live="polite" data-status></p>
+  </form>
+
+  <div class="cform__success" data-success hidden>
+    <p class="t-mono cform__success-label"><span class="cform__success-mark" aria-hidden="true"></span>Request received</p>
+    <h3 class="t-h3 cform__title" tabindex="-1" data-success-title>Thanks — we’ve got your project details.</h3>
+    <ol role="list" class="cform__next">
+      <li><span class="t-mono">01</span>We review what you’re building and where.</li>
+      <li><span class="t-mono">02</span>We reach out to schedule a site assessment.</li>
+      <li><span class="t-mono">03</span>You get a clear, scoped plan — no guesswork, no surprises.</li>
+    </ol>
+    <p class="t-small t-muted">
+      Need us sooner? Call <a class="cform__link" href={site.phoneHref}>{site.phone}</a> · {site.hours}
+    </p>
+  </div>
+</div>
+
+<style>
+  .cform {
+    display: grid;
+  }
+
+  .cform__form {
+    display: grid;
+    gap: 2.5rem;
+  }
+
+  .cform__hp,
+  .cform__form[hidden],
+  .cform__actions[hidden] {
+    display: none;
+  }
+
+  .cform__step {
+    display: grid;
+    gap: 1.5rem;
+    align-content: start;
+  }
+
+  .cform__progress {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .cform__progress[hidden] {
+    display: none;
+  }
+
+  .cform__count {
+    color: var(--steel);
+  }
+
+  .cform__bars {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    width: 72px;
+  }
+
+  .cform__bars span {
+    height: 2px;
+    background: var(--hairline-strong);
+  }
+
+  .cform__bars span.is-on {
+    background: var(--ink);
+  }
+
+  .cform__title:focus {
+    outline: none;
+  }
+
+  .cform__title:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 4px;
+  }
+
+  .cform__chips {
+    display: grid;
+    gap: 0.875rem;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  .cform__chips legend {
+    padding: 0;
+    margin-bottom: 0.875rem;
+  }
+
+  .cform__chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .cform__chip-list .chip span {
+    background: var(--white);
+  }
+
+  .cform__chip-list .chip input:checked + span {
+    background: var(--ink);
+  }
+
+  .cform__req {
+    color: var(--signal);
+  }
+
+  .cform__req-note {
+    margin-top: -0.75rem;
+  }
+
+  .cform__fields {
+    display: grid;
+    gap: 1.75rem var(--col-gap);
+  }
+
+  .cform__fields .field {
+    align-content: start;
+  }
+
+  .cform__error {
+    font-size: 0.875rem;
+    color: var(--signal);
+  }
+
+  .cform__error:empty {
+    display: none;
+  }
+
+  .field__control[aria-invalid="true"] {
+    border-bottom-color: var(--signal);
+  }
+
+  .cform__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .cform__actions :global(.btn[hidden]) {
+    display: none;
+  }
+
+  .cform__actions :global(.btn:disabled) {
+    opacity: 0.7;
+    cursor: progress;
+  }
+
+  .cform__status {
+    font-size: var(--fs-small);
+  }
+
+  .cform__status:empty {
+    display: none;
+  }
+
+  .cform__status.is-error {
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--signal);
+    border-left-width: 3px;
+    border-radius: var(--radius);
+    color: var(--ink);
+    background: var(--white);
+  }
+
+  .cform__link {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+
+  .cform__status :global(a) {
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    white-space: nowrap;
+  }
+
+  /* Enhanced (JS) mode: one step at a time */
+  .cform.is-enhanced .cform__step[hidden] {
+    display: none;
+  }
+
+  /* No-JS: both steps visible — separate them with a rule */
+  .cform:not(.is-enhanced) .cform__step[data-step="2"] {
+    padding-top: 2rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  /* Success panel */
+  .cform__success {
+    display: grid;
+    gap: 1.5rem;
+    align-content: start;
+  }
+
+  .cform__success[hidden] {
+    display: none;
+  }
+
+  .cform__success-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--pass);
+  }
+
+  .cform__success-mark {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--pass);
+  }
+
+  .cform__next {
+    display: grid;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .cform__next li {
+    display: grid;
+    grid-template-columns: 2.5rem 1fr;
+    gap: 0.75rem;
+    padding-block: 0.875rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .cform__next .t-mono {
+    color: var(--signal);
+    padding-top: 0.3rem;
+  }
+
+  @media (min-width: 640px) {
+    .cform__fields {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .cform__full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .cform__actions :global(.btn) {
+      flex: 1 1 100%;
+    }
+  }
+</style>
+
+<script>
+  const MIN_PHONE_DIGITS = 7;
+
+  type Field = HTMLInputElement | HTMLTextAreaElement;
+
+  document.querySelectorAll<HTMLElement>('[data-contact-form]').forEach((root) => {
+    const form = root.querySelector<HTMLFormElement>('[data-cform-form]');
+    const steps = [...root.querySelectorAll<HTMLElement>('[data-step]')];
+    const next = root.querySelector<HTMLButtonElement>('[data-next]');
+    const back = root.querySelector<HTMLButtonElement>('[data-back]');
+    const submit = root.querySelector<HTMLButtonElement>('[data-submit]');
+    const status = root.querySelector<HTMLElement>('[data-status]');
+    const success = root.querySelector<HTMLElement>('[data-success]');
+    if (!form || steps.length !== 2 || !next || !back || !submit || !status || !success) return;
+
+    const phone = root.dataset.phone ?? '';
+    const phoneHref = `tel:+1${phone.replace(/\D/g, '')}`;
+    const submitLabel = submit.querySelector<HTMLElement>('.btn__label');
+    const submitText = submitLabel?.textContent ?? '';
+    let sending = false;
+
+    // ── Enhance ────────────────────────────────────────────
+    root.classList.add('is-enhanced');
+    form.noValidate = true; // we show our own inline messages
+    root.querySelectorAll<HTMLElement>('[data-js-only]').forEach((el) => (el.hidden = false));
+
+    const errorEl = (name: string) => root.querySelector<HTMLElement>(`[data-error-for="${name}"]`);
+
+    function setError(name: string, message: string) {
+      const el = errorEl(name);
+      if (el) el.textContent = message;
+      const control = form!.elements.namedItem(name);
+      if (control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement) {
+        if (message) control.setAttribute('aria-invalid', 'true');
+        else control.removeAttribute('aria-invalid');
+      }
+    }
+
+    function showStep(n: 1 | 2, focus = true) {
+      steps.forEach((s) => (s.hidden = s.dataset.step !== String(n)));
+      if (focus) steps[n - 1].querySelector<HTMLElement>('.cform__title')?.focus();
+    }
+
+    const chips = () => [...form.querySelectorAll<HTMLInputElement>('input[name="project_type"]')];
+    const selectedTypes = () => chips().filter((c) => c.checked).map((c) => c.value);
+
+    // ── Step 1 → 2 ─────────────────────────────────────────
+    next.addEventListener('click', () => {
+      if (!selectedTypes().length) {
+        setError('project_type', 'Pick at least one — or choose “Not sure yet”.');
+        chips()[0]?.focus();
+        return;
+      }
+      setError('project_type', '');
+      showStep(2);
+    });
+
+    back.addEventListener('click', () => showStep(1));
+
+    form.addEventListener('change', (e) => {
+      if (e.target instanceof HTMLInputElement && e.target.name === 'project_type' && selectedTypes().length) {
+        setError('project_type', '');
+      }
+    });
+
+    // ── Validation ─────────────────────────────────────────
+    function validate(control: Field): string {
+      const v = control.value.trim();
+      switch (control.name) {
+        case 'name':
+          return v ? '' : 'Please enter your name.';
+        case 'email':
+          if (!v) return 'Please enter your email address.';
+          return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? '' : 'That email address doesn’t look right.';
+        case 'phone':
+          if (!v) return 'Please enter a phone number.';
+          return v.replace(/\D/g, '').length >= MIN_PHONE_DIGITS ? '' : 'Please enter a full phone number.';
+        case 'message':
+          return v ? '' : 'Tell us a little about the project — location, scale, timeline.';
+        default:
+          return '';
+      }
+    }
+
+    const requiredFields = () => [...form.querySelectorAll<Field>('[data-step="2"] [required]')];
+
+    requiredFields().forEach((control) => {
+      // Re-check as the visitor fixes a field, once it has been flagged.
+      control.addEventListener('input', () => {
+        if (control.getAttribute('aria-invalid') === 'true') setError(control.name, validate(control));
+      });
+      control.addEventListener('blur', () => {
+        if (control.value.trim()) setError(control.name, validate(control));
+      });
+    });
+
+    // ── Submit ─────────────────────────────────────────────
+    function setSending(on: boolean) {
+      sending = on;
+      submit!.disabled = on;
+      back!.disabled = on;
+      submit!.setAttribute('aria-busy', String(on));
+      if (submitLabel) submitLabel.textContent = on ? 'Sending…' : submitText;
+    }
+
+    function showError() {
+      status!.classList.add('is-error');
+      status!.replaceChildren(
+        'Something went wrong sending your request. Please try again, or call us at ',
+        Object.assign(document.createElement('a'), { href: phoneHref, textContent: phone }),
+        '.',
+      );
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (sending) return;
+
+      if (!selectedTypes().length) {
+        showStep(1);
+        setError('project_type', 'Pick at least one — or choose “Not sure yet”.');
+        return;
+      }
+
+      let firstInvalid: Field | null = null;
+      for (const control of requiredFields()) {
+        const message = validate(control);
+        setError(control.name, message);
+        if (message && !firstInvalid) firstInvalid = control;
+      }
+      if (firstInvalid) {
+        firstInvalid.focus();
+        return;
+      }
+
+      // Build the JSON payload; multiple project types are sent as one readable string.
+      const payload: Record<string, string> = {};
+      for (const [key, value] of new FormData(form)) {
+        if (typeof value !== 'string' || key === 'project_type') continue;
+        payload[key] = value.trim();
+      }
+      payload.project_type = selectedTypes().join(', ');
+
+      status!.classList.remove('is-error');
+      status!.textContent = '';
+      setSending(true);
+
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = (await res.json().catch(() => ({}))) as { success?: boolean };
+        if (!res.ok || !json.success) throw new Error('Submission rejected');
+
+        form.hidden = true;
+        success!.hidden = false;
+        success!.querySelector<HTMLElement>('[data-success-title]')?.focus();
+      } catch {
+        setSending(false);
+        showError();
+      }
+    });
+
+    showStep(1, false);
+  });
+</script>

@@ -1,0 +1,171 @@
+---
+/**
+ * Compact opener shared by every inner page (about, industries, projects, contact, 404):
+ * breadcrumb → TIA label → h1 (t-h1) → lead → optional actions (default slot).
+ * Optional `aside` slot sits to the right on desktop; optional `spec` renders a SpecStrip foot.
+ * Extra labels (e.g. a "Placeholder" flag) go in the `labels` slot next to the main label.
+ */
+import Label from '../ui/Label.astro';
+import SpecStrip from '../ui/SpecStrip.astro';
+
+interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  code: string;
+  label: string;
+  title: string;
+  lead?: string;
+  /** Trail after "Home". The last crumb is the current page. Omit to hide the breadcrumb. */
+  crumbs?: Crumb[];
+  spec?: string[];
+  labelTone?: 'default' | 'signal';
+  titleId?: string;
+}
+
+const { code, label, title, lead, crumbs, spec, labelTone = 'default', titleId = 'page-title' } = Astro.props;
+const trail: Crumb[] | undefined = crumbs ? [{ label: 'Home', href: '/' }, ...crumbs] : undefined;
+const hasAside = Astro.slots.has('aside');
+---
+
+<section class="page-hero container" aria-labelledby={titleId}>
+  {trail && (
+    <nav class="page-hero__crumbs t-mono" aria-label="Breadcrumb">
+      <ol role="list">
+        {trail.map((c, i) =>
+          i === trail.length - 1 ? <li aria-current="page">{c.label}</li> : <li><a href={c.href}>{c.label}</a></li>,
+        )}
+      </ol>
+    </nav>
+  )}
+
+  <div class:list={['page-hero__grid', { 'page-hero__grid--aside': hasAside }]}>
+    <div class="page-hero__copy">
+      <div class="page-hero__labels">
+        <Label code={code} tone={labelTone}>{label}</Label>
+        <slot name="labels" />
+      </div>
+      <h1 id={titleId} class="t-h1 page-hero__title">{title}</h1>
+      {lead && <p class="t-lead" data-reveal>{lead}</p>}
+      <slot />
+    </div>
+    {hasAside && (
+      <div class="page-hero__aside" data-reveal style="--reveal-delay: 150ms">
+        <slot name="aside" />
+      </div>
+    )}
+  </div>
+
+  {spec && <SpecStrip class="page-hero__spec" items={spec} />}
+</section>
+
+<style>
+  .page-hero {
+    display: grid;
+    gap: var(--space-block);
+    padding-top: clamp(1.5rem, 1rem + 2.5vw, 3.5rem);
+    padding-bottom: var(--space-block);
+  }
+
+  .page-hero__crumbs {
+    color: var(--steel);
+  }
+
+  .page-hero__crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0;
+  }
+
+  .page-hero__crumbs li {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  .page-hero__crumbs li:not(:last-child)::after {
+    content: "/";
+    margin-inline: 0.625rem;
+    color: var(--hairline-strong);
+  }
+
+  .page-hero__crumbs a {
+    transition: color var(--dur-fast) ease;
+  }
+
+  .page-hero__crumbs a:hover,
+  .page-hero__crumbs [aria-current] {
+    color: var(--ink);
+  }
+
+  .page-hero__grid {
+    display: grid;
+    gap: var(--space-block) var(--col-gap);
+  }
+
+  .page-hero__copy {
+    display: grid;
+    gap: 1.75rem;
+    align-content: start;
+    justify-items: start;
+    min-width: 0;
+  }
+
+  .page-hero__labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .page-hero__title {
+    max-width: 15ch;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .page-hero__title {
+      animation: page-hero-in 1.1s var(--ease-out) both;
+    }
+  }
+
+  @keyframes page-hero-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0.3em, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .page-hero__copy > :global(.page-hero__actions) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .page-hero__copy > :global(.page-hero__actions .btn) {
+    white-space: normal;
+  }
+
+  .page-hero__aside {
+    min-width: 0;
+  }
+
+  @media (min-width: 1000px) {
+    .page-hero__grid--aside {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: end;
+    }
+
+    .page-hero__grid--aside .page-hero__copy {
+      grid-column: 1 / span 7;
+    }
+
+    .page-hero__aside {
+      grid-column: 9 / -1;
+    }
+  }
+</style>

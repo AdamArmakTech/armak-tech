@@ -1,27 +1,39 @@
 {
   "name": "armak-tech",
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "private": true,
   "description": "Armak Technologies delivers low-voltage, telecommunications, and enterprise networking infrastructure across Southern California since 1998.",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AdamArmakTech/armak-tech.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
+  "license": "UNLICENSED",
   "bugs": {
     "url": "https://github.com/AdamArmakTech/armak-tech/issues"
   },
-  "homepage": "https://github.com/AdamArmakTech/armak-tech#readme",
+  "homepage": "https://armak.tech",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@fontsource-variable/geist-mono": "^5.3.0",
+    "@lucide/astro": "^1.55.0",
+    "astro": "^7.3.8",
+    "gsap": "^3.15.0",
+    "lenis": "^1.3.26",
+    "maplibre-gl": "^6.13.0"
+  },
   "devDependencies": {
-    "vite": "^8.0.14",
-    "vite-plugin-ejs": "^1.7.0"
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^6.0.3"
   }
 }

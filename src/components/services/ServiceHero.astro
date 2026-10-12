@@ -1,0 +1,260 @@
+---
+/**
+ * Service page opener: breadcrumb, TIA-style label, h1 (service name + headline), intro, CTAs,
+ * and a "scope sheet" card summarising what's included and the standards involved.
+ */
+import Label from '../ui/Label.astro';
+import Button from '../ui/Button.astro';
+import { site, type Service } from '../../data/site';
+import type { ServiceDetail } from '../../data/services-detail';
+
+interface Props {
+  service: Service;
+  detail: ServiceDetail;
+}
+
+const { service, detail } = Astro.props;
+---
+
+<section class="svc-hero container" aria-labelledby="svc-hero-title">
+  <nav class="svc-hero__crumbs t-mono" aria-label="Breadcrumb">
+    <ol role="list">
+      <li><a href="/">Home</a></li>
+      <li><a href="/services/">Services</a></li>
+      <li aria-current="page">{service.name}</li>
+    </ol>
+  </nav>
+
+  <div class="svc-hero__grid">
+    <div class="svc-hero__copy">
+      <Label code={service.code}>{service.layer}</Label>
+      <h1 id="svc-hero-title" class="svc-hero__title">
+        <span class="svc-hero__name">{service.name}</span>
+        <span class="t-h1 svc-hero__headline">{detail.headline}</span>
+      </h1>
+      <p class="t-lead" data-reveal>{detail.intro}</p>
+      <div class="svc-hero__ctas" data-reveal style="--reveal-delay: 120ms">
+        <Button href="/contact/" size="lg">Request a site assessment</Button>
+        <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
+      </div>
+    </div>
+
+    <aside class="sheet" aria-label={`${service.name} scope summary`} data-reveal style="--reveal-delay: 150ms">
+      <header class="sheet__head t-mono">
+        <span>Scope sheet</span>
+        <span class="sheet__id">{service.code}</span>
+      </header>
+
+      <div class="sheet__block">
+        <p class="t-mono sheet__heading">Includes</p>
+        <ul role="list" class="sheet__list sheet__list--includes">
+          {service.includes.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+
+      <div class="sheet__block">
+        <p class="t-mono sheet__heading">Standards &amp; technology</p>
+        <ul role="list" class="sheet__list sheet__list--specs t-mono">
+          {detail.standards.map((s) => <li>{s}</li>)}
+        </ul>
+      </div>
+
+      <footer class="sheet__foot t-mono">
+        <span>{service.layer}</span>
+        <span>Southern California</span>
+      </footer>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .svc-hero {
+    padding-top: clamp(1.25rem, 0.9rem + 1.5vw, 2.25rem);
+    padding-bottom: var(--space-block);
+  }
+
+  /* ── Breadcrumb ── */
+  .svc-hero__crumbs {
+    margin-bottom: clamp(2rem, 1.4rem + 2.6vw, 4rem);
+    color: var(--steel);
+  }
+
+  .svc-hero__crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0;
+  }
+
+  .svc-hero__crumbs li {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .svc-hero__crumbs li:not(:last-child)::after {
+    content: "/";
+    margin-inline: 0.625rem;
+    color: var(--hairline-strong);
+  }
+
+  .svc-hero__crumbs a {
+    transition: color var(--dur-fast) ease;
+  }
+
+  .svc-hero__crumbs a:hover {
+    color: var(--ink);
+  }
+
+  .svc-hero__crumbs [aria-current] {
+    color: var(--ink);
+  }
+
+  /* ── Layout ── */
+  .svc-hero__grid {
+    display: grid;
+    gap: var(--space-block) var(--col-gap);
+  }
+
+  .svc-hero__copy {
+    display: grid;
+    gap: 1.75rem;
+    align-content: start;
+    justify-items: start;
+  }
+
+  .svc-hero__title {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .svc-hero__name {
+    font-size: var(--fs-h4);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+    color: var(--steel);
+  }
+
+  .svc-hero__headline {
+    display: block;
+    max-width: 14ch;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .svc-hero__headline {
+      animation: svc-title-in 1.1s var(--ease-out) both;
+    }
+  }
+
+  @keyframes svc-title-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0.3em, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .svc-hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /* ── Scope sheet ── */
+  .sheet {
+    display: grid;
+    align-content: start;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    font-size: var(--fs-small);
+  }
+
+  .sheet__head,
+  .sheet__foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    color: var(--steel);
+  }
+
+  .sheet__head {
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .sheet__id {
+    color: var(--signal);
+  }
+
+  .sheet__block {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .sheet__heading {
+    color: var(--steel);
+  }
+
+  .sheet__list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding-block: 0.55rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .sheet__list li:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .sheet__list--includes li {
+    font-weight: 500;
+  }
+
+  .sheet__list--includes li::before {
+    content: "";
+    flex: none;
+    width: 6px;
+    height: 6px;
+    background: var(--ink);
+    transform: translateY(-2px);
+  }
+
+  .sheet__list--specs {
+    color: var(--ink);
+  }
+
+  .sheet__list--specs li::before {
+    content: "";
+    flex: none;
+    width: 6px;
+    height: 6px;
+    border: 1px solid var(--hairline-strong);
+    transform: translateY(-1px);
+  }
+
+  .sheet__foot {
+    font-size: 0.6875rem;
+  }
+
+  @media (min-width: 1000px) {
+    .svc-hero__grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .svc-hero__copy {
+      grid-column: 1 / span 7;
+    }
+
+    .sheet {
+      grid-column: 9 / -1;
+    }
+  }
+</style>

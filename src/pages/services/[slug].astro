@@ -1,0 +1,127 @@
+---
+/**
+ * Service detail template — one page per entry in `services` (src/data/site.ts),
+ * with rich copy from src/data/services-detail.ts. Adding a service = one entry in each.
+ */
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import ServiceHero from '../../components/services/ServiceHero.astro';
+import PhotoBand from '../../components/services/PhotoBand.astro';
+import Capabilities from '../../components/services/Capabilities.astro';
+import DeliverySteps from '../../components/services/DeliverySteps.astro';
+import PartnerLogos from '../../components/services/PartnerLogos.astro';
+import FaqList from '../../components/services/FaqList.astro';
+import OtherServices from '../../components/services/OtherServices.astro';
+import ServiceCta from '../../components/services/ServiceCta.astro';
+import { services, site, serviceArea, type Service } from '../../data/site';
+import { servicesDetail, servicePhotos } from '../../data/services-detail';
+import { partners } from '../../data/content';
+
+export const getStaticPaths = (() =>
+  services.map((service) => ({ params: { slug: service.slug }, props: { service } }))) satisfies GetStaticPaths;
+
+interface Props {
+  service: Service;
+}
+
+const { service } = Astro.props;
+const detail = servicesDetail[service.slug];
+const photo = servicePhotos[service.slug];
+const hasPartners = partners.some((p) => detail.partnerCategories.includes(p.category));
+/* Section labels run A-01.1, A-01.2 … with no gaps, whichever sections render */
+let n = 0;
+const next = () => `${service.code}.${++n}`;
+const codes = {
+  caps: next(),
+  delivery: next(),
+  partners: hasPartners ? next() : '',
+  faq: next(),
+  others: next(),
+  cta: next(),
+};
+const pageUrl = new URL(`/services/${service.slug}/`, site.url).href;
+
+/* ── Structured data ── */
+const provider = {
+  '@type': 'LocalBusiness',
+  '@id': `${site.url}/#business`,
+  name: site.name,
+  url: site.url,
+  telephone: '+1-818-858-4615',
+  email: site.email,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: site.hq.city,
+    addressRegion: site.hq.region,
+    addressCountry: site.hq.country,
+  },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Service',
+      '@id': `${pageUrl}#service`,
+      name: service.name,
+      serviceType: service.name,
+      description: detail.metaDescription,
+      url: pageUrl,
+      provider,
+      areaServed: [
+        { '@type': 'AdministrativeArea', name: 'Southern California' },
+        ...serviceArea.map((c) => ({ '@type': 'City', name: `${c.name}, CA` })),
+      ],
+      hasOfferCatalog: {
+        '@type': 'OfferCatalog',
+        name: service.name,
+        itemListElement: detail.capabilities.map((c) => ({
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: c.title, description: c.body },
+        })),
+      },
+    },
+    {
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: detail.faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${site.url}/` },
+        { '@type': 'ListItem', position: 2, name: 'Services', item: `${site.url}/services/` },
+        { '@type': 'ListItem', position: 3, name: service.name, item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<Base title={`${service.name} in Southern California`} description={detail.metaDescription} footerCta={false}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
+  <ServiceHero service={service} detail={detail} />
+
+  {photo && <PhotoBand photo={photo} testCard={service.slug === 'structured-cabling'} />}
+
+  <Capabilities code={codes.caps} serviceName={service.name} items={detail.capabilities} />
+
+  <DeliverySteps code={codes.delivery} />
+
+  {hasPartners && <PartnerLogos code={codes.partners} categories={detail.partnerCategories} />}
+
+  <FaqList code={codes.faq} faqs={detail.faqs} />
+
+  <OtherServices current={service.slug} code={codes.others} />
+
+  <ServiceCta
+    code={codes.cta}
+    title={`Planning ${service.name.toLowerCase()} work?`}
+    body="Tell us about the site. We’ll walk it with you, document what’s there and scope the job before anything is priced."
+  />
+</Base>

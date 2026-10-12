@@ -1,0 +1,115 @@
+---
+/**
+ * Closing call to action for service pages. Light panel so it doesn't stack against the dark
+ * footer; pages using it pass footerCta={false} to Base so the footer's generic CTA doesn't repeat.
+ */
+import Label from '../ui/Label.astro';
+import Button from '../ui/Button.astro';
+import { site } from '../../data/site';
+
+interface Props {
+  code: string;
+  title: string;
+  body: string;
+}
+
+const { code, title, body } = Astro.props;
+---
+
+<section class="cta container" aria-labelledby="cta-title">
+  <div class="cta__panel">
+    <div class="cta__body">
+      <div class="cta__copy">
+        <Label code={code}>Next step</Label>
+        <h2 id="cta-title" class="t-h2 cta__title" data-split>{title}</h2>
+        <p class="t-lead" data-reveal>{body}</p>
+      </div>
+      <div class="cta__side" data-reveal style="--reveal-delay: 120ms">
+        <div class="cta__actions">
+          <Button href="/contact/" size="lg">Request a site assessment</Button>
+          <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
+        </div>
+        <ul role="list" class="cta__meta t-mono">
+          <li><a href={site.emailHref}>{site.email}</a></li>
+          <li>{site.hours}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding-top: var(--space-block);
+  }
+
+  .cta__panel {
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-top: 2px solid var(--ink);
+    border-radius: var(--radius);
+  }
+
+  .cta__body {
+    display: grid;
+    gap: 2.5rem var(--col-gap);
+    padding: clamp(1.25rem, 0.5rem + 3.8vw, 4.5rem);
+  }
+
+  .cta__copy {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+  }
+
+  .cta__title {
+    max-width: 16ch;
+  }
+
+  .cta__side {
+    display: grid;
+    gap: 1.5rem;
+    align-content: end;
+  }
+
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .cta__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    color: var(--steel);
+  }
+
+  .cta__meta a {
+    transition: color var(--dur-fast) ease;
+  }
+
+  .cta__meta a:hover {
+    color: var(--ink);
+  }
+
+  /* Long phone/CTA labels must not force horizontal scroll at 375px */
+  .cta__actions :global(.btn) {
+    white-space: normal;
+  }
+
+  @media (min-width: 1000px) {
+    .cta__body {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: end;
+    }
+
+    .cta__copy {
+      grid-column: 1 / span 7;
+    }
+
+    .cta__side {
+      grid-column: 9 / -1;
+    }
+  }
+</style>

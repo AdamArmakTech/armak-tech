@@ -1,0 +1,369 @@
+/*
+ * ARMAK — Global styles: reset, base typography, layout primitives, form fields, motion states.
+ * Component-specific styles live in each .astro component.
+ */
+
+@import "./tokens.css";
+
+/* ── Reset ─────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+
+body {
+  min-height: 100dvh;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+  padding: 0;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+}
+
+/* ── Typography ────────────────────────────────────────── */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  line-height: var(--lh-heading);
+  letter-spacing: var(--tracking-heading);
+  text-wrap: balance;
+}
+
+.t-display {
+  font-size: var(--fs-display);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+  font-weight: 600;
+}
+
+.t-h1 {
+  font-size: var(--fs-h1);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-display);
+}
+
+.t-h2 {
+  font-size: var(--fs-h2);
+}
+
+.t-h3 {
+  font-size: var(--fs-h3);
+  letter-spacing: -0.02em;
+}
+
+.t-h4 {
+  font-size: var(--fs-h4);
+  letter-spacing: -0.01em;
+}
+
+.t-lead {
+  font-size: var(--fs-lead);
+  line-height: 1.5;
+  color: var(--steel);
+  text-wrap: pretty;
+  max-width: 38em;
+}
+
+.t-small {
+  font-size: var(--fs-small);
+}
+
+.t-muted {
+  color: var(--steel);
+}
+
+/* Mono technical label: "A-01 · SERVICES", spec rows, metadata */
+.t-mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.t-accent {
+  color: var(--signal);
+}
+
+/* ── Layout primitives ─────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: var(--space-section);
+}
+
+.section--tight {
+  padding-block: var(--space-block);
+}
+
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--col-gap);
+}
+
+.rule {
+  border: 0;
+  border-top: 1px solid var(--hairline);
+}
+
+.surface-ink {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.surface-ink .t-muted,
+.surface-ink .t-lead {
+  color: var(--steel-light);
+}
+
+.surface-white {
+  background: var(--white);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--gutter);
+  top: -100px;
+  z-index: 1000;
+  padding: 0.75rem 1rem;
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 500;
+}
+
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+/* ── Form fields ───────────────────────────────────────── */
+.field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.field__label {
+  font-family: var(--font-mono);
+  font-size: var(--fs-label);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--steel);
+}
+
+.field__control {
+  width: 100%;
+  padding: 0.875rem 0 0.75rem;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--hairline-strong);
+  border-radius: 0;
+  font-size: 1.0625rem;
+  transition: border-color var(--dur-fast) ease;
+}
+
+.field__control::placeholder {
+  color: var(--steel-light);
+}
+
+.field__control:hover {
+  border-bottom-color: var(--steel);
+}
+
+.field__control:focus {
+  outline: none;
+  border-bottom-color: var(--ink);
+  box-shadow: 0 1px 0 0 var(--ink);
+}
+
+textarea.field__control {
+  min-height: 8rem;
+  resize: vertical;
+}
+
+/* Choice chips (radio/checkbox styled as selectable tags) */
+.chip {
+  position: relative;
+  display: inline-flex;
+}
+
+.chip input {
+  position: absolute;
+  opacity: 0;
+  inset: 0;
+  cursor: pointer;
+}
+
+.chip span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--radius);
+  font-size: var(--fs-small);
+  transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+}
+
+.chip:hover span {
+  border-color: var(--ink);
+}
+
+.chip input:checked + span {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.chip input:focus-visible + span {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+/* ── Motion states (driven by src/scripts/motion.ts) ───── */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+    transition:
+      opacity var(--dur-slow) var(--ease-out),
+      transform var(--dur-slow) var(--ease-out);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .js [data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Hide split headings until SplitText has prepared them (prevents flash). */
+  .js [data-split]:not(.is-split) {
+    visibility: hidden;
+  }
+
+  /* Failsafe: if motion.ts never boots (blocked/failed script), everything appears
+     after 2.5s. Once motion.ts adds .motion-ready these selectors stop matching. */
+  .js:not(.motion-ready) [data-split]:not(.is-split) {
+    animation: split-failsafe 0s linear 2.5s forwards;
+  }
+
+  .js:not(.motion-ready) [data-reveal]:not(.is-revealed) {
+    animation: reveal-failsafe 0.6s var(--ease-out) 2.5s forwards;
+  }
+}
+
+@keyframes split-failsafe {
+  to {
+    visibility: visible;
+  }
+}
+
+@keyframes reveal-failsafe {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

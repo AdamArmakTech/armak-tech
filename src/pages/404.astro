@@ -1,0 +1,142 @@
+---
+/** On-brand 404: styled like a failed link test, with routes back into the site. */
+import { Unplug } from '@lucide/astro';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/pages/PageHero.astro';
+import Button from '../components/ui/Button.astro';
+import { site } from '../data/site';
+
+const routes = [
+  { href: '/', code: 'R-01', label: 'Home' },
+  { href: '/services/', code: 'R-02', label: 'Services' },
+  { href: '/projects/', code: 'R-03', label: 'Projects' },
+  { href: '/contact/', code: 'R-04', label: 'Contact' },
+];
+---
+
+<Base title="Page Not Found" description="The page you’re looking for isn’t here." noindex>
+  <PageHero
+    code="E-404"
+    label="Not found"
+    labelTone="signal"
+    title="This port isn’t patched."
+    lead="The page you’re looking for has moved or never existed. Pick a route below, or call us and we’ll point you in the right direction."
+  >
+    <div class="page-hero__actions" data-reveal style="--reveal-delay: 120ms">
+      <Button href="/" size="lg">Back to home</Button>
+      <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
+    </div>
+
+    <figure slot="aside" class="trace">
+      <header class="trace__head t-mono">
+        <span>Link test</span>
+        <span class="trace__fail">Fail</span>
+      </header>
+      <div class="trace__result">
+        <span class="trace__badge" aria-hidden="true"><Unplug size={22} stroke-width={2} /></span>
+        <div>
+          <p class="trace__status">OPEN</p>
+          <p class="t-mono trace__std">HTTP 404 · No link detected</p>
+        </div>
+      </div>
+      <nav aria-label="Suggested pages">
+        <ul role="list" class="trace__routes">
+          {routes.map((r) => (
+            <li>
+              <a href={r.href}>
+                <span class="t-mono trace__code">{r.code}</span>
+                <span>{r.label}</span>
+                <span class="t-mono trace__ok">Connect →</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <figcaption class="visually-hidden">Page not found. Suggested pages: home, services, projects, contact.</figcaption>
+    </figure>
+  </PageHero>
+</Base>
+
+<style>
+  .trace {
+    display: grid;
+    gap: 1.25rem;
+    max-width: 420px;
+    padding: 1.25rem;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-raise);
+  }
+
+  .trace__head {
+    display: flex;
+    justify-content: space-between;
+    color: var(--steel);
+  }
+
+  .trace__fail {
+    padding: 0.15rem 0.4rem;
+    border: 1px solid var(--signal);
+    border-radius: var(--radius);
+    color: var(--signal);
+  }
+
+  .trace__result {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .trace__badge {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--signal);
+    color: var(--white);
+  }
+
+  .trace__status {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    color: var(--signal);
+  }
+
+  .trace__std {
+    margin-top: 0.35rem;
+    color: var(--steel);
+  }
+
+  .trace__routes a {
+    display: grid;
+    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0.25rem;
+    border-bottom: 1px solid var(--hairline);
+    font-weight: 500;
+    transition: background var(--dur-fast) ease;
+  }
+
+  .trace__routes li:first-child a {
+    border-top: 1px solid var(--hairline);
+  }
+
+  .trace__routes a:hover {
+    background: var(--paper);
+  }
+
+  .trace__code {
+    color: var(--steel);
+  }
+
+  .trace__ok {
+    color: var(--pass);
+  }
+</style>

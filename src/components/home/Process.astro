@@ -1,0 +1,296 @@
+---
+import { Image } from 'astro:assets';
+import SectionHead from '../ui/SectionHead.astro';
+import Label from '../ui/Label.astro';
+import TestCard from '../ui/TestCard.astro';
+import { process as steps, pillars } from '../../data/content';
+// TODO(photo): replace with a real Armak install photo
+import patchColors from '../../assets/photos/patch-panel-colors.webp';
+---
+
+<section id="process" class="section process">
+  <div class="container">
+    <SectionHead
+      code="D-01"
+      label="The Armak standard"
+      title="Assessed, designed, installed — then proven."
+      intro="The same five steps on every job, from a single-rack retrofit to a multi-site rollout. Nothing is signed off until it has been tested and documented."
+    />
+
+    <div class="process__layout">
+      <ol role="list" class="process__steps" data-reveal-stagger="80">
+        {steps.map((step) => {
+          const isCertify = step.title === 'Certify';
+          return (
+            <li class:list={['step', { 'step--certify': isCertify }]} data-reveal>
+              <span class="step__num" aria-hidden="true">{step.code}</span>
+              <div class="step__copy">
+                <h3 class="t-h3 step__title">
+                  <span class="visually-hidden">Step {step.code}: </span>{step.title}
+                </h3>
+                <p class="step__body t-muted">{step.body}</p>
+                {isCertify && <p class="t-mono step__ref">See fig. D-02 · Sample report</p>}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+
+      <aside class="process__aside" aria-label="Certification evidence">
+        <div class="process__sticky" data-reveal>
+          <div class="process__figure">
+            <div class="process__photo">
+              <Image
+                src={patchColors}
+                alt="Color-coded patch cables terminated and labeled in a patch panel"
+                widths={[480, 720, 960]}
+                sizes="(min-width: 1000px) 34vw, 100vw"
+                loading="lazy"
+              />
+              <span class="process__tag t-mono">Fig. D-02 · Step 04</span>
+            </div>
+            <TestCard class="process__card" />
+          </div>
+          <p class="t-small t-muted process__caption">
+            Every run, rack and port is tested before we leave. You get the reports.
+          </p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="pillars">
+      <Label code="D-03">Principles</Label>
+      <ul role="list" class="pillars__grid" data-reveal-stagger="80">
+        {pillars.map((p, i) => (
+          <li class="pillar" data-reveal>
+            <span class="t-mono pillar__index">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="t-h4 pillar__title">{p.title}</h3>
+            <p class="t-small t-muted pillar__body">{p.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .process__layout {
+    display: grid;
+    gap: var(--space-block) var(--col-gap);
+  }
+
+  /* ── Steps ── */
+  .process__steps {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .step {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: 0.25rem var(--col-gap);
+    padding-block: 1.75rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .step__num {
+    font-family: var(--font-mono);
+    font-size: clamp(2rem, 1.4rem + 2.4vw, 3.75rem);
+    font-weight: 400;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+    color: var(--hairline-strong);
+    transition: color var(--dur) ease;
+  }
+
+  .step:hover .step__num {
+    color: var(--ink);
+  }
+
+  .step__copy {
+    display: grid;
+    gap: 0.625rem;
+    align-content: start;
+  }
+
+  .step__body {
+    max-width: 34em;
+  }
+
+  .step--certify .step__num {
+    color: var(--ink);
+  }
+
+  .step__ref {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--ink);
+  }
+
+  .step__ref::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    background: var(--signal);
+  }
+
+  /* ── Aside: photo + certification card ── */
+  /* Phone/tablet: card sits in flow, overlapping the photo's foot.
+     Desktop: card floats over the photo's lower-left corner. */
+  .process__figure {
+    position: relative;
+    display: grid;
+  }
+
+  .process__photo {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--paper-sunken);
+  }
+
+  .process__photo img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .process__tag {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    padding: 0.35rem 0.55rem;
+    background: var(--paper);
+    border-radius: var(--radius);
+  }
+
+  .process__figure :global(.process__card) {
+    position: relative;
+    justify-self: end;
+    width: min(340px, calc(100% - 1.5rem));
+    margin-top: -4rem;
+    margin-right: 0.75rem;
+  }
+
+  .process__caption {
+    margin-top: 1.25rem;
+    max-width: 30em;
+  }
+
+  /* ── Pillars ── */
+  .pillars {
+    display: grid;
+    gap: 1.75rem;
+    justify-items: start;
+    margin-top: var(--space-section);
+  }
+
+  .pillars__grid {
+    display: grid;
+    width: 100%;
+    border-top: 1px solid var(--ink);
+  }
+
+  .pillar {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    padding: 1.5rem 0 2rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .pillar__index {
+    color: var(--signal);
+  }
+
+  .pillar__body {
+    max-width: 30em;
+  }
+
+  @media (min-width: 700px) {
+    .step {
+      grid-template-columns: 6rem minmax(0, 1fr);
+    }
+
+    .process__figure :global(.process__card) {
+      margin-right: 1.5rem;
+    }
+
+    .pillars__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pillar {
+      padding: 1.5rem 1.5rem 2rem;
+    }
+
+    .pillar:nth-child(odd) {
+      padding-left: 0;
+    }
+
+    .pillar:nth-child(even) {
+      border-left: 1px solid var(--hairline);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .process__layout {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .process__steps {
+      grid-column: 1 / span 7;
+    }
+
+    .process__aside {
+      grid-column: 9 / -1;
+      align-self: stretch;
+    }
+
+    .process__sticky {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+
+    .process__photo img {
+      aspect-ratio: 4 / 5;
+      max-height: 62vh;
+    }
+
+    .process__figure {
+      padding-bottom: 5rem;
+    }
+
+    .process__figure :global(.process__card) {
+      position: absolute;
+      left: -3.5rem;
+      bottom: 0;
+      width: min(320px, 92%);
+      margin: 0;
+    }
+
+    .step {
+      padding-block: 2.25rem;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .pillars__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .pillar,
+    .pillar:nth-child(odd) {
+      padding: 1.5rem 1.5rem 0.5rem;
+      border-bottom: 0;
+      border-left: 1px solid var(--hairline);
+    }
+
+    .pillar:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+</style>

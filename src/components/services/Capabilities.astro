@@ -1,0 +1,107 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import type { Capability } from '../../data/services-detail';
+
+interface Props {
+  code: string;
+  serviceName: string;
+  items: Capability[];
+}
+
+const { code, serviceName, items } = Astro.props;
+---
+
+<section class="section caps" aria-label={`${serviceName} capabilities`}>
+  <div class="container">
+    <SectionHead
+      code={code}
+      label="Capabilities"
+      title="What’s in scope."
+      intro={`Everything we design, install and support under ${serviceName.toLowerCase()} — scoped to your site after a walk-through, not from a template.`}
+    />
+
+    <ol role="list" class="caps__grid" data-reveal-stagger="70">
+      {items.map((item, i) => (
+        <li class="cap" data-reveal>
+          <span class="t-mono cap__index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="t-h4 cap__title">{item.title}</h3>
+          <p class="t-small t-muted cap__body">{item.body}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .caps__grid {
+    display: grid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .cap {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: 0.5rem 0.75rem;
+    align-content: start;
+    padding: 1.5rem 0 1.75rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .cap__index {
+    grid-row: span 2;
+    padding-top: 0.2rem;
+    color: var(--signal);
+  }
+
+  .cap__body {
+    max-width: 34em;
+  }
+
+  @media (min-width: 700px) {
+    .caps__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cap {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.75rem;
+      padding: 1.75rem 1.75rem 2.25rem;
+    }
+
+    .cap__index {
+      grid-row: auto;
+      padding-top: 0;
+      margin-bottom: 1.25rem;
+    }
+
+    .cap:nth-child(odd) {
+      padding-left: 0;
+    }
+
+    .cap:nth-child(even) {
+      border-left: 1px solid var(--hairline);
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .caps__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cap:nth-child(odd) {
+      padding-left: 1.75rem;
+    }
+
+    .cap:nth-child(even) {
+      border-left: 0;
+    }
+
+    .cap:not(:nth-child(3n + 1)) {
+      border-left: 1px solid var(--hairline);
+    }
+
+    .cap:nth-child(3n + 1) {
+      padding-left: 0;
+    }
+  }
+</style>

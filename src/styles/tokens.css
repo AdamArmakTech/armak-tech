@@ -1,0 +1,75 @@
+/*
+ * ARMAK — Design tokens ("Precision Infrastructure", light editorial)
+ * Every color, size and timing in the site should come from here.
+ */
+
+:root {
+  /* ── Surfaces ─────────────────────────────────────────── */
+  --paper: #f4f3ef;          /* main background (warm off-white) */
+  --paper-sunken: #ebe9e3;   /* recessed panels, image placeholders */
+  --white: #ffffff;          /* raised cards */
+  --ink: #0b0d10;            /* primary text, inverse surfaces */
+  --graphite: #1a1d22;       /* inverse raised */
+  --steel: #565e6b;          /* secondary text (5.9:1 on paper) */
+  --steel-light: #8a919c;    /* tertiary text on ink */
+  --hairline: #d9d7d0;       /* 1px rules */
+  --hairline-strong: #b9b6ad;
+  --hairline-inverse: #2a2e35;
+
+  /* ── Brand ────────────────────────────────────────────── */
+  --signal: #d4111a;         /* CTAs + key accents. 5.4:1 with white text */
+  --signal-hover: #b30d15;
+  --logo-red: #fe2322;       /* sampled from logo — large/decorative only */
+  --armak-blue: #1d3f8f;     /* from logo "TECHNOLOGIES" — diagrams & map only */
+  --pass: #1f8a4c;           /* certification PASS state */
+
+  /* ── T568B pair colors (stripe motif only) ────────────── */
+  --t568-orange: #e8731a;
+  --t568-green: #2e9e4f;
+  --t568-blue: #2c5fd4;
+  --t568-brown: #7a4a26;
+
+  /* ── Type ─────────────────────────────────────────────── */
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --fs-display: clamp(3.25rem, 1.6rem + 6.4vw, 8.5rem);
+  --fs-h1: clamp(2.6rem, 1.6rem + 3.9vw, 5.5rem);
+  --fs-h2: clamp(2rem, 1.35rem + 2.5vw, 3.75rem);
+  --fs-h3: clamp(1.35rem, 1.2rem + 0.6vw, 1.75rem);
+  --fs-h4: 1.125rem;
+  --fs-lead: clamp(1.125rem, 1.04rem + 0.38vw, 1.4rem);
+  --fs-body: 1.0625rem;
+  --fs-small: 0.9375rem;
+  --fs-label: 0.75rem;
+  --fs-stat: clamp(3rem, 2rem + 4vw, 6rem);
+
+  --lh-tight: 0.94;
+  --lh-heading: 1.04;
+  --lh-body: 1.6;
+
+  --tracking-display: -0.045em;
+  --tracking-heading: -0.03em;
+  --tracking-label: 0.08em;
+
+  /* ── Layout ───────────────────────────────────────────── */
+  --container: 1360px;
+  --gutter: clamp(1rem, 0.4rem + 2.6vw, 2.5rem);
+  --col-gap: clamp(1rem, 0.6rem + 1.6vw, 2rem);
+  --space-section: clamp(5rem, 3rem + 8vw, 10rem);
+  --space-block: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
+  --header-h: 72px;
+
+  --radius: 2px;             /* engineered, near-square corners */
+  --radius-lg: 4px;
+
+  /* ── Motion ───────────────────────────────────────────── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 160ms;
+  --dur: 320ms;
+  --dur-slow: 900ms;
+
+  /* ── Elevation (used sparingly) ───────────────────────── */
+  --shadow-raise: 0 1px 0 rgba(11, 13, 16, 0.04), 0 12px 32px -12px rgba(11, 13, 16, 0.18);
+}

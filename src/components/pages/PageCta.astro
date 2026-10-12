@@ -1,0 +1,115 @@
+---
+/**
+ * Closing call to action for inner pages. Pages using it pass footerCta={false} to Base so the
+ * footer's generic CTA doesn't repeat it.
+ */
+import Label from '../ui/Label.astro';
+import Button from '../ui/Button.astro';
+import Stripe from '../ui/Stripe.astro';
+import { site } from '../../data/site';
+
+interface Props {
+  code: string;
+  title: string;
+  body: string;
+}
+
+const { code, title, body } = Astro.props;
+---
+
+<section class="page-cta container" aria-labelledby={`${code}-cta-title`}>
+  <div class="page-cta__panel surface-ink">
+    <Stripe height={4} />
+    <div class="page-cta__body">
+      <div class="page-cta__copy">
+        <Label code={code} tone="inverse">Next step</Label>
+        <h2 id={`${code}-cta-title`} class="t-h2 page-cta__title" data-split>{title}</h2>
+        <p class="t-lead" data-reveal>{body}</p>
+      </div>
+      <div class="page-cta__side" data-reveal style="--reveal-delay: 120ms">
+        <div class="page-cta__actions">
+          <Button href="/contact/" size="lg">Request a site assessment</Button>
+          <Button href={site.phoneHref} variant="outline-inverse" size="lg" icon="phone">{site.phone}</Button>
+        </div>
+        <ul role="list" class="page-cta__meta t-mono">
+          <li><a href={site.emailHref}>{site.email}</a></li>
+          <li>{site.hours}</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .page-cta {
+    padding-block: var(--space-block);
+  }
+
+  .page-cta__panel {
+    overflow: hidden;
+    border-radius: var(--radius);
+  }
+
+  .page-cta__body {
+    display: grid;
+    gap: 2.5rem var(--col-gap);
+    padding: clamp(1.75rem, 1rem + 3.5vw, 4.5rem);
+  }
+
+  .page-cta__copy {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+  }
+
+  .page-cta__title {
+    max-width: 16ch;
+  }
+
+  .page-cta__side {
+    display: grid;
+    gap: 1.5rem;
+    align-content: end;
+  }
+
+  .page-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  /* Long labels must not force horizontal scroll at 375px */
+  .page-cta__actions :global(.btn) {
+    white-space: normal;
+  }
+
+  .page-cta__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    color: var(--steel-light);
+  }
+
+  .page-cta__meta a {
+    transition: color var(--dur-fast) ease;
+  }
+
+  .page-cta__meta a:hover {
+    color: var(--paper);
+  }
+
+  @media (min-width: 1000px) {
+    .page-cta__body {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: end;
+    }
+
+    .page-cta__copy {
+      grid-column: 1 / span 7;
+    }
+
+    .page-cta__side {
+      grid-column: 9 / -1;
+    }
+  }
+</style>

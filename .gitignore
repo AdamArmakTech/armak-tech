@@ -28,3 +28,5 @@ index.html.legacy
 *.sln
 *.sw?
 .env
+# Astro generated types
+.astro

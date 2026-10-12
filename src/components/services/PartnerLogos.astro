@@ -1,0 +1,129 @@
+---
+/**
+ * Manufacturer logos filtered by category. Renders nothing when no partner matches.
+ * Same optical-sizing rule as the homepage strip: wide wordmarks render shorter.
+ */
+import { Image } from 'astro:assets';
+import Label from '../ui/Label.astro';
+import { partners, type Partner } from '../../data/content';
+
+interface Props {
+  code: string;
+  categories: Partner['category'][];
+}
+
+const { code, categories } = Astro.props;
+const list = partners.filter((p) => categories.includes(p.category));
+
+const heightFor = (w: number, h: number) => {
+  const aspect = w / h;
+  return Math.round(Math.min(44, Math.max(18, 58 / Math.sqrt(aspect))));
+};
+
+const n = list.length;
+const cols = `--c-sm:${Math.min(n, 2)};--c-md:${Math.min(n, 3)};--c-lg:${Math.min(n, 6)}`;
+---
+
+{n > 0 && (
+  <section class="plogos" aria-labelledby="plogos-title">
+    <div class="container plogos__inner">
+      <div class="plogos__head">
+        <Label code={code}>Platforms we install</Label>
+        <p id="plogos-title" class="t-small t-muted">
+          Hardware from the manufacturers enterprise IT already trusts.
+        </p>
+      </div>
+      <ul role="list" class="plogos__grid" style={cols} data-reveal-stagger="50">
+        {list.map((p) => {
+          const h = heightFor(p.logo.width, p.logo.height);
+          return (
+            <li class="plogos__item" data-reveal>
+              <Image
+                src={p.logo}
+                alt={p.name}
+                height={h}
+                width={Math.round((p.logo.width / p.logo.height) * h)}
+                densities={[1, 2]}
+                loading="lazy"
+              />
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  </section>
+)}
+
+<style>
+  .plogos {
+    padding-block: var(--space-block);
+  }
+
+  .plogos__inner {
+    display: grid;
+    gap: 2rem var(--col-gap);
+  }
+
+  .plogos__head {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+    align-content: start;
+  }
+
+  .plogos__head p {
+    max-width: 22em;
+  }
+
+  .plogos__grid {
+    --c: var(--c-sm);
+    display: grid;
+    grid-template-columns: repeat(var(--c), minmax(0, 1fr));
+    gap: 1px;
+    width: 100%;
+    max-width: calc(var(--c) * 14rem);
+    background: var(--hairline);
+    border: 1px solid var(--hairline);
+  }
+
+  .plogos__item {
+    display: grid;
+    place-items: center;
+    min-height: 104px;
+    padding: 1.25rem;
+    background: var(--white);
+  }
+
+  .plogos__item img {
+    width: auto;
+    max-width: 100%;
+    opacity: 0.78;
+    transition: opacity var(--dur) ease;
+  }
+
+  .plogos__item:hover img {
+    opacity: 1;
+  }
+
+  @media (min-width: 640px) {
+    .plogos__grid {
+      --c: var(--c-md);
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .plogos__inner {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .plogos__head {
+      grid-column: 1 / span 3;
+    }
+
+    .plogos__grid {
+      --c: var(--c-lg);
+      grid-column: 4 / -1;
+    }
+  }
+</style>

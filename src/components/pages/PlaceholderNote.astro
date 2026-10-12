@@ -1,0 +1,41 @@
+---
+/**
+ * Clearly marked slot for content Armak hasn't supplied yet. Renders a dashed panel with a
+ * "Placeholder" tag so nothing invented can be mistaken for a real fact.
+ * <PlaceholderNote title="Team photos">What goes here…</PlaceholderNote>
+ */
+import Label from '../ui/Label.astro';
+
+interface Props {
+  title?: string;
+  class?: string;
+}
+
+const { title, class: className } = Astro.props;
+---
+
+<div class:list={['ph-note', className]}>
+  <Label tone="signal">Placeholder</Label>
+  {title && <p class="t-mono ph-note__title">{title}</p>}
+  <div class="ph-note__body t-small t-muted"><slot /></div>
+</div>
+
+<style>
+  .ph-note {
+    display: grid;
+    gap: 0.875rem;
+    justify-items: start;
+    padding: 1.25rem;
+    border: 1px dashed var(--hairline-strong);
+    border-radius: var(--radius);
+    background: var(--paper-sunken);
+  }
+
+  .ph-note__title {
+    color: var(--ink);
+  }
+
+  .ph-note__body {
+    max-width: 40em;
+  }
+</style>

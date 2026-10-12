@@ -1,0 +1,539 @@
+---
+/**
+ * /glossary/ — plain-English A–Z of low-voltage terms.
+ * Every term is a <details> (works without JS, fully indexable). With JS, opening a term shows it
+ * in a side drawer (bottom sheet on phones) with its Q&A; search, category chips and an A–Z bar filter.
+ * Content: src/data/glossary/*.ts (merged + validated in index.ts).
+ */
+import { ChevronRight, Search, X } from '@lucide/astro';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/pages/PageHero.astro';
+import PageCta from '../components/pages/PageCta.astro';
+import TermDetail from '../components/glossary/TermDetail.astro';
+import { glossary, groups, alphabet, categoryLabels, type GlossaryCategory } from '../data/glossary';
+import { site } from '../data/site';
+
+const usedCategories = (Object.keys(categoryLabels) as GlossaryCategory[]).filter((c) =>
+  glossary.some((e) => e.category === c),
+);
+const lettersWithTerms = new Set(groups.map((g) => g.letter));
+
+const haystack = (e: (typeof glossary)[number]) =>
+  [e.term, e.stands_for, ...(e.aka ?? []), e.definition].filter(Boolean).join(' ').toLowerCase();
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'DefinedTermSet',
+  '@id': `${site.url}/glossary/`,
+  name: `${site.name} glossary of low-voltage, networking and security terms`,
+  hasDefinedTerm: glossary.map((e) => ({
+    '@type': 'DefinedTerm',
+    '@id': `${site.url}/glossary/#${e.slug}`,
+    name: e.term,
+    ...(e.stands_for ? { alternateName: e.stands_for } : {}),
+    description: e.definition,
+    inDefinedTermSet: `${site.url}/glossary/`,
+  })),
+};
+---
+
+<Base
+  title="Glossary: Low-Voltage & Network Terms Explained"
+  description="Plain-English A–Z of cabling, networking, security camera, access control, phone and AV terms — with the questions people actually ask. Southern California."
+  footerCta={false}
+>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
+  <PageHero
+    code="R-01"
+    label="Glossary"
+    title="Every term, in plain English."
+    lead="Cabling, networks, cameras, doors, phones and AV come with a lot of jargon. Here’s what each word means, why it matters to your building, and the questions people usually ask — no background needed."
+    crumbs={[{ label: 'Glossary' }]}
+    spec={[`${glossary.length} terms`, `${usedCategories.length} categories`, 'Tap any term for Q&A']}
+  >
+    <label class="gl-search" for="gl-search-input">
+      <Search size={20} stroke-width={1.75} aria-hidden="true" />
+      <span class="visually-hidden">Search the glossary</span>
+      <input id="gl-search-input" type="search" placeholder="Search a term, like PoE or patch panel" autocomplete="off" data-gl-search />
+    </label>
+  </PageHero>
+
+  <section class="gl container" aria-label="Glossary terms" data-gl>
+    <div class="gl__toolbar">
+      <nav class="gl__az t-mono" aria-label="Jump to letter">
+        {alphabet.map((l) =>
+          lettersWithTerms.has(l) ? (
+            <a href={`#letter-${l === '#' ? 'num' : l}`} data-gl-letter={l}>{l}</a>
+          ) : (
+            <span aria-hidden="true" class="is-empty">{l}</span>
+          ),
+        )}
+      </nav>
+      <div class="gl__cats" role="group" aria-label="Filter by category">
+        <label class="chip"><input type="radio" name="gl-cat" value="all" checked data-gl-cat /><span>All</span></label>
+        {usedCategories.map((c) => (
+          <label class="chip"><input type="radio" name="gl-cat" value={c} data-gl-cat /><span>{categoryLabels[c]}</span></label>
+        ))}
+      </div>
+    </div>
+
+    <p class="gl__status t-mono t-muted" aria-live="polite" data-gl-status></p>
+
+    {groups.map((g) => (
+      <section class="gl__group" id={`letter-${g.letter === '#' ? 'num' : g.letter}`} data-gl-group={g.letter} aria-labelledby={`gl-h-${g.letter === '#' ? 'num' : g.letter}`}>
+        <h2 class="gl__letter" id={`gl-h-${g.letter === '#' ? 'num' : g.letter}`}>{g.letter === '#' ? '0–9' : g.letter}</h2>
+        <ul role="list" class="gl__list">
+          {g.entries.map((e) => (
+            <li data-gl-term={e.slug} data-cat={e.category} data-search={haystack(e)}>
+              <details class="term" id={e.slug}>
+                <summary class="term__summary">
+                  <span class="term__name">{e.term}</span>
+                  {e.stands_for && <span class="term__expansion">{e.stands_for}</span>}
+                  <ChevronRight class="term__chev" size={18} stroke-width={1.75} aria-hidden="true" />
+                </summary>
+                <div class="term__body" data-term-body data-term-title={e.term}>
+                  <TermDetail entry={e} />
+                </div>
+              </details>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+
+    <p class="gl__empty" hidden data-gl-empty>
+      No terms match that search. Try a shorter word — or <a href="/contact/">ask us directly</a>.
+    </p>
+  </section>
+
+  <dialog class="gl-drawer" aria-labelledby="gl-drawer-title" data-gl-drawer data-lenis-prevent>
+    <div class="gl-drawer__head">
+      <p class="t-mono t-muted">Glossary</p>
+      <button class="gl-drawer__close" type="button" data-gl-close>
+        <X size={22} stroke-width={1.5} aria-hidden="true" />
+        <span class="visually-hidden">Close</span>
+      </button>
+    </div>
+    <h2 class="t-h2 gl-drawer__title" id="gl-drawer-title" data-gl-drawer-title></h2>
+    <div class="gl-drawer__body" data-gl-drawer-body></div>
+  </dialog>
+
+  <PageCta
+    code="R-02"
+    title="Still not sure what you need?"
+    body="Tell us about the building. We’ll walk the site and explain the plan in plain English."
+  />
+</Base>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-gl]');
+  const drawer = document.querySelector<HTMLDialogElement>('[data-gl-drawer]');
+  const drawerTitle = document.querySelector<HTMLElement>('[data-gl-drawer-title]');
+  const drawerBody = document.querySelector<HTMLElement>('[data-gl-drawer-body]');
+  const search = document.querySelector<HTMLInputElement>('[data-gl-search]');
+  const status = document.querySelector<HTMLElement>('[data-gl-status]');
+  const empty = document.querySelector<HTMLElement>('[data-gl-empty]');
+
+  if (root && drawer && drawerTitle && drawerBody) {
+    const items = [...root.querySelectorAll<HTMLElement>('[data-gl-term]')];
+    const groups = [...root.querySelectorAll<HTMLElement>('[data-gl-group]')];
+    const letters = [...root.querySelectorAll<HTMLAnchorElement>('[data-gl-letter]')];
+    const total = items.length;
+
+    /* ── Drawer ─────────────────────────────────────────── */
+    const openTerm = (slug: string, { updateHash = true } = {}) => {
+      const details = document.getElementById(slug) as HTMLDetailsElement | null;
+      const body = details?.querySelector<HTMLElement>('[data-term-body]');
+      if (!details || !body) return;
+
+      drawerTitle.textContent = body.dataset.termTitle ?? '';
+      drawerBody.replaceChildren(...[...body.children].map((n) => n.cloneNode(true)));
+      drawerBody.scrollTop = 0;
+
+      if (!drawer.open) {
+        drawer.showModal();
+        window.armakLenis?.stop();
+      }
+      if (updateHash) history.replaceState(null, '', `#${slug}`);
+    };
+
+    const closeDrawer = () => drawer.close();
+
+    drawer.addEventListener('close', () => {
+      window.armakLenis?.start();
+      history.replaceState(null, '', location.pathname + location.search);
+    });
+
+    // Click on the dimmed backdrop (outside the panel) closes it
+    drawer.addEventListener('click', (e) => {
+      if (e.target === drawer) closeDrawer();
+    });
+    document.querySelector('[data-gl-close]')?.addEventListener('click', closeDrawer);
+
+    // Term summaries open the drawer instead of expanding inline
+    root.addEventListener('click', (e) => {
+      const summary = (e.target as Element).closest('summary.term__summary');
+      if (!summary) return;
+      e.preventDefault();
+      const details = summary.parentElement as HTMLDetailsElement;
+      openTerm(details.id);
+    });
+
+    // Related-term chips (inside the drawer or inline) switch to that term
+    document.addEventListener('click', (e) => {
+      const link = (e.target as Element).closest<HTMLAnchorElement>('[data-term-link]');
+      if (!link) return;
+      e.preventDefault();
+      openTerm(link.dataset.termLink!);
+    });
+
+    // Shared links like /glossary/#poe open straight to the term — on load, and when only the
+    // hash changes on an already-open page (in-page links, back/forward)
+    const openFromHash = () => {
+      const slug = decodeURIComponent(location.hash.slice(1));
+      if (slug && document.getElementById(slug)?.matches('details.term')) {
+        requestAnimationFrame(() => openTerm(slug, { updateHash: false }));
+      }
+    };
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+
+    /* ── Search + category filter ───────────────────────── */
+    let category = 'all';
+
+    const applyFilter = () => {
+      const q = (search?.value ?? '').trim().toLowerCase();
+      let shown = 0;
+
+      for (const li of items) {
+        const match = (category === 'all' || li.dataset.cat === category) && (!q || li.dataset.search!.includes(q));
+        li.hidden = !match;
+        if (match) shown++;
+      }
+
+      for (const g of groups) {
+        const visible = g.querySelector('[data-gl-term]:not([hidden])');
+        g.hidden = !visible;
+        const letter = letters.find((a) => a.dataset.glLetter === g.dataset.glGroup);
+        letter?.classList.toggle('is-empty', !visible);
+      }
+
+      if (empty) empty.hidden = shown > 0;
+      if (status) status.textContent = shown === total ? '' : `${shown} of ${total} terms`;
+    };
+
+    search?.addEventListener('input', applyFilter);
+    root.querySelectorAll<HTMLInputElement>('[data-gl-cat]').forEach((r) =>
+      r.addEventListener('change', () => {
+        category = r.value;
+        applyFilter();
+      }),
+    );
+  }
+</script>
+
+<style>
+  /* ── Search ── */
+  .gl-search {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: min(100%, 560px);
+    padding: 0.25rem 1rem;
+    background: var(--white);
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    transition: border-color var(--dur-fast) ease;
+  }
+
+  .gl-search:focus-within {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 1px var(--ink);
+  }
+
+  .gl-search input {
+    flex: 1;
+    min-width: 0;
+    padding: 0.875rem 0;
+    border: 0;
+    background: transparent;
+    font-size: 1.0625rem;
+  }
+
+  .gl-search input:focus {
+    outline: none;
+  }
+
+  /* ── Toolbar (sticky under the header) ── */
+  .gl {
+    padding-bottom: var(--space-block);
+  }
+
+  .gl__toolbar {
+    position: sticky;
+    top: var(--header-h);
+    z-index: 5;
+    display: grid;
+    gap: 0.875rem;
+    padding-block: 1rem;
+    margin-bottom: 1rem;
+    background: var(--paper);
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .gl__az {
+    display: flex;
+    gap: 0.125rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .gl__az::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gl__az a,
+  .gl__az span {
+    display: grid;
+    place-items: center;
+    min-width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius);
+    font-size: 0.8125rem;
+  }
+
+  .gl__az a:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .gl__az .is-empty {
+    color: var(--hairline-strong);
+    pointer-events: none;
+  }
+
+  .gl__cats {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .gl__cats::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gl__cats .chip {
+    flex-shrink: 0;
+  }
+
+  .gl__status:empty {
+    display: none;
+  }
+
+  /* ── Letter groups ── */
+  .gl__group {
+    display: grid;
+    gap: 1rem;
+    padding-block: 2rem;
+    border-top: 1px solid var(--hairline);
+    scroll-margin-top: calc(var(--header-h) + 9rem);
+  }
+
+  .gl__group:first-of-type {
+    border-top: 0;
+  }
+
+  .gl__letter {
+    font-family: var(--font-mono);
+    font-size: clamp(2.5rem, 2rem + 2vw, 3.75rem);
+    font-weight: 400;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .gl__list {
+    display: grid;
+    gap: 0.5rem var(--col-gap);
+  }
+
+  @media (min-width: 700px) {
+    .gl__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .gl__group {
+      grid-template-columns: 2fr 10fr;
+      align-items: start;
+    }
+
+    .gl__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /* ── Term rows ── */
+  .term {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .term__summary {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    column-gap: 0.75rem;
+    padding: 0.875rem 0.25rem;
+    cursor: pointer;
+    list-style: none;
+    transition: background var(--dur-fast) ease;
+  }
+
+  .term__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .term__summary:hover {
+    background: var(--white);
+  }
+
+  .term__name {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .term__expansion {
+    grid-column: 1;
+    font-size: 0.8125rem;
+    color: var(--steel);
+  }
+
+  .term__chev {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    color: var(--steel);
+    transition: transform var(--dur) var(--ease-out), color var(--dur-fast) ease;
+  }
+
+  .term__summary:hover .term__chev {
+    color: var(--signal);
+    transform: translateX(3px);
+  }
+
+  .term[open] .term__chev {
+    transform: rotate(90deg);
+  }
+
+  /* No-JS fallback: details expand inline */
+  .term__body {
+    padding: 0.5rem 0.25rem 1.5rem;
+  }
+
+  .gl__empty {
+    padding-block: 3rem;
+    color: var(--steel);
+  }
+
+  .gl__empty a {
+    text-decoration: underline;
+  }
+
+  /* ── Drawer ── */
+  .gl-drawer {
+    position: fixed;
+    inset: 0 0 0 auto;
+    width: min(560px, 100vw);
+    height: 100dvh;
+    max-height: 100dvh;
+    max-width: 100vw;
+    margin: 0;
+    padding: clamp(1.25rem, 1rem + 1.5vw, 2rem);
+    background: var(--paper);
+    color: var(--ink);
+    border: 0;
+    border-left: 1px solid var(--hairline);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .gl-drawer::backdrop {
+    background: rgba(11, 13, 16, 0.45);
+  }
+
+  .gl-drawer[open] {
+    display: grid;
+    align-content: start;
+    gap: 1.25rem;
+  }
+
+  .gl-drawer__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .gl-drawer__close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    border-radius: var(--radius);
+  }
+
+  .gl-drawer__close:hover {
+    background: var(--white);
+  }
+
+  .gl-drawer__title {
+    max-width: 18ch;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .gl-drawer[open] {
+      animation: gl-drawer-in var(--dur) var(--ease-out);
+    }
+
+    .gl-drawer[open]::backdrop {
+      animation: gl-fade-in var(--dur) ease;
+    }
+  }
+
+  @keyframes gl-drawer-in {
+    from {
+      transform: translateX(40px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes gl-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* Phones: bottom sheet */
+  @media (max-width: 699px) {
+    .gl-drawer {
+      inset: auto 0 0 0;
+      width: 100vw;
+      height: auto;
+      max-height: 88dvh;
+      border-left: 0;
+      border-top: 1px solid var(--hairline);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+
+    @keyframes gl-drawer-in {
+      from {
+        transform: translateY(40px);
+        opacity: 0;
+      }
+    }
+  }
+</style>

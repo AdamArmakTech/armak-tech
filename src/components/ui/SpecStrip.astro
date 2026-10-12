@@ -1,0 +1,45 @@
+---
+/**
+ * Mono "spec sheet" line: EST. 1998 · GLENDALE HQ · BICSI-CERTIFIED · …
+ */
+interface Props {
+  items: string[];
+  tone?: 'default' | 'inverse';
+  class?: string;
+}
+
+const { items, tone = 'default', class: className } = Astro.props;
+---
+
+<ul role="list" class:list={['spec-strip', `spec-strip--${tone}`, 't-mono', className]}>
+  {items.map((item) => <li>{item}</li>)}
+</ul>
+
+<style>
+  .spec-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0;
+    padding-block: 1rem;
+    border-block: 1px solid var(--hairline);
+    color: var(--steel);
+  }
+
+  .spec-strip li {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .spec-strip li:not(:last-child)::after {
+    content: "";
+    width: 4px;
+    height: 4px;
+    margin-inline: 1rem;
+    background: var(--signal);
+  }
+
+  .spec-strip--inverse {
+    border-color: var(--hairline-inverse);
+    color: var(--steel-light);
+  }
+</style>

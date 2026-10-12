@@ -1,0 +1,54 @@
+---
+/**
+ * Large mono numeral with label. `value` counts up once when scrolled into view
+ * (see src/scripts/motion.ts); the final value is always in the HTML for no-JS/SEO.
+ */
+interface Props {
+  value: number | string;
+  suffix?: string;
+  label: string;
+  detail?: string;
+}
+
+const { value, suffix = '', label, detail } = Astro.props;
+const numeric = typeof value === 'number';
+---
+
+<div class="stat">
+  <p class="stat__value">
+    <span data-count={numeric ? value : undefined}>{numeric ? value.toLocaleString('en-US') : value}</span>{suffix && <span class="stat__suffix">{suffix}</span>}
+  </p>
+  <p class="t-mono stat__label">{label}</p>
+  {detail && <p class="t-small t-muted stat__detail">{detail}</p>}
+</div>
+
+<style>
+  .stat {
+    display: grid;
+    align-content: start;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--ink);
+  }
+
+  .stat__value {
+    font-family: var(--font-mono);
+    font-size: var(--fs-stat);
+    font-weight: 400;
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat__suffix {
+    color: var(--signal);
+  }
+
+  .stat__label {
+    color: var(--ink);
+  }
+
+  .stat__detail {
+    max-width: 24em;
+  }
+</style>

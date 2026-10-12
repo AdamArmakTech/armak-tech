@@ -1,0 +1,421 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Label from '../components/ui/Label.astro';
+import Stripe from '../components/ui/Stripe.astro';
+import Button from '../components/ui/Button.astro';
+import SectionHead from '../components/ui/SectionHead.astro';
+import SpecStrip from '../components/ui/SpecStrip.astro';
+import TestCard from '../components/ui/TestCard.astro';
+import ServiceTile from '../components/ui/ServiceTile.astro';
+import Stat from '../components/ui/Stat.astro';
+import { services, site, yearsInBusiness, FOUNDED, serviceArea } from '../data/site';
+
+import cableBundles from '../assets/photos/cable-bundles.jpg';
+import rackRow from '../assets/photos/rack-row.jpg';
+import patchColors from '../assets/photos/patch-panel-colors.webp';
+import dataHall from '../assets/photos/data-hall.webp';
+
+const colors = [
+  { name: 'Paper', token: '--paper', hex: '#F4F3EF', use: 'Page background' },
+  { name: 'White', token: '--white', hex: '#FFFFFF', use: 'Raised cards' },
+  { name: 'Ink', token: '--ink', hex: '#0B0D10', use: 'Text, inverse surfaces' },
+  { name: 'Steel', token: '--steel', hex: '#565E6B', use: 'Secondary text' },
+  { name: 'Hairline', token: '--hairline', hex: '#D9D7D0', use: '1px rules' },
+  { name: 'Signal', token: '--signal', hex: '#D4111A', use: 'CTAs & key accents only' },
+  { name: 'Armak Blue', token: '--armak-blue', hex: '#1D3F8F', use: 'Diagrams & map only' },
+  { name: 'Pass', token: '--pass', hex: '#1F8A4C', use: 'Certification state' },
+];
+
+const typeScale = [
+  { cls: 't-display', name: 'Display', sample: 'Built to stay up.' },
+  { cls: 't-h1', name: 'H1', sample: 'Infrastructure that doesn’t go down.' },
+  { cls: 't-h2', name: 'H2', sample: 'Every run tested. Every port labeled.' },
+  { cls: 't-h3', name: 'H3', sample: 'Structured Cabling & Fiber' },
+  { cls: 't-lead', name: 'Lead', sample: 'We design, install and certify the low-voltage systems Southern California’s facilities run on.' },
+  { cls: '', name: 'Body', sample: 'Every drop we install is tested end-to-end and documented, so your IT team inherits a system they can actually maintain.' },
+  { cls: 't-mono', name: 'Mono label', sample: 'IDF2-A-024 · Cat 6A · 47.2 m' },
+];
+
+const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Access control', 'Voice', 'Audio / video', 'Not sure yet'];
+---
+
+<Base title="Style guide" noindex>
+  <!-- ─────────── Intro ─────────── -->
+  <section class="container sg-intro">
+    <Label code="SG-00">Design system</Label>
+    <h1 class="t-display" data-split>Precision<br />Infrastructure.</h1>
+    <p class="t-lead">
+      The Armak design system: a light, editorial look built from the trade itself — TIA-606 labels,
+      T568B pair colors and certification reports. Every page of the new site is assembled from the
+      pieces below.
+    </p>
+  </section>
+
+  <!-- ─────────── Hero preview ─────────── -->
+  <section class="container sg-block">
+    <SectionHead code="SG-01" label="Hero preview" title="How the homepage opens." split={false} />
+    <div class="hero-preview">
+      <div class="hero-preview__copy">
+        <SpecStrip items={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`, 'All of SoCal']} class="hero-preview__spec" />
+        <h2 class="t-display hero-preview__title" data-split>Infrastructure that doesn’t go down.</h2>
+        <p class="t-lead" data-reveal>
+          {yearsInBusiness} years designing, installing and certifying the cabling, networks and
+          security systems Southern California’s facilities run on.
+        </p>
+        <div class="hero-preview__ctas" data-reveal>
+          <Button href="/contact/" size="lg">Request a site assessment</Button>
+          <Button href="/services/" variant="outline" size="lg" icon="none">Explore services</Button>
+        </div>
+      </div>
+      <div class="hero-preview__media" data-reveal>
+        <Image src={cableBundles} alt="Neatly dressed blue Cat 6A cable bundles terminating into patch panels" widths={[640, 960, 1400]} sizes="(min-width: 900px) 50vw, 100vw" loading="eager" />
+        <TestCard class="hero-preview__card" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── Color ─────────── -->
+  <section class="container sg-block">
+    <SectionHead code="SG-02" label="Color" title="Paper, ink, and one signal." intro="Red is reserved for actions and live indicators. If everything is red, nothing is." split={false} />
+    <ul role="list" class="swatches" data-reveal-stagger="50">
+      {colors.map((c) => (
+        <li class="swatch" data-reveal>
+          <span class="swatch__chip" style={`background: var(${c.token})`} />
+          <span class="swatch__name">{c.name}</span>
+          <span class="t-mono t-muted">{c.hex}</span>
+          <span class="t-small t-muted">{c.use}</span>
+        </li>
+      ))}
+    </ul>
+    <div class="sg-row">
+      <div class="sg-stripe-demo">
+        <Stripe height={10} />
+        <p class="t-mono t-muted">T568B stripe — pins 1 → 8. Used as a divider and footer accent.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── Type ─────────── -->
+  <section class="container sg-block">
+    <SectionHead code="SG-03" label="Typography" title="Geist, set tight and confident." intro="Geist Sans for everything people read; Geist Mono for anything a technician would print on a label." split={false} />
+    <ul role="list" class="type-list">
+      {typeScale.map((t) => (
+        <li class="type-row">
+          <span class="t-mono t-muted type-row__name">{t.name}</span>
+          <p class={t.cls}>{t.sample}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- ─────────── Labels & buttons ─────────── -->
+  <section class="container sg-block">
+    <SectionHead code="SG-04" label="Labels & actions" title="Labeled like a finished rack." split={false} />
+    <div class="sg-grid-2">
+      <div class="sg-panel">
+        <p class="t-mono t-muted">Labels</p>
+        <div class="sg-wrap">
+          <Label code="A-01">Services</Label>
+          <Label code="B-02">Projects</Label>
+          <Label code="C-03" tone="signal">Live</Label>
+          <Label>No code</Label>
+        </div>
+      </div>
+      <div class="sg-panel">
+        <p class="t-mono t-muted">Buttons</p>
+        <div class="sg-wrap">
+          <Button>Request assessment</Button>
+          <Button variant="ink">Ink</Button>
+          <Button variant="outline" icon="none">Outline</Button>
+          <Button variant="link">Text link</Button>
+          <Button variant="outline" icon="phone" href={site.phoneHref}>{site.phone}</Button>
+        </div>
+      </div>
+      <div class="sg-panel sg-panel--ink surface-ink">
+        <p class="t-mono t-muted">On ink</p>
+        <div class="sg-wrap">
+          <Label code="A-01" tone="inverse">Services</Label>
+          <Button>Primary</Button>
+          <Button variant="outline-inverse" icon="none">Outline</Button>
+        </div>
+      </div>
+      <div class="sg-panel">
+        <p class="t-mono t-muted">Spec strip</p>
+        <SpecStrip items={[`Est. ${FOUNDED}`, 'BICSI-certified', 'Licensed & bonded', '24/7 support']} />
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── Tiles ─────────── -->
+  <section class="container sg-block">
+    <SectionHead code="SG-05" label="Service tiles" title="Everything you do, visible at once." intro="Replaces the one-card-at-a-time decks. Each tile links to its own service page." split={false} />
+    <div class="tiles" data-reveal-stagger="90">
+      <ServiceTile data-reveal href={`/services/${services[0].slug}/`} code={services[0].code} title={services[0].name} description={services[0].short} image={cableBundles} size="feature" class="tiles__feature" />
+      <ServiceTile data-reveal href={`/services/${services[1].slug}/`} code={services[1].code} title={services[1].name} description={services[1].short} image={rackRow} />
+      <ServiceTile data-reveal href={`/services/${services[2].slug}/`} code={services[2].code} title={services[2].name} description={services[2].short} image={dataHall} />
+      <ServiceTile data-reveal href={`/services/${services[3].slug}/`} code={services[3].code} title={services[3].name} description={services[3].short} />
+      <ServiceTile data-reveal href={`/services/${services[4].slug}/`} code={services[4].code} title={services[4].name} description={services[4].short} image={patchColors} />
+    </div>
+  </section>
+
+  <!-- ─────────── Stats ─────────── -->
+  <section class="container sg-block">
+    <SectionHead code="SG-06" label="Numbers" title="Proof, set in mono." split={false} />
+    <div class="stats">
+      <Stat value={yearsInBusiness} label="Years in business" detail={`Since ${FOUNDED}. Computed at build — never out of date.`} />
+      <Stat value={site.projectsDelivered} suffix="+" label="Projects delivered" />
+      <Stat value="24/7" label="Support" detail="For contracted clients." />
+      <Stat value={serviceArea.length} label="Cities served" />
+    </div>
+  </section>
+
+  <!-- ─────────── Form ─────────── -->
+  <section class="container sg-block">
+    <SectionHead code="SG-07" label="Form" title="Two steps, no friction." intro="Step 1 is a tap. Step 2 is contact details. Shorter forms get more site assessments." split={false} />
+    <form class="sg-form" onsubmit="return false">
+      <fieldset class="sg-form__chips">
+        <legend class="field__label">What are you building?</legend>
+        <div class="sg-wrap">
+          {projectTypes.map((p, i) => (
+            <label class="chip"><input type="checkbox" name="type" value={p} checked={i === 0} /><span>{p}</span></label>
+          ))}
+        </div>
+      </fieldset>
+      <div class="sg-form__fields">
+        <label class="field"><span class="field__label">Name</span><input class="field__control" placeholder="Jane Cooper" /></label>
+        <label class="field"><span class="field__label">Company</span><input class="field__control" placeholder="Company name" /></label>
+        <label class="field"><span class="field__label">Email</span><input class="field__control" type="email" placeholder="jane@company.com" /></label>
+        <label class="field"><span class="field__label">Phone</span><input class="field__control" type="tel" placeholder="(818) 555-0100" /></label>
+        <label class="field sg-form__full"><span class="field__label">Project details</span><textarea class="field__control" placeholder="Site location, size, timeline."></textarea></label>
+      </div>
+      <Button variant="primary" size="lg" type="submit">Request my site assessment</Button>
+    </form>
+  </section>
+</Base>
+
+<style>
+  .sg-intro {
+    display: grid;
+    gap: 2rem;
+    justify-items: start;
+    padding-block: clamp(3rem, 2rem + 5vw, 7rem) var(--space-block);
+  }
+
+  .sg-block {
+    padding-block: var(--space-block);
+  }
+
+  /* Hero preview */
+  .hero-preview {
+    display: grid;
+    gap: var(--space-block) var(--col-gap);
+    align-items: end;
+  }
+
+  .hero-preview__copy {
+    display: grid;
+    gap: 1.75rem;
+    justify-items: start;
+  }
+
+  /* :global — these classes land on child components, outside this page's scope */
+  .hero-preview :global(.hero-preview__spec) {
+    width: 100%;
+  }
+
+  .hero-preview__title {
+    max-width: 11ch;
+  }
+
+  .hero-preview__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .hero-preview__media {
+    position: relative;
+    padding-bottom: 3rem;
+  }
+
+  .hero-preview__media img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    max-height: 72vh;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+
+  .hero-preview__media :global(.hero-preview__card) {
+    position: absolute;
+    left: -1rem;
+    bottom: 0;
+    width: min(320px, 85%);
+  }
+
+  @media (min-width: 900px) {
+    .hero-preview {
+      grid-template-columns: 7fr 5fr;
+    }
+
+    .hero-preview__media :global(.hero-preview__card) {
+      left: -4rem;
+    }
+  }
+
+  /* Swatches */
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1.5rem var(--col-gap);
+  }
+
+  .swatch {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .swatch__chip {
+    height: 96px;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    margin-bottom: 0.5rem;
+  }
+
+  .swatch__name {
+    font-weight: 600;
+  }
+
+  .sg-row {
+    margin-top: 2.5rem;
+  }
+
+  .sg-stripe-demo {
+    display: grid;
+    gap: 0.75rem;
+    max-width: 520px;
+  }
+
+  /* Type */
+  .type-list {
+    display: grid;
+  }
+
+  .type-row {
+    display: grid;
+    gap: 0.5rem;
+    padding-block: 1.5rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  @media (min-width: 900px) {
+    .type-row {
+      grid-template-columns: 3fr 9fr;
+      align-items: baseline;
+      column-gap: var(--col-gap);
+    }
+  }
+
+  /* Panels */
+  .sg-grid-2 {
+    display: grid;
+    gap: var(--col-gap);
+  }
+
+  @media (min-width: 900px) {
+    .sg-grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .sg-panel {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+    padding: 1.5rem;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+  }
+
+  .sg-panel--ink {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .sg-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  /* Tiles */
+  .tiles {
+    display: grid;
+    gap: var(--col-gap);
+  }
+
+  @media (min-width: 700px) {
+    .tiles {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tiles :global(.tiles__feature) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .tiles {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .tiles :global(.tiles__feature) {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+  }
+
+  /* Stats */
+  .stats {
+    display: grid;
+    gap: 2.5rem var(--col-gap);
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+
+  /* Form */
+  .sg-form {
+    display: grid;
+    gap: 2.5rem;
+    justify-items: start;
+    max-width: 860px;
+    padding: clamp(1.5rem, 1rem + 2vw, 3rem);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+  }
+
+  .sg-form__chips {
+    border: 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+  }
+
+  .sg-form__fields {
+    display: grid;
+    gap: 2rem var(--col-gap);
+    width: 100%;
+  }
+
+  @media (min-width: 700px) {
+    .sg-form__fields {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .sg-form__full {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

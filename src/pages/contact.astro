@@ -1,0 +1,209 @@
+---
+/**
+ * Contact — site-assessment form (Web3Forms → sales inbox) beside direct contact details,
+ * then the service-area map. Ends in the form, so the footer CTA is hidden.
+ */
+import { Clock, LifeBuoy, MapPin } from '@lucide/astro';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/pages/PageHero.astro';
+import ContactForm from '../components/forms/ContactForm.astro';
+import ServiceArea from '../components/home/ServiceArea.astro';
+import { site } from '../data/site';
+import { process as steps } from '../data/content';
+
+const description = `Request a site assessment from Armak Technologies — cabling, networking, security and AV across Southern California. Call ${site.phone}.`;
+
+/** "What happens next" uses the first two steps of the Armak standard. */
+const next = steps.slice(0, 2);
+---
+
+<Base title="Contact & Site Assessments" description={description} footerCta={false}>
+  <PageHero
+    code="J-00"
+    label="Contact"
+    title="Start with a site assessment."
+    lead="Tell us what you’re building. We’ll assess the site, scope the infrastructure, and give you a clear plan — no guesswork, no surprises."
+    crumbs={[{ label: 'Contact' }]}
+  />
+
+  <section class="contact container" aria-label="Contact form and details">
+    <div class="contact__panel" data-reveal>
+      <ContactForm id="contact-assessment" />
+    </div>
+
+    <aside class="contact__info" aria-label="Contact details" data-reveal style="--reveal-delay: 120ms">
+      <div class="contact__direct">
+        <p class="t-mono t-muted">Prefer to talk?</p>
+        <a class="contact__phone" href={site.phoneHref}>{site.phone}</a>
+        <a class="contact__email" href={site.emailHref}>{site.email}</a>
+      </div>
+
+      <ul role="list" class="contact__rows">
+        <li>
+          <Clock class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
+          <span class="t-mono contact__key">Hours</span>
+          <span>{site.hours}</span>
+        </li>
+        <li>
+          <LifeBuoy class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
+          <span class="t-mono contact__key">Support</span>
+          <span>{site.support}</span>
+        </li>
+        <li>
+          <MapPin class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
+          <span class="t-mono contact__key">Headquarters</span>
+          <span>{site.hq.city}, California<br /><span class="t-muted">Serving all of Southern California</span></span>
+        </li>
+      </ul>
+
+      <div class="contact__next">
+        <p class="t-mono t-muted">What happens next</p>
+        <ol role="list">
+          {next.map((s) => (
+            <li>
+              <span class="t-mono contact__step">{s.code}</span>
+              <div>
+                <p class="contact__step-title">{s.title}</p>
+                <p class="t-small t-muted">{s.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </aside>
+  </section>
+
+  <ServiceArea />
+</Base>
+
+<style>
+  .contact {
+    display: grid;
+    gap: var(--col-gap);
+    align-items: start;
+  }
+
+  .contact__panel {
+    padding: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    min-width: 0;
+  }
+
+  .contact__info {
+    display: grid;
+    gap: 2rem;
+    align-content: start;
+    min-width: 0;
+  }
+
+  .contact__direct {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: start;
+  }
+
+  .contact__phone {
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .contact__email {
+    color: var(--steel);
+  }
+
+  .contact__phone,
+  .contact__email {
+    background: linear-gradient(currentColor, currentColor) left bottom / 0% 1px no-repeat;
+    transition: background-size var(--dur) var(--ease-out);
+  }
+
+  .contact__phone:hover,
+  .contact__email:hover {
+    background-size: 100% 1px;
+  }
+
+  .contact__rows {
+    display: grid;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .contact__rows li {
+    display: grid;
+    grid-template-columns: 18px 7.5rem minmax(0, 1fr);
+    gap: 0.25rem 0.875rem;
+    align-items: start;
+    padding-block: 0.875rem;
+    border-bottom: 1px solid var(--hairline);
+    font-size: var(--fs-small);
+    overflow-wrap: anywhere;
+  }
+
+  .contact__rows :global(.contact__icon) {
+    margin-top: 0.15rem;
+    color: var(--steel);
+  }
+
+  .contact__key {
+    padding-top: 0.2rem;
+    color: var(--steel);
+  }
+
+  .contact__next {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .contact__next ol {
+    display: grid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .contact__next li {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: 0.75rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .contact__step {
+    padding-top: 0.2rem;
+    color: var(--signal);
+  }
+
+  .contact__step-title {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+  }
+
+  @media (max-width: 419px) {
+    .contact__rows li {
+      grid-template-columns: 18px minmax(0, 1fr);
+    }
+
+    .contact__rows li > :last-child {
+      grid-column: 2;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .contact {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .contact__panel {
+      grid-column: 1 / span 8;
+    }
+
+    .contact__info {
+      grid-column: 9 / -1;
+      position: sticky;
+      top: calc(var(--header-h) + 1.5rem);
+    }
+  }
+</style>

@@ -1,0 +1,174 @@
+---
+import Logo from '../ui/Logo.astro';
+import Button from '../ui/Button.astro';
+import Stripe from '../ui/Stripe.astro';
+import { site, services, serviceArea, FOUNDED } from '../../data/site';
+
+interface Props {
+  cta?: boolean;
+}
+
+const { cta = true } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer surface-ink">
+  <Stripe height={4} />
+
+  <div class="container">
+    {cta && (
+    <div class="site-footer__cta">
+      <p class="t-h1 site-footer__headline">Let's scope your<br />next build.</p>
+      <div class="site-footer__cta-actions">
+        <Button href="/contact/" variant="primary" size="lg">Request a site assessment</Button>
+        <Button href={site.phoneHref} variant="outline-inverse" size="lg" icon="phone">{site.phone}</Button>
+      </div>
+    </div>
+    )}
+
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <Logo variant="inverse" height={44} />
+        <p class="t-small t-muted">{site.description}</p>
+      </div>
+
+      <nav aria-label="Services" class="site-footer__col">
+        <p class="t-mono site-footer__heading">Services</p>
+        <ul role="list">
+          {services.map((s) => <li><a href={`/services/${s.slug}/`}>{s.name}</a></li>)}
+        </ul>
+      </nav>
+
+      <nav aria-label="Company" class="site-footer__col">
+        <p class="t-mono site-footer__heading">Company</p>
+        <ul role="list">
+          <li><a href="/industries/">Industries</a></li>
+          <li><a href="/projects/">Projects</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/glossary/">Glossary</a></li>
+          <li><a href="/contact/">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="site-footer__col">
+        <p class="t-mono site-footer__heading">Contact</p>
+        <address>
+          <ul role="list">
+            <li><a href={site.phoneHref}>{site.phone}</a></li>
+            <li><a href={site.emailHref}>{site.email}</a></li>
+            <li>{site.hq.city}, California</li>
+            <li class="t-muted">{site.hours}</li>
+            <li class="t-muted">{site.support}</li>
+          </ul>
+        </address>
+      </div>
+    </div>
+
+    <div class="site-footer__area">
+      <p class="t-mono site-footer__heading">Serving Southern California</p>
+      <p class="t-small t-muted">{serviceArea.map((c) => c.name).join(' · ')}</p>
+    </div>
+
+    <div class="site-footer__legal t-mono">
+      <span>© {year} {site.name}</span>
+      <span>Est. {FOUNDED}</span>
+      {site.license && <span>{site.license}</span>}
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-section);
+  }
+
+  .site-footer__cta {
+    display: grid;
+    gap: 2rem;
+    padding-block: var(--space-block);
+    border-bottom: 1px solid var(--hairline-inverse);
+  }
+
+  .site-footer__cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 900px) {
+    .site-footer__cta {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+  }
+
+  .site-footer__grid {
+    display: grid;
+    gap: 2.5rem;
+    padding-block: var(--space-block);
+  }
+
+  @media (min-width: 700px) {
+    .site-footer__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .site-footer__brand {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .site-footer__grid {
+      grid-template-columns: 1.6fr 1fr 0.8fr 1fr;
+    }
+
+    .site-footer__brand {
+      grid-column: auto;
+    }
+  }
+
+  .site-footer__brand {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+    max-width: 30rem;
+  }
+
+  .site-footer__heading {
+    color: var(--steel-light);
+    margin-bottom: 1rem;
+  }
+
+  .site-footer__col ul {
+    display: grid;
+    gap: 0.625rem;
+    font-size: var(--fs-small);
+  }
+
+  .site-footer__col a {
+    transition: color var(--dur-fast) ease;
+  }
+
+  .site-footer__col a:hover {
+    color: var(--logo-red);
+  }
+
+  address {
+    font-style: normal;
+  }
+
+  .site-footer__area {
+    padding-block: 2rem;
+    border-top: 1px solid var(--hairline-inverse);
+  }
+
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    padding-block: 1.5rem 2rem;
+    border-top: 1px solid var(--hairline-inverse);
+    color: var(--steel-light);
+  }
+</style>

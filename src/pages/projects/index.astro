@@ -1,0 +1,105 @@
+---
+/**
+ * Projects index. All entries in `projects` are placeholders until Armak supplies real,
+ * permissioned case studies — the page says so plainly.
+ */
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/pages/PageHero.astro';
+import PageCta from '../../components/pages/PageCta.astro';
+import Label from '../../components/ui/Label.astro';
+import ProjectCard from '../../components/projects/ProjectCard.astro';
+import { site, FOUNDED, serviceArea } from '../../data/site';
+import { projects } from '../../data/content';
+
+const hasPlaceholders = projects.some((p) => p.placeholder);
+if (hasPlaceholders) {
+  console.warn(`[armak] /projects/ renders ${projects.filter((p) => p.placeholder).length} placeholder project(s) — replace before launch (src/data/content.ts).`);
+}
+
+const description =
+  'Structured cabling, networking and security projects by Armak Technologies across Southern California — scope, sector and outcome for each install.';
+---
+
+<Base title="Projects & Case Studies" description={description} footerCta={false}>
+  <PageHero
+    code="E-00"
+    label="Projects"
+    title="Work, documented."
+    lead="Case studies from across Southern California: the site, the constraints, what we installed and what we handed over."
+    crumbs={[{ label: 'Projects' }]}
+    spec={[`${site.projectsDelivered}+ projects since ${FOUNDED}`, `${serviceArea.length} cities served`, 'Every install tested & documented']}
+  />
+
+  <section class="container plist" aria-label="Projects">
+    {hasPlaceholders && (
+      <div class="plist__note" role="note" data-reveal>
+        <Label code="E-00.1" tone="signal">In progress</Label>
+        <p>
+          Detailed case studies are on the way. Until they’re published, the projects below are
+          <strong>placeholders that show the format</strong> — not real jobs.
+        </p>
+      </div>
+    )}
+
+    <ul role="list" class="plist__grid" data-reveal-stagger="90">
+      {projects.map((p) => (
+        <li data-reveal>
+          <ProjectCard project={p} headingLevel="h2" />
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <PageCta
+    code="E-00.2"
+    title="Have a project like these?"
+    body="Tell us what you’re building. We’ll assess the site, scope the infrastructure, and give you a clear plan — no guesswork, no surprises."
+  />
+</Base>
+
+<style>
+  .plist {
+    display: grid;
+    gap: var(--col-gap);
+  }
+
+  .plist__note {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+    padding: 1.25rem;
+    border: 1px dashed var(--signal);
+    border-radius: var(--radius);
+    background: var(--white);
+  }
+
+  .plist__note p {
+    max-width: 52em;
+    font-size: var(--fs-small);
+    color: var(--steel);
+  }
+
+  .plist__note strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .plist__grid {
+    display: grid;
+    gap: var(--col-gap);
+  }
+
+  @media (min-width: 900px) {
+    .plist__note {
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .plist__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,64 @@
+---
+/**
+ * TIA-606-style cable label — the site's signature section marker.
+ * <Label code="A-01">Services</Label>  →  [A-01│SERVICES]
+ */
+interface Props {
+  code?: string;
+  tone?: 'default' | 'inverse' | 'signal';
+  class?: string;
+}
+
+const { code, tone = 'default', class: className } = Astro.props;
+---
+
+<span class:list={['label', `label--${tone}`, className]}>
+  {code && <span class="label__code">{code}</span>}
+  <span class="label__text"><slot /></span>
+</span>
+
+<style>
+  .label {
+    display: inline-flex;
+    align-items: stretch;
+    border: 1px solid var(--ink);
+    border-radius: var(--radius);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .label__code,
+  .label__text {
+    padding: 0.4rem 0.6rem 0.38rem;
+  }
+
+  .label__code {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .label--inverse {
+    border-color: var(--paper);
+    color: var(--paper);
+  }
+
+  .label--inverse .label__code {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .label--signal {
+    border-color: var(--signal);
+    color: var(--signal);
+  }
+
+  .label--signal .label__code {
+    background: var(--signal);
+    color: var(--white);
+  }
+</style>

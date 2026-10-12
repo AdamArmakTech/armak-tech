@@ -1,0 +1,98 @@
+---
+/** Native <details>/<summary> disclosure list — accessible and works without JS. */
+import { Plus } from '@lucide/astro';
+import SectionHead from '../ui/SectionHead.astro';
+import type { Faq } from '../../data/services-detail';
+
+interface Props {
+  code: string;
+  title?: string;
+  faqs: Faq[];
+}
+
+const { code, title = 'Common questions.', faqs } = Astro.props;
+---
+
+<section class="section faq">
+  <div class="container">
+    <SectionHead code={code} label="FAQ" title={title} />
+
+    <div class="faq__list" data-reveal>
+      {faqs.map((f) => (
+        <details class="faq__item">
+          <summary class="faq__q">
+            <span class="t-h4">{f.q}</span>
+            <Plus class="faq__icon" size={22} stroke-width={1.5} aria-hidden="true" />
+          </summary>
+          <p class="faq__a t-muted">{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq__list {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .faq__item {
+    border-top: 1px solid var(--hairline);
+  }
+
+  .faq__item:first-child {
+    border-top-color: var(--ink);
+  }
+
+  .faq__q {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding-block: 1.375rem;
+    cursor: pointer;
+    list-style: none;
+    transition: color var(--dur-fast) ease;
+  }
+
+  .faq__q::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq__q:hover {
+    color: var(--signal);
+  }
+
+  .faq__q :global(.faq__icon) {
+    flex: none;
+    margin-top: 0.05rem;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .faq__item[open] :global(.faq__icon) {
+    transform: rotate(45deg);
+  }
+
+  .faq__a {
+    max-width: 44em;
+    padding-bottom: 1.75rem;
+    padding-right: 2.5rem;
+  }
+
+  @media (min-width: 900px) {
+    .faq__list {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      border-bottom: 0;
+    }
+
+    .faq__item {
+      grid-column: 4 / -1;
+    }
+
+    .faq__item:last-child {
+      border-bottom: 1px solid var(--hairline);
+    }
+  }
+</style>

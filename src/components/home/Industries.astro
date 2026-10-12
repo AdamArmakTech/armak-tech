@@ -1,0 +1,153 @@
+---
+import {
+  HeartPulse,
+  GraduationCap,
+  BuildingComplex,
+  Store,
+  Hotel,
+  Building,
+  Landmark,
+  Warehouse,
+  ArrowUpRight,
+} from '@lucide/astro';
+import SectionHead from '../ui/SectionHead.astro';
+import { industries, type Industry } from '../../data/content';
+
+const icons: Record<Industry['icon'], typeof HeartPulse> = {
+  'heart-pulse': HeartPulse,
+  'graduation-cap': GraduationCap,
+  'building-2': BuildingComplex,
+  store: Store,
+  hotel: Hotel,
+  building: Building,
+  landmark: Landmark,
+  warehouse: Warehouse,
+};
+---
+
+<section id="industries" class="section industries">
+  <div class="container">
+    <SectionHead
+      code="G-01"
+      label="Industries"
+      title="Different buildings. The same standard."
+      intro="Every sector brings its own constraints — operating hours, compliance, footprint. We plan the install around them."
+    />
+
+    <ul role="list" class="industries__grid" data-reveal-stagger="60">
+      {industries.map((ind, i) => {
+        const Icon = icons[ind.icon];
+        return (
+          <li class="industry" data-reveal>
+            <a href={`/industries/#${ind.slug}`} class="industry__link">
+              <span class="industry__top">
+                <span class="industry__icon"><Icon size={22} stroke-width={1.5} aria-hidden="true" /></span>
+                <span class="t-mono industry__code" aria-hidden="true">G-{String(i + 1).padStart(2, '0')}</span>
+              </span>
+              <h3 class="t-h4 industry__name">{ind.name}</h3>
+              <p class="t-small t-muted industry__need">{ind.need}</p>
+              <ArrowUpRight class="industry__arrow" size={18} stroke-width={1.5} aria-hidden="true" />
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</section>
+
+<style>
+  /* Spec-table grid: outer border on the list, each cell draws its right + bottom rule */
+  .industries__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    border-top: 1px solid var(--hairline);
+    border-left: 1px solid var(--hairline);
+  }
+
+  .industry {
+    border-right: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .industry__link {
+    position: relative;
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    height: 100%;
+    padding: 1.5rem 1.25rem 1.75rem;
+    transition: background var(--dur-fast) ease;
+  }
+
+  .industry__link:hover {
+    background: var(--white);
+  }
+
+  .industry__link:focus-visible {
+    outline-offset: -2px;
+  }
+
+  .industry__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+  }
+
+  .industry__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+  }
+
+  .industry__link:hover .industry__icon {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .industry__code {
+    color: var(--steel);
+  }
+
+  .industry__need {
+    max-width: 28em;
+    padding-right: 1.5rem;
+  }
+
+  .industry__link :global(.industry__arrow) {
+    position: absolute;
+    right: 1.25rem;
+    bottom: 1.5rem;
+    opacity: 0;
+    transform: translate(-4px, 4px);
+    transition: opacity var(--dur) ease, transform var(--dur) var(--ease-out);
+  }
+
+  .industry__link:hover :global(.industry__arrow),
+  .industry__link:focus-visible :global(.industry__arrow) {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (min-width: 640px) {
+    .industries__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .industries__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .industry__link {
+      min-height: 280px;
+      padding: 1.5rem 1.5rem 2rem;
+    }
+  }
+</style>

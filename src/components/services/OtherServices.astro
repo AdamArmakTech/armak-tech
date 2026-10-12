@@ -1,0 +1,124 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+import Label from '../ui/Label.astro';
+import { services, type ServiceSlug } from '../../data/site';
+
+interface Props {
+  current: ServiceSlug;
+  code: string;
+}
+
+const { current, code } = Astro.props;
+const others = services.filter((s) => s.slug !== current);
+---
+
+<nav class="others container" aria-labelledby="others-title">
+  <div class="others__head">
+    <Label code={code}>Other services</Label>
+    <p id="others-title" class="t-small t-muted">One crew, one standard, one point of contact — across every system.</p>
+  </div>
+  <ul role="list" class="others__grid" data-reveal-stagger="60">
+    {others.map((s) => (
+      <li data-reveal>
+        <a class="other" href={`/services/${s.slug}/`}>
+          <span class="other__top">
+            <span class="t-mono other__code">{s.code}</span>
+            <ArrowUpRight class="other__arrow" size={20} stroke-width={1.5} aria-hidden="true" />
+          </span>
+          <span class="other__name">{s.name}</span>
+          <span class="t-mono other__layer">{s.layer}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<style>
+  .others {
+    display: grid;
+    gap: 2rem;
+    padding-block: var(--space-block);
+  }
+
+  .others__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+  }
+
+  .others__grid {
+    display: grid;
+    gap: 1px;
+    background: var(--hairline);
+    border: 1px solid var(--hairline);
+  }
+
+  .other {
+    display: grid;
+    gap: 0.75rem;
+    height: 100%;
+    padding: 1.25rem;
+    background: var(--paper);
+    transition: background var(--dur-fast) ease;
+  }
+
+  .other:hover {
+    background: var(--white);
+  }
+
+  .other__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .other__code {
+    color: var(--signal);
+  }
+
+  .other :global(.other__arrow) {
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .other:hover :global(.other__arrow) {
+    transform: translate(3px, -3px);
+  }
+
+  .other__name {
+    font-size: var(--fs-h4);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+  }
+
+  .other__layer {
+    color: var(--steel);
+  }
+
+  @media (min-width: 640px) {
+    .others__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .others__grid li:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .others__grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .others__grid li:last-child:nth-child(odd) {
+      grid-column: auto;
+    }
+
+    .other {
+      min-height: 11rem;
+      align-content: space-between;
+    }
+  }
+</style>

@@ -1,0 +1,356 @@
+---
+/**
+ * Interactive building cutaway — the homepage's signature section.
+ * Tabs (one per service) highlight that system's layer in BuildingSvg.
+ * Auto-advances while in view until the visitor interacts (never under reduced motion).
+ */
+import { ArrowRight } from '@lucide/astro';
+import SectionHead from '../ui/SectionHead.astro';
+import BuildingSvg from './BuildingSvg.astro';
+import { services } from '../../data/site';
+---
+
+<section class="explorer section" id="systems" aria-labelledby="explorer-tabs-label">
+  <div class="container">
+    <SectionHead
+      code="C-01"
+      label="System explorer"
+      title="Six systems. One accountable team."
+      intro="Every building runs on layers most people never see. We design, install and certify all of them — so they work together from day one."
+    />
+
+    <div class="explorer__body" data-explorer>
+      <div class="explorer__tabs-wrap">
+        <p id="explorer-tabs-label" class="t-mono t-muted explorer__hint">Select a system</p>
+        <div class="explorer__tabs" role="tablist" aria-labelledby="explorer-tabs-label" aria-orientation="vertical">
+          {services.map((s, i) => (
+            <button
+              class="explorer__tab"
+              role="tab"
+              id={`explorer-tab-${s.slug}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              aria-controls="explorer-panel"
+              tabindex={i === 0 ? 0 : -1}
+              data-slug={s.slug}
+              data-layer-name={s.layer}
+            >
+              <span class="t-mono explorer__code">{s.code}</span>
+              <span class="explorer__name">{s.name}</span>
+              <span class="explorer__progress" aria-hidden="true"></span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="explorer__stage" id="explorer-panel" role="tabpanel" aria-labelledby={`explorer-tab-${services[0].slug}`} tabindex="0">
+        <div class="explorer__drawing">
+          <BuildingSvg />
+        </div>
+
+        {services.map((s, i) => (
+          <div class="explorer__detail" data-detail={s.slug} hidden={i !== 0}>
+            <div class="explorer__detail-head">
+              <span class="t-mono explorer__layer">{s.code} · {s.layer}</span>
+              <h3 class="t-h3">{s.name}</h3>
+            </div>
+            <p class="t-muted">{s.short}</p>
+            <ul role="list" class="explorer__includes t-mono">
+              {s.includes.map((inc) => <li>{inc}</li>)}
+            </ul>
+            <a class="explorer__link" href={`/services/${s.slug}/`}>
+              Explore {s.name.toLowerCase()}
+              <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" />
+            </a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const AUTO_MS = 5200;
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-explorer]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panel = root.querySelector<HTMLElement>('[role="tabpanel"]');
+    const svg = root.querySelector<SVGSVGElement>('.bx');
+    const layerName = root.querySelector<SVGTextElement>('[data-bx-layer-name]');
+    const details = [...root.querySelectorAll<HTMLElement>('[data-detail]')];
+    if (!tabs.length || !panel || !svg) return;
+
+    let index = 0;
+    let timer: number | undefined;
+    let userTookOver = false;
+
+    const select = (i: number, { focus = false } = {}) => {
+      index = (i + tabs.length) % tabs.length;
+      const tab = tabs[index];
+      const slug = tab.dataset.slug!;
+
+      tabs.forEach((t, n) => {
+        const on = n === index;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+      });
+      panel.setAttribute('aria-labelledby', tab.id);
+      details.forEach((d) => (d.hidden = d.dataset.detail !== slug));
+
+      svg.setAttribute('data-active', slug);
+      svg.querySelectorAll('[data-layer]').forEach((g) => {
+        g.classList.toggle('is-active', g.getAttribute('data-layer') === slug);
+      });
+      if (layerName) layerName.textContent = `LAYER ${tab.querySelector('.explorer__code')?.textContent} · ${tab.dataset.layerName?.toUpperCase()}`;
+
+      if (focus) tab.focus();
+      if (!userTookOver) restartProgress(tab);
+    };
+
+    // Progress bar on the active tab shows when auto-advance will move on
+    const restartProgress = (tab: HTMLElement) => {
+      tabs.forEach((t) => t.classList.remove('is-timing'));
+      void tab.offsetWidth;
+      tab.classList.add('is-timing');
+    };
+
+    const stopAuto = () => {
+      window.clearInterval(timer);
+      timer = undefined;
+      tabs.forEach((t) => t.classList.remove('is-timing'));
+    };
+
+    const takeOver = () => {
+      userTookOver = true;
+      root.classList.add('is-manual');
+      stopAuto();
+    };
+
+    const startAuto = () => {
+      if (reduceMotion || userTookOver || timer) return;
+      restartProgress(tabs[index]);
+      timer = window.setInterval(() => select(index + 1), AUTO_MS);
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => {
+        takeOver();
+        select(i);
+      });
+      tab.addEventListener('keydown', (e) => {
+        const keys: Record<string, number> = {
+          ArrowDown: index + 1,
+          ArrowRight: index + 1,
+          ArrowUp: index - 1,
+          ArrowLeft: index - 1,
+          Home: 0,
+          End: tabs.length - 1,
+        };
+        if (!(e.key in keys)) return;
+        e.preventDefault();
+        takeOver();
+        select(keys[e.key], { focus: true });
+      });
+    });
+
+    // Any press inside the explorer (e.g. tapping the drawing) hands control to the visitor
+    root.addEventListener('pointerdown', takeOver, { once: true });
+
+    // Only auto-advance while the section is actually on screen
+    new IntersectionObserver(
+      ([entry]) => (entry.isIntersecting ? startAuto() : stopAuto()),
+      { threshold: 0.35 },
+    ).observe(root);
+
+    select(0);
+  });
+</script>
+
+<style>
+  .explorer__body {
+    display: grid;
+    gap: 1.5rem var(--col-gap);
+  }
+
+  /* Grid items default to min-width:auto, which lets the scrolling tab strip push the
+     column wider than the phone screen. */
+  .explorer__body > * {
+    min-width: 0;
+  }
+
+  .explorer__hint {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Tabs: horizontal scroller on phones, vertical list on desktop */
+  .explorer__tabs {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    padding-bottom: 2px;
+  }
+
+  .explorer__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .explorer__tab {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    flex-shrink: 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    background: transparent;
+    text-align: left;
+    overflow: hidden;
+    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
+  }
+
+  .explorer__tab:hover {
+    border-color: var(--ink);
+  }
+
+  .explorer__tab[aria-selected='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .explorer__code {
+    color: var(--signal);
+  }
+
+  .explorer__tab[aria-selected='true'] .explorer__code {
+    color: var(--logo-red);
+  }
+
+  .explorer__name {
+    font-weight: 500;
+    font-size: var(--fs-small);
+  }
+
+  .explorer__progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+    background: var(--logo-red);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .explorer__tab.is-timing .explorer__progress {
+    animation: explorer-progress 5.2s linear forwards;
+  }
+
+  @keyframes explorer-progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Stage */
+  .explorer__stage {
+    display: grid;
+    gap: 1.5rem;
+    outline-offset: 6px;
+  }
+
+  .explorer__drawing {
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: clamp(0.5rem, 0.2rem + 1.5vw, 1.5rem);
+  }
+
+  .explorer__detail {
+    display: grid;
+    gap: 0.875rem;
+    justify-items: start;
+  }
+
+  .explorer__detail-head {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .explorer__layer {
+    color: var(--signal);
+  }
+
+  .explorer__includes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .explorer__includes li {
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    color: var(--steel);
+  }
+
+  .explorer__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    padding-bottom: 2px;
+    background: linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
+    transition: color var(--dur-fast) ease;
+  }
+
+  .explorer__link:hover {
+    color: var(--signal);
+  }
+
+  @media (min-width: 1000px) {
+    .explorer__body {
+      grid-template-columns: 4fr 8fr;
+      align-items: start;
+    }
+
+    .explorer__tabs-wrap {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+
+    .explorer__tabs {
+      flex-direction: column;
+      gap: 0;
+      overflow: visible;
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .explorer__tab {
+      display: grid;
+      grid-template-columns: 3.5rem 1fr;
+      padding: 1.125rem 1rem;
+      border: 0;
+      border-bottom: 1px solid var(--hairline);
+      border-radius: 0;
+    }
+
+    .explorer__tab:hover {
+      background: var(--white);
+    }
+
+    .explorer__name {
+      font-size: 1.0625rem;
+    }
+
+    .explorer__stage {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

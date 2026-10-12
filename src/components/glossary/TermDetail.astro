@@ -1,0 +1,192 @@
+---
+/**
+ * Full explanation of one glossary term: definition, analogy, why it matters, Q&A, related terms.
+ * Rendered inside each term's <details> (works without JS) and cloned into the drawer by the page script.
+ */
+import { ArrowRight } from '@lucide/astro';
+import { bySlug, categoryLabels, type GlossaryEntry } from '../../data/glossary';
+import { services } from '../../data/site';
+
+interface Props {
+  entry: GlossaryEntry;
+}
+
+const { entry } = Astro.props;
+const service = entry.service ? services.find((s) => s.slug === entry.service) : undefined;
+const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is GlossaryEntry => !!e);
+---
+
+<div class="term-detail">
+  <div class="term-detail__meta t-mono">
+    <span class="term-detail__cat">{categoryLabels[entry.category]}</span>
+    {entry.stands_for && <span>{entry.stands_for}</span>}
+  </div>
+
+  <p class="term-detail__def">{entry.definition}</p>
+
+  {entry.aka && entry.aka.length > 0 && (
+    <p class="t-small t-muted">Also called: {entry.aka.join(', ')}</p>
+  )}
+
+  {entry.analogy && (
+    <p class="term-detail__analogy"><span class="t-mono">Think of it like</span>{entry.analogy}</p>
+  )}
+
+  <div class="term-detail__why">
+    <p class="t-mono">Why it matters</p>
+    <p>{entry.why_it_matters}</p>
+  </div>
+
+  {entry.qa.length > 0 && (
+    <div class="term-detail__qa">
+      <p class="t-mono">Questions people ask</p>
+      <dl>
+        {entry.qa.map((item) => (
+          <div class="term-detail__qa-item">
+            <dt>{item.q}</dt>
+            <dd>{item.a}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  )}
+
+  {related.length > 0 && (
+    <div class="term-detail__related">
+      <p class="t-mono">Related terms</p>
+      <ul role="list">
+        {related.map((r) => (
+          <li><a href={`#${r.slug}`} data-term-link={r.slug}>{r.term}</a></li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {service && (
+    <a class="term-detail__service" href={`/services/${service.slug}/`}>
+      <span class="t-mono">{service.code}</span>
+      {service.name}
+      <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" />
+    </a>
+  )}
+</div>
+
+<style>
+  .term-detail {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+  }
+
+  .term-detail__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    color: var(--steel);
+  }
+
+  .term-detail__cat {
+    color: var(--signal);
+  }
+
+  .term-detail__def {
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  .term-detail__analogy {
+    display: grid;
+    gap: 0.35rem;
+    padding: 1rem 1.125rem;
+    background: var(--paper-sunken);
+    border-left: 2px solid var(--ink);
+  }
+
+  .term-detail__analogy .t-mono,
+  .term-detail__why .t-mono,
+  .term-detail__qa > .t-mono,
+  .term-detail__related .t-mono {
+    color: var(--steel);
+  }
+
+  .term-detail__why {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .term-detail__qa {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .term-detail__qa dl {
+    display: grid;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .term-detail__qa-item {
+    display: grid;
+    gap: 0.35rem;
+    padding-block: 0.875rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .term-detail__qa dt {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .term-detail__qa dd {
+    margin: 0;
+    color: var(--steel);
+    font-size: var(--fs-small);
+    line-height: 1.55;
+  }
+
+  .term-detail__related {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .term-detail__related ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .term-detail__related a {
+    display: inline-block;
+    padding: 0.4rem 0.7rem;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    font-size: var(--fs-small);
+    transition: border-color var(--dur-fast) ease, background var(--dur-fast) ease;
+  }
+
+  .term-detail__related a:hover {
+    border-color: var(--ink);
+    background: var(--white);
+  }
+
+  .term-detail__service {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    justify-self: start;
+    padding: 0.75rem 1rem;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--radius);
+    font-weight: 500;
+    font-size: var(--fs-small);
+  }
+
+  .term-detail__service .t-mono {
+    color: var(--logo-red);
+  }
+
+  .term-detail__service:hover {
+    background: var(--graphite);
+  }
+</style>

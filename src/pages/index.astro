@@ -1,0 +1,33 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/home/Hero.astro';
+import PartnerStrip from '../components/home/PartnerStrip.astro';
+import BuildingExplorer from '../components/home/BuildingExplorer.astro';
+import ServicesGrid from '../components/home/ServicesGrid.astro';
+import Process from '../components/home/Process.astro';
+import FeaturedProjects from '../components/home/FeaturedProjects.astro';
+import Numbers from '../components/home/Numbers.astro';
+import Industries from '../components/home/Industries.astro';
+import ServiceArea from '../components/home/ServiceArea.astro';
+import ContactSection from '../components/home/ContactSection.astro';
+import { placeholderCount } from '../data/content';
+
+// Surface unfinished content in every build log so placeholders can't ship unnoticed
+const placeholders = placeholderCount();
+if (placeholders > 0) {
+  console.warn(`[armak] Homepage renders ${placeholders} placeholder project(s) — replace before launch (src/data/content.ts).`);
+}
+---
+
+<Base footerCta={false}>
+  <Hero />
+  <PartnerStrip />
+  <BuildingExplorer />
+  <ServicesGrid />
+  <Process />
+  <Numbers />
+  <FeaturedProjects />
+  <Industries />
+  <ServiceArea />
+  <ContactSection />
+</Base>

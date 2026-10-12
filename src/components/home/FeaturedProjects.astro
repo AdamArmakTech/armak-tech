@@ -1,0 +1,246 @@
+---
+import { Image } from 'astro:assets';
+import { ArrowUpRight } from '@lucide/astro';
+import SectionHead from '../ui/SectionHead.astro';
+import Label from '../ui/Label.astro';
+import Button from '../ui/Button.astro';
+import { projects } from '../../data/content';
+
+const featured = projects.slice(0, 3);
+---
+
+<section id="projects" class="section projects">
+  <div class="container">
+    <SectionHead
+      code="E-01"
+      label="Selected work"
+      title="Scope, sector and outcome — in numbers."
+      intro="Representative installs from across Southern California. Each one links to the full story: the site, the constraints and what we handed over."
+    />
+
+    <ul role="list" class="projects__grid" data-reveal-stagger="90">
+      {featured.map((p) => (
+        <li class="project" data-reveal>
+          <article class="project__card">
+            <div class="project__media">
+              {p.image && (
+                <Image
+                  src={p.image}
+                  alt=""
+                  widths={[480, 720, 960]}
+                  sizes="(min-width: 1000px) 30vw, (min-width: 700px) 42vw, 100vw"
+                  loading="lazy"
+                />
+              )}
+              {p.placeholder && <Label tone="signal" class="project__flag">Placeholder</Label>}
+            </div>
+
+            <div class="project__body">
+              <p class="t-mono t-muted project__meta">{p.sector} · {p.location}</p>
+              <h3 class="t-h3 project__title">
+                <a href={`/projects/${p.slug}/`} class="project__link">{p.title}</a>
+              </h3>
+
+              <dl class="project__scope">
+                {p.scope.map((s) => (
+                  <div>
+                    <dt class="t-mono">{s.label}</dt>
+                    <dd>{s.value}</dd>
+                  </div>
+                ))}
+              </dl>
+
+              <p class="t-small t-muted project__summary">{p.summary}</p>
+
+              <span class="t-mono project__more" aria-hidden="true">
+                View project <ArrowUpRight size={16} stroke-width={1.75} />
+              </span>
+            </div>
+          </article>
+        </li>
+      ))}
+    </ul>
+
+    <div class="projects__foot" data-reveal>
+      <p class="t-mono t-muted">Case studies · Full scope &amp; outcome</p>
+      <Button href="/projects/" variant="outline">All projects</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects__grid {
+    display: grid;
+    gap: var(--col-gap);
+  }
+
+  .project__card {
+    position: relative;
+    display: grid;
+    height: 100%;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color var(--dur) ease;
+  }
+
+  .project__card:hover {
+    border-color: var(--ink);
+  }
+
+  .project__card:focus-within {
+    border-color: var(--ink);
+  }
+
+  .project__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--paper-sunken);
+  }
+
+  .project__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.15);
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+
+  .project__card:hover .project__media img {
+    transform: scale(1.04);
+  }
+
+  .project__media :global(.project__flag) {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: var(--paper);
+  }
+
+  .project__body {
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    gap: 1rem;
+    padding: 1.25rem 1.25rem 1.5rem;
+  }
+
+  .project__title {
+    max-width: 20ch;
+  }
+
+  /* Whole card is clickable via the title link; one link per card for screen readers */
+  .project__link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .project__link:focus-visible {
+    outline: none;
+  }
+
+  .project__card:has(.project__link:focus-visible) {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+
+  .project__scope {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-block: 1px solid var(--hairline);
+  }
+
+  .project__scope div {
+    display: grid;
+    gap: 0.375rem;
+    align-content: start;
+    padding: 0.875rem 0.75rem 0.875rem 0;
+  }
+
+  .project__scope div + div {
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--hairline);
+  }
+
+  .project__scope dt {
+    order: 2;
+    font-size: 0.625rem;
+    letter-spacing: 0.06em;
+    color: var(--steel);
+    line-height: 1.3;
+  }
+
+  .project__scope dd {
+    order: 1;
+    font-family: var(--font-mono);
+    font-size: 1.5rem;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .project__summary {
+    max-width: 34em;
+  }
+
+  .project__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    justify-self: start;
+    color: var(--ink);
+  }
+
+  .project__more :global(svg) {
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .project__card:hover .project__more :global(svg) {
+    transform: translate(2px, -2px);
+  }
+
+  .projects__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-top: var(--col-gap);
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  /* Tablet: horizontal cards, image left */
+  @media (min-width: 700px) and (max-width: 999px) {
+    .project__card {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+
+    .project__media {
+      aspect-ratio: auto;
+      min-height: 100%;
+    }
+
+    .project__media img {
+      position: absolute;
+      inset: 0;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .projects__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .project__card {
+      grid-template-rows: auto 1fr;
+    }
+
+    .project__body {
+      padding: 1.5rem 1.5rem 1.75rem;
+    }
+  }
+</style>

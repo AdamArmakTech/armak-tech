@@ -1,0 +1,43 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../../assets/brand/armak-logo-hd.png';
+import logoInverse from '../../assets/brand/armak-logo-inverse.png';
+import { site } from '../../data/site';
+
+interface Props {
+  variant?: 'default' | 'inverse';
+  /** Rendered height in px; width follows the logo's 3:1 ratio */
+  height?: number;
+  href?: string | null;
+  class?: string;
+}
+
+const { variant = 'default', height = 40, href = '/', class: className } = Astro.props;
+const src = variant === 'inverse' ? logoInverse : logo;
+const width = Math.round((src.width / src.height) * height);
+const Tag = href ? 'a' : 'span';
+---
+
+<Tag class:list={['logo', className]} href={href ?? undefined} aria-label={href ? `${site.name} — home` : undefined}>
+  <Image
+    src={src}
+    alt={href ? '' : site.name}
+    width={width}
+    height={height}
+    densities={[1, 2]}
+    loading="eager"
+    decoding="async"
+  />
+</Tag>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .logo img {
+    width: auto;
+  }
+</style>

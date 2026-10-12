@@ -4,16 +4,19 @@ PURPOSE: This is the authoritative rulebook for AI assistants. It defines the 'h
 
 ## Project Context
 - **Objective**: Armak Technologies business website providing low-voltage, networking, and security infrastructure services.
-- **Stack**: HTML5, Vanilla CSS (embedded), JavaScript.
+- **Stack**: Astro 7 (static), vanilla CSS with design tokens, TypeScript. GSAP + Lenis for motion.
 
 ## Architecture Constraints
-- **Structure**: Single-page responsive landing page (`index.html`).
-- **Assets**: Images and logos stored in the root directory.
+- **Structure**: Multi-page static site; see `ARCHITECTURE.md`.
+- **Assets**: Images in `src/assets/` (optimized by Astro); static files in `public/`.
+- **Design system**: Use tokens and `components/ui/*`; review new components on `/styleguide/`.
+- **Facts**: Business facts come from `src/data/site.ts` only. Never invent projects, testimonials,
+  certifications or client names — use clearly marked placeholders until Armak supplies them.
 - **Markdown Persistence**: All state must be tracked in `/ai`
 
 ## Coding Conventions
 - **Explicit over Implicit**: Avoid hidden logic or complex dependencies.
-- **Verification First**: All changes must be verified by opening `index.html` and checking responsiveness/design.
+- **Verification First**: Run `npm run check` and `npm run build`, then review in `npm run dev` at 375px, 768px and 1440px.
 - **Compact Context**: Keep context files task-scoped and minimal.
 
 

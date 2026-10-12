@@ -1,0 +1,384 @@
+---
+/**
+ * Project case-study template. While a project is `placeholder: true` the page is noindex and
+ * every narrative section renders a clearly marked placeholder instead of invented copy.
+ */
+import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/pages/PageHero.astro';
+import PageCta from '../../components/pages/PageCta.astro';
+import PlaceholderNote from '../../components/pages/PlaceholderNote.astro';
+import ProjectCard from '../../components/projects/ProjectCard.astro';
+import Label from '../../components/ui/Label.astro';
+import Button from '../../components/ui/Button.astro';
+import Stat from '../../components/ui/Stat.astro';
+import ServiceTile from '../../components/ui/ServiceTile.astro';
+import { services } from '../../data/site';
+import { projects, type Project } from '../../data/content';
+
+export const getStaticPaths = (() =>
+  projects.map((project, index) => ({ params: { slug: project.slug }, props: { project, index } }))) satisfies GetStaticPaths;
+
+interface Props {
+  project: Project;
+  index: number;
+}
+
+const { project: p, index } = Astro.props;
+const code = `E-${String(index + 1).padStart(2, '0')}`;
+const projectServices = p.services.map((slug) => services.find((s) => s.slug === slug)!).filter(Boolean);
+// TODO(photo): project images are stock placeholders — replace with photos from each actual job
+const others = projects.filter((o) => o.slug !== p.slug).slice(0, 2);
+
+const description = p.placeholder
+  ? `Placeholder case study: ${p.title.toLowerCase()} — ${p.sector.toLowerCase()}, ${p.location}, Southern California. Armak Technologies.`
+  : `${p.title}: ${p.sector.toLowerCase()} project in ${p.location}, Southern California, by Armak Technologies.`;
+
+/** Narrative sections. Real copy will come from the data file; until then, what each should contain. */
+const sections = [
+  {
+    id: 'challenge',
+    title: 'The challenge',
+    brief: 'The site and its constraints — building type, schedule, occupied spaces, legacy systems, compliance.',
+  },
+  {
+    id: 'installed',
+    title: 'What we installed',
+    brief: 'Systems, quantities and platforms — drops, fiber, racks, access points, cameras, doors — and how the work was phased.',
+  },
+  {
+    id: 'outcome',
+    title: 'The outcome',
+    brief: 'What the client got at handover — certification results, documentation, cutover timing — plus a client quote with permission.',
+  },
+];
+---
+
+<Base title={p.placeholder ? `${p.title} (Placeholder)` : p.title} description={description} noindex={p.placeholder} footerCta={false}>
+  <PageHero
+    code={code}
+    label={p.sector}
+    title={p.title}
+    lead={p.summary}
+    crumbs={[{ label: 'Projects', href: '/projects/' }, { label: p.title }]}
+    titleId="project-title"
+  >
+    {p.placeholder && <Label slot="labels" tone="signal">Placeholder</Label>}
+
+    <dl class="meta" data-reveal style="--reveal-delay: 120ms">
+      <div>
+        <dt class="t-mono">Sector</dt>
+        <dd>{p.sector}</dd>
+      </div>
+      <div>
+        <dt class="t-mono">Location</dt>
+        <dd>{p.location}</dd>
+      </div>
+      <div class="meta__wide">
+        <dt class="t-mono">Services</dt>
+        <dd>
+          <ul role="list" class="meta__svcs">
+            {projectServices.map((s) => <li><a href={`/services/${s.slug}/`}>{s.name}</a></li>)}
+          </ul>
+        </dd>
+      </div>
+    </dl>
+  </PageHero>
+
+  {p.image && (
+    <div class="container">
+      <figure class="cover" data-reveal>
+        <Image
+          src={p.image}
+          alt=""
+          widths={[640, 960, 1280, 1920]}
+          sizes="(min-width: 1400px) 1320px, 100vw"
+          loading="eager"
+          fetchpriority="high"
+        />
+        <figcaption class="cover__tag t-mono">{p.placeholder ? 'Stock image · placeholder' : `Fig. ${code}`}</figcaption>
+      </figure>
+    </div>
+  )}
+
+  <section class="section scope" aria-labelledby="scope-title">
+    <div class="container">
+      <div class="scope__head">
+        <Label code={`${code}.1`}>Scope</Label>
+        <h2 id="scope-title" class="t-h3 scope__title">
+          The job in numbers.
+          {p.placeholder && <span class="t-muted"> Figures to be supplied.</span>}
+        </h2>
+      </div>
+      <div class="scope__grid" data-reveal-stagger="90">
+        {p.scope.map((s) => (
+          <div data-reveal>
+            <Stat value={s.value} label={s.label} />
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <div class="container story">
+    {sections.map((s, i) => (
+      <section class="story__row" id={s.id} aria-labelledby={`${s.id}-title`}>
+        <div class="story__meta">
+          <Label code={`${code}.${i + 2}`}>{String(i + 1).padStart(2, '0')}</Label>
+        </div>
+        <div class="story__body" data-reveal>
+          <h2 id={`${s.id}-title`} class="t-h2">{s.title}</h2>
+          {p.placeholder ? (
+            <PlaceholderNote title="To be supplied by Armak">{s.brief}</PlaceholderNote>
+          ) : (
+            <p class="t-lead">{s.brief}</p>
+          )}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <section class="section related" aria-labelledby="related-title">
+    <div class="container">
+      <div class="related__head">
+        <Label code={`${code}.5`}>Related services</Label>
+        <h2 id="related-title" class="t-h3">Systems on this project.</h2>
+      </div>
+      <ul role="list" class="related__grid" data-reveal-stagger="80">
+        {projectServices.map((s) => (
+          <li data-reveal>
+            <ServiceTile href={`/services/${s.slug}/`} code={s.code} title={s.name} description={s.short} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  {others.length > 0 && (
+    <section class="section section--flush-top more" aria-labelledby="more-title">
+      <div class="container">
+        <div class="related__head">
+          <Label code={`${code}.6`}>More projects</Label>
+          <h2 id="more-title" class="t-h3">Other case studies.</h2>
+        </div>
+        <ul role="list" class="more__grid" data-reveal-stagger="90">
+          {others.map((o) => (
+            <li data-reveal><ProjectCard project={o} /></li>
+          ))}
+        </ul>
+        <div class="more__foot" data-reveal>
+          <Button href="/projects/" variant="outline">All projects</Button>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <PageCta
+    code={`${code}.7`}
+    title="Planning something similar?"
+    body="Tell us what you’re building. We’ll assess the site, scope the infrastructure, and give you a clear plan — no guesswork, no surprises."
+  />
+</Base>
+
+<style>
+  /* ── Hero meta ── */
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    border-top: 1px solid var(--ink);
+  }
+
+  .meta > div {
+    display: grid;
+    gap: 0.375rem;
+    align-content: start;
+    padding: 0.875rem 1rem 0.875rem 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .meta > div:nth-child(2) {
+    padding-left: 1rem;
+    border-left: 1px solid var(--hairline);
+  }
+
+  .meta__wide {
+    grid-column: 1 / -1;
+  }
+
+  .meta dt {
+    color: var(--steel);
+  }
+
+  .meta dd {
+    font-weight: 500;
+  }
+
+  .meta__svcs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+  }
+
+  .meta__svcs a {
+    background: linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
+    transition: color var(--dur-fast) ease;
+  }
+
+  .meta__svcs a:hover {
+    color: var(--signal);
+  }
+
+  /* ── Cover image ── */
+  .cover {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--paper-sunken);
+  }
+
+  .cover img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .cover__tag {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    padding: 0.35rem 0.55rem;
+    background: var(--paper);
+    border-radius: var(--radius);
+  }
+
+  /* ── Scope ── */
+  .scope__head,
+  .related__head {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+    margin-bottom: var(--space-block);
+  }
+
+  .scope__title {
+    max-width: 26ch;
+  }
+
+  .scope__grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.5rem var(--col-gap);
+  }
+
+  /* Keep the big mono numerals inside narrow phone columns */
+  .scope__grid :global(.stat__value) {
+    font-size: clamp(2rem, 1.2rem + 4.2vw, 6rem);
+  }
+
+  /* ── Narrative ── */
+  .story {
+    padding-bottom: var(--space-block);
+  }
+
+  .story__row {
+    display: grid;
+    gap: 1.25rem var(--col-gap);
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+    border-top: 1px solid var(--hairline);
+  }
+
+  .story__body {
+    display: grid;
+    gap: 1.5rem;
+    align-content: start;
+  }
+
+  /* ── Related + more ── */
+  .section--flush-top {
+    padding-top: 0;
+  }
+
+  .related__grid,
+  .more__grid {
+    display: grid;
+    gap: var(--col-gap);
+  }
+
+  .related__grid :global(.tile) {
+    height: 100%;
+  }
+
+  .more__foot {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--col-gap);
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  @media (min-width: 640px) {
+    .related__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .meta {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .meta__wide {
+      grid-column: auto;
+    }
+
+    .meta > div:nth-child(3) {
+      padding-left: 1rem;
+      border-left: 1px solid var(--hairline);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .cover img {
+      aspect-ratio: 21 / 9;
+    }
+
+    .scope__head,
+    .related__head {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: start;
+    }
+
+    .scope__head > :global(.label),
+    .related__head > :global(.label) {
+      grid-column: 1 / span 3;
+      margin-top: 0.35rem;
+    }
+
+    .scope__title,
+    .related__head > h2 {
+      grid-column: 4 / -1;
+    }
+
+    .story__row {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .story__meta {
+      grid-column: 1 / span 3;
+      padding-top: 0.55rem;
+    }
+
+    .story__body {
+      grid-column: 4 / span 7;
+    }
+
+    .related__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .more__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

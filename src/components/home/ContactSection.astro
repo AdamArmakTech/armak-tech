@@ -1,0 +1,155 @@
+---
+/**
+ * Homepage closing section: site-assessment form + direct contact details.
+ */
+import { Clock, LifeBuoy, MapPin } from '@lucide/astro';
+import SectionHead from '../ui/SectionHead.astro';
+import ContactForm from '../forms/ContactForm.astro';
+import { site } from '../../data/site';
+---
+
+<section class="contact section" id="contact">
+  <div class="container">
+    <SectionHead
+      code="J-01"
+      label="Start a project"
+      title="Let’s scope your next build."
+      intro="Tell us what you’re building. We’ll assess the site, scope the infrastructure, and give you a clear plan — no guesswork, no surprises."
+    />
+
+    <div class="contact__body">
+      <div class="contact__panel" data-reveal>
+        <ContactForm id="home-assessment" />
+      </div>
+
+      <aside class="contact__info" aria-label="Contact details" data-reveal style="--reveal-delay: 120ms">
+        <div class="contact__direct">
+          <p class="t-mono t-muted">Prefer to talk?</p>
+          <a class="contact__phone" href={site.phoneHref}>{site.phone}</a>
+          <a class="contact__email" href={site.emailHref}>{site.email}</a>
+        </div>
+
+        <ul role="list" class="contact__rows">
+          <li>
+            <Clock class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
+            <span class="t-mono contact__key">Hours</span>
+            <span>{site.hours}</span>
+          </li>
+          <li>
+            <LifeBuoy class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
+            <span class="t-mono contact__key">Support</span>
+            <span>{site.support}</span>
+          </li>
+          <li>
+            <MapPin class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
+            <span class="t-mono contact__key">Headquarters</span>
+            <span>{site.hq.city}, California<br /><span class="t-muted">Serving all of Southern California</span></span>
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact__body {
+    display: grid;
+    gap: var(--col-gap);
+    align-items: start;
+  }
+
+  .contact__panel {
+    padding: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    min-width: 0;
+  }
+
+  .contact__info {
+    display: grid;
+    gap: 2rem;
+    align-content: start;
+  }
+
+  .contact__direct {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: start;
+  }
+
+  .contact__phone {
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .contact__email {
+    color: var(--steel);
+  }
+
+  .contact__phone,
+  .contact__email {
+    background: linear-gradient(currentColor, currentColor) left bottom / 0% 1px no-repeat;
+    transition: background-size var(--dur) var(--ease-out);
+  }
+
+  .contact__phone:hover,
+  .contact__email:hover {
+    background-size: 100% 1px;
+  }
+
+  .contact__rows {
+    display: grid;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .contact__rows li {
+    display: grid;
+    grid-template-columns: 18px 7.5rem minmax(0, 1fr);
+    gap: 0.25rem 0.875rem;
+    align-items: start;
+    padding-block: 0.875rem;
+    border-bottom: 1px solid var(--hairline);
+    font-size: var(--fs-small);
+    overflow-wrap: anywhere;
+  }
+
+  .contact__rows :global(.contact__icon) {
+    margin-top: 0.15rem;
+    color: var(--steel);
+  }
+
+  .contact__key {
+    padding-top: 0.2rem;
+    color: var(--steel);
+  }
+
+  @media (max-width: 419px) {
+    .contact__rows li {
+      grid-template-columns: 18px minmax(0, 1fr);
+    }
+
+    .contact__rows li > :last-child {
+      grid-column: 2;
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .contact__body {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .contact__panel {
+      grid-column: 1 / span 8;
+    }
+
+    .contact__info {
+      grid-column: 9 / -1;
+      position: sticky;
+      top: calc(var(--header-h) + 1.5rem);
+    }
+  }
+</style>

@@ -1,0 +1,11 @@
+---
+// Dev preview (noindex): service-area map + homepage contact section in isolation.
+import Base from '../../layouts/Base.astro';
+import ServiceArea from '../../components/home/ServiceArea.astro';
+import ContactSection from '../../components/home/ContactSection.astro';
+---
+
+<Base title="Dev: map & contact" noindex footerCta={false}>
+  <ServiceArea />
+  <ContactSection />
+</Base>

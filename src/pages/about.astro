@@ -1,0 +1,504 @@
+---
+/**
+ * About — story since 1998 (original site's copy, tightened), principles, credentials,
+ * numbers, manufacturer partners, team slot (placeholder until Armak supplies it), service area.
+ */
+import { Image } from 'astro:assets';
+import { UserRound } from '@lucide/astro';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/pages/PageHero.astro';
+import PageCta from '../components/pages/PageCta.astro';
+import PlaceholderNote from '../components/pages/PlaceholderNote.astro';
+import SectionHead from '../components/ui/SectionHead.astro';
+import Label from '../components/ui/Label.astro';
+import Button from '../components/ui/Button.astro';
+import Numbers from '../components/home/Numbers.astro';
+import PartnerStrip from '../components/home/PartnerStrip.astro';
+import ServiceArea from '../components/home/ServiceArea.astro';
+import { site, FOUNDED, yearsInBusiness, serviceArea } from '../data/site';
+import { pillars, credentials } from '../data/content';
+// TODO(photo): replace with a real photo of Armak's team or a finished Armak install
+import storyPhoto from '../assets/photos/rack-row.jpg';
+
+const description = `Armak Technologies has designed and installed low-voltage, networking and security systems across Southern California since ${FOUNDED}. Glendale HQ.`;
+
+/** The original site's three "about" cards, tightened. */
+const story = [
+  {
+    tag: 'Legacy',
+    title: `Since ${FOUNDED}`,
+    body: 'We design and deploy high-performance low-voltage and enterprise networking systems — the backbone of how an organization operates.',
+  },
+  {
+    tag: 'Our standard',
+    title: 'Global-grade excellence',
+    body: 'Global-grade technical excellence for every client. We don’t just solve technical hurdles — we engineer for maximum reliability and long-term asset value.',
+  },
+  {
+    tag: 'Scope',
+    title: 'Cabling to security',
+    body: 'From structured cabling to enterprise security, we provide the foundational systems that keep businesses competitive.',
+  },
+];
+
+/** Tags from the original site's value cards, paired with `pillars` in order. */
+const pillarTags = ['Precision', 'Scale', 'Speed', 'Service'];
+
+const thisYear = new Date().getFullYear();
+---
+
+<Base title="About Us" description={description} footerCta={false}>
+  <PageHero
+    code="K-00"
+    label="About"
+    title="The infrastructure partner when failure isn’t an option."
+    lead={`For ${yearsInBusiness} years, organizations across Southern California have relied on Armak Technologies to design, install and support the cabling, networks and security systems they run on.`}
+    crumbs={[{ label: 'About' }]}
+    spec={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`, ...credentials]}
+  />
+
+  <!-- K-01 · Story -->
+  <section class="section story">
+    <div class="container">
+      <SectionHead
+        code="K-01"
+        label="Our story"
+        title={`${yearsInBusiness} years in. Zero shortcuts.`}
+      />
+
+      <div class="story__body">
+        <figure class="story__figure" data-reveal>
+          <div class="story__photo">
+            <Image
+              src={storyPhoto}
+              alt="A row of server racks with neatly dressed cabling"
+              widths={[480, 720, 960, 1280]}
+              sizes="(min-width: 1000px) 40vw, 100vw"
+              loading="lazy"
+            />
+            <span class="story__tag t-mono">Fig. K-01</span>
+          </div>
+        </figure>
+
+        <ol role="list" class="story__list" data-reveal-stagger="90">
+          {story.map((s, i) => (
+            <li class="story__item" data-reveal>
+              <span class="t-mono story__index">{String(i + 1).padStart(2, '0')} · {s.tag}</span>
+              <h3 class="t-h3">{s.title}</h3>
+              <p class="t-muted">{s.body}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <!-- Milestones: only the founding year and current totals are facts; the rest is a slot. -->
+      <div class="timeline" data-reveal>
+        <Label code="K-01.1">Milestones</Label>
+        <ol role="list" class="timeline__rows">
+          <li class="timeline__row">
+            <span class="timeline__year">{FOUNDED}</span>
+            <span class="timeline__text">{site.name} established.</span>
+          </li>
+          <li class="timeline__row timeline__row--slot">
+            <span class="timeline__year" aria-hidden="true">····</span>
+            <PlaceholderNote class="timeline__note" title="Key milestones">
+              Firsts, growth and notable moments between {FOUNDED} and today — to be supplied by Armak.
+            </PlaceholderNote>
+          </li>
+          <li class="timeline__row">
+            <span class="timeline__year">{thisYear}</span>
+            <span class="timeline__text">
+              {site.projectsDelivered}+ projects delivered across {serviceArea.length} Southern California cities.
+            </span>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- K-02 · Principles -->
+  <section class="section section--flush-top principles">
+    <div class="container">
+      <SectionHead code="K-02" label="How we work" title="The same standard, closet to campus." />
+      <ul role="list" class="principles__grid" data-reveal-stagger="80">
+        {pillars.map((p, i) => (
+          <li class="principle" data-reveal>
+            <span class="t-mono principle__index">
+              {String(i + 1).padStart(2, '0')}{pillarTags[i] && ` · ${pillarTags[i]}`}
+            </span>
+            <h3 class="t-h4">{p.title}</h3>
+            <p class="t-small t-muted">{p.body}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- K-03 · Credentials -->
+  <section class="section section--flush-top creds">
+    <div class="container">
+      <SectionHead code="K-03" label="Credentials" title="The paperwork behind the work." />
+      <ul role="list" class="creds__grid" data-reveal-stagger="70">
+        {credentials.map((c, i) => (
+          <li class="cred" data-reveal>
+            <span class="t-mono cred__code">C-{String(i + 1).padStart(2, '0')}</span>
+            <span class="cred__text">{c}</span>
+          </li>
+        ))}
+        <li class="cred" data-reveal>
+          <span class="t-mono cred__code">C-{String(credentials.length + 1).padStart(2, '0')}</span>
+          <span class="cred__text">Contractor license</span>
+          {site.license ? (
+            <span class="t-mono cred__value">{site.license}</span>
+          ) : (
+            <Label tone="signal" class="cred__flag">Placeholder · Lic. no. to confirm</Label>
+          )}
+        </li>
+        <li class="cred" data-reveal>
+          <span class="t-mono cred__code">C-{String(credentials.length + 2).padStart(2, '0')}</span>
+          <span class="cred__text">Manufacturer certifications</span>
+          <Label tone="signal" class="cred__flag">Placeholder · List to supply</Label>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <Numbers />
+
+  <PartnerStrip />
+
+  <!-- K-04 · Team (slot until Armak supplies people, photos and permission) -->
+  <section class="section team">
+    <div class="container">
+      <SectionHead
+        code="K-04"
+        label="The team"
+        title="The people behind the installs."
+        intro="One crew and one point of contact from the first walk-through to the final report."
+      />
+      <ul role="list" class="team__grid" data-reveal-stagger="70">
+        {[1, 2, 3, 4].map((n) => (
+          <li class="member" data-reveal>
+            <div class="member__photo" aria-hidden="true">
+              <UserRound size={40} stroke-width={1} />
+              <Label tone="signal" class="member__flag">Placeholder</Label>
+            </div>
+            <p class="t-mono t-muted">K-04.{n}</p>
+            <p class="member__name">Name to be supplied</p>
+            <p class="t-small t-muted">Role · photo and short bio, with permission</p>
+          </li>
+        ))}
+      </ul>
+      <div class="team__foot" data-reveal>
+        <p class="t-small t-muted">Want to work with us?</p>
+        <Button href="/contact/" variant="link">Get in touch</Button>
+      </div>
+    </div>
+  </section>
+
+  <ServiceArea />
+
+  <PageCta
+    code="K-05"
+    title="Let’s talk about your site."
+    body="Tell us what you’re building. We’ll assess the site, scope the infrastructure, and give you a clear plan — no guesswork, no surprises."
+  />
+</Base>
+
+<style>
+  .section--flush-top {
+    padding-top: 0;
+  }
+
+  /* ── Story ── */
+  .story__body {
+    display: grid;
+    gap: var(--space-block) var(--col-gap);
+  }
+
+  .story__photo {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--paper-sunken);
+  }
+
+  .story__photo img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .story__tag {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    padding: 0.35rem 0.55rem;
+    background: var(--paper);
+    border-radius: var(--radius);
+  }
+
+  .story__list {
+    border-top: 1px solid var(--ink);
+  }
+
+  .story__item {
+    display: grid;
+    gap: 0.75rem;
+    padding-block: 1.75rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .story__item p {
+    max-width: 34em;
+  }
+
+  .story__index {
+    color: var(--signal);
+  }
+
+  .timeline {
+    display: grid;
+    gap: 1.5rem;
+    justify-items: start;
+    margin-top: var(--space-block);
+  }
+
+  .timeline__rows {
+    width: 100%;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .timeline__row {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    gap: var(--col-gap);
+    align-items: baseline;
+    padding-block: 1.25rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .timeline__row--slot {
+    align-items: start;
+  }
+
+  .timeline__year {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .timeline__row--slot .timeline__year {
+    color: var(--hairline-strong);
+  }
+
+  /* ── Principles ── */
+  .principles__grid {
+    display: grid;
+    border-top: 1px solid var(--ink);
+  }
+
+  .principle {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    padding: 1.5rem 0 2rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .principle p {
+    max-width: 30em;
+  }
+
+  .principle__index {
+    color: var(--signal);
+  }
+
+  /* ── Credentials ── */
+  .creds__grid {
+    display: grid;
+    border-top: 1px solid var(--hairline);
+    border-left: 1px solid var(--hairline);
+  }
+
+  .cred {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    justify-items: start;
+    padding: 1.5rem 1.25rem 1.75rem;
+    border-right: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    background: var(--white);
+  }
+
+  .cred__code {
+    color: var(--steel);
+  }
+
+  .cred__text {
+    font-size: var(--fs-h4);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
+  }
+
+  .cred :global(.cred__flag) {
+    white-space: normal;
+  }
+
+  /* ── Team ── */
+  .team__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem var(--col-gap);
+  }
+
+  .member {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+  }
+
+  .member__photo {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1 / 1;
+    margin-bottom: 0.5rem;
+    border: 1px dashed var(--hairline-strong);
+    border-radius: var(--radius);
+    background: var(--paper-sunken);
+    color: var(--hairline-strong);
+  }
+
+  .member__photo :global(.member__flag) {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    background: var(--paper);
+  }
+
+  .member__name {
+    font-weight: 500;
+    color: var(--steel);
+  }
+
+  .team__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1.25rem;
+    margin-top: var(--space-block);
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  @media (max-width: 419px) {
+    .member__photo :global(.member__flag) {
+      top: 0.5rem;
+      left: 0.5rem;
+    }
+  }
+
+  @media (min-width: 700px) {
+    .principles__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .principle {
+      padding: 1.5rem 1.5rem 2rem;
+    }
+
+    .principle:nth-child(odd) {
+      padding-left: 0;
+    }
+
+    .principle:nth-child(even) {
+      border-left: 1px solid var(--hairline);
+    }
+
+    .creds__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cred:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .timeline__row {
+      grid-template-columns: 7rem minmax(0, 1fr);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .story__body {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .story__figure {
+      grid-column: 1 / span 5;
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+
+    .story__photo img {
+      aspect-ratio: 4 / 5;
+    }
+
+    .story__list {
+      grid-column: 7 / -1;
+    }
+
+    .timeline {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: start;
+    }
+
+    .timeline > :global(.label) {
+      grid-column: 1 / span 3;
+    }
+
+    .timeline__rows {
+      grid-column: 4 / -1;
+    }
+
+    /* 3 facts on the first row, the 2 pending items share the second */
+    .creds__grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .cred {
+      grid-column: span 2;
+    }
+
+    .cred:nth-last-child(-n + 2) {
+      grid-column: span 3;
+    }
+
+    .team__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1100px) {
+    .principles__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .principle,
+    .principle:nth-child(odd) {
+      padding: 1.5rem 1.5rem 0.5rem;
+      border-bottom: 0;
+      border-left: 1px solid var(--hairline);
+    }
+
+    .principle:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+</style>

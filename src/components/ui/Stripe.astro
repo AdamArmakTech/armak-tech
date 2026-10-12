@@ -1,0 +1,48 @@
+---
+/**
+ * T568B color-pair stripe — pin 1 → 8:
+ * white/orange, orange, white/green, blue, white/blue, green, white/brown, brown.
+ * "White/x" pins render as a striped tracer, like the real conductor insulation.
+ */
+interface Props {
+  height?: number;
+  class?: string;
+}
+
+const { height = 4, class: className } = Astro.props;
+const pins = ['wo', 'o', 'wg', 'bl', 'wbl', 'g', 'wbr', 'br'];
+---
+
+<span class:list={['stripe', className]} style={`--stripe-h:${height}px`} aria-hidden="true">
+  {pins.map((p) => <span class={`pin pin--${p}`} />)}
+</span>
+
+<style>
+  .stripe {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    height: var(--stripe-h);
+    width: 100%;
+  }
+
+  .pin--o { background: var(--t568-orange); }
+  .pin--g { background: var(--t568-green); }
+  .pin--bl { background: var(--t568-blue); }
+  .pin--br { background: var(--t568-brown); }
+
+  .pin--wo,
+  .pin--wg,
+  .pin--wbl,
+  .pin--wbr {
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--white) 0 6px,
+      var(--pin-color) 6px 9px
+    );
+  }
+
+  .pin--wo { --pin-color: var(--t568-orange); }
+  .pin--wg { --pin-color: var(--t568-green); }
+  .pin--wbl { --pin-color: var(--t568-blue); }
+  .pin--wbr { --pin-color: var(--t568-brown); }
+</style>

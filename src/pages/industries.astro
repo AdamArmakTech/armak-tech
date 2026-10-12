@@ -1,0 +1,295 @@
+---
+/**
+ * Industries — one section per sector (id = slug, matching homepage links /industries/#{slug}).
+ * The sector → service mapping below is a general guide derived from each sector's `need`;
+ * TODO(content): confirm sectors and typical systems with Armak.
+ */
+import {
+  HeartPulse,
+  GraduationCap,
+  BuildingComplex,
+  Store,
+  Hotel,
+  Building,
+  Landmark,
+  Warehouse,
+  ArrowRight,
+} from '@lucide/astro';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/pages/PageHero.astro';
+import PageCta from '../components/pages/PageCta.astro';
+import { services, type ServiceSlug } from '../data/site';
+import { industries, type Industry } from '../data/content';
+
+const icons: Record<Industry['icon'], typeof HeartPulse> = {
+  'heart-pulse': HeartPulse,
+  'graduation-cap': GraduationCap,
+  'building-2': BuildingComplex,
+  store: Store,
+  hotel: Hotel,
+  building: Building,
+  landmark: Landmark,
+  warehouse: Warehouse,
+};
+
+/** Systems that typically apply per sector. Kept general — every site is scoped individually. */
+const typical: Record<string, ServiceSlug[]> = {
+  'commercial-office': ['structured-cabling', 'networking', 'access-control', 'voip-unified-comms', 'audio-video'],
+  healthcare: ['structured-cabling', 'networking', 'video-surveillance', 'access-control'],
+  education: ['networking', 'audio-video', 'access-control', 'video-surveillance'],
+  retail: ['networking', 'video-surveillance', 'structured-cabling'],
+  hospitality: ['networking', 'voip-unified-comms', 'audio-video', 'video-surveillance'],
+  multifamily: ['structured-cabling', 'access-control', 'video-surveillance'],
+  government: ['structured-cabling', 'networking', 'access-control', 'video-surveillance'],
+  industrial: ['structured-cabling', 'networking', 'video-surveillance'],
+};
+
+const rows = industries.map((ind, i) => ({
+  ...ind,
+  code: `G-${String(i + 1).padStart(2, '0')}`,
+  Icon: icons[ind.icon],
+  services: (typical[ind.slug] ?? []).map((slug) => services.find((s) => s.slug === slug)!).filter(Boolean),
+}));
+
+const description =
+  'Low-voltage, network and security systems for offices, healthcare, schools, retail, hospitality, multifamily and industrial sites in Southern California.';
+---
+
+<Base title="Industries We Serve" description={description} footerCta={false}>
+  <PageHero
+    code="G-00"
+    label="Industries"
+    title="Different buildings. The same standard."
+    lead="Every sector brings its own constraints — operating hours, compliance, footprint. We plan the install around them, then build every system to the same ANSI/TIA standard."
+    crumbs={[{ label: 'Industries' }]}
+  >
+    <nav class="jump" aria-label="Jump to an industry" data-reveal style="--reveal-delay: 120ms">
+      <ul role="list" class="jump__list">
+        {rows.map((r) => (
+          <li>
+            <a href={`#${r.slug}`} class="jump__link">
+              <span class="t-mono jump__code">{r.code}</span>
+              {r.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </PageHero>
+
+  <div class="sectors container">
+    {rows.map(({ Icon, ...r }) => (
+      <section id={r.slug} class="sector" aria-labelledby={`${r.slug}-title`}>
+        <div class="sector__head" data-reveal>
+          <span class="sector__icon"><Icon size={26} stroke-width={1.5} aria-hidden="true" /></span>
+          <span class="t-mono sector__code">{r.code}</span>
+        </div>
+
+        <div class="sector__main" data-reveal>
+          <h2 id={`${r.slug}-title`} class="t-h2 sector__name">{r.name}</h2>
+          <p class="t-lead sector__need">{r.need}</p>
+        </div>
+
+        <div class="sector__systems" data-reveal style="--reveal-delay: 100ms">
+          <p class="t-mono sector__systems-head">Typical systems</p>
+          <ul role="list" class="sector__list">
+            {r.services.map((s) => (
+              <li>
+                <a href={`/services/${s.slug}/`} class="sector__svc">
+                  <span class="t-mono sector__svc-code">{s.code}</span>
+                  <span class="sector__svc-name">{s.name}</span>
+                  <ArrowRight class="sector__svc-arrow" size={18} stroke-width={1.75} aria-hidden="true" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <PageCta
+    code="G-09"
+    title="Tell us about your building."
+    body="Don’t see your sector? Every site is different. We’ll walk it with you, document what’s there and scope the job before anything is priced."
+  />
+</Base>
+
+<style>
+  /* ── Jump nav ── */
+  .jump {
+    width: 100%;
+  }
+
+  .jump__list {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+  }
+
+  .jump__link {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-height: 40px;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    font-size: var(--fs-small);
+    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
+  }
+
+  .jump__link:hover {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .jump__code {
+    color: var(--steel);
+    transition: color var(--dur-fast) ease;
+  }
+
+  .jump__link:hover .jump__code {
+    color: var(--steel-light);
+  }
+
+  /* ── Sector rows ── */
+  .sectors {
+    padding-bottom: var(--space-block);
+  }
+
+  .sector {
+    display: grid;
+    gap: 1.5rem var(--col-gap);
+    padding-block: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
+    border-top: 1px solid var(--hairline);
+  }
+
+  .sector:first-child {
+    border-top-color: var(--ink);
+  }
+
+  .sector__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .sector__icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+  }
+
+  .sector:target .sector__icon {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .sector__code {
+    color: var(--signal);
+  }
+
+  .sector__main {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+
+  .sector__name {
+    max-width: 14ch;
+  }
+
+  .sector__need {
+    color: var(--steel);
+  }
+
+  .sector__systems {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+  }
+
+  .sector__systems-head {
+    color: var(--steel);
+  }
+
+  .sector__list {
+    border-top: 1px solid var(--ink);
+  }
+
+  .sector__list li {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .sector__svc {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 0.25rem;
+    transition: background var(--dur-fast) ease;
+  }
+
+  .sector__svc:hover {
+    background: var(--white);
+  }
+
+  .sector__svc-code {
+    color: var(--steel);
+  }
+
+  .sector__svc-name {
+    font-weight: 500;
+  }
+
+  .sector__svc :global(.sector__svc-arrow) {
+    color: var(--steel);
+    transition: transform var(--dur) var(--ease-out), color var(--dur-fast) ease;
+  }
+
+  .sector__svc:hover :global(.sector__svc-arrow) {
+    color: var(--ink);
+    transform: translateX(3px);
+  }
+
+  @media (min-width: 560px) {
+    .jump__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 900px) {
+    .jump__list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .sector {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .sector__head {
+      grid-column: 1 / span 2;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .sector__main {
+      grid-column: 3 / span 5;
+    }
+
+    .sector__systems {
+      grid-column: 8 / -1;
+      padding-top: 0.5rem;
+    }
+  }
+</style>

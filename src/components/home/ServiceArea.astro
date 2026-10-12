@@ -1,0 +1,678 @@
+---
+/**
+ * Service-area map + city list.
+ * The map (MapLibre GL + OpenFreeMap "positron" tiles, no API key) is only downloaded when the
+ * section nears the viewport. Until then — and if WebGL or the network fails — a static
+ * schematic plot of the same cities is shown, so there is never an empty box.
+ */
+import SectionHead from '../ui/SectionHead.astro';
+import { site, serviceArea, counties } from '../../data/site';
+
+type LngLat = [number, number];
+
+const hq = site.hq;
+const isHq = (name: string) => name === hq.city;
+
+// ── Geometry (computed at build time) ───────────────────────────────────────
+const lngs = serviceArea.map((c) => c.lng);
+const lats = serviceArea.map((c) => c.lat);
+const bounds: [LngLat, LngLat] = [
+  [Math.min(...lngs), Math.min(...lats)],
+  [Math.max(...lngs), Math.max(...lats)],
+];
+
+/** Convex hull (monotone chain) of the cities — drawn as the faint coverage outline. */
+function convexHull(points: LngLat[]): LngLat[] {
+  const pts = [...points].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  const cross = (o: LngLat, a: LngLat, b: LngLat) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+  const lower: LngLat[] = [];
+  for (const p of pts) {
+    while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0) lower.pop();
+    lower.push(p);
+  }
+  const upper: LngLat[] = [];
+  for (const p of [...pts].reverse()) {
+    while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0) upper.pop();
+    upper.push(p);
+  }
+  return [...lower.slice(0, -1), ...upper.slice(0, -1)];
+}
+
+const hull = convexHull(serviceArea.map((c) => [c.lng, c.lat]));
+
+const mapData = {
+  bounds,
+  hull: [...hull, hull[0]],
+  cities: serviceArea.map((c) => ({ name: c.name, lng: c.lng, lat: c.lat, hq: isHq(c.name) })),
+};
+
+// ── Static schematic (equirectangular, corrected for latitude) ──────────────
+const PAD = 0.35;
+const minLng = bounds[0][0] - PAD;
+const maxLng = bounds[1][0] + PAD;
+const minLat = bounds[0][1] - PAD;
+const maxLat = bounds[1][1] + PAD;
+const kx = Math.cos((((minLat + maxLat) / 2) * Math.PI) / 180);
+const VB_W = 1000;
+const VB_H = Math.round((VB_W * (maxLat - minLat)) / ((maxLng - minLng) * kx));
+const px = (lng: number) => +(((lng - minLng) / (maxLng - minLng)) * VB_W).toFixed(1);
+const py = (lat: number) => +(((maxLat - lat) / (maxLat - minLat)) * VB_H).toFixed(1);
+
+const gridLngs: number[] = [];
+for (let v = Math.ceil(minLng * 2) / 2; v <= maxLng; v += 0.5) gridLngs.push(v);
+const gridLats: number[] = [];
+for (let v = Math.ceil(minLat * 2) / 2; v <= maxLat; v += 0.5) gridLats.push(v);
+
+const hullPoints = hull.map(([lng, lat]) => `${px(lng)},${py(lat)}`).join(' ');
+/** Only a few anchor cities are labeled in the schematic to keep it legible. */
+const schematicLabels = new Set(['Santa Barbara', 'Lancaster', 'San Bernardino', 'Long Beach', 'Temecula', 'San Diego']);
+
+const fmtCoord = (v: number, pos: string, neg: string) => `${Math.abs(v).toFixed(4)}° ${v >= 0 ? pos : neg}`;
+const hqCoords = `${fmtCoord(hq.lat, 'N', 'S')}, ${fmtCoord(hq.lng, 'E', 'W')}`;
+
+const groups = counties.map((county) => ({
+  county,
+  cities: serviceArea.filter((c) => c.county === county),
+}));
+---
+
+<section class="area section" id="service-area">
+  <div class="container">
+    <SectionHead
+      code="H-01"
+      label="Service area"
+      title="All of Southern California, from Santa Barbara to Chula Vista."
+      intro={`Crews dispatched from our ${hq.city} headquarters to ${serviceArea.length} cities across ${counties.length} counties — from the Central Coast to San Diego County.`}
+    />
+
+    <div class="area__body">
+      <figure class="area__map" data-area-map data-state="idle" data-geo={JSON.stringify(mapData)} data-reveal>
+        <div class="area__stage">
+          <div class="area__fallback" aria-hidden="true">
+            <svg class="area__schematic" viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio="xMidYMid meet" focusable="false">
+              <g class="sx-grid">
+                {gridLngs.map((v) => <line x1={px(v)} x2={px(v)} y1="0" y2={VB_H} />)}
+                {gridLats.map((v) => <line x1="0" x2={VB_W} y1={py(v)} y2={py(v)} />)}
+              </g>
+              <g class="sx-ticks">
+                {gridLngs.filter((v) => Number.isInteger(v)).map((v) => <text x={px(v) + 8} y={VB_H - 14}>{`${Math.abs(v)}°W`}</text>)}
+                {gridLats.filter((v) => Number.isInteger(v)).map((v) => <text x="14" y={py(v) - 10}>{`${v}°N`}</text>)}
+              </g>
+              <polygon class="sx-hull" points={hullPoints} />
+              {serviceArea.filter((c) => !isHq(c.name)).map((c) => (
+                <g class="sx-city">
+                  <circle cx={px(c.lng)} cy={py(c.lat)} r="7" />
+                  {schematicLabels.has(c.name) && <text x={px(c.lng) + 14} y={py(c.lat) + 6}>{c.name}</text>}
+                </g>
+              ))}
+              <g class="sx-hq">
+                <circle class="sx-hq__ring" cx={px(hq.lng)} cy={py(hq.lat)} r="22" />
+                <circle class="sx-hq__dot" cx={px(hq.lng)} cy={py(hq.lat)} r="11" />
+                <text x={px(hq.lng) - 30} y={py(hq.lat) - 30} text-anchor="end">HQ · {hq.city}</text>
+              </g>
+            </svg>
+          </div>
+          <div class="area__canvas" data-map-canvas></div>
+          <p class="area__status t-mono" data-map-status aria-hidden="true">Schematic</p>
+        </div>
+        <figcaption class="area__caption t-mono">
+          <span><span class="area__hq-mark" aria-hidden="true"></span>{hq.city} HQ<span class="area__coords"> · {hqCoords}</span></span>
+          <span>{serviceArea.length} cities · {counties.length} counties</span>
+        </figcaption>
+      </figure>
+
+      <div class="area__list" data-reveal style="--reveal-delay: 120ms">
+        <div class="area__hq">
+          <p class="t-mono area__hq-label">Headquarters</p>
+          <p class="t-h3 area__hq-city">{hq.city}, {hq.region}</p>
+          <p class="t-mono t-muted">{hqCoords}</p>
+        </div>
+
+        <h3 class="visually-hidden">Cities we serve, by county</h3>
+        <ul role="list" class="area__counties">
+          {groups.map((g) => (
+            <li class="area__county">
+              <p class="area__county-head">
+                <span class="area__county-name">{g.county} County</span>
+                <span class="t-mono t-muted">{String(g.cities.length).padStart(2, '0')}</span>
+              </p>
+              <ul role="list" class="area__cities">
+                {g.cities.map((c) => (
+                  <li class:list={['area__city', { 'is-hq': isHq(c.name) }]}>
+                    {c.name}
+                    {isHq(c.name) && <span class="area__hq-tag t-mono">HQ</span>}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .area__body {
+    display: grid;
+    gap: var(--col-gap);
+  }
+
+  /* ── Map frame ─────────────────────────────────────────── */
+  .area__map {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--paper-sunken);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+  }
+
+  .area__stage {
+    position: relative;
+    flex: 1;
+    aspect-ratio: 1 / 1;
+  }
+
+  .area__fallback,
+  .area__canvas {
+    position: absolute;
+    inset: 0;
+  }
+
+  .area__canvas {
+    opacity: 0;
+    transition: opacity var(--dur-slow) var(--ease-out);
+  }
+
+  .area__map[data-state="ready"] .area__canvas {
+    opacity: 1;
+  }
+
+  .area__map[data-state="ready"] .area__fallback,
+  .area__map[data-state="ready"] .area__status {
+    visibility: hidden;
+  }
+
+  .area__schematic {
+    width: 100%;
+    height: 100%;
+  }
+
+  .sx-grid line {
+    stroke: var(--hairline-strong);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .sx-ticks text {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    fill: var(--steel);
+  }
+
+  .sx-hull {
+    fill: rgba(11, 13, 16, 0.04);
+    stroke: var(--ink);
+    stroke-width: 1;
+    stroke-dasharray: 4 4;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .sx-city circle {
+    fill: var(--ink);
+    stroke: var(--paper-sunken);
+    stroke-width: 3;
+  }
+
+  .sx-city text,
+  .sx-hq text {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    fill: var(--ink);
+  }
+
+  .sx-hq__dot {
+    fill: var(--signal);
+    stroke: var(--white);
+    stroke-width: 3;
+  }
+
+  .sx-hq__ring {
+    fill: none;
+    stroke: var(--signal);
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .sx-hq text {
+    fill: var(--signal);
+    font-weight: 600;
+  }
+
+  .area__status {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.3rem 0.5rem;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    color: var(--steel);
+  }
+
+  .area__caption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.25rem 1rem;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.875rem;
+    background: var(--white);
+    border-top: 1px solid var(--hairline);
+    color: var(--steel);
+  }
+
+  .area__caption > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .area__hq-mark {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--signal);
+  }
+
+  /* MapLibre UI — restyled to the design system (its DOM is injected, so :global) */
+  .area__map :global(.maplibregl-ctrl-group) {
+    border-radius: var(--radius);
+    box-shadow: none;
+    border: 1px solid var(--hairline-strong);
+  }
+
+  .area__map :global(.maplibregl-ctrl-group button) {
+    width: 36px;
+    height: 36px;
+  }
+
+  .area__map :global(.maplibregl-ctrl-attrib) {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    line-height: 1.4;
+    background: rgba(255, 255, 255, 0.85);
+  }
+
+  .area__map :global(.maplibregl-cooperative-gesture-screen) {
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+  }
+
+  /* ── City list ─────────────────────────────────────────── */
+  .area__list {
+    display: grid;
+    align-content: start;
+    gap: 1.5rem;
+  }
+
+  .area__hq {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--signal);
+    border-radius: var(--radius);
+  }
+
+  .area__hq-label {
+    color: var(--signal);
+  }
+
+  .area__counties {
+    display: grid;
+    gap: 0;
+  }
+
+  .area__county {
+    display: grid;
+    align-content: start;
+    gap: 0.5rem;
+    padding-block: 0.875rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .area__county-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .area__county-name {
+    font-weight: 500;
+  }
+
+  .area__cities {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    font-size: var(--fs-small);
+    color: var(--steel);
+  }
+
+  .area__city {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .area__city.is-hq {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .area__city.is-hq::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--signal);
+  }
+
+  .area__hq-tag {
+    padding: 0.1rem 0.35rem;
+    font-size: 0.625rem;
+    line-height: 1.3;
+    color: var(--white);
+    background: var(--signal);
+    border-radius: var(--radius);
+  }
+
+  @media (max-width: 599px) {
+    .area__coords {
+      display: none;
+    }
+
+    .sx-city text {
+      display: none;
+    }
+
+    .sx-hq text {
+      font-size: 34px;
+    }
+  }
+
+  @media (min-width: 600px) and (max-width: 999px) {
+    .area__counties {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--col-gap);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .area__body {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: stretch;
+    }
+
+    .area__map {
+      grid-column: 1 / span 8;
+      min-height: 640px;
+    }
+
+    .area__stage {
+      aspect-ratio: auto;
+    }
+
+    .area__list {
+      grid-column: 9 / -1;
+    }
+  }
+</style>
+
+<script>
+  import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
+  import type { GeoJSONSourceSpecification, Map as MapLibreMap } from 'maplibre-gl';
+
+  // MapLibre cannot read CSS custom properties — literal token values.
+  const INK = '#0b0d10';
+  const SIGNAL = '#d4111a';
+  const WHITE = '#ffffff';
+  const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
+  const LOAD_TIMEOUT_MS = 15000;
+
+  interface MapData {
+    bounds: [[number, number], [number, number]];
+    hull: [number, number][];
+    cities: { name: string; lng: number; lat: number; hq: boolean }[];
+  }
+
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function hasWebGL() {
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch {
+      return false;
+    }
+  }
+
+  function addOverlay(map: MapLibreMap, data: MapData, narrow: boolean) {
+    const cities: GeoJSONSourceSpecification = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: data.cities.map((c) => ({
+          type: 'Feature',
+          properties: { name: c.name, hq: c.hq, lng: c.lng },
+          geometry: { type: 'Point', coordinates: [c.lng, c.lat] },
+        })),
+      },
+    };
+
+    map.addSource('armak-hull', {
+      type: 'geojson',
+      data: { type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [data.hull] } },
+    });
+    map.addSource('armak-cities', cities);
+
+    map.addLayer({
+      id: 'armak-hull-fill',
+      type: 'fill',
+      source: 'armak-hull',
+      paint: { 'fill-color': INK, 'fill-opacity': 0.035 },
+    });
+    map.addLayer({
+      id: 'armak-hull-line',
+      type: 'line',
+      source: 'armak-hull',
+      paint: { 'line-color': INK, 'line-width': 1, 'line-opacity': 0.55, 'line-dasharray': [3, 3] },
+    });
+    map.addLayer({
+      id: 'armak-city-dots',
+      type: 'circle',
+      source: 'armak-cities',
+      filter: ['!=', ['get', 'hq'], true],
+      paint: {
+        'circle-color': INK,
+        'circle-radius': ['interpolate', ['linear'], ['zoom'], 6, 3.5, 10, 6],
+        'circle-stroke-color': WHITE,
+        'circle-stroke-width': 1.5,
+      },
+    });
+    // Labels sit to the right of their dot, except along the eastern edge where they'd be
+    // clipped by the frame — those flip to the left.
+    const EAST_LNG = -117.5;
+    const labelLayer = (id: string, east: boolean, anchors: ('left' | 'right' | 'top' | 'bottom')[]) =>
+      map.addLayer({
+        id,
+        type: 'symbol',
+        source: 'armak-cities',
+        filter: ['all', ['!=', ['get', 'hq'], true], [east ? '>' : '<=', ['get', 'lng'], EAST_LNG]],
+        layout: {
+          'text-field': ['upcase', ['get', 'name']],
+          'text-font': ['Noto Sans Regular'],
+          'text-size': narrow ? 9.5 : 10.5,
+          'text-letter-spacing': 0.08,
+          'text-variable-anchor': anchors,
+          'text-radial-offset': 0.75,
+          'text-justify': 'auto',
+          'text-padding': 2,
+        },
+        paint: { 'text-color': INK, 'text-halo-color': WHITE, 'text-halo-width': 1.5 },
+      });
+    labelLayer('armak-city-labels', false, ['left', 'right', 'top', 'bottom']);
+    labelLayer('armak-city-labels-east', true, ['right', 'top', 'bottom', 'left']);
+    map.addLayer({
+      id: 'armak-hq-ring',
+      type: 'circle',
+      source: 'armak-cities',
+      filter: ['==', ['get', 'hq'], true],
+      paint: {
+        'circle-radius': 15,
+        'circle-color': SIGNAL,
+        'circle-opacity': 0,
+        'circle-stroke-color': SIGNAL,
+        'circle-stroke-width': 1,
+      },
+    });
+    map.addLayer({
+      id: 'armak-hq-dot',
+      type: 'circle',
+      source: 'armak-cities',
+      filter: ['==', ['get', 'hq'], true],
+      paint: {
+        'circle-radius': 7,
+        'circle-color': SIGNAL,
+        'circle-stroke-color': WHITE,
+        'circle-stroke-width': 2,
+      },
+    });
+    map.addLayer({
+      id: 'armak-hq-label',
+      type: 'symbol',
+      source: 'armak-cities',
+      filter: ['==', ['get', 'hq'], true],
+      layout: {
+        'text-field': ['concat', 'HQ · ', ['upcase', ['get', 'name']]],
+        'text-font': ['Noto Sans Bold'],
+        'text-size': 12,
+        'text-letter-spacing': 0.08,
+        'text-anchor': 'bottom-right',
+        'text-offset': [-1, -1],
+        'text-allow-overlap': true,
+      },
+      paint: { 'text-color': SIGNAL, 'text-halo-color': WHITE, 'text-halo-width': 2 },
+    });
+
+    // Hide the basemap's own place names so our city labels are the only ones.
+    for (const layer of map.getStyle().layers) {
+      if (layer.type === 'symbol' && 'source-layer' in layer && layer['source-layer'] === 'place') {
+        map.setLayoutProperty(layer.id, 'visibility', 'none');
+      }
+    }
+  }
+
+  async function initMap(root: HTMLElement) {
+    const container = root.querySelector<HTMLElement>('[data-map-canvas]');
+    const status = root.querySelector<HTMLElement>('[data-map-status]');
+    if (!container || !root.dataset.geo) return;
+    const data = JSON.parse(root.dataset.geo) as MapData;
+
+    const fail = (map?: MapLibreMap) => {
+      if (root.dataset.state === 'error') return;
+      root.dataset.state = 'error';
+      if (status) status.textContent = 'Schematic · map unavailable';
+      map?.remove();
+    };
+
+    if (!hasWebGL()) return fail();
+    root.dataset.state = 'loading';
+    if (status) status.textContent = 'Loading map…';
+
+    let map: MapLibreMap | undefined;
+    try {
+      const [maplibregl] = await Promise.all([
+        import('maplibre-gl'),
+        import('maplibre-gl/dist/maplibre-gl.css'),
+      ]);
+      // MapLibre resolves its worker relative to its own module URL, which breaks once bundled.
+      maplibregl.setWorkerUrl(workerUrl);
+
+      const narrow = root.clientWidth < 600;
+      map = new maplibregl.Map({
+        container,
+        style: STYLE_URL,
+        bounds: data.bounds,
+        fitBoundsOptions: { padding: narrow ? { top: 40, right: 36, bottom: 48, left: 28 } : 64 },
+        maxBounds: [
+          [data.bounds[0][0] - 4, data.bounds[0][1] - 3],
+          [data.bounds[1][0] + 4, data.bounds[1][1] + 3],
+        ],
+        minZoom: 5,
+        maxZoom: 14,
+        scrollZoom: false,
+        cooperativeGestures: true,
+        dragRotate: false,
+        pitchWithRotate: false,
+        touchPitch: false,
+        maxPitch: 0,
+        renderWorldCopies: false,
+        fadeDuration: reduceMotion ? 0 : 300,
+        // Always-visible, single-line attribution (the compact variant opens over the map on mobile).
+        attributionControl: { compact: false },
+      });
+      map.touchZoomRotate.disableRotation();
+      map.keyboard.disableRotation();
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+
+      const timeout = window.setTimeout(() => fail(map), LOAD_TIMEOUT_MS);
+
+      map.on('error', () => {
+        // Before the style has loaded, any error means the map can't render (style/network/worker).
+        // Later errors (a single tile) are tolerated.
+        if (root.dataset.state === 'loading' && !map?.isStyleLoaded()) {
+          window.clearTimeout(timeout);
+          fail(map);
+        }
+      });
+
+      map.on('load', () => {
+        if (!map || root.dataset.state === 'error') return;
+        addOverlay(map, data, narrow);
+        map.once('idle', () => {
+          window.clearTimeout(timeout);
+          if (root.dataset.state !== 'error') root.dataset.state = 'ready';
+        });
+      });
+    } catch (err) {
+      console.warn('[service-area] map unavailable, showing schematic', err);
+      fail(map);
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-area-map]').forEach((root) => {
+    if (!('IntersectionObserver' in window)) {
+      void initMap(root);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((e) => e.isIntersecting)) return;
+        io.disconnect();
+        void initMap(root);
+      },
+      { rootMargin: '300px 0px' },
+    );
+    io.observe(root);
+  });
+</script>

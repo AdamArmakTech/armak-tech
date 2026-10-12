@@ -1,0 +1,170 @@
+---
+import SectionHead from '../ui/SectionHead.astro';
+import ServiceTile from '../ui/ServiceTile.astro';
+import Button from '../ui/Button.astro';
+import { services } from '../../data/site';
+// TODO(photo): interim stock (see assets/photos/CREDITS.md) — replace with real Armak install photos
+import cableBundles from '../../assets/photos/cabling-bundles-white.jpg';
+import rackRow from '../../assets/photos/wifi-ap-tray.jpg';
+
+const [feature, second, ...rest] = services;
+const href = (slug: string) => `/services/${slug}/`;
+---
+
+<section id="services" class="section services">
+  <div class="container">
+    <SectionHead
+      code="A-00"
+      label="Services"
+      title="Every low-voltage system your building runs on."
+      intro="Cabling, networks, security, voice and AV — designed, installed and supported by one crew, to one standard, with one point of contact."
+    />
+
+    <div class="services__grid" data-reveal-stagger="80">
+      <ServiceTile
+        data-reveal
+        href={href(feature.slug)}
+        code={feature.code}
+        title={feature.name}
+        description={feature.short}
+        image={cableBundles}
+        imageAlt="Neatly dressed white cable bundles fanning into a patch panel"
+        size="feature"
+        class="services__tile services__tile--feature"
+      />
+      <ServiceTile
+        data-reveal
+        href={href(second.slug)}
+        code={second.code}
+        title={second.name}
+        description={second.short}
+        image={rackRow}
+        imageAlt="An enterprise Wi-Fi access point mounted on a ceiling cable tray"
+        class="services__tile services__tile--photo"
+      />
+      {rest.map((s) => (
+        <ServiceTile
+          data-reveal
+          href={href(s.slug)}
+          code={s.code}
+          title={s.name}
+          description={s.short}
+          includes={s.includes}
+          class="services__tile services__tile--text"
+        />
+      ))}
+    </div>
+
+    <div class="services__foot" data-reveal>
+      <p class="t-mono t-muted">{services.length} disciplines · One point of contact</p>
+      <Button href="/services/" variant="outline">All services</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .services__grid {
+    display: grid;
+    gap: var(--col-gap);
+  }
+
+  .services__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-top: var(--col-gap);
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  /* Feature tile gets a larger title */
+  .services__grid :global(.services__tile--feature .tile__title) {
+    font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.5rem);
+    letter-spacing: var(--tracking-heading);
+    max-width: 16ch;
+  }
+
+  .services__grid :global(.services__tile--feature .tile__desc) {
+    font-size: var(--fs-body);
+  }
+
+  /* Tablet: feature full width, A-02 as a horizontal tile, text tiles 2×2 */
+  @media (min-width: 700px) {
+    .services__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .services__grid :global(.services__tile--feature),
+    .services__grid :global(.services__tile--photo) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 700px) and (max-width: 1099px) {
+    .services__grid :global(.services__tile--photo) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .services__grid :global(.services__tile--photo .tile__media) {
+      position: relative;
+      aspect-ratio: auto;
+      min-height: 300px;
+    }
+
+    .services__grid :global(.services__tile--photo .tile__media img) {
+      position: absolute;
+      inset: 0;
+    }
+
+    .services__grid :global(.services__tile--photo .tile__body) {
+      padding: 1.5rem;
+    }
+  }
+
+  /* Desktop bento: 8/4 photo row, then four text tiles */
+  @media (min-width: 1100px) {
+    .services__grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .services__grid :global(.services__tile--feature) {
+      grid-column: span 8;
+    }
+
+    .services__grid :global(.services__tile--photo) {
+      grid-column: span 4;
+    }
+
+    .services__grid :global(.services__tile--text) {
+      grid-column: span 3;
+    }
+
+    /* Photo tiles share one height: the media flexes to fill the row */
+    .services__grid :global(.services__tile--feature .tile__media),
+    .services__grid :global(.services__tile--photo .tile__media) {
+      position: relative;
+      flex: 1;
+      aspect-ratio: auto;
+      min-height: clamp(340px, 30vw, 500px);
+    }
+
+    .services__grid :global(.services__tile--feature .tile__media img),
+    .services__grid :global(.services__tile--photo .tile__media img) {
+      position: absolute;
+      inset: 0;
+    }
+
+    .services__grid :global(.services__tile--feature .tile__body),
+    .services__grid :global(.services__tile--photo .tile__body) {
+      flex: none;
+      padding: 1.5rem 1.5rem 1.75rem;
+    }
+
+    .services__grid :global(.services__tile--text) {
+      min-height: 360px;
+    }
+  }
+</style>
