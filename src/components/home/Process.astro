@@ -1,11 +1,8 @@
 ---
-import { Image } from 'astro:assets';
 import SectionHead from '../ui/SectionHead.astro';
 import Label from '../ui/Label.astro';
-import TestCard from '../ui/TestCard.astro';
+import CableTest from '../ui/CableTest.astro';
 import { process as steps, pillars } from '../../data/content';
-// TODO(photo): replace with a real Armak install photo
-import patchColors from '../../assets/photos/patch-panel-colors.webp';
 ---
 
 <section id="process" class="section process">
@@ -29,32 +26,16 @@ import patchColors from '../../assets/photos/patch-panel-colors.webp';
                   <span class="visually-hidden">Step {step.code}: </span>{step.title}
                 </h3>
                 <p class="step__body t-muted">{step.body}</p>
-                {isCertify && <p class="t-mono step__ref">See fig. D-02 · Sample report</p>}
+                {isCertify && <a class="t-mono step__ref" href="#cable-test">Try the live test demo →</a>}
               </div>
             </li>
           );
         })}
       </ol>
 
-      <aside class="process__aside" aria-label="Certification evidence">
-        <div class="process__sticky" data-reveal>
-          <div class="process__figure">
-            <div class="process__photo">
-              <Image
-                src={patchColors}
-                alt="Color-coded patch cables terminated and labeled in a patch panel"
-                widths={[480, 720, 960]}
-                sizes="(min-width: 1000px) 34vw, 100vw"
-                loading="lazy"
-              />
-              <span class="process__tag t-mono">Fig. D-02 · Step 04</span>
-            </div>
-            <TestCard class="process__card" />
-          </div>
-          <p class="t-small t-muted process__caption">
-            Every run, rack and port is tested before we leave. You get the reports.
-          </p>
-        </div>
+      <aside class="process__aside" aria-label="Step 04 in action: a live cable test">
+        <p class="t-mono process__aside-label">Step 04 · Certify — see it work</p>
+        <CableTest variant="full" id="cable-test" />
       </aside>
     </div>
 
@@ -124,8 +105,13 @@ import patchColors from '../../assets/photos/patch-panel-colors.webp';
   .step__ref {
     display: inline-flex;
     align-items: center;
+    justify-self: start;
     gap: 0.5rem;
     color: var(--ink);
+  }
+
+  .step__ref:hover {
+    color: var(--signal);
   }
 
   .step__ref::before {
@@ -135,47 +121,15 @@ import patchColors from '../../assets/photos/patch-panel-colors.webp';
     background: var(--signal);
   }
 
-  /* ── Aside: photo + certification card ── */
-  /* Phone/tablet: card sits in flow, overlapping the photo's foot.
-     Desktop: card floats over the photo's lower-left corner. */
-  .process__figure {
-    position: relative;
+  /* ── Aside: the live cable-test demo (step 04 in action) ── */
+  .process__aside {
     display: grid;
+    gap: 0.875rem;
+    align-content: start;
   }
 
-  .process__photo {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius);
-    background: var(--paper-sunken);
-  }
-
-  .process__photo img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-  }
-
-  .process__tag {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    padding: 0.35rem 0.55rem;
-    background: var(--paper);
-    border-radius: var(--radius);
-  }
-
-  .process__figure :global(.process__card) {
-    position: relative;
-    justify-self: end;
-    width: min(340px, calc(100% - 1.5rem));
-    margin-top: -4rem;
-    margin-right: 0.75rem;
-  }
-
-  .process__caption {
-    margin-top: 1.25rem;
-    max-width: 30em;
+  .process__aside-label {
+    color: var(--steel);
   }
 
   /* ── Pillars ── */
@@ -213,10 +167,6 @@ import patchColors from '../../assets/photos/patch-panel-colors.webp';
       grid-template-columns: 6rem minmax(0, 1fr);
     }
 
-    .process__figure :global(.process__card) {
-      margin-right: 1.5rem;
-    }
-
     .pillars__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -241,34 +191,11 @@ import patchColors from '../../assets/photos/patch-panel-colors.webp';
     }
 
     .process__steps {
-      grid-column: 1 / span 7;
+      grid-column: 1 / span 6;
     }
 
     .process__aside {
-      grid-column: 9 / -1;
-      align-self: stretch;
-    }
-
-    .process__sticky {
-      position: sticky;
-      top: calc(var(--header-h) + 2rem);
-    }
-
-    .process__photo img {
-      aspect-ratio: 4 / 5;
-      max-height: 62vh;
-    }
-
-    .process__figure {
-      padding-bottom: 5rem;
-    }
-
-    .process__figure :global(.process__card) {
-      position: absolute;
-      left: -3.5rem;
-      bottom: 0;
-      width: min(320px, 92%);
-      margin: 0;
+      grid-column: 7 / -1;
     }
 
     .step {

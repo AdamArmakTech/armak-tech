@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import Button from '../ui/Button.astro';
-import TestCard from '../ui/TestCard.astro';
+import CableTest from '../ui/CableTest.astro';
 import { site, yearsInBusiness } from '../../data/site';
 import { credentials } from '../../data/content';
 // TODO(photo): interim stock (Unsplash, see assets/photos/CREDITS.md) — replace with a real Armak install photo
@@ -45,7 +45,7 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
       />
       <span class="hero__tag t-mono">A-01 · Physical layer</span>
     </div>
-    <TestCard class="hero__card" />
+    <CableTest variant="compact" class="hero__card" />
   </div>
 </section>
 

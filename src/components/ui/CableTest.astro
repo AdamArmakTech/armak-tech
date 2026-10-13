@@ -1,0 +1,977 @@
+---
+/**
+ * Live cable-test demo — shows what a certification test actually checks, step by step.
+ *
+ *  variant="full"     wire map + 5 checks with plain-English explanations, Run test button,
+ *                     Passing / Failing cable switch, PASS/FAIL result (homepage Process section)
+ *  variant="compact"  wire map + result + "See how we test" link (hero photo, cabling service page)
+ *
+ * Server-renders the finished PASSING report (works without JS / under reduced motion);
+ * the script resets it and plays the test once when it scrolls into view.
+ * Values are illustrative and labeled SAMPLE.
+ */
+import { Play, RotateCcw, ArrowDown, ArrowRight } from '@lucide/astro';
+
+interface Props {
+  variant?: 'full' | 'compact';
+  id?: string;
+  /** Compact only: where "See how we test" points */
+  demoHref?: string;
+  class?: string;
+}
+
+const { variant = 'full', id, demoHref = '#cable-test', class: className } = Astro.props;
+const full = variant === 'full';
+const uid = `ct${Math.random().toString(36).slice(2, 8)}`;
+
+/* ── Wire map geometry (viewBox 320 × 210) ── */
+const pinY = (i: number) => 36 + i * 22;
+const X1 = 48;
+const X2 = 272;
+const curve = (from: number, to: number) =>
+  `M${X1} ${pinY(from)} C 160 ${pinY(from)}, 160 ${pinY(to)}, ${X2} ${pinY(to)}`;
+
+// T568B pin order. Striped ("white/x") conductors use an SVG pattern stroke.
+const pins = [
+  { n: 1, name: 'White/orange', color: 'var(--t568-orange)', striped: true },
+  { n: 2, name: 'Orange', color: 'var(--t568-orange)', striped: false },
+  { n: 3, name: 'White/green', color: 'var(--t568-green)', striped: true },
+  { n: 4, name: 'Blue', color: 'var(--t568-blue)', striped: false },
+  { n: 5, name: 'White/blue', color: 'var(--t568-blue)', striped: true },
+  { n: 6, name: 'Green', color: 'var(--t568-green)', striped: false },
+  { n: 7, name: 'White/brown', color: 'var(--t568-brown)', striped: true },
+  { n: 8, name: 'Brown', color: 'var(--t568-brown)', striped: false },
+].map((p, i) => ({
+  ...p,
+  i,
+  dPass: curve(i, i),
+  // Failing cable: pins 3 and 6 are crossed (a real wire-map fault)
+  dFail: i === 2 ? curve(2, 5) : i === 5 ? curve(5, 2) : curve(i, i),
+  bad: i === 2 || i === 5,
+  stroke: p.striped ? `url(#${uid}-${p.color.replace(/\W/g, '')})` : p.color,
+}));
+const stripeColors = [...new Set(pins.filter((p) => p.striped).map((p) => p.color))];
+
+/* ── The five checks ── */
+type Bar = { kind: 'length'; value: number; limit: number } | { kind: 'margin'; value: number };
+interface Check {
+  id: string;
+  name: string;
+  plain: string;
+  passText: string;
+  failText: string;
+  bar?: Bar;
+  explain: string;
+  slug: string;
+}
+
+const checks: Check[] = [
+  {
+    id: 'wiremap',
+    name: 'Wire map',
+    plain: 'Every wire lands on the right pin',
+    passText: '8 / 8 correct',
+    failText: 'Pins 3 & 6 crossed',
+    explain:
+      'A network cable has 8 small wires. Each one must connect to the matching pin at both ends, in the standard color order. One wire in the wrong spot and the connection drops out — or never works at all.',
+    slug: 'termination',
+  },
+  {
+    id: 'length',
+    name: 'Length',
+    plain: 'How long the cable is',
+    passText: '47.2 m',
+    failText: 'Skipped — fix the wiring first',
+    bar: { kind: 'length', value: 47.2, limit: 90 },
+    explain:
+      'The tester times a signal down the cable and back to measure its length. A Cat 6A permanent link can be up to 90 meters; longer runs lose too much signal.',
+    slug: 'permanent-link',
+  },
+  {
+    id: 'next',
+    name: 'Crosstalk (NEXT)',
+    plain: 'Signal leaking between wire pairs',
+    passText: '+5.8 dB margin',
+    failText: 'Skipped — fix the wiring first',
+    bar: { kind: 'margin', value: 5.8 },
+    explain:
+      'The wires travel in four twisted pairs, side by side. Crosstalk is signal from one pair bleeding into another — like hearing a neighbor’s call on your line. Careful twisting and termination keep it low.',
+    slug: 'next',
+  },
+  {
+    id: 'il',
+    name: 'Insertion loss',
+    plain: 'Signal fading over the distance',
+    passText: '+12.3 dB margin',
+    failText: 'Skipped — fix the wiring first',
+    bar: { kind: 'margin', value: 12.3 },
+    explain:
+      'Every cable weakens a signal a little along its length. This checks that enough signal survives to the far end to run at full speed.',
+    slug: 'insertion-loss',
+  },
+  {
+    id: 'rl',
+    name: 'Return loss',
+    plain: 'Signal bouncing back from connections',
+    passText: '+4.1 dB margin',
+    failText: 'Skipped — fix the wiring first',
+    bar: { kind: 'margin', value: 4.1 },
+    explain:
+      'A poorly made connection reflects part of the signal back toward the sender, like an echo. The less echo, the cleaner the connection.',
+    slug: 'return-loss',
+  },
+];
+
+// Bar positions as a 0–1 fraction of the track
+const LIMIT_AT = 0.4; // margin bars: the standard's limit sits 40% along the track
+const barPos = (b: Bar) =>
+  b.kind === 'length'
+    ? b.value / (b.limit / 0.9) // track = 0 → limit/0.9, so the limit tick sits at 90%
+    : Math.min(1, LIMIT_AT + (b.value / 20) * (1 - LIMIT_AT));
+---
+
+<figure
+  class:list={['ct', `ct--${variant}`, className]}
+  id={id}
+  data-ct
+  data-variant={variant}
+  data-mode="pass"
+  aria-label="Cable test demonstration"
+>
+  <header class="ct__head">
+    <span class="t-mono">Cable test · Live demo</span>
+    <span class="ct__sample t-mono">Sample</span>
+  </header>
+  <p class="ct__sub t-mono">Cable IDF2-A-024 · Cat 6A permanent link</p>
+
+  {full && (
+    <div class="ct__controls">
+      <button type="button" class="ct__run" data-ct-run>
+        <Play size={16} stroke-width={2} aria-hidden="true" />
+        Run test
+      </button>
+      <fieldset class="ct__mode">
+        <legend class="visually-hidden">Which cable to test</legend>
+        <label><input type="radio" name={`${uid}-mode`} value="pass" checked data-ct-mode /><span>Passing cable</span></label>
+        <label><input type="radio" name={`${uid}-mode`} value="fail" data-ct-mode /><span>Failing cable</span></label>
+      </fieldset>
+    </div>
+  )}
+
+  <!-- Wire map: wall jack (left) ↔ patch panel (right) -->
+  <div class="ct__map">
+    <svg viewBox="0 0 320 210" role="img" aria-label="Wire map: the 8 wires connecting wall jack pins to patch panel pins">
+      <defs>
+        {stripeColors.map((c) => (
+          <pattern id={`${uid}-${c.replace(/\W/g, '')}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="7" height="7" style="fill: var(--white)" />
+            <rect width="3" height="7" style={`fill: ${c}`} />
+          </pattern>
+        ))}
+      </defs>
+      <text x={X1} y="14" class="ct__map-label">WALL JACK</text>
+      <text x={X2} y="14" class="ct__map-label" text-anchor="end">PATCH PANEL</text>
+
+      {pins.map((p) => (
+        <g class="ct__wire is-drawn" data-wire={p.i} data-bad={p.bad ? '' : undefined}>
+          <path class="ct__wire-under" d={p.dPass} data-d-pass={p.dPass} data-d-fail={p.dFail} pathLength="1" />
+          <path class="ct__wire-line" d={p.dPass} data-d-pass={p.dPass} data-d-fail={p.dFail} pathLength="1" style={`stroke: ${p.stroke}`} />
+          <title>{`Pin ${p.n}: ${p.name}`}</title>
+        </g>
+      ))}
+
+      {pins.map((p) => (
+        <g class="ct__pins">
+          <text x={X1 - 20} y={pinY(p.i) + 4} class="ct__pin-num" text-anchor="middle">{p.n}</text>
+          <circle cx={X1} cy={pinY(p.i)} r="5" class="ct__pin" />
+          <circle cx={X2} cy={pinY(p.i)} r="5" class="ct__pin" />
+          <text x={X2 + 20} y={pinY(p.i) + 4} class="ct__pin-num" text-anchor="middle">{p.n}</text>
+          <text x={X2 + 38} y={pinY(p.i) + 4} class="ct__pin-mark is-shown" data-pin-mark={p.i} text-anchor="middle">✓</text>
+        </g>
+      ))}
+    </svg>
+  </div>
+
+  {full && (
+    <>
+      <p class="ct__margin-note t-small t-muted">
+        <strong>Margin</strong> = how far the cable beats the standard’s limit. Above zero passes.
+      </p>
+      <ol role="list" class="ct__checks">
+        {checks.map((c) => (
+          <li class="ct__check" data-check={c.id} data-state="pass" data-pass-text={c.passText} data-fail-text={c.failText}>
+            <span class="ct__status" aria-hidden="true"></span>
+            <div class="ct__check-main">
+              <div class="ct__check-top">
+                <span class="ct__check-name">
+                  {c.plain}
+                  <span class="t-mono ct__check-term">{c.name}</span>
+                </span>
+                <span class="ct__check-value t-mono" data-ct-value>{c.passText}</span>
+              </div>
+              {c.bar && (
+                <div class:list={['ct__bar', `ct__bar--${c.bar.kind}`]} style={`--pos:${barPos(c.bar).toFixed(3)}; --limit:${c.bar.kind === 'length' ? 0.9 : LIMIT_AT}`} data-ct-bar>
+                  <span class="ct__bar-fill"></span>
+                  <span class="ct__bar-limit"><span class="t-mono">{c.bar.kind === 'length' ? `limit ${c.bar.limit} m` : 'limit'}</span></span>
+                </div>
+              )}
+              <details class="ct__explain">
+                <summary>What’s this?</summary>
+                <p>{c.explain}</p>
+                <a href={`/glossary/#${c.slug}`}>More in the glossary <ArrowRight size={14} stroke-width={1.75} aria-hidden="true" /></a>
+              </details>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </>
+  )}
+
+  <!-- Result -->
+  <div class="ct__result is-shown" data-ct-result data-result="pass">
+    <span class="ct__stamp" aria-hidden="true"><span class="ct__stamp-pass">PASS</span><span class="ct__stamp-fail">FAIL</span></span>
+    {full ? (
+      <div class="ct__result-text">
+        <p class="ct__result-pass">This cable meets the Cat 6A standard. Every cable on the job is tested and documented like this before sign-off.</p>
+        <p class="ct__result-fail"><strong>What happens next:</strong> the jack is re-terminated and the cable is tested again. Nothing is signed off until it passes.</p>
+        <p class="t-small t-muted ct__learn">New to this? <a href="/glossary/#cat-6a">Cat 6A</a> · <a href="/glossary/#cable-certification">Cable certification</a></p>
+      </div>
+    ) : (
+      <p class="ct__result-text t-small">All 8 wires connected correctly.</p>
+    )}
+  </div>
+
+  {!full && (
+    <footer class="ct__foot">
+      <span class="t-small">Every cable gets tested.</span>
+      <a class="ct__how" href={demoHref}>See how we test <ArrowDown size={14} stroke-width={1.75} aria-hidden="true" /></a>
+      <button type="button" class="ct__replay" data-ct-run>
+        <RotateCcw size={15} stroke-width={1.75} aria-hidden="true" />
+        <span class="visually-hidden">Replay test</span>
+      </button>
+    </footer>
+  )}
+
+  <p class="visually-hidden" aria-live="polite" data-ct-live></p>
+</figure>
+
+<script>
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+  document.querySelectorAll<HTMLElement>('[data-ct]').forEach((root) => {
+    const full = root.dataset.variant === 'full';
+    const wires = [...root.querySelectorAll<SVGGElement>('[data-wire]')];
+    const marks = [...root.querySelectorAll<SVGTextElement>('[data-pin-mark]')];
+    const rows = [...root.querySelectorAll<HTMLElement>('[data-check]')];
+    const result = root.querySelector<HTMLElement>('[data-ct-result]')!;
+    const live = root.querySelector<HTMLElement>('[data-ct-live]')!;
+    let mode: 'pass' | 'fail' = 'pass';
+    let runId = 0;
+
+    const say = (text: string) => (live.textContent = text);
+
+    const setWireShapes = () => {
+      root.dataset.mode = mode;
+      root.querySelectorAll<SVGPathElement>('[data-d-pass]').forEach((p) => {
+        p.setAttribute('d', (mode === 'fail' ? p.dataset.dFail : p.dataset.dPass)!);
+      });
+    };
+
+    const setRow = (row: HTMLElement, state: string, text?: string) => {
+      row.dataset.state = state;
+      const value = row.querySelector<HTMLElement>('[data-ct-value]')!;
+      if (text !== undefined) value.textContent = text;
+    };
+
+    const setResult = (show: boolean) => {
+      result.dataset.result = mode;
+      result.classList.toggle('is-shown', show);
+    };
+
+    /** Jump straight to the finished report for the current mode (reduced motion, no animation) */
+    const showFinal = () => {
+      root.classList.add('ct--instant');
+      setWireShapes();
+      wires.forEach((w) => w.classList.add('is-drawn'));
+      marks.forEach((m, i) => {
+        const bad = mode === 'fail' && wires[i].hasAttribute('data-bad');
+        m.textContent = bad ? '✗' : '✓';
+        m.classList.toggle('is-bad', bad);
+        m.classList.add('is-shown');
+        wires[i].classList.toggle('is-bad', bad);
+      });
+      rows.forEach((row, i) => {
+        if (mode === 'pass') setRow(row, 'pass', row.dataset.passText);
+        else setRow(row, i === 0 ? 'fail' : 'skip', row.dataset.failText);
+      });
+      setResult(true);
+      say(mode === 'pass' ? 'Result: pass. All checks passed.' : 'Result: fail. Pins 3 and 6 are crossed.');
+      requestAnimationFrame(() => root.classList.remove('ct--instant'));
+    };
+
+    const reset = () => {
+      root.classList.add('ct--instant');
+      setWireShapes();
+      wires.forEach((w) => w.classList.remove('is-drawn', 'is-bad'));
+      marks.forEach((m) => m.classList.remove('is-shown', 'is-bad'));
+      rows.forEach((row) => setRow(row, 'idle', '—'));
+      setResult(false);
+      // Force a reflow so the next state change animates from the reset state
+      void root.offsetWidth;
+      root.classList.remove('ct--instant');
+    };
+
+    const run = async () => {
+      if (reduceMotion) return showFinal();
+      const id = ++runId;
+      const alive = () => id === runId;
+      reset();
+      await sleep(250);
+
+      // 1 · Wire map
+      if (rows[0]) setRow(rows[0], 'running', 'Testing…');
+      say('Testing wire map');
+      for (let i = 0; i < wires.length; i++) {
+        if (!alive()) return;
+        const bad = mode === 'fail' && wires[i].hasAttribute('data-bad');
+        wires[i].classList.add('is-drawn');
+        wires[i].classList.toggle('is-bad', bad);
+        await sleep(full ? 170 : 150);
+        marks[i].textContent = bad ? '✗' : '✓';
+        marks[i].classList.toggle('is-bad', bad);
+        marks[i].classList.add('is-shown');
+      }
+      await sleep(250);
+      if (!alive()) return;
+
+      if (rows[0]) {
+        setRow(rows[0], mode === 'pass' ? 'pass' : 'fail', mode === 'pass' ? rows[0].dataset.passText : rows[0].dataset.failText);
+      }
+      say(mode === 'pass' ? 'Wire map: passed' : 'Wire map: failed, pins 3 and 6 crossed');
+
+      // 2–5 · The rest (skipped when the wiring is wrong — a real tester stops too)
+      for (const row of rows.slice(1)) {
+        await sleep(mode === 'pass' ? 300 : 160);
+        if (!alive()) return;
+        if (mode === 'fail') {
+          setRow(row, 'skip', row.dataset.failText);
+          continue;
+        }
+        setRow(row, 'running', 'Testing…');
+        await sleep(650);
+        if (!alive()) return;
+        setRow(row, 'pass', row.dataset.passText);
+        say(`${row.querySelector('.ct__check-term')?.textContent}: passed`);
+      }
+
+      await sleep(350);
+      if (!alive()) return;
+      setResult(true);
+      say(mode === 'pass' ? 'Result: pass' : 'Result: fail. The jack gets re-terminated and retested.');
+    };
+
+    root.querySelectorAll('[data-ct-run]').forEach((b) => b.addEventListener('click', run));
+    root.querySelectorAll<HTMLInputElement>('[data-ct-mode]').forEach((r) =>
+      r.addEventListener('change', () => {
+        mode = r.value === 'fail' ? 'fail' : 'pass';
+        run();
+      }),
+    );
+
+    // Play once, the first time the demo is mostly on screen
+    if (!reduceMotion) {
+      reset();
+      const io = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          io.disconnect();
+          run();
+        },
+        { threshold: full ? 0.35 : 0.5 },
+      );
+      io.observe(root);
+    }
+  });
+</script>
+
+<style>
+  .ct {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-raise);
+    font-size: var(--fs-small);
+  }
+
+  .ct--compact {
+    max-width: 360px;
+    gap: 0.75rem;
+  }
+
+  .ct__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--steel);
+  }
+
+  .ct__head .t-mono:first-child::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 0.5rem;
+    border-radius: 50%;
+    background: var(--signal);
+    vertical-align: 1px;
+  }
+
+  .ct__sample {
+    padding: 0.15rem 0.4rem;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+  }
+
+  .ct__sub {
+    color: var(--ink);
+    margin-top: -0.5rem;
+  }
+
+  /* ── Controls ── */
+  .ct__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .ct__run {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 40px;
+    padding: 0.5rem 1rem;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--radius);
+    font-weight: 500;
+  }
+
+  .ct__run:hover {
+    background: var(--graphite);
+  }
+
+  .ct__mode {
+    display: inline-flex;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    padding: 2px;
+    margin: 0;
+  }
+
+  .ct__mode label {
+    position: relative;
+  }
+
+  .ct__mode input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+
+  .ct__mode span {
+    display: block;
+    padding: 0.45rem 0.75rem;
+    border-radius: var(--radius);
+    color: var(--steel);
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
+  }
+
+  .ct__mode input:checked + span {
+    background: var(--paper-sunken);
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .ct__mode input[value='fail']:checked + span {
+    color: var(--signal);
+  }
+
+  .ct__mode input:focus-visible + span {
+    outline: 2px solid var(--signal);
+    outline-offset: 1px;
+  }
+
+  /* ── Wire map ── */
+  .ct__map {
+    padding: 0.5rem 0.25rem 0.25rem;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+  }
+
+  .ct__map svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .ct__map-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    fill: var(--steel);
+  }
+
+  .ct__pin {
+    fill: var(--white);
+    stroke: var(--ink);
+    stroke-width: 1.5;
+  }
+
+  .ct__pin-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    fill: var(--steel);
+  }
+
+  .ct__wire-under,
+  .ct__wire-line {
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 0.45s var(--ease-out), stroke 0.3s ease;
+  }
+
+  .ct__wire-under {
+    stroke: var(--hairline-strong);
+    stroke-width: 7.5;
+  }
+
+  .ct__wire-line {
+    stroke-width: 5;
+  }
+
+  .ct__wire.is-drawn .ct__wire-under,
+  .ct__wire.is-drawn .ct__wire-line {
+    stroke-dashoffset: 0;
+  }
+
+  /* Round caps would leave a dot at the start of an undrawn wire */
+  .ct__wire:not(.is-drawn) path {
+    stroke-linecap: butt;
+  }
+
+  .ct__wire.is-bad .ct__wire-under {
+    stroke: var(--signal);
+  }
+
+  .ct__wire.is-bad .ct__wire-line {
+    animation: ct-bad 0.9s ease-in-out 0.4s 2;
+  }
+
+  @keyframes ct-bad {
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  .ct__pin-mark {
+    font-size: 12px;
+    font-weight: 700;
+    fill: var(--pass);
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(0.4);
+    transition: opacity 0.2s ease, transform 0.3s var(--ease-out);
+  }
+
+  .ct__pin-mark.is-shown {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ct__pin-mark.is-bad {
+    fill: var(--signal);
+  }
+
+  /* ── Checks ── */
+  .ct__margin-note strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .ct__checks {
+    display: grid;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .ct__check {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 0.75rem;
+    padding-block: 0.875rem;
+    border-bottom: 1px solid var(--hairline);
+    transition: background var(--dur) ease;
+  }
+
+  .ct__check[data-state='running'] {
+    background: color-mix(in srgb, var(--paper) 70%, transparent);
+  }
+
+  /* Status icon: idle ○ · running spinner · pass ✓ · fail ✗ · skip – */
+  .ct__status {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    border-radius: 50%;
+    border: 1.5px solid var(--hairline-strong);
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--white);
+    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease;
+  }
+
+  .ct__check[data-state='running'] .ct__status {
+    border-color: var(--hairline);
+    border-top-color: var(--ink);
+    animation: ct-spin 0.7s linear infinite;
+  }
+
+  .ct__check[data-state='pass'] .ct__status {
+    background: var(--pass);
+    border-color: var(--pass);
+  }
+
+  .ct__check[data-state='pass'] .ct__status::after {
+    content: "✓";
+  }
+
+  .ct__check[data-state='fail'] .ct__status {
+    background: var(--signal);
+    border-color: var(--signal);
+  }
+
+  .ct__check[data-state='fail'] .ct__status::after {
+    content: "✕";
+  }
+
+  .ct__check[data-state='skip'] .ct__status {
+    border-style: dashed;
+  }
+
+  .ct__check[data-state='skip'] .ct__status::after {
+    content: "–";
+    color: var(--steel);
+  }
+
+  @keyframes ct-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .ct__check-main {
+    display: grid;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .ct__check-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  .ct__check-name {
+    display: grid;
+    gap: 0.15rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .ct__check-term {
+    color: var(--steel);
+    font-weight: 400;
+  }
+
+  .ct__check-value {
+    flex-shrink: 0;
+    text-align: right;
+    color: var(--steel);
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+
+  .ct__check[data-state='pass'] .ct__check-value {
+    color: var(--pass);
+  }
+
+  .ct__check[data-state='fail'] .ct__check-value {
+    color: var(--signal);
+  }
+
+  .ct__check[data-state='skip'] .ct__check-value {
+    max-width: 10rem;
+  }
+
+  /* Result-vs-limit bar */
+  .ct__bar {
+    position: relative;
+    height: 8px;
+    margin-bottom: 1.1rem;
+    border-radius: 4px;
+    background: var(--paper-sunken);
+  }
+
+  .ct__bar--margin {
+    background: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--signal) 12%, var(--paper-sunken)) 0 calc(var(--limit) * 100%),
+      color-mix(in srgb, var(--pass) 12%, var(--paper-sunken)) calc(var(--limit) * 100%) 100%
+    );
+  }
+
+  .ct__bar-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0;
+    border-radius: 4px;
+    background: var(--ink);
+    transition: width 0.65s var(--ease-out);
+  }
+
+  .ct__check[data-state='pass'] .ct__bar-fill {
+    width: calc(var(--pos) * 100%);
+    background: var(--pass);
+  }
+
+  .ct__check[data-state='skip'] .ct__bar,
+  .ct__check[data-state='fail'] .ct__bar {
+    opacity: 0.35;
+  }
+
+  .ct__bar-limit {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    left: calc(var(--limit) * 100%);
+    width: 2px;
+    background: var(--ink);
+  }
+
+  .ct__bar-limit .t-mono {
+    position: absolute;
+    top: calc(100% + 3px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.625rem;
+    white-space: nowrap;
+    color: var(--steel);
+  }
+
+  .ct__bar--length .ct__bar-limit .t-mono {
+    left: auto;
+    right: 0;
+    transform: none;
+  }
+
+  /* "What's this?" */
+  .ct__explain summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    list-style: none;
+    font-size: 0.8125rem;
+    color: var(--steel);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .ct__explain summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .ct__explain summary:hover {
+    color: var(--ink);
+  }
+
+  .ct__explain[open] summary {
+    color: var(--ink);
+  }
+
+  .ct__explain p {
+    margin-top: 0.5rem;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  .ct__explain a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+    font-weight: 500;
+    color: var(--signal);
+  }
+
+  /* ── Result ── */
+  .ct__result {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.875rem;
+    align-items: center;
+    padding: 0.875rem 1rem;
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--pass) 8%, var(--white));
+    border: 1px solid color-mix(in srgb, var(--pass) 35%, var(--white));
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+    transition: opacity 0.35s var(--ease-out), transform 0.45s var(--ease-out);
+  }
+
+  .ct__result.is-shown {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ct__result[data-result='fail'] {
+    background: color-mix(in srgb, var(--signal) 7%, var(--white));
+    border-color: color-mix(in srgb, var(--signal) 35%, var(--white));
+  }
+
+  .ct__stamp {
+    display: grid;
+    place-items: center;
+    padding: 0.3rem 0.6rem;
+    border: 2px solid var(--pass);
+    border-radius: var(--radius);
+    color: var(--pass);
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    transform: rotate(-4deg);
+  }
+
+  .ct__result.is-shown .ct__stamp {
+    animation: ct-stamp 0.45s var(--ease-out);
+  }
+
+  @keyframes ct-stamp {
+    from {
+      transform: rotate(-4deg) scale(1.6);
+      opacity: 0;
+    }
+  }
+
+  .ct__result[data-result='fail'] .ct__stamp {
+    border-color: var(--signal);
+    color: var(--signal);
+  }
+
+  .ct__stamp-fail,
+  .ct__result-fail,
+  .ct__result[data-result='fail'] .ct__stamp-pass,
+  .ct__result[data-result='fail'] .ct__result-pass {
+    display: none;
+  }
+
+  .ct__result[data-result='fail'] .ct__stamp-fail,
+  .ct__result[data-result='fail'] .ct__result-fail {
+    display: block;
+  }
+
+  .ct__result-text {
+    display: grid;
+    gap: 0.4rem;
+    line-height: 1.5;
+  }
+
+  .ct__learn a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* ── Compact footer ── */
+  .ct__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  /* Sentence on its own line; link + replay button share the line below */
+  .ct__foot > .t-small {
+    flex-basis: 100%;
+    color: var(--steel);
+  }
+
+  .ct__how {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 600;
+    font-size: var(--fs-small);
+    color: var(--signal);
+  }
+
+  .ct__how:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .ct__replay {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    margin-left: auto;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    color: var(--steel);
+  }
+
+  .ct__replay:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  /* Disable transitions while snapping to a state */
+  .ct--instant,
+  .ct--instant * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  @media (max-width: 420px) {
+    .ct {
+      padding: 1rem;
+    }
+
+    .ct__mode {
+      width: 100%;
+    }
+
+    .ct__mode label {
+      flex: 1;
+      text-align: center;
+    }
+  }
+</style>

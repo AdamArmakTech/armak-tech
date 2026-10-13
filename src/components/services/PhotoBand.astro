@@ -1,10 +1,10 @@
 ---
 /**
- * Wide photo band under the service hero. Optionally overlays the sample certification card.
+ * Wide photo band under the service hero. Optionally overlays the compact live cable-test demo.
  * Photos come from `servicePhotos` in src/data/services-detail.ts — TODO(photo) lives there.
  */
 import { Image } from 'astro:assets';
-import TestCard from '../ui/TestCard.astro';
+import CableTest from '../ui/CableTest.astro';
 import type { ServicePhoto } from '../../data/services-detail';
 
 interface Props {
@@ -26,7 +26,7 @@ const { photo, testCard = false } = Astro.props;
     />
     <span class="band__tag t-mono">{photo.tag}</span>
   </figure>
-  {testCard && <TestCard class="band__card" />}
+  {testCard && <CableTest variant="compact" demoHref="/#cable-test" class="band__card" />}
 </div>
 
 <style>

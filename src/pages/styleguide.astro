@@ -6,7 +6,7 @@ import Stripe from '../components/ui/Stripe.astro';
 import Button from '../components/ui/Button.astro';
 import SectionHead from '../components/ui/SectionHead.astro';
 import SpecStrip from '../components/ui/SpecStrip.astro';
-import TestCard from '../components/ui/TestCard.astro';
+import CableTest from '../components/ui/CableTest.astro';
 import ServiceTile from '../components/ui/ServiceTile.astro';
 import Stat from '../components/ui/Stat.astro';
 import { services, site, yearsInBusiness, FOUNDED, serviceArea } from '../data/site';
@@ -70,7 +70,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
       </div>
       <div class="hero-preview__media" data-reveal>
         <Image src={cableBundles} alt="Neatly dressed blue Cat 6A cable bundles terminating into patch panels" widths={[640, 960, 1400]} sizes="(min-width: 900px) 50vw, 100vw" loading="eager" />
-        <TestCard class="hero-preview__card" />
+        <CableTest variant="compact" class="hero-preview__card" />
       </div>
     </div>
   </section>
