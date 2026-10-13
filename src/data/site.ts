@@ -114,6 +114,7 @@ export const nav = [
   { label: 'Industries', href: '/industries/' },
   { label: 'Projects', href: '/projects/' },
   { label: 'About', href: '/about/' },
+  { label: 'Glossary', href: '/glossary/' },
 ] as const;
 
 export interface City {
