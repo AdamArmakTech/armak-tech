@@ -18,7 +18,7 @@ export const defaultOgImage = {
   src: '/og-image.png',
   width: 1200,
   height: 630,
-  alt: `${site.name} — Infrastructure that doesn’t go down. Low-voltage, networking and security across Southern California.`,
+  alt: `${site.name} — Built for the future. Low-voltage, networking and security across Southern California.`,
 };
 
 /** Same @id the service pages use for their `provider`, so search engines merge the two */

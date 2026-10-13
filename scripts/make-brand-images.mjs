@@ -171,14 +171,14 @@ async function ogImage() {
   const head = { size: headSize, weight: 600, tracking: headTrack };
 
   // Second line ends in a signal-red full stop (the site's .t-accent), placed after the measured line
-  const line2 = 'doesn’t go down';
+  const line2 = 'the future';
   const line2W = await geistWidth(line2, headSize, 600, headTrack);
 
   const parts = await Promise.all([
     text(`EST. ${FOUNDED} · ${site.hq.city.toUpperCase()}, ${site.hq.region}`, {
       x: W - M, y: logoTop + logoH / 2 + 7, size: 19, family: 'mono', weight: 500, fill: C.steel, tracking: 0.08, anchor: 'end',
     }),
-    text('Infrastructure that', { x: headX, y: line1Y, ...head }),
+    text('Built for', { x: headX, y: line1Y, ...head }),
     line2W == null
       ? text(`${line2}.`, { x: headX, y: line2Y, ...head })
       : text(line2, { x: headX, y: line2Y, ...head }),
