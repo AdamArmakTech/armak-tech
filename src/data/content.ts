@@ -185,3 +185,11 @@ export const testimonials: Testimonial[] = [];
 export function placeholderCount() {
   return projects.filter((p) => p.placeholder).length;
 }
+
+/**
+ * Only real projects are ever shown. While every project is a placeholder, the whole Projects
+ * area (homepage section, nav/footer links, /projects/ pages) is hidden. Add a real project with
+ * `placeholder: false` and it all switches back on automatically.
+ */
+export const publishedProjects = projects.filter((p) => !p.placeholder);
+export const showProjects = publishedProjects.length > 0;

@@ -15,7 +15,8 @@ import Button from '../../components/ui/Button.astro';
 import Stat from '../../components/ui/Stat.astro';
 import ServiceTile from '../../components/ui/ServiceTile.astro';
 import { services } from '../../data/site';
-import { projects, type Project } from '../../data/content';
+// Only real projects get pages (placeholders are never published)
+import { publishedProjects as projects, type Project } from '../../data/content';
 
 export const getStaticPaths = (() =>
   projects.map((project, index) => ({ params: { slug: project.slug }, props: { project, index } }))) satisfies GetStaticPaths;

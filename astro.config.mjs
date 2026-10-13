@@ -10,10 +10,9 @@ export default defineConfig({
   integrations: [
     sitemap({
       // Internal review pages never go in the sitemap.
-      // TODO(launch): project detail pages are noindex placeholders — drop the /projects/{slug}/
-      // exclusion once real case studies replace them.
-      filter: (page) =>
-        !page.includes('/styleguide') && !page.includes('/dev/') && !/\/projects\/[^/]+\/$/.test(page),
+      // TODO: the Projects area is hidden until real projects exist (see showProjects in
+      // src/data/content.ts) — remove the '/projects/' exclusion when real projects are added.
+      filter: (page) => !page.includes('/styleguide') && !page.includes('/dev/') && !page.includes('/projects/'),
     }),
   ],
 });

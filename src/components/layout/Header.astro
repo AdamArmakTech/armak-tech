@@ -2,8 +2,11 @@
 import { ChevronDown, Menu, X, Phone } from '@lucide/astro';
 import Logo from '../ui/Logo.astro';
 import Button from '../ui/Button.astro';
-import { nav, services, site } from '../../data/site';
+import { nav as allNav, services, site } from '../../data/site';
+import { showProjects } from '../../data/content';
 
+// "Projects" only appears once real projects exist
+const nav = allNav.filter((item) => item.href !== '/projects/' || showProjects);
 const path = Astro.url.pathname;
 const isActive = (href: string) => path === href || path.startsWith(href);
 ---

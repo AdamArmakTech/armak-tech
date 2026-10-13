@@ -4,9 +4,10 @@ import { ArrowUpRight } from '@lucide/astro';
 import SectionHead from '../ui/SectionHead.astro';
 import Label from '../ui/Label.astro';
 import Button from '../ui/Button.astro';
-import { projects } from '../../data/content';
+import { publishedProjects } from '../../data/content';
 
-const featured = projects.slice(0, 3);
+// Only real projects — the homepage hides this whole section until at least one exists
+const featured = publishedProjects.slice(0, 3);
 ---
 
 <section id="projects" class="section projects">

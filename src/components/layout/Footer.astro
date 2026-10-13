@@ -3,6 +3,7 @@ import Logo from '../ui/Logo.astro';
 import Button from '../ui/Button.astro';
 import Stripe from '../ui/Stripe.astro';
 import { site, services, serviceArea, FOUNDED } from '../../data/site';
+import { showProjects } from '../../data/content';
 
 interface Props {
   cta?: boolean;
@@ -43,7 +44,7 @@ const year = new Date().getFullYear();
         <p class="t-mono site-footer__heading">Company</p>
         <ul role="list">
           <li><a href="/industries/">Industries</a></li>
-          <li><a href="/projects/">Projects</a></li>
+          {showProjects && <li><a href="/projects/">Projects</a></li>}
           <li><a href="/about/">About</a></li>
           <li><a href="/glossary/">Glossary</a></li>
           <li><a href="/contact/">Contact</a></li>

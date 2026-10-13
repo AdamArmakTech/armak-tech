@@ -9,12 +9,12 @@ import PageCta from '../../components/pages/PageCta.astro';
 import Label from '../../components/ui/Label.astro';
 import ProjectCard from '../../components/projects/ProjectCard.astro';
 import { site, FOUNDED, serviceArea } from '../../data/site';
-import { projects } from '../../data/content';
+import { publishedProjects as projects, showProjects } from '../../data/content';
 
-const hasPlaceholders = projects.some((p) => p.placeholder);
-if (hasPlaceholders) {
-  console.warn(`[armak] /projects/ renders ${projects.filter((p) => p.placeholder).length} placeholder project(s) — replace before launch (src/data/content.ts).`);
-}
+// Hidden until real projects exist: send anyone who lands here to the homepage
+if (!showProjects) return Astro.redirect('/');
+
+const hasPlaceholders = false;
 
 const description =
   'Structured cabling, networking and security projects by Armak Technologies across Southern California — scope, sector and outcome for each install.';

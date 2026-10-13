@@ -5,11 +5,12 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import Button from '../components/ui/Button.astro';
 import { site } from '../data/site';
+import { showProjects } from '../data/content';
 
 const routes = [
   { href: '/', code: 'R-01', label: 'Home' },
   { href: '/services/', code: 'R-02', label: 'Services' },
-  { href: '/projects/', code: 'R-03', label: 'Projects' },
+  ...(showProjects ? [{ href: '/projects/', code: 'R-03', label: 'Projects' }] : []),
   { href: '/contact/', code: 'R-04', label: 'Contact' },
 ];
 ---
