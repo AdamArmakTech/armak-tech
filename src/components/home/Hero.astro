@@ -1,9 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import Button from '../ui/Button.astro';
-import SpecStrip from '../ui/SpecStrip.astro';
 import TestCard from '../ui/TestCard.astro';
-import { site, yearsInBusiness, FOUNDED } from '../../data/site';
+import { site, yearsInBusiness } from '../../data/site';
 import { credentials } from '../../data/content';
 // TODO(photo): interim stock (Unsplash, see assets/photos/CREDITS.md) — replace with a real Armak install photo
 import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
@@ -11,7 +10,14 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
 
 <section class="hero container" aria-labelledby="hero-title">
   <div class="hero__copy">
-    <SpecStrip items={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`, 'Serving all of Southern California']} />
+    <nav class="hero__links t-mono" aria-label="Quick links">
+      <ul role="list">
+        <li><a href="/industries/">Industries</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/glossary/">Glossary</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </nav>
     <!-- CSS-only entrance (no data-split): the LCP headline must never wait on a JS download -->
     <h1 id="hero-title" class="t-display hero__title">Infrastructure that doesn’t go down.</h1>
     <p class="t-lead" data-reveal>
@@ -58,8 +64,41 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
     justify-items: start;
   }
 
-  .hero__copy > :global(.spec-strip) {
+
+  /* Quick links row (same spot and look as the old spec strip, but clickable) */
+  .hero__links {
     width: 100%;
+    padding-block: 1rem;
+    border-block: 1px solid var(--hairline);
+  }
+
+  .hero__links ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0;
+  }
+
+  .hero__links li {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .hero__links li:not(:last-child)::after {
+    content: "";
+    width: 4px;
+    height: 4px;
+    margin-inline: 1rem;
+    background: var(--signal);
+  }
+
+  .hero__links a {
+    font-size: 0.8125rem;
+    color: var(--ink);
+    transition: color var(--dur-fast) ease;
+  }
+
+  .hero__links a:hover {
+    color: var(--signal);
   }
 
   .hero__title {
