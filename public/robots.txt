@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+# Internal review pages (also noindex)
+Disallow: /dev/
+Disallow: /styleguide
+
+Sitemap: https://armak.tech/sitemap-index.xml

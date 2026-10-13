@@ -5,12 +5,17 @@ import '../styles/global.css';
 import Header from '../components/layout/Header.astro';
 import Footer from '../components/layout/Footer.astro';
 import { site } from '../data/site';
+import { defaultTitle, defaultDescription, defaultOgImage, businessJsonLd } from '../data/seo';
 
 interface Props {
+  /** Page title; " | Armak Technologies" is appended. Omit on the homepage. Aim for ≤ 40 chars. */
   title?: string;
+  /** Meta description, 120–155 chars */
   description?: string;
-  /** Path to a social image in /public */
+  /** Path to a 1200×630 social image in /public (defaults to /og-image.png) */
   ogImage?: string;
+  /** Alt text for a custom ogImage */
+  ogImageAlt?: string;
   noindex?: boolean;
   /** Hide the footer's "Let's scope your next build" CTA (for pages that end in a contact form) */
   footerCta?: boolean;
@@ -18,15 +23,22 @@ interface Props {
 
 const {
   title,
-  description = site.description,
-  ogImage = '/armak-logo.png',
+  description = defaultDescription,
+  ogImage,
+  ogImageAlt,
   noindex = false,
   footerCta = true,
 } = Astro.props;
 
-const fullTitle = title ? `${title} | ${site.name}` : `${site.name} — Low-Voltage, Networking & Security Infrastructure in Southern California`;
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImageUrl = new URL(ogImage, Astro.site);
+const siteUrl = Astro.site ?? site.url;
+const fullTitle = title ? `${title} | ${site.name}` : defaultTitle;
+const canonical = new URL(Astro.url.pathname, siteUrl).href;
+const image = ogImage
+  ? { src: ogImage, alt: ogImageAlt ?? fullTitle, width: undefined, height: undefined }
+  : defaultOgImage;
+const imageUrl = new URL(image.src, siteUrl).href;
+// Escape "<" so no string in the data can close the script element early
+const jsonLd = JSON.stringify(businessJsonLd).replace(/</g, '\\u003c');
 ---
 
 <!doctype html>
@@ -36,20 +48,30 @@ const ogImageUrl = new URL(ogImage, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {noindex ? <meta name="robots" content="noindex, nofollow" /> : <link rel="canonical" href={canonical} />}
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image" content={imageUrl} />
+    {image.width && <meta property="og:image:width" content={String(image.width)} />}
+    {image.height && <meta property="og:image:height" content={String(image.height)} />}
+    <meta property="og:image:alt" content={image.alt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image:alt" content={image.alt} />
 
     <meta name="theme-color" content="#f4f3ef" />
-    <link rel="icon" type="image/png" href="/armak-logo.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <script type="application/ld+json" set:html={jsonLd} />
 
     <!-- Enables motion styles only when JS runs; motion.ts takes over from here -->
     <script is:inline>document.documentElement.classList.add('js');</script>

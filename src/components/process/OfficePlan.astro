@@ -1,8 +1,10 @@
 ---
 /**
  * The sample office floor plan shared by the Assess and Design demos (same site, step to step).
- * Renders an SVG <g> — place it inside an <svg viewBox="0 0 400 262">.
+ * Renders an SVG <g> — place it inside an <svg viewBox="0 0 400 262" data-fit-text> (fitSvgText in
+ * src/scripts/demo.ts sets --u so the room labels stay ≈ 9.5 px on screen, even on phones).
  * Rooms: closet (top-left, with rack), office, conference, open office, lobby (entrance bottom-right).
+ * Label positions leave room for the largest label size (12 units) next to the demos' cameras and routes.
  */
 ---
 
@@ -16,11 +18,11 @@
   <!-- lobby (door gap y185–207 on its west wall) -->
   <path class="plan__wall" d="M290 250 V207 M290 185 V160 H390" />
 
-  <text x="18" y="24" class="plan__label">CLOSET</text>
+  <text x="15" y="24" class="plan__label">CLOSET</text>
   <text x="100" y="24" class="plan__label">OFFICE</text>
   <text x="230" y="24" class="plan__label">CONFERENCE</text>
-  <text x="22" y="242" class="plan__label">OPEN OFFICE</text>
-  <text x="300" y="174" class="plan__label">LOBBY</text>
+  <text x="26" y="242" class="plan__label">OPEN OFFICE</text>
+  <text x="377" y="178" class="plan__label" text-anchor="end">LOBBY</text>
 
   <g class="plan__furn">
     <!-- rack in the closet -->
@@ -51,8 +53,8 @@
 
   .plan__label {
     font-family: var(--font-mono);
-    font-size: 8.5px;
-    letter-spacing: 0.08em;
+    font-size: clamp(8.5px, calc(var(--u, 1) * 9.5px), 12px);
+    letter-spacing: 0.06em;
     fill: var(--steel);
   }
 

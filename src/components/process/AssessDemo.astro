@@ -17,9 +17,11 @@ const stops = [
   { x: 40, y: 52, title: 'Telecom closet', detail: '1 wall-mount rack, little free space' },
 ];
 
-// The walk: lobby entrance → each stop in order. Segment lengths give each stop's position on the path.
-const walk = 'M340 248 V196 H215 V128 H40 V52';
-const segs = [52, 125, 68, 175, 76];
+// The walk: lobby entrance → each stop in order (straight segments). Segment lengths give each
+// stop's position along the path; the script moves the walker along the same points.
+const points: [number, number][] = [[340, 248], ...stops.map((s) => [s.x, s.y] as [number, number])];
+const walk = 'M' + points.map(([x, y]) => `${x} ${y}`).join(' L');
+const segs = points.slice(1).map(([x, y], i) => Math.hypot(x - points[i][0], y - points[i][1]));
 const total = segs.reduce((a, b) => a + b, 0);
 const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / total);
 ---
@@ -30,16 +32,16 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
   caption="Before anything is priced, the site gets walked and what matters is written down — closets, power, pathways and the systems already there — so the plan is built on what’s actually on site."
 >
   <div class="as">
-    <svg class="as__plan" viewBox="0 0 400 262" role="img" aria-label="Floor plan of a small office with a walk path from the lobby to the telecom closet and five numbered findings">
+    <svg class="as__plan" viewBox="0 0 400 262" role="img" data-fit-text aria-label="Floor plan of a small office with a walk path from the lobby to the telecom closet and five numbered findings">
       <defs>
         <pattern id="as-ceiling" width="16" height="16" patternUnits="userSpaceOnUse">
           <path d="M16 0H0V16" class="as__grid" />
         </pattern>
       </defs>
 
-      <!-- open-ceiling area (pathway) -->
+      <!-- open-ceiling area (pathway); label kept left of the walk's x=215 leg -->
       <rect x="92" y="112" width="196" height="40" fill="url(#as-ceiling)" />
-      <text x="190" y="148" class="as__note" text-anchor="middle">OPEN CEILING</text>
+      <text x="148" y="148" class="as__note" text-anchor="middle">OPEN CEILING</text>
 
       <OfficePlan />
 
@@ -55,14 +57,14 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
       </g>
 
       <!-- the walk -->
-      <path class="as__walk is-drawn" d={walk} pathLength="1" data-as-walk />
+      <path class="as__walk is-drawn" d={walk} pathLength="1" data-as-walk data-points={JSON.stringify(points)} />
       <circle class="as__walker" r="6" cx={stops[4].x} cy={stops[4].y} data-as-walker />
 
       <!-- pins -->
       {stops.map((s, i) => (
         <g class="as__pin is-on" data-as-pin={i} data-at={at[i].toFixed(4)} transform={`translate(${s.x} ${s.y})`}>
           <circle r="10" />
-          <text y="4" text-anchor="middle">{i + 1}</text>
+          <text dy="0.36em" text-anchor="middle">{i + 1}</text>
         </g>
       ))}
     </svg>
@@ -86,7 +88,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="assess"]').forEach((root) => {
     const walk = root.querySelector<SVGPathElement>('[data-as-walk]')!;
@@ -96,6 +98,31 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     const done = root.querySelector<HTMLElement>('[data-as-done]')!;
     const titles = items.map((li) => li.querySelector('.as__item-title')?.textContent ?? '');
 
+    fitSvgText(root);
+
+    // The walk is straight segments, so the walker is placed by simple interpolation —
+    // no getTotalLength()/getPointAtLength(), which can throw while the panel is hidden.
+    const points: [number, number][] = JSON.parse(walk.dataset.points || '[[340,248]]');
+    const lengths = points.slice(1).map(([x, y], i) => Math.hypot(x - points[i][0], y - points[i][1]));
+    const total = lengths.reduce((a, b) => a + b, 0) || 1;
+    const pointAt = (t: number): [number, number] => {
+      let d = t * total;
+      for (let i = 0; i < lengths.length; i++) {
+        if (d <= lengths[i] || i === lengths.length - 1) {
+          const k = lengths[i] ? Math.min(1, d / lengths[i]) : 1;
+          const [x0, y0] = points[i];
+          const [x1, y1] = points[i + 1];
+          return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
+        }
+        d -= lengths[i];
+      }
+      return points[points.length - 1];
+    };
+    const placeWalker = ([x, y]: [number, number]) => {
+      walker.setAttribute('cx', x.toFixed(1));
+      walker.setAttribute('cy', y.toFixed(1));
+    };
+
     const reset = () => {
       root.classList.add('as--instant');
       walk.classList.remove('is-drawn');
@@ -103,9 +130,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
       pins.forEach((p) => p.classList.remove('is-on'));
       items.forEach((li) => li.classList.remove('is-on'));
       done.classList.remove('is-on');
-      // Start of the walk (lobby entrance). Fixed numbers: measuring a hidden path can throw.
-      walker.setAttribute('cx', '340');
-      walker.setAttribute('cy', '248');
+      placeWalker(points[0]); // lobby entrance
       void root.offsetWidth;
       root.classList.remove('as--instant');
     };
@@ -116,7 +141,6 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
       await sleep(250);
       if (!alive()) return;
 
-      const length = walk.getTotalLength();
       const duration = 4200;
       const start = performance.now();
       let next = 0;
@@ -125,9 +149,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
         const frame = (now: number) => {
           if (!alive()) return resolve();
           const t = Math.min(1, (now - start) / duration);
-          const p = walk.getPointAtLength(t * length);
-          walker.setAttribute('cx', p.x.toFixed(1));
-          walker.setAttribute('cy', p.y.toFixed(1));
+          placeWalker(pointAt(t));
           walk.style.strokeDashoffset = String(1 - t);
 
           // Drop each pin and log its finding as the walker reaches it
@@ -180,10 +202,11 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     stroke-dasharray: 2 3;
   }
 
+  /* SVG text is sized in screen pixels via --u (see fitSvgText), capped to fit the drawing */
   .as__note {
     font-family: var(--font-mono);
-    font-size: 7.5px;
-    letter-spacing: 0.08em;
+    font-size: clamp(7.5px, calc(var(--u, 1) * 9px), 11.5px);
+    letter-spacing: 0.06em;
     fill: var(--steel);
   }
 
@@ -228,7 +251,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
 
   .as__pin text {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: clamp(10px, calc(var(--u, 1) * 9.5px), 12.5px);
     font-weight: 600;
     fill: var(--white);
   }
@@ -338,6 +361,89 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     .as {
       grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
       align-items: start;
+    }
+  }
+
+  /* Phones: no-JS fallback for the label scale (the script sets the exact value) */
+  @container (max-width: 520px) {
+    .as__plan {
+      --u: 1.25;
+    }
+  }
+
+  /* Phones: findings in two columns (number + title, detail below), and the
+     "report ready" note fills the empty sixth cell instead of adding a row */
+  @container (min-width: 330px) and (max-width: 599px) {
+    .as {
+      gap: 0.75rem;
+    }
+
+    .as__side {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 0.875rem;
+      row-gap: 0;
+    }
+
+    .as__side-title {
+      grid-column: 1 / -1;
+      margin-bottom: 0.375rem;
+    }
+
+    .as__list {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+    }
+
+    .as__item {
+      grid-template-columns: 20px minmax(0, 1fr);
+      column-gap: 0.5rem;
+      row-gap: 0.125rem;
+      align-items: center;
+      padding-block: 0.5rem;
+    }
+
+    .as__num {
+      width: 20px;
+      height: 20px;
+      font-size: 0.625rem;
+    }
+
+    .as__text {
+      display: contents;
+    }
+
+    .as__item-title {
+      font-size: 0.875rem;
+      line-height: 1.3;
+    }
+
+    .as__item-detail {
+      grid-column: 1 / -1;
+      align-self: start;
+      font-size: 0.78125rem;
+      line-height: 1.35;
+    }
+
+    .as__done {
+      margin-top: 0.625rem;
+      font-size: 0.6875rem;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+    }
+
+    @supports (grid-template-rows: subgrid) {
+      .as__list {
+        grid-row: 2 / span 3;
+        grid-template-rows: subgrid;
+      }
+
+      .as__done {
+        grid-column: 2;
+        grid-row: 4;
+        align-self: center;
+        margin-block: 0.5rem;
+        text-wrap: balance;
+      }
     }
   }
 </style>

@@ -21,7 +21,12 @@ Plan: `ai/plans/redesign.md` ("Precision Infrastructure", light editorial, Astro
       alphabet range: src/data/glossary/{a-c,d-h,i-n,o-r,s-z}.ts, merged + validated in index.ts).
       Click a term → drawer (bottom sheet on phones); search, category filter, A–Z bar,
       shareable #slug links, DefinedTermSet JSON-LD. Linked from the footer.
-- [ ] Phase 4: SEO & performance — LocalBusiness JSON-LD in Base, OG image, robots.txt,
+- [x] Process section stepper with a live demo per step (Assess, Design, Install, Certify, Support)
+- [x] SEO basics: business JSON-LD (src/data/seo.ts), og-image + favicons (scripts/make-brand-images.mjs), robots.txt, unique titles/descriptions
+- [ ] Demo polish (stopped by usage limit 2026-10-12): Assess done (readable SVG labels via fitSvgText);
+      still to do — Design/Install/Support/CableTest: compact phone layouts (currently 700–1400px tall at 375px), readable SVG labels
+- [ ] Launch checklist (ai/plans/launch-checklist.md) — audit agent stopped by usage limit before writing it
+- [ ] Phase 4 remainder: Lighthouse pass on the Vercel preview — LocalBusiness JSON-LD in Base, OG image, robots.txt,
       Lighthouse pass on a deployed preview
 - [ ] Phase 5: Launch — remove `legacy/`, `src/pages/dev/`, unused `public/` images; replace placeholders; deploy
 

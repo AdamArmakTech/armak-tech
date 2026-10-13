@@ -43,7 +43,7 @@ const pageUrl = new URL(`/services/${service.slug}/`, site.url).href;
 
 /* ── Structured data ── */
 const provider = {
-  '@type': 'LocalBusiness',
+  '@type': 'ProfessionalService', // same type + @id as the site-wide business entry (src/data/seo.ts)
   '@id': `${site.url}/#business`,
   name: site.name,
   url: site.url,
@@ -102,7 +102,18 @@ const jsonLd = {
 };
 ---
 
-<Base title={`${service.name} in Southern California`} description={detail.metaDescription} footerCta={false}>
+<Base
+  title={{
+    'structured-cabling': 'Structured Cabling in Southern California',
+    networking: 'Networking & Wi-Fi in Southern California',
+    'video-surveillance': 'Video Surveillance in Southern California',
+    'access-control': 'Access Control in Southern California',
+    'voip-unified-comms': 'VoIP Phone Systems in Southern California',
+    'audio-video': 'Commercial AV in Southern California',
+  }[service.slug]}
+  description={detail.metaDescription}
+  footerCta={false}
+>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
 
   <ServiceHero service={service} detail={detail} />
