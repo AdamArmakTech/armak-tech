@@ -45,6 +45,13 @@ const story = [
 const pillarTags = ['Precision', 'Scale', 'Speed', 'Service'];
 
 const thisYear = new Date().getFullYear();
+
+/**
+ * Placeholder slots (milestones, license, certifications, team) stay hidden on the live site.
+ * Flip to true to preview them while gathering Armak's real content; add the real data to
+ * src/data/site.ts / content.ts and render it instead before showing them publicly.
+ */
+const SHOW_PLACEHOLDERS = false;
 ---
 
 <Base title={`About Us · SoCal Low-Voltage Since ${FOUNDED}`} description={description} footerCta={false}>
@@ -99,12 +106,14 @@ const thisYear = new Date().getFullYear();
             <span class="timeline__year">{FOUNDED}</span>
             <span class="timeline__text">{site.name} established.</span>
           </li>
-          <li class="timeline__row timeline__row--slot">
-            <span class="timeline__year" aria-hidden="true">····</span>
-            <PlaceholderNote class="timeline__note" title="Key milestones">
-              Firsts, growth and notable moments between {FOUNDED} and today — to be supplied by Armak.
-            </PlaceholderNote>
-          </li>
+          {SHOW_PLACEHOLDERS && (
+            <li class="timeline__row timeline__row--slot">
+              <span class="timeline__year" aria-hidden="true">····</span>
+              <PlaceholderNote class="timeline__note" title="Key milestones">
+                Firsts, growth and notable moments between {FOUNDED} and today — to be supplied by Armak.
+              </PlaceholderNote>
+            </li>
+          )}
           <li class="timeline__row">
             <span class="timeline__year">{thisYear}</span>
             <span class="timeline__text">
@@ -145,20 +154,24 @@ const thisYear = new Date().getFullYear();
             <span class="cred__text">{c}</span>
           </li>
         ))}
-        <li class="cred" data-reveal>
-          <span class="t-mono cred__code">C-{String(credentials.length + 1).padStart(2, '0')}</span>
-          <span class="cred__text">Contractor license</span>
-          {site.license ? (
-            <span class="t-mono cred__value">{site.license}</span>
-          ) : (
-            <Label tone="signal" class="cred__flag">Placeholder · Lic. no. to confirm</Label>
-          )}
-        </li>
-        <li class="cred" data-reveal>
-          <span class="t-mono cred__code">C-{String(credentials.length + 2).padStart(2, '0')}</span>
-          <span class="cred__text">Manufacturer certifications</span>
-          <Label tone="signal" class="cred__flag">Placeholder · List to supply</Label>
-        </li>
+        {(site.license || SHOW_PLACEHOLDERS) && (
+          <li class="cred" data-reveal>
+            <span class="t-mono cred__code">C-{String(credentials.length + 1).padStart(2, '0')}</span>
+            <span class="cred__text">Contractor license</span>
+            {site.license ? (
+              <span class="t-mono cred__value">{site.license}</span>
+            ) : (
+              <Label tone="signal" class="cred__flag">Placeholder · Lic. no. to confirm</Label>
+            )}
+          </li>
+        )}
+        {SHOW_PLACEHOLDERS && (
+          <li class="cred" data-reveal>
+            <span class="t-mono cred__code">C-{String(credentials.length + 2).padStart(2, '0')}</span>
+            <span class="cred__text">Manufacturer certifications</span>
+            <Label tone="signal" class="cred__flag">Placeholder · List to supply</Label>
+          </li>
+        )}
       </ul>
     </div>
   </section>
@@ -168,6 +181,7 @@ const thisYear = new Date().getFullYear();
   <PartnerStrip />
 
   <!-- K-04 · Team (slot until Armak supplies people, photos and permission) -->
+  {SHOW_PLACEHOLDERS && (
   <section class="section team">
     <div class="container">
       <SectionHead
@@ -195,6 +209,7 @@ const thisYear = new Date().getFullYear();
       </div>
     </div>
   </section>
+  )}
 
   <ServiceArea />
 

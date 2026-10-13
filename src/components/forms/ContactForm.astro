@@ -17,7 +17,9 @@ interface Props {
 const { id = 'assessment', class: className } = Astro.props;
 
 // Server-side at build time only (from .env). Never log this value.
-const accessKey: string = import.meta.env.WEB3FORMSAPIKEY ?? '';
+// Build-time env: .env locally, Vercel project env vars in production (process.env as a fallback)
+const accessKey: string = import.meta.env.WEB3FORMSAPIKEY ?? process.env.WEB3FORMSAPIKEY ?? '';
+if (!accessKey) console.warn('[armak] WEB3FORMSAPIKEY is not set — the contact form will not send. Add it to .env / Vercel env vars.');
 const endpoint = 'https://api.web3forms.com/submit';
 const projectTypes = [...services.map((s) => s.name), 'Not sure yet'];
 const f = (name: string) => `${id}-${name}`;
