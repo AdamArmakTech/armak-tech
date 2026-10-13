@@ -1,8 +1,28 @@
 ---
+/**
+ * "The Armak standard" — the five steps, each with a live demo.
+ * Works like the System explorer: tabs on the left auto-advance (red progress line under the
+ * active one); one stage on the right shows the active step and plays its demo. Any click or
+ * interaction hands control to the visitor. Without JS every step + demo is shown stacked.
+ */
 import SectionHead from '../ui/SectionHead.astro';
 import Label from '../ui/Label.astro';
 import CableTest from '../ui/CableTest.astro';
+import AssessDemo from '../process/AssessDemo.astro';
+import DesignDemo from '../process/DesignDemo.astro';
+import InstallDemo from '../process/InstallDemo.astro';
+import SupportDemo from '../process/SupportDemo.astro';
 import { process as steps, pillars } from '../../data/content';
+
+const demos: Record<string, any> = {
+  '01': AssessDemo,
+  '02': DesignDemo,
+  '03': InstallDemo,
+  '05': SupportDemo,
+};
+
+// How long each step stays up before advancing (ms). The cable test plays a little longer.
+const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 ---
 
 <section id="process" class="section process">
@@ -14,29 +34,51 @@ import { process as steps, pillars } from '../../data/content';
       intro="The same five steps on every job, from a single-rack retrofit to a multi-site rollout. Nothing is signed off until it has been tested and documented."
     />
 
-    <div class="process__layout">
-      <ol role="list" class="process__steps" data-reveal-stagger="80">
-        {steps.map((step) => {
-          const isCertify = step.title === 'Certify';
+    <div class="steps" data-steps>
+      <div class="steps__tabs-wrap">
+        <p id="steps-tabs-label" class="t-mono t-muted steps__hint">The five steps</p>
+        <div class="steps__tabs" role="tablist" aria-labelledby="steps-tabs-label" aria-orientation="vertical">
+          {steps.map((s, i) => (
+            <button
+              type="button"
+              class="steps__tab"
+              role="tab"
+              id={`step-tab-${s.code}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              aria-controls={`step-panel-${s.code}`}
+              tabindex={i === 0 ? 0 : -1}
+              style={`--dwell:${dwell(s.code)}ms`}
+              data-dwell={dwell(s.code)}
+            >
+              <span class="t-mono steps__code">{s.code}</span>
+              <span class="steps__name">{s.title}</span>
+              <span class="steps__progress" aria-hidden="true"></span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="steps__stage">
+        {steps.map((s, i) => {
+          const Demo = demos[s.code];
           return (
-            <li class:list={['step', { 'step--certify': isCertify }]} data-reveal>
-              <span class="step__num" aria-hidden="true">{step.code}</span>
-              <div class="step__copy">
-                <h3 class="t-h3 step__title">
-                  <span class="visually-hidden">Step {step.code}: </span>{step.title}
-                </h3>
-                <p class="step__body t-muted">{step.body}</p>
-                {isCertify && <a class="t-mono step__ref" href="#cable-test">Try the live test demo →</a>}
+            <div
+              class:list={['steps__panel', { 'is-active': i === 0 }]}
+              role="tabpanel"
+              id={`step-panel-${s.code}`}
+              aria-labelledby={`step-tab-${s.code}`}
+              data-step-panel
+            >
+              <div class="steps__intro">
+                <p class="t-mono steps__intro-label">Step {s.code} · {s.title}</p>
+                <h3 class="visually-hidden">{s.title}</h3>
+                <p class="steps__intro-body">{s.body}</p>
               </div>
-            </li>
+              {s.code === '04' ? <CableTest variant="full" id="cable-test" /> : Demo && <Demo />}
+            </div>
           );
         })}
-      </ol>
-
-      <aside class="process__aside" aria-label="Step 04 in action: a live cable test">
-        <p class="t-mono process__aside-label">Step 04 · Certify — see it work</p>
-        <CableTest variant="full" id="cable-test" />
-      </aside>
+      </div>
     </div>
 
     <div class="pillars">
@@ -54,82 +96,314 @@ import { process as steps, pillars } from '../../data/content';
   </div>
 </section>
 
+<script>
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  document.querySelectorAll<HTMLElement>('[data-steps]').forEach((root) => {
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const panels = [...root.querySelectorAll<HTMLElement>('[data-step-panel]')];
+    const stage = root.querySelector<HTMLElement>('.steps__stage')!;
+    if (!tabs.length) return;
+
+    root.classList.add('is-enhanced');
+
+    let index = 0;
+    let timer: number | undefined;
+    let inView = false;
+    let userTookOver = false;
+
+    /** Restart the active step's demo from the beginning */
+    const playDemo = (panel: HTMLElement) => {
+      panel.querySelector<HTMLButtonElement>('[data-demo-replay], [data-ct-run]')?.click();
+    };
+
+    const startProgress = (tab: HTMLElement) => {
+      tabs.forEach((t) => t.classList.remove('is-timing'));
+      void tab.offsetWidth;
+      tab.classList.add('is-timing');
+    };
+
+    const stopAuto = () => {
+      window.clearTimeout(timer);
+      timer = undefined;
+      tabs.forEach((t) => t.classList.remove('is-timing'));
+    };
+
+    const scheduleNext = () => {
+      window.clearTimeout(timer);
+      if (reduceMotion || userTookOver || !inView) return;
+      const tab = tabs[index];
+      startProgress(tab);
+      timer = window.setTimeout(() => {
+        select(index + 1, { play: true });
+        scheduleNext();
+      }, Number(tab.dataset.dwell) || 6500);
+    };
+
+    function select(i: number, { focus = false, play = false } = {}) {
+      index = (i + tabs.length) % tabs.length;
+      tabs.forEach((t, n) => {
+        const on = n === index;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+      });
+      panels.forEach((p, n) => p.classList.toggle('is-active', n === index));
+      if (focus) tabs[index].focus();
+      if (play) playDemo(panels[index]);
+    }
+
+    const takeOver = () => {
+      if (userTookOver) return;
+      userTookOver = true;
+      root.classList.add('is-manual');
+      stopAuto();
+    };
+
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('click', () => {
+        takeOver();
+        select(i, { play: true });
+      });
+      tab.addEventListener('keydown', (e) => {
+        const keys: Record<string, number> = {
+          ArrowDown: index + 1,
+          ArrowRight: index + 1,
+          ArrowUp: index - 1,
+          ArrowLeft: index - 1,
+          Home: 0,
+          End: tabs.length - 1,
+        };
+        if (!(e.key in keys)) return;
+        e.preventDefault();
+        takeOver();
+        select(keys[e.key], { focus: true, play: true });
+      });
+    });
+
+    // Interacting with a demo (cable switch, slider, replay…) also hands over control
+    stage.addEventListener('pointerdown', takeOver);
+    stage.addEventListener('keydown', takeOver);
+
+    // Links to the cable test (hero "See how we test") open step 04 first, so the target is visible.
+    // Capture phase: runs before the smooth-scroll handler measures the target.
+    const certify = panels.findIndex((p) => p.querySelector('#cable-test'));
+    const openCertify = () => {
+      if (certify < 0) return;
+      takeOver();
+      select(certify, { play: true });
+    };
+    document.addEventListener(
+      'click',
+      (e) => {
+        const a = (e.target as Element).closest?.('a[href$="#cable-test"]');
+        if (a) openCertify();
+      },
+      true,
+    );
+    if (location.hash === '#cable-test') openCertify();
+
+    // Auto-advance only while the section is on screen
+    new IntersectionObserver(
+      ([entry]) => {
+        const wasInView = inView;
+        inView = entry.isIntersecting;
+        if (inView && !wasInView) {
+          if (!userTookOver) playDemo(panels[index]);
+          scheduleNext();
+        } else if (!inView) {
+          stopAuto();
+        }
+      },
+      { threshold: 0.3 },
+    ).observe(root);
+  });
+</script>
+
 <style>
-  .process__layout {
+  /* ── Stepper ── */
+  .steps {
     display: grid;
-    gap: var(--space-block) var(--col-gap);
+    gap: 1.5rem var(--col-gap);
   }
 
-  /* ── Steps ── */
-  .process__steps {
-    border-bottom: 1px solid var(--hairline);
+  .steps > * {
+    min-width: 0;
   }
 
-  .step {
-    display: grid;
-    grid-template-columns: 3.5rem minmax(0, 1fr);
-    gap: 0.25rem var(--col-gap);
-    padding-block: 1.75rem;
-    border-top: 1px solid var(--hairline);
+  /* Without JS: no tabs, every step + demo stacked */
+  .steps:not(.is-enhanced) .steps__tabs-wrap {
+    display: none;
   }
 
-  .step__num {
-    font-family: var(--font-mono);
-    font-size: clamp(2rem, 1.4rem + 2.4vw, 3.75rem);
-    font-weight: 400;
-    letter-spacing: -0.06em;
-    line-height: 0.9;
-    font-variant-numeric: tabular-nums;
-    color: var(--hairline-strong);
-    transition: color var(--dur) ease;
+  .steps:not(.is-enhanced) .steps__stage {
+    gap: var(--space-block);
   }
 
-  .step:hover .step__num {
-    color: var(--ink);
+  .steps.is-enhanced .steps__panel:not(.is-active) {
+    display: none;
   }
 
-  .step__copy {
-    display: grid;
-    gap: 0.625rem;
-    align-content: start;
+  .steps__hint {
+    margin-bottom: 0.75rem;
   }
 
-  .step__body {
-    max-width: 34em;
-  }
-
-  .step--certify .step__num {
-    color: var(--ink);
-  }
-
-  .step__ref {
-    display: inline-flex;
-    align-items: center;
-    justify-self: start;
+  /* Tabs: horizontal scroller on phones, vertical list on desktop (same as the System explorer) */
+  .steps__tabs {
+    display: flex;
     gap: 0.5rem;
-    color: var(--ink);
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    padding-bottom: 2px;
   }
 
-  .step__ref:hover {
+  .steps__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .steps__tab {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.625rem;
+    flex-shrink: 0;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    background: transparent;
+    text-align: left;
+    overflow: hidden;
+    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
+  }
+
+  .steps__tab:hover {
+    border-color: var(--ink);
+  }
+
+  .steps__tab[aria-selected='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .steps__code {
     color: var(--signal);
   }
 
-  .step__ref::before {
-    content: "";
-    width: 6px;
-    height: 6px;
-    background: var(--signal);
+  .steps__tab[aria-selected='true'] .steps__code {
+    color: var(--logo-red);
   }
 
-  /* ── Aside: the live cable-test demo (step 04 in action) ── */
-  .process__aside {
+  .steps__name {
+    font-weight: 500;
+    font-size: var(--fs-small);
+  }
+
+  .steps__progress {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: var(--logo-red);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .steps__tab.is-timing .steps__progress {
+    animation: steps-progress var(--dwell, 6500ms) linear forwards;
+  }
+
+  @keyframes steps-progress {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Stage */
+  .steps__stage {
     display: grid;
-    gap: 0.875rem;
+    container-type: inline-size;
+  }
+
+  .steps__panel {
+    display: grid;
+    gap: 1.25rem;
     align-content: start;
   }
 
-  .process__aside-label {
-    color: var(--steel);
+  .steps.is-enhanced .steps__panel.is-active {
+    animation: steps-in 0.4s var(--ease-out);
+  }
+
+  @keyframes steps-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  .steps__intro {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .steps__intro-label {
+    color: var(--signal);
+  }
+
+  .steps__intro-body {
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+    max-width: 40em;
+    text-wrap: pretty;
+  }
+
+  @media (min-width: 1000px) {
+    .steps {
+      grid-template-columns: 4fr 8fr;
+      align-items: start;
+    }
+
+    .steps__tabs-wrap {
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
+    }
+
+    .steps__tabs {
+      flex-direction: column;
+      gap: 0;
+      overflow: visible;
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid var(--hairline);
+    }
+
+    .steps__tab {
+      display: grid;
+      grid-template-columns: 3.5rem 1fr;
+      padding: 1.375rem 1rem;
+      border: 0;
+      border-bottom: 1px solid var(--hairline);
+      border-radius: 0;
+    }
+
+    .steps__tab:hover {
+      background: var(--white);
+    }
+
+    .steps__tab[aria-selected='true']:hover {
+      background: var(--ink);
+    }
+
+    .steps__name {
+      font-size: var(--fs-h4);
+    }
+
+    .steps__stage {
+      min-height: 640px;
+    }
   }
 
   /* ── Pillars ── */
@@ -163,10 +437,6 @@ import { process as steps, pillars } from '../../data/content';
   }
 
   @media (min-width: 700px) {
-    .step {
-      grid-template-columns: 6rem minmax(0, 1fr);
-    }
-
     .pillars__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -181,25 +451,6 @@ import { process as steps, pillars } from '../../data/content';
 
     .pillar:nth-child(even) {
       border-left: 1px solid var(--hairline);
-    }
-  }
-
-  @media (min-width: 1000px) {
-    .process__layout {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      align-items: start;
-    }
-
-    .process__steps {
-      grid-column: 1 / span 6;
-    }
-
-    .process__aside {
-      grid-column: 7 / -1;
-    }
-
-    .step {
-      padding-block: 2.25rem;
     }
   }
 

@@ -1,0 +1,506 @@
+---
+/**
+ * Step 05 · Support — "A move request" (MAC: move, add, change).
+ * A ticket comes in → the as-built record says which panel ports are involved → the patch cord
+ * is moved from A-14 to A-22 → the link is tested and the record updated → ticket done.
+ * Teaches: support is quick and tidy because the install was labeled and documented.
+ * Server-renders the finished state (no-JS / reduced motion).
+ */
+import DemoFrame from './DemoFrame.astro';
+
+// Panel / switch geometry (viewBox 300 × 150): 12 ports per row
+const px = (i: number) => 22 + i * 22;
+const OLD = 1; // panel A-14 = bottom row, index 1
+const NEW = 9; // panel A-22 = bottom row, index 9
+const cx = (i: number) => px(i) + 6;
+const oldCord = `M${cx(OLD)} 44 V102`;
+const newCord = `M${cx(NEW)} 44 C ${cx(NEW)} 78, ${cx(OLD)} 70, ${cx(OLD)} 102`;
+const otherCords = [0, 2, 3, 4, 5].map((i) => `M${cx(i)} 44 V102`);
+
+const records = [
+  { jack: '2B-13', port: 'A-13', key: '' },
+  { jack: '2B-14', port: 'A-14', key: 'from' },
+  { jack: '3A-01', port: 'A-21', key: '' },
+  { jack: '3A-02', port: 'A-22', key: 'to' },
+];
+
+const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
+---
+
+<DemoFrame
+  name="support"
+  title="A move request"
+  caption="Moves, adds and changes go fast when the install was labeled and documented: look up the record, move one patch cord, test it, update the record. No tracing wires through the ceiling."
+>
+  <div class="sp">
+    <ol role="list" class="sp__stages t-mono">
+      {stages.map((s, i) => (
+        <li class="sp__stage is-done" data-sp-stage={i}><span class="sp__stage-dot" aria-hidden="true"></span>{s}</li>
+      ))}
+    </ol>
+
+    <div class="sp__grid">
+      <div class="sp__left">
+        <div class="sp__ticket is-on" data-sp-ticket>
+          <div class="sp__ticket-top">
+            <span class="t-mono">Ticket MAC-0417</span>
+            <span class="sp__status t-mono" data-sp-status data-state="done">Done</span>
+          </div>
+          <p class="sp__ticket-body">Move desk <strong>2B-14</strong> to <strong>3A-02</strong></p>
+        </div>
+
+        <table class="sp__records">
+          <caption class="t-mono">As-built record</caption>
+          <thead>
+            <tr><th scope="col">Desk jack</th><th scope="col">Panel port</th></tr>
+          </thead>
+          <tbody>
+            {records.map((r) => (
+              <tr class:list={['sp__row', { 'is-hit': r.key }]} data-sp-row={r.key || undefined}>
+                <td class="t-mono">{r.jack}</td>
+                <td class="t-mono">{r.port}{r.key === 'to' && <span class="sp__updated" data-sp-updated> · in use</span>}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="sp__right">
+        <svg class="sp__panel" viewBox="0 0 300 150" role="img" aria-label="Patch panel A above a network switch; the patch cord for the moved desk goes from port A-22 down to the switch">
+          <!-- panel A -->
+          <rect x="10" y="10" width="280" height="40" class="sp__box" />
+          <text x="14" y="8" class="sp__tiny">PATCH PANEL A</text>
+          {Array.from({ length: 12 }, (_, i) => (
+            <g>
+              <rect x={px(i)} y="15" width="12" height="10" class="sp__port" />
+              <rect x={px(i)} y="32" width="12" height="10" class="sp__port" />
+            </g>
+          ))}
+          <!-- switch -->
+          <rect x="10" y="98" width="280" height="40" class="sp__box" />
+          <text x="14" y="148" class="sp__tiny">SWITCH</text>
+          {Array.from({ length: 12 }, (_, i) => (
+            <g>
+              <rect x={px(i)} y="102" width="12" height="10" class="sp__port" />
+              <rect x={px(i)} y="120" width="12" height="10" class="sp__port" />
+            </g>
+          ))}
+
+          <!-- cords already in place -->
+          {otherCords.map((d) => <path d={d} class="sp__cord sp__cord--static" />)}
+
+          <!-- the move: old cord out, new cord in -->
+          <path d={oldCord} class="sp__cord sp__cord--old is-gone" pathLength="1" data-sp-old />
+          <path d={newCord} class="sp__cord sp__cord--new is-on" pathLength="1" data-sp-new />
+
+          <!-- port highlights + labels -->
+          <g class="sp__mark sp__mark--from is-on" data-sp-mark="from">
+            <rect x={px(OLD) - 3} y="29" width="18" height="16" rx="2" />
+            <text x={cx(OLD)} y="62" text-anchor="middle">A-14</text>
+          </g>
+          <g class="sp__mark sp__mark--to is-on" data-sp-mark="to">
+            <rect x={px(NEW) - 3} y="29" width="18" height="16" rx="2" />
+            <text x={cx(NEW)} y="62" text-anchor="middle">A-22</text>
+          </g>
+        </svg>
+
+        <ul role="list" class="sp__checks">
+          <li class="is-on" data-sp-check><span aria-hidden="true">✓</span> Link tested at the new desk</li>
+          <li class="is-on" data-sp-check><span aria-hidden="true">✓</span> Record updated: 3A-02 → A-22</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</DemoFrame>
+
+<script>
+  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion } from '../../scripts/demo';
+
+  document.querySelectorAll<HTMLElement>('[data-demo="support"]').forEach((root) => {
+    const box = root.querySelector<HTMLElement>('.sp')!;
+    const stages = [...root.querySelectorAll<HTMLElement>('[data-sp-stage]')];
+    const ticket = root.querySelector<HTMLElement>('[data-sp-ticket]')!;
+    const status = root.querySelector<HTMLElement>('[data-sp-status]')!;
+    const rowFrom = root.querySelector<HTMLElement>('[data-sp-row="from"]')!;
+    const rowTo = root.querySelector<HTMLElement>('[data-sp-row="to"]')!;
+    const updated = root.querySelector<HTMLElement>('[data-sp-updated]')!;
+    const oldCord = root.querySelector<SVGPathElement>('[data-sp-old]')!;
+    const newCord = root.querySelector<SVGPathElement>('[data-sp-new]')!;
+    const markFrom = root.querySelector<SVGGElement>('[data-sp-mark="from"]')!;
+    const markTo = root.querySelector<SVGGElement>('[data-sp-mark="to"]')!;
+    const checks = [...root.querySelectorAll<HTMLElement>('[data-sp-check]')];
+
+    const setStage = (n: number) =>
+      stages.forEach((s, i) => {
+        s.classList.toggle('is-done', i < n);
+        s.classList.toggle('is-active', i === n);
+      });
+
+    const setStatus = (state: 'open' | 'progress' | 'done') => {
+      status.dataset.state = state;
+      status.textContent = state === 'open' ? 'Open' : state === 'progress' ? 'In progress' : 'Done';
+    };
+
+    const reset = () => {
+      box.classList.add('sp--instant');
+      setStage(-1);
+      ticket.classList.remove('is-on');
+      setStatus('open');
+      [rowFrom, rowTo].forEach((r) => r.classList.remove('is-hit'));
+      updated.classList.remove('is-on');
+      oldCord.classList.remove('is-gone');
+      newCord.classList.remove('is-on');
+      [markFrom, markTo].forEach((m) => m.classList.remove('is-on'));
+      checks.forEach((c) => c.classList.remove('is-on'));
+      void box.offsetWidth;
+      box.classList.remove('sp--instant');
+    };
+
+    const run = createRun(async (alive) => {
+      if (reduceMotion) return;
+      reset();
+      await sleep(250);
+      if (!alive()) return;
+
+      // 1 · Request
+      setStage(0);
+      ticket.classList.add('is-on');
+      announce(root, 'Request: move desk 2B-14 to 3A-02');
+      await sleep(800);
+      if (!alive()) return;
+
+      // 2 · Look up the as-built record
+      setStage(1);
+      setStatus('progress');
+      rowFrom.classList.add('is-hit');
+      await sleep(550);
+      if (!alive()) return;
+      rowTo.classList.add('is-hit');
+      announce(root, 'Record: 2B-14 is panel port A-14, 3A-02 is A-22');
+      await sleep(650);
+      if (!alive()) return;
+
+      // 3 · Re-patch: unplug A-14, plug into A-22
+      setStage(2);
+      markFrom.classList.add('is-on');
+      await sleep(300);
+      oldCord.classList.add('is-gone');
+      await sleep(650);
+      if (!alive()) return;
+      markTo.classList.add('is-on');
+      newCord.classList.add('is-on');
+      announce(root, 'Patch cord moved to A-22');
+      await sleep(900);
+      if (!alive()) return;
+
+      // 4 · Test & update the record
+      setStage(3);
+      checks[0].classList.add('is-on');
+      await sleep(400);
+      if (!alive()) return;
+      checks[1].classList.add('is-on');
+      updated.classList.add('is-on');
+      await sleep(350);
+      if (!alive()) return;
+      setStatus('done');
+      setStage(4);
+      announce(root, 'Tested, record updated, ticket done');
+    });
+
+    if (!reduceMotion) {
+      reset();
+      onFirstView(root, run);
+    }
+    bindReplay(root, run);
+  });
+</script>
+
+<style>
+  .sp {
+    display: grid;
+    gap: 1rem;
+  }
+
+  /* Stage strip */
+  .sp__stages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    color: var(--steel);
+  }
+
+  .sp__stage {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    transition: color 0.25s ease;
+  }
+
+  .sp__stage-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    border: 1.5px solid var(--hairline-strong);
+    transition: background 0.25s ease, border-color 0.25s ease;
+  }
+
+  .sp__stage.is-active {
+    color: var(--ink);
+  }
+
+  .sp__stage.is-active .sp__stage-dot {
+    border-color: var(--signal);
+    background: var(--signal);
+  }
+
+  .sp__stage.is-done {
+    color: var(--ink);
+  }
+
+  .sp__stage.is-done .sp__stage-dot {
+    border-color: var(--pass);
+    background: var(--pass);
+  }
+
+  .sp__grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .sp__left,
+  .sp__right {
+    display: grid;
+    gap: 0.875rem;
+    align-content: start;
+    min-width: 0;
+  }
+
+  /* Ticket */
+  .sp__ticket {
+    display: grid;
+    gap: 0.4rem;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid var(--hairline-strong);
+    border-left: 3px solid var(--ink);
+    border-radius: var(--radius);
+    background: var(--paper);
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.35s ease, transform 0.4s var(--ease-out);
+  }
+
+  .sp__ticket.is-on {
+    opacity: 1;
+    transform: none;
+  }
+
+  .sp__ticket-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--steel);
+  }
+
+  .sp__ticket-body {
+    color: var(--ink);
+  }
+
+  .sp__status {
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--radius);
+    background: var(--paper-sunken);
+    color: var(--steel);
+  }
+
+  .sp__status[data-state='progress'] {
+    background: color-mix(in srgb, var(--signal) 12%, var(--white));
+    color: var(--signal);
+  }
+
+  .sp__status[data-state='done'] {
+    background: color-mix(in srgb, var(--pass) 12%, var(--white));
+    color: var(--pass);
+  }
+
+  /* Records table */
+  .sp__records {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+  }
+
+  .sp__records caption {
+    text-align: left;
+    padding-bottom: 0.4rem;
+    color: var(--steel);
+  }
+
+  .sp__records th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--steel);
+    padding: 0.35rem 0.5rem;
+    border-bottom: 1px solid var(--hairline-strong);
+  }
+
+  .sp__records td {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--hairline);
+    letter-spacing: 0.02em;
+    text-transform: none;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  .sp__row td {
+    color: var(--steel);
+  }
+
+  .sp__row.is-hit td {
+    background: color-mix(in srgb, var(--signal) 8%, var(--white));
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .sp__updated {
+    color: var(--pass);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .sp__updated.is-on {
+    opacity: 1;
+  }
+
+  /* Panel + switch */
+  .sp__panel {
+    width: 100%;
+    height: auto;
+    padding: 0.25rem;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    overflow: visible;
+  }
+
+  .sp__box {
+    fill: var(--white);
+    stroke: var(--ink);
+    stroke-width: 1.25;
+  }
+
+  .sp__port {
+    fill: var(--ink);
+  }
+
+  .sp__tiny {
+    font-family: var(--font-mono);
+    font-size: 6.5px;
+    letter-spacing: 0.08em;
+    fill: var(--steel);
+  }
+
+  .sp__cord {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  .sp__cord--static {
+    stroke: var(--hairline-strong);
+  }
+
+  .sp__cord--old,
+  .sp__cord--new {
+    stroke: var(--t568-blue);
+    stroke-dasharray: 1 1;
+    transition: stroke-dashoffset 0.7s var(--ease-in-out), opacity 0.3s ease;
+  }
+
+  .sp__cord--old {
+    stroke-dashoffset: 0;
+  }
+
+  .sp__cord--old.is-gone {
+    stroke-dashoffset: -1;
+    opacity: 0.2;
+  }
+
+  .sp__cord--new {
+    stroke-dashoffset: 1;
+  }
+
+  .sp__cord--new.is-on {
+    stroke-dashoffset: 0;
+  }
+
+  .sp__mark {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .sp__mark.is-on {
+    opacity: 1;
+  }
+
+  .sp__mark rect {
+    fill: none;
+    stroke-width: 2;
+  }
+
+  .sp__mark text {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    font-weight: 600;
+  }
+
+  .sp__mark--from rect {
+    stroke: var(--signal);
+  }
+
+  .sp__mark--from text {
+    fill: var(--signal);
+  }
+
+  .sp__mark--to rect {
+    stroke: var(--pass);
+  }
+
+  .sp__mark--to text {
+    fill: var(--pass);
+  }
+
+  /* Checks */
+  .sp__checks {
+    display: grid;
+    gap: 0.35rem;
+  }
+
+  .sp__checks li {
+    color: var(--ink);
+    opacity: 0.25;
+    transition: opacity 0.3s ease;
+  }
+
+  .sp__checks li span {
+    color: var(--pass);
+    font-weight: 700;
+  }
+
+  .sp__checks li.is-on {
+    opacity: 1;
+  }
+
+  .sp--instant,
+  .sp--instant * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  @container (min-width: 600px) {
+    .sp__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      align-items: start;
+    }
+  }
+</style>

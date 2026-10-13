@@ -1,0 +1,113 @@
+---
+/**
+ * Shared shell for the animated process demos — same card language as the cable test
+ * (src/components/ui/CableTest.astro): white card, hairline, red "live" dot, SAMPLE tag,
+ * replay button, and a plain-English caption telling the visitor what they're looking at.
+ *
+ * Put the demo's own markup in the default slot. The demo's script finds its frame via
+ * `[data-demo="{name}"]` and uses the helpers in src/scripts/demo.ts.
+ */
+import { RotateCcw } from '@lucide/astro';
+
+interface Props {
+  /** Unique demo name, used as data-demo="{name}" for the script to find it */
+  name: string;
+  /** Short title after "Live demo ·", e.g. "Site walk" */
+  title: string;
+  /** One or two plain-English sentences: what the visitor is watching and why it matters */
+  caption: string;
+  class?: string;
+}
+
+const { name, title, caption, class: className } = Astro.props;
+---
+
+<figure class:list={['demo', className]} data-demo={name}>
+  <header class="demo__head">
+    <span class="t-mono demo__title">Live demo · {title}</span>
+    <span class="demo__tools">
+      <span class="t-mono demo__sample">Sample</span>
+      <button type="button" class="demo__replay" data-demo-replay>
+        <RotateCcw size={15} stroke-width={1.75} aria-hidden="true" />
+        <span class="visually-hidden">Replay {title} demo</span>
+      </button>
+    </span>
+  </header>
+
+  <div class="demo__body">
+    <slot />
+  </div>
+
+  <figcaption class="demo__caption t-small">{caption}</figcaption>
+  <p class="visually-hidden" aria-live="polite" data-demo-live></p>
+</figure>
+
+<style>
+  .demo {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-raise);
+    font-size: var(--fs-small);
+  }
+
+  .demo__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    color: var(--steel);
+  }
+
+  .demo__title::before {
+    content: "";
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 0.5rem;
+    border-radius: 50%;
+    background: var(--signal);
+    vertical-align: 1px;
+  }
+
+  .demo__tools {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .demo__sample {
+    padding: 0.15rem 0.4rem;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+  }
+
+  .demo__replay {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    color: var(--steel);
+  }
+
+  .demo__replay:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+
+  .demo__body {
+    min-width: 0;
+  }
+
+  .demo__caption {
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--hairline);
+    color: var(--steel);
+    line-height: 1.55;
+  }
+</style>

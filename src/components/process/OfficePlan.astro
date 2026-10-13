@@ -1,0 +1,64 @@
+---
+/**
+ * The sample office floor plan shared by the Assess and Design demos (same site, step to step).
+ * Renders an SVG <g> — place it inside an <svg viewBox="0 0 400 262">.
+ * Rooms: closet (top-left, with rack), office, conference, open office, lobby (entrance bottom-right).
+ */
+---
+
+<g class="plan">
+  <!-- walls: outer shell with the lobby entrance gap (x320–360) -->
+  <path class="plan__wall" d="M320 250 H10 V10 H390 V250 H360" />
+  <!-- closet (door gap x30–55) -->
+  <path class="plan__wall" d="M10 80 H30 M55 80 H90 V10" />
+  <!-- office / conference row (door gaps on y=110) -->
+  <path class="plan__wall" d="M90 110 H130 M160 110 H250 M280 110 H390 M220 10 V110" />
+  <!-- lobby (door gap y185–207 on its west wall) -->
+  <path class="plan__wall" d="M290 250 V207 M290 185 V160 H390" />
+
+  <text x="18" y="24" class="plan__label">CLOSET</text>
+  <text x="100" y="24" class="plan__label">OFFICE</text>
+  <text x="230" y="24" class="plan__label">CONFERENCE</text>
+  <text x="22" y="242" class="plan__label">OPEN OFFICE</text>
+  <text x="300" y="174" class="plan__label">LOBBY</text>
+
+  <g class="plan__furn">
+    <!-- rack in the closet -->
+    <rect x="64" y="18" width="18" height="44" />
+    <line x1="64" y1="28" x2="82" y2="28" />
+    <line x1="64" y1="38" x2="82" y2="38" />
+    <line x1="64" y1="48" x2="82" y2="48" />
+    <!-- office desk, conference table -->
+    <rect x="110" y="40" width="70" height="26" />
+    <rect x="250" y="40" width="110" height="34" rx="6" />
+    <!-- open-office desks -->
+    <rect x="110" y="172" width="44" height="16" />
+    <rect x="168" y="172" width="44" height="16" />
+    <rect x="110" y="212" width="44" height="16" />
+    <rect x="168" y="212" width="44" height="16" />
+    <!-- reception desk -->
+    <rect x="300" y="222" width="50" height="14" />
+  </g>
+</g>
+
+<style>
+  .plan__wall {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2.5;
+    stroke-linecap: square;
+  }
+
+  .plan__label {
+    font-family: var(--font-mono);
+    font-size: 8.5px;
+    letter-spacing: 0.08em;
+    fill: var(--steel);
+  }
+
+  .plan__furn {
+    fill: none;
+    stroke: var(--hairline-strong);
+    stroke-width: 1.25;
+  }
+</style>

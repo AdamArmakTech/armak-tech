@@ -1,0 +1,418 @@
+---
+/**
+ * Step 03 · Install — "The closet, before and after".
+ * The same rack drawn two ways (tangled vs dressed + labeled) with a before/after slider, then a
+ * 3-step timeline (pre-staged → after-hours install → cutover).
+ * Teaches: a clean, labeled install is traceable and easy to change; work is planned around the
+ * business. The slider works without JS animation; the script auto-sweeps it once, then hands over.
+ */
+import { Package, Moon, Zap } from '@lucide/astro';
+import DemoFrame from './DemoFrame.astro';
+
+const uid = `in${Math.random().toString(36).slice(2, 8)}`;
+
+// Geometry (viewBox 400 × 215)
+const portX = (i: number) => 133 + i * 11; // 12 ports per row
+const PANEL_TOP = 32; // top-row ports y
+const SWITCH_TOP = 104; // switch top-row ports y
+
+// Deterministic "random" for the tangled version
+let seed = 7;
+const rand = () => {
+  seed = (seed * 16807) % 2147483647;
+  return (seed - 1) / 2147483646;
+};
+const pick = <T,>(a: T[]) => a[Math.floor(rand() * a.length)];
+const messColors = ['var(--t568-blue)', 'var(--t568-green)', 'var(--t568-orange)', 'var(--steel)', 'var(--signal)', 'var(--t568-brown)'];
+
+const messyFeeds = Array.from({ length: 14 }, () => {
+  const x0 = 110 + rand() * 180;
+  const p = portX(Math.floor(rand() * 12)) + 4;
+  return { d: `M${x0.toFixed(1)} 0 C ${(x0 + (rand() - 0.5) * 140).toFixed(1)} 20, ${(p + (rand() - 0.5) * 120).toFixed(1)} 6, ${p} ${PANEL_TOP}`, c: pick(messColors) };
+});
+const messyCords = Array.from({ length: 11 }, () => {
+  const a = portX(Math.floor(rand() * 12)) + 4;
+  const b = portX(Math.floor(rand() * 12)) + 4;
+  const sag = 150 + rand() * 50;
+  const side = (rand() - 0.5) * 160;
+  return { d: `M${a} 39 C ${(a + side).toFixed(1)} ${sag.toFixed(1)}, ${(b - side).toFixed(1)} ${(sag - 20).toFixed(1)}, ${b} ${SWITCH_TOP}`, c: pick(messColors) };
+});
+
+// Dressed version: 4 bundles of 6 feeding the panel from above, 12 short cords straight down
+const bundles = [0, 1, 2, 3].map((k) => ({
+  lines: Array.from({ length: 6 }, (_, j) => 140 + k * 33 + j * 3),
+  tie: 136 + k * 33,
+  label: `A-${String(k * 6 + 1).padStart(2, '0')}–${String(k * 6 + 6).padStart(2, '0')}`,
+  x: 147 + k * 33,
+}));
+const cords = Array.from({ length: 12 }, (_, i) => ({ x: portX(i) + 4, uplink: i >= 10 }));
+
+const steps = [
+  { icon: Package, title: 'Pre-staged', detail: 'Panels, labels and parts prepared before arriving on site.' },
+  { icon: Moon, title: 'After-hours install', detail: 'The noisy work happens while the office is closed.' },
+  { icon: Zap, title: 'Phased cutover', detail: 'Systems switched over in planned phases, so the business keeps running.' },
+];
+---
+
+<DemoFrame
+  name="install"
+  title="The closet, before and after"
+  caption="Same closet, two ways to install it. Drag the slider: when cables are dressed and every port is labeled, anyone can trace a connection in seconds — and future changes are quick and safe."
+>
+  <div class="in">
+    <div class="in__compare">
+      <svg class="in__rack" viewBox="0 0 400 215" role="img" aria-label="A network rack shown two ways: on the left, tangled unlabeled cables; on the right, neatly bundled, labeled cables with short patch cords">
+        <defs>
+          <clipPath id={`${uid}-before`}><rect x="0" y="0" width="200" height="215" data-in-clip-before /></clipPath>
+          <clipPath id={`${uid}-after`}><rect x="200" y="0" width="200" height="215" data-in-clip-after /></clipPath>
+        </defs>
+
+        <!-- rack + equipment (shared by both versions) -->
+        <g class="in__gear">
+          <rect x="120" y="8" width="8" height="205" class="in__rail" />
+          <rect x="272" y="8" width="8" height="205" class="in__rail" />
+          <rect x="128" y="28" width="144" height="30" />
+          <rect x="128" y="64" width="144" height="14" />
+          <rect x="128" y="100" width="144" height="30" />
+          <rect x="128" y="160" width="144" height="36" />
+          <text x="200" y="183" text-anchor="middle" class="in__tiny">UPS</text>
+          {Array.from({ length: 12 }, (_, i) => (
+            <g>
+              <rect x={portX(i)} y={PANEL_TOP} width="8" height="7" class="in__port" />
+              <rect x={portX(i)} y={PANEL_TOP + 13} width="8" height="7" class="in__port" />
+              <rect x={portX(i)} y={SWITCH_TOP} width="8" height="7" class="in__port" />
+              <rect x={portX(i)} y={SWITCH_TOP + 13} width="8" height="7" class="in__port" />
+            </g>
+          ))}
+          {Array.from({ length: 8 }, (_, i) => <line x1={138 + i * 17} y1="64" x2={138 + i * 17} y2="70" />)}
+        </g>
+
+        <!-- BEFORE: tangled, unlabeled -->
+        <g clip-path={`url(#${uid}-before)`} class="in__before">
+          {messyFeeds.map((c) => <path d={c.d} style={`stroke:${c.c}`} />)}
+          {messyCords.map((c) => <path d={c.d} style={`stroke:${c.c}`} />)}
+          <text x="20" y="30" class="in__tag in__tag--bad">BEFORE</text>
+          <text x="20" y="44" class="in__tiny">no labels · no slack management</text>
+        </g>
+
+        <!-- AFTER: dressed bundles, labels, short cords -->
+        <g clip-path={`url(#${uid}-after)`} class="in__after">
+          {bundles.map((b) => (
+            <g>
+              {b.lines.map((x) => <line x1={x} y1="0" x2={x} y2={PANEL_TOP} class="in__feed" />)}
+              <rect x={b.tie} y="11" width="24" height="3" class="in__tie" />
+              <rect x={b.tie} y="21" width="24" height="3" class="in__tie" />
+            </g>
+          ))}
+          {cords.map((c) => (
+            <line x1={c.x} y1="39" x2={c.x} y2={SWITCH_TOP} class:list={['in__cord', { 'in__cord--uplink': c.uplink }]} />
+          ))}
+          <text x={portX(0)} y="26" class="in__label">A-01</text>
+          <text x={portX(11) + 8} y="26" class="in__label" text-anchor="end">A-12</text>
+          <text x={portX(0)} y="66" class="in__label">A-13 … A-24 spare</text>
+          <text x="132" y="146" class="in__label">SW-1 · ports 1–12</text>
+          <text x="380" y="30" class="in__tag in__tag--good" text-anchor="end">AFTER</text>
+          <text x="380" y="44" class="in__tiny" text-anchor="end">dressed · labeled · tested</text>
+        </g>
+
+        <!-- divider -->
+        <g class="in__divider" data-in-divider transform="translate(200 0)">
+          <line x1="0" y1="0" x2="0" y2="215" />
+          <circle cx="0" cy="107" r="11" />
+          <path d="M-4 103 L-7 107 L-4 111 M4 103 L7 107 L4 111" />
+        </g>
+      </svg>
+
+      <label class="in__slider">
+        <span class="t-mono">Before</span>
+        <input type="range" min="0" max="100" value="50" step="1" aria-label="Compare the closet before and after" data-in-range />
+        <span class="t-mono">After</span>
+      </label>
+    </div>
+
+    <ol role="list" class="in__steps">
+      {steps.map(({ icon: Icon, title, detail }) => (
+        <li class="in__step is-on" data-in-step>
+          <span class="in__icon" aria-hidden="true"><Icon size={16} stroke-width={1.75} /></span>
+          <span class="in__step-text">
+            <span class="in__step-title">{title}</span>
+            <span class="in__step-detail">{detail}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</DemoFrame>
+
+<script>
+  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion } from '../../scripts/demo';
+
+  document.querySelectorAll<HTMLElement>('[data-demo="install"]').forEach((root) => {
+    const range = root.querySelector<HTMLInputElement>('[data-in-range]')!;
+    const clipBefore = root.querySelector<SVGRectElement>('[data-in-clip-before]')!;
+    const clipAfter = root.querySelector<SVGRectElement>('[data-in-clip-after]')!;
+    const divider = root.querySelector<SVGGElement>('[data-in-divider]')!;
+    const steps = [...root.querySelectorAll<HTMLElement>('[data-in-step]')];
+
+    // value = how much of the BEFORE picture shows, from the left (0–100%)
+    const setSplit = (v: number) => {
+      const x = (Math.max(0, Math.min(100, v)) / 100) * 400;
+      clipBefore.setAttribute('width', x.toFixed(1));
+      clipAfter.setAttribute('x', x.toFixed(1));
+      clipAfter.setAttribute('width', (400 - x).toFixed(1));
+      divider.setAttribute('transform', `translate(${x.toFixed(1)} 0)`);
+      range.value = String(Math.round(v));
+    };
+
+    let sweeping = false;
+    range.addEventListener('input', () => {
+      sweeping = false;
+      setSplit(Number(range.value));
+    });
+
+    const tween = (from: number, to: number, ms: number, alive: () => boolean) =>
+      new Promise<void>((resolve) => {
+        const start = performance.now();
+        const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+        const frame = (now: number) => {
+          if (!alive() || !sweeping) return resolve();
+          const t = Math.min(1, (now - start) / ms);
+          setSplit(from + (to - from) * ease(t));
+          if (t < 1) requestAnimationFrame(frame);
+          else resolve();
+        };
+        requestAnimationFrame(frame);
+      });
+
+    const reset = () => {
+      root.classList.add('in--instant');
+      setSplit(100);
+      steps.forEach((s) => s.classList.remove('is-on'));
+      void root.offsetWidth;
+      root.classList.remove('in--instant');
+    };
+
+    const run = createRun(async (alive) => {
+      if (reduceMotion) return;
+      reset();
+      sweeping = true;
+      announce(root, 'Before: tangled, unlabeled cables');
+      await sleep(600);
+      if (!alive()) return;
+      await tween(100, 0, 1500, alive);
+      if (!alive()) return;
+      announce(root, 'After: dressed and labeled');
+      await sleep(350);
+      await tween(0, 50, 600, alive);
+      sweeping = false;
+      for (const s of steps) {
+        if (!alive()) return;
+        await sleep(380);
+        s.classList.add('is-on');
+      }
+      announce(root, 'Pre-staged, installed after hours, cut over in phases');
+    });
+
+    if (!reduceMotion) {
+      reset();
+      onFirstView(root, run);
+    }
+    bindReplay(root, run);
+  });
+</script>
+
+<style>
+  .in {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .in__compare {
+    display: grid;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .in__rack {
+    width: 100%;
+    height: auto;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+  }
+
+  .in__gear rect {
+    fill: var(--white);
+    stroke: var(--ink);
+    stroke-width: 1.25;
+  }
+
+  .in__gear .in__rail {
+    fill: var(--paper-sunken);
+  }
+
+  .in__gear line {
+    stroke: var(--hairline-strong);
+    stroke-width: 1.25;
+  }
+
+  .in__gear .in__port {
+    fill: var(--ink);
+    stroke: none;
+  }
+
+  .in__before path {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    opacity: 0.85;
+  }
+
+  .in__feed {
+    stroke: var(--t568-blue);
+    stroke-width: 1.75;
+  }
+
+  .in__tie {
+    fill: var(--ink);
+  }
+
+  .in__cord {
+    stroke: var(--t568-blue);
+    stroke-width: 2.25;
+    stroke-linecap: round;
+  }
+
+  .in__cord--uplink {
+    stroke: var(--t568-green);
+  }
+
+  .in__label,
+  .in__tiny {
+    font-family: var(--font-mono);
+    font-size: 6.5px;
+    letter-spacing: 0.06em;
+    fill: var(--steel);
+  }
+
+  .in__label {
+    fill: var(--ink);
+  }
+
+  .in__tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  .in__tag--bad {
+    fill: var(--signal);
+  }
+
+  .in__tag--good {
+    fill: var(--pass);
+  }
+
+  .in__divider line {
+    stroke: var(--ink);
+    stroke-width: 2;
+  }
+
+  .in__divider circle {
+    fill: var(--white);
+    stroke: var(--ink);
+    stroke-width: 2;
+  }
+
+  .in__divider path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.75;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Slider */
+  .in__slider {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--steel);
+  }
+
+  .in__slider input {
+    width: 100%;
+    accent-color: var(--ink);
+    cursor: ew-resize;
+  }
+
+  /* Timeline */
+  .in__steps {
+    display: grid;
+    align-content: start;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .in__step {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 0.75rem;
+    padding-block: 0.75rem;
+    border-bottom: 1px solid var(--hairline);
+    opacity: 0.3;
+    transform: translateX(-4px);
+    transition: opacity 0.35s ease, transform 0.35s var(--ease-out);
+  }
+
+  .in__step.is-on {
+    opacity: 1;
+    transform: none;
+  }
+
+  .in__icon {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--paper-sunken);
+    color: var(--ink);
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+  .in__step.is-on .in__icon {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .in__step-text {
+    display: grid;
+    gap: 0.15rem;
+    line-height: 1.4;
+  }
+
+  .in__step-title {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .in__step-detail {
+    color: var(--steel);
+    font-size: 0.8125rem;
+  }
+
+  .in--instant,
+  .in--instant * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  @container (min-width: 600px) {
+    .in {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+</style>
