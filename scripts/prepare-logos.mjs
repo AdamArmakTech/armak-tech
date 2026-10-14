@@ -34,7 +34,7 @@ const logos = {
 await mkdir('src/assets/partners', { recursive: true });
 
 for (const [name, file] of Object.entries(logos)) {
-  const { data, info } = await sharp(`public/${file}`)
+  const { data, info } = await sharp(`scripts/logo-sources/${file}`)
     .ensureAlpha()
     .raw()
     .toBuffer({ resolveWithObject: true });

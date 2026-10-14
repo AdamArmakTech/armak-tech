@@ -73,7 +73,7 @@ const checks: Check[] = [
     passText: '8 / 8 correct',
     failText: 'Pins 3 & 6 crossed',
     explain:
-      'A network cable has 8 small wires. Each one must connect to the matching pin at both ends, in the standard color order. One wire in the wrong spot and the connection drops out — or never works at all.',
+      'A network cable has 8 small wires. Each one must connect to the matching pin at both ends, in the standard color order. One wire in the wrong spot and the connection drops out or never works at all.',
     slug: 'termination',
   },
   {
@@ -81,7 +81,7 @@ const checks: Check[] = [
     name: 'Length',
     plain: 'How long the cable is',
     passText: '47.2 m',
-    failText: 'Skipped — fix the wiring first',
+    failText: 'Skipped until the wiring is fixed',
     bar: { kind: 'length', value: 47.2, limit: 90 },
     explain:
       'The tester times a signal down the cable and back to measure its length. A Cat 6A permanent link can be up to 90 meters; longer runs lose too much signal.',
@@ -92,10 +92,10 @@ const checks: Check[] = [
     name: 'Crosstalk (NEXT)',
     plain: 'Signal leaking between wire pairs',
     passText: '+5.8 dB margin',
-    failText: 'Skipped — fix the wiring first',
+    failText: 'Skipped until the wiring is fixed',
     bar: { kind: 'margin', value: 5.8 },
     explain:
-      'The wires travel in four twisted pairs, side by side. Crosstalk is signal from one pair bleeding into another — like hearing a neighbor’s call on your line. Careful twisting and termination keep it low.',
+      'The wires travel in four twisted pairs, side by side. Crosstalk is signal from one pair bleeding into another, like hearing a neighbor’s call on your line. Careful twisting and termination keep it low.',
     slug: 'next',
   },
   {
@@ -103,7 +103,7 @@ const checks: Check[] = [
     name: 'Insertion loss',
     plain: 'Signal fading over the distance',
     passText: '+12.3 dB margin',
-    failText: 'Skipped — fix the wiring first',
+    failText: 'Skipped until the wiring is fixed',
     bar: { kind: 'margin', value: 12.3 },
     explain:
       'Every cable weakens a signal a little along its length. This checks that enough signal survives to the far end to run at full speed.',
@@ -114,7 +114,7 @@ const checks: Check[] = [
     name: 'Return loss',
     plain: 'Signal bouncing back from connections',
     passText: '+4.1 dB margin',
-    failText: 'Skipped — fix the wiring first',
+    failText: 'Skipped until the wiring is fixed',
     bar: { kind: 'margin', value: 4.1 },
     explain:
       'A poorly made connection reflects part of the signal back toward the sender, like an echo. The less echo, the cleaner the connection.',

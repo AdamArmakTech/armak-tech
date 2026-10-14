@@ -11,14 +11,14 @@ const abs = (path: string) => new URL(path, site.url).href;
 export const defaultTitle = `${site.name} — Low-Voltage & Network Contractor, SoCal`;
 
 /** Homepage meta description (120–155 chars) */
-export const defaultDescription = `${site.name} designs, installs and supports cabling, networks, cameras, access control, voice and AV across Southern California — since ${FOUNDED}.`;
+export const defaultDescription = `${site.name} designs, installs and supports cabling, networks, cameras, access control, voice and AV across Southern California. In business since ${FOUNDED}.`;
 
 /** Default social share card — regenerate with `node scripts/make-brand-images.mjs` */
 export const defaultOgImage = {
   src: '/og-image.png',
   width: 1200,
   height: 630,
-  alt: `${site.name} — Built for the future. Low-voltage, networking and security across Southern California.`,
+  alt: `${site.name}: Built for the future. Low-voltage, networking and security across Southern California.`,
 };
 
 /** Same @id the service pages use for their `provider`, so search engines merge the two */

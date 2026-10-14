@@ -14,5 +14,4 @@ Full research notes and alternates: `ai/plans/stock-photos.md`.
 | desk-phone.jpg | Julian Hochgesang | https://unsplash.com/photos/Dkn8-zPIbwo | Unsplash License |
 | conference-room.jpg | Craig Lovelidge | https://unsplash.com/photos/s-KphF10sWM | Unsplash License |
 
-Older files in this folder (cable-bundles.jpg, data-hall.webp, rack-row.jpg, patch-panel-colors.webp,
-rack-closeup.webp) came from the original site's /public folder; their source is unknown.
+The AI-looking images from the original site were removed on 2026-10-13 (still in the `old-site` branch).

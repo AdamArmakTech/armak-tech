@@ -23,9 +23,9 @@ import panduit from '../assets/partners/panduit.png';
 import crestron from '../assets/partners/crestron.png';
 import netgear from '../assets/partners/netgear.png';
 
-import cableBundles from '../assets/photos/cable-bundles.jpg';
-import rackRow from '../assets/photos/rack-row.jpg';
-import patchColors from '../assets/photos/patch-panel-colors.webp';
+import cableBundles from '../assets/photos/cabling-bundles-white.jpg';
+import rackRow from '../assets/photos/wifi-ap-tray.jpg';
+import patchColors from '../assets/photos/camera-ceiling.jpg';
 
 /* ── Manufacturer partners (logos processed by scripts/prepare-logos.mjs) ── */
 export interface Partner {
@@ -56,17 +56,17 @@ export const process = [
   {
     code: '01',
     title: 'Assess',
-    body: 'We walk the site with you — pathways, closets, power, existing systems — and document what is actually there before anything is priced.',
+    body: 'We walk the site with you and write down what’s actually there: pathways, closets, power and existing systems. Nothing is priced until that’s done.',
   },
   {
     code: '02',
     title: 'Design',
-    body: 'A clear plan for the infrastructure, scoped to your site — no guesswork, no surprises.',
+    body: 'We draw up where every cable, jack and device will go, and price the job from that drawing.',
   },
   {
     code: '03',
     title: 'Install',
-    body: 'ANSI/TIA-compliant installs with pre-staged kits, after-hours work and phased cutovers — we work around your operations, not through them.',
+    body: 'Installed to ANSI/TIA standards with materials prepared ahead of time. Disruptive work happens after hours, and systems are switched over in planned phases so your business keeps running.',
   },
   {
     code: '04',
@@ -76,7 +76,7 @@ export const process = [
   {
     code: '05',
     title: 'Support',
-    body: 'Post-install MAC work, warranty response and managed service contracts. We don’t disappear after sign-off.',
+    body: 'Post-install MAC work, warranty response and managed service contracts. We stay available after the job is done.',
   },
 ];
 
@@ -85,9 +85,9 @@ export const credentials = ['Licensed · Bonded · Insured', 'BICSI-certified te
 
 export const pillars = [
   { title: 'Built to standard', body: 'ANSI/TIA-compliant installs. Every cable tested, every port labeled, every job documented to spec.' },
-  { title: 'From closet to campus', body: 'Single-rack retrofits to multi-site enterprise rollouts — same crew, same standard, one point of contact.' },
-  { title: 'Cutover-ready', body: 'Pre-staged kits, after-hours installs, phased cutovers. We work around your operations, not through them.' },
-  { title: 'Lifecycle support', body: 'Post-install MAC work, warranty response and managed service contracts. We don’t disappear after sign-off.' },
+  { title: 'From closet to campus', body: 'From a single rack to a multi-site rollout, you work with the same team and one point of contact.' },
+  { title: 'Cutover-ready', body: 'Materials are prepared ahead of time, noisy work happens after hours, and cutovers are phased so your business keeps running.' },
+  { title: 'Lifecycle support', body: 'Post-install MAC work, warranty response and managed service contracts. We stay available after the job is done.' },
 ];
 
 /* ── Industries ──

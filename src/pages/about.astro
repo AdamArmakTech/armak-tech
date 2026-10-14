@@ -17,8 +17,8 @@ import PartnerStrip from '../components/home/PartnerStrip.astro';
 import ServiceArea from '../components/home/ServiceArea.astro';
 import { site, FOUNDED, yearsInBusiness, serviceArea } from '../data/site';
 import { pillars, credentials } from '../data/content';
-// TODO(photo): replace with a real photo of Armak's team or a finished Armak install
-import storyPhoto from '../assets/photos/rack-row.jpg';
+// TODO(photo): interim stock (see assets/photos/CREDITS.md) — replace with a real Armak photo
+import storyPhoto from '../assets/photos/cabling-bundles-white.jpg';
 
 const description = `Armak Technologies has designed and installed low-voltage, networking and security systems across Southern California since ${FOUNDED}. Glendale HQ.`;
 
@@ -27,17 +27,17 @@ const story = [
   {
     tag: 'Legacy',
     title: `Since ${FOUNDED}`,
-    body: 'We design and deploy high-performance low-voltage and enterprise networking systems — the backbone of how an organization operates.',
+    body: 'We design and install low-voltage and networking systems for businesses across Southern California.',
   },
   {
     tag: 'Our standard',
-    title: 'Global-grade excellence',
-    body: 'Global-grade technical excellence for every client. We don’t just solve technical hurdles — we engineer for maximum reliability and long-term asset value.',
+    title: 'Done to standard',
+    body: 'Every job is built to ANSI/TIA standards, tested and documented, so it stays reliable and easy to maintain for years.',
   },
   {
     tag: 'Scope',
     title: 'Cabling to security',
-    body: 'From structured cabling to enterprise security, we provide the foundational systems that keep businesses competitive.',
+    body: 'From structured cabling to security systems, we install what a business needs to run day to day.',
   },
 ];
 
@@ -58,7 +58,7 @@ const SHOW_PLACEHOLDERS = false;
   <PageHero
     code="K-00"
     label="About"
-    title="The infrastructure partner when failure isn’t an option."
+    title={`Low-voltage and network installs since ${FOUNDED}.`}
     lead={`For ${yearsInBusiness} years, organizations across Southern California have relied on Armak Technologies to design, install and support the cabling, networks and security systems they run on.`}
     crumbs={[{ label: 'About' }]}
     spec={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`, ...credentials]}
@@ -70,7 +70,7 @@ const SHOW_PLACEHOLDERS = false;
       <SectionHead
         code="K-01"
         label="Our story"
-        title={`${yearsInBusiness} years in. Zero shortcuts.`}
+        title={`${yearsInBusiness} years in business.`}
       />
 
       <div class="story__body">
@@ -78,12 +78,11 @@ const SHOW_PLACEHOLDERS = false;
           <div class="story__photo">
             <Image
               src={storyPhoto}
-              alt="A row of server racks with neatly dressed cabling"
+              alt="Neatly dressed white cable bundles fanning into a patch panel"
               widths={[480, 720, 960, 1280]}
               sizes="(min-width: 1000px) 40vw, 100vw"
               loading="lazy"
             />
-            <span class="story__tag t-mono">Fig. K-01</span>
           </div>
         </figure>
 
@@ -128,7 +127,7 @@ const SHOW_PLACEHOLDERS = false;
   <!-- K-02 · Principles -->
   <section class="section section--flush-top principles">
     <div class="container">
-      <SectionHead code="K-02" label="How we work" title="The same standard, closet to campus." />
+      <SectionHead code="K-02" label="How we work" title="How we work on every job." />
       <ul role="list" class="principles__grid" data-reveal-stagger="80">
         {pillars.map((p, i) => (
           <li class="principle" data-reveal>
@@ -146,7 +145,7 @@ const SHOW_PLACEHOLDERS = false;
   <!-- K-03 · Credentials -->
   <section class="section section--flush-top creds">
     <div class="container">
-      <SectionHead code="K-03" label="Credentials" title="The paperwork behind the work." />
+      <SectionHead code="K-03" label="Credentials" title="Licensed, bonded and insured." />
       <ul role="list" class="creds__grid" data-reveal-stagger="70">
         {credentials.map((c, i) => (
           <li class="cred" data-reveal>
@@ -216,7 +215,7 @@ const SHOW_PLACEHOLDERS = false;
   <PageCta
     code="K-05"
     title="Let’s talk about your site."
-    body="Tell us what you’re building. We’ll assess the site, scope the infrastructure, and give you a clear plan — no guesswork, no surprises."
+    body="Tell us what you’re building. We’ll walk the site, scope the work and send you a clear written plan and price."
   />
 </Base>
 

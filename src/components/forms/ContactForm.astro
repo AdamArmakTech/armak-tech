@@ -107,11 +107,11 @@ const f = (name: string) => `${id}-${name}`;
 
   <div class="cform__success" data-success hidden>
     <p class="t-mono cform__success-label"><span class="cform__success-mark" aria-hidden="true"></span>Request received</p>
-    <h3 class="t-h3 cform__title" tabindex="-1" data-success-title>Thanks — we’ve got your project details.</h3>
+    <h3 class="t-h3 cform__title" tabindex="-1" data-success-title>Thanks. We’ve got your project details.</h3>
     <ol role="list" class="cform__next">
       <li><span class="t-mono">01</span>We review what you’re building and where.</li>
       <li><span class="t-mono">02</span>We reach out to schedule a site assessment.</li>
-      <li><span class="t-mono">03</span>You get a clear, scoped plan — no guesswork, no surprises.</li>
+      <li><span class="t-mono">03</span>You get a written plan and price for the work.</li>
     </ol>
     <p class="t-small t-muted">
       Need us sooner? Call <a class="cform__link" href={site.phoneHref}>{site.phone}</a> · {site.hours}
@@ -403,7 +403,7 @@ const f = (name: string) => `${id}-${name}`;
     // ── Step 1 → 2 ─────────────────────────────────────────
     next.addEventListener('click', () => {
       if (!selectedTypes().length) {
-        setError('project_type', 'Pick at least one — or choose “Not sure yet”.');
+        setError('project_type', 'Pick at least one, or choose “Not sure yet”.');
         chips()[0]?.focus();
         return;
       }
@@ -432,7 +432,7 @@ const f = (name: string) => `${id}-${name}`;
           if (!v) return 'Please enter a phone number.';
           return v.replace(/\D/g, '').length >= MIN_PHONE_DIGITS ? '' : 'Please enter a full phone number.';
         case 'message':
-          return v ? '' : 'Tell us a little about the project — location, scale, timeline.';
+          return v ? '' : 'Tell us a little about the project: location, size and timeline.';
         default:
           return '';
       }
@@ -474,7 +474,7 @@ const f = (name: string) => `${id}-${name}`;
 
       if (!selectedTypes().length) {
         showStep(1);
-        setError('project_type', 'Pick at least one — or choose “Not sure yet”.');
+        setError('project_type', 'Pick at least one, or choose “Not sure yet”.');
         return;
       }
 

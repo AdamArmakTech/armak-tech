@@ -689,7 +689,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'A box with many network ports that connects the computers, phones, cameras and Wi-Fi access points in a building and sends data only to the device it’s meant for. PoE switches also power devices.',
     why_it_matters:
-      'Switches are the backbone of the local network; their capacity, power budget and management features decide what you can connect and how reliably.',
+      'Every device on the local network connects through a switch; their capacity, power budget and management features decide what you can connect and how reliably.',
     analogy: 'Like a mailroom clerk who reads each envelope and hands it straight to the right desk.',
     qa: [
       {

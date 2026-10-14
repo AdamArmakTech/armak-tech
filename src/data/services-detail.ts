@@ -90,21 +90,21 @@ export const servicePhotos: Partial<Record<ServiceSlug, ServicePhoto>> = {
 export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
   /* ── A-01 ─────────────────────────────────────────────────────────── */
   'structured-cabling': {
-    headline: 'Cabling that’s proven before it’s trusted.',
+    headline: 'Structured cabling, tested and documented.',
     intro:
-      'Every system in your building rides on the physical layer. We install Cat 6A, Cat 8 and fiber to ANSI/TIA standards — then test, label and document every run before we leave the site.',
+      'Every system in your building rides on the physical layer. We install Cat 6A, Cat 8 and fiber to ANSI/TIA standards, then test, label and document every run before we leave the site.',
     capabilities: [
       {
         title: 'Cat 6A horizontal cabling',
-        body: 'Cat 6A carries 10GBASE-T across a full 100-meter channel and handles the heat of bundled, high-power PoE runs to access points, cameras and door hardware — the practical default for new drops.',
+        body: 'Cat 6A carries 10GBASE-T across a full 100-meter channel and handles the heat of bundled, high-power PoE runs to access points, cameras and door hardware. It’s the sensible default for new drops.',
       },
       {
         title: 'Cat 8 for high-speed links',
-        body: 'Cat 8 supports 25 and 40 Gb/s over short runs of up to 30 meters — built for switch-to-server connections in server rooms and data centers rather than everyday office drops.',
+        body: 'Cat 8 supports 25 and 40 Gb/s over short runs of up to 30 meters. It’s meant for switch-to-server connections in server rooms and data centers rather than everyday office drops.',
       },
       {
         title: 'Fiber backbone',
-        body: 'Single-mode and multimode fiber linking your main equipment room, IDF closets and neighboring buildings — terminated and loss-tested end to end.',
+        body: 'Single-mode and multimode fiber linking your main equipment room, IDF closets and neighboring buildings, terminated and loss-tested end to end.',
       },
       {
         title: 'Testing, labeling & certification',
@@ -112,11 +112,11 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'Racks, patching & cable management',
-        body: 'Patch panels, dressed and labeled patching, and cable management in the closet — so the next move, add or change takes minutes, not an afternoon of tracing.',
+        body: 'Patch panels, dressed and labeled patching, and cable management in the closet, so the next move, add or change takes minutes instead of an afternoon of tracing.',
       },
       {
         title: 'Business & corporate relocation',
-        body: 'IT moves, cabling refreshes and go-live support — the new space cabled, tested and ready before your team carries in the first box.',
+        body: 'IT moves, cabling refreshes and go-live support. The new space is cabled, tested and ready before your team moves in.',
       },
     ],
     standards: [
@@ -134,11 +134,11 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         q: 'When does Cat 8 make sense?',
-        a: 'Cat 8 is designed for short, high-speed links — up to 30 meters at 25 or 40 Gb/s — typically between switches and servers in a data center or server room. It isn’t a replacement for Cat 6A in horizontal office cabling, and most desktops, access points and cameras gain nothing from it.',
+        a: 'Cat 8 is designed for short, high-speed links (up to 30 meters at 25 or 40 Gb/s), typically between switches and servers in a data center or server room. It isn’t a replacement for Cat 6A in horizontal office cabling, and most desktops, access points and cameras gain nothing from it.',
       },
       {
         q: 'What’s the difference between testing and certifying a cable?',
-        a: 'A basic tester confirms continuity and wire map — that each conductor lands on the right pin. Certification uses a field tester to measure performance (insertion loss, near-end crosstalk, return loss and more) against the TIA limits for the cable’s category, and records a pass/fail report for every link. Certification results are typically what manufacturers require for extended system warranties.',
+        a: 'A basic tester confirms continuity and wire map, meaning each conductor lands on the right pin. Certification uses a field tester to measure performance (insertion loss, near-end crosstalk, return loss and more) against the TIA limits for the cable’s category, and records a pass/fail report for every link. Certification results are typically what manufacturers require for extended system warranties.',
       },
       {
         q: 'Single-mode or multimode fiber for our backbone?',
@@ -146,18 +146,18 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
     ],
     metaDescription:
-      'Cat 6A, Cat 8 and fiber cabling installed to ANSI/TIA standards across Southern California — every run tested, labeled and certified.',
+      'Cat 6A, Cat 8 and fiber cabling installed to ANSI/TIA standards across Southern California. Every run tested, labeled and certified.',
   },
 
   /* ── A-02 ─────────────────────────────────────────────────────────── */
   networking: {
-    headline: 'Networks built for uptime, not just install day.',
+    headline: 'Networks that stay up long after install day.',
     intro:
       'Switches, firewalls, VLANs, UPS power and enterprise Wi-Fi, designed around how your building actually works. One team from the patch panel to the access point.',
     capabilities: [
       {
         title: 'Switching & VLANs',
-        body: 'Managed switching with VLANs that keep staff, guest, voice, camera and building-system traffic apart — and PoE budgets sized for the devices you actually run.',
+        body: 'Managed switching with VLANs that keep staff, guest, voice, camera and building-system traffic apart, with PoE budgets sized for the devices you actually run.',
       },
       {
         title: 'Firewalls & secure edge',
@@ -165,7 +165,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'Enterprise Wi-Fi design',
-        body: 'Access points planned around client density, wall construction and roaming — then deployed and optimized for full coverage, not just a signal in the lobby.',
+        body: 'Access points planned around client density, wall construction and roaming, then deployed and tuned for coverage across the whole space.',
       },
       {
         title: 'UPS & power',
@@ -173,7 +173,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'Internet service brokerage',
-        body: 'Carrier sourcing, redundancy planning and SLA negotiation — so you get the right circuits, a backup path and terms you understand.',
+        body: 'Carrier sourcing, redundancy planning and SLA negotiation, so you get the right circuits, a backup path and terms you understand.',
       },
       {
         title: 'POS install & training',
@@ -199,7 +199,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         q: 'What is a PoE budget, and why does it matter?',
-        a: 'Power over Ethernet delivers power and data on one cable. Per port, 802.3af provides up to 15.4 W at the switch, 802.3at (PoE+) up to 30 W, and 802.3bt up to 60 or 90 W. Each switch also has a total power budget — if cameras, access points and phones together exceed it, some devices won’t power up, so budgets should be planned with headroom.',
+        a: 'Power over Ethernet delivers power and data on one cable. Per port, 802.3af provides up to 15.4 W at the switch, 802.3at (PoE+) up to 30 W, and 802.3bt up to 60 or 90 W. Each switch also has a total power budget. If cameras, access points and phones together exceed it, some devices won’t power up, so budgets should be planned with headroom.',
       },
       {
         q: 'Cloud-managed or traditionally managed networking?',
@@ -212,13 +212,13 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
 
   /* ── A-03 ─────────────────────────────────────────────────────────── */
   'video-surveillance': {
-    headline: 'Camera coverage you can actually use.',
+    headline: 'Cameras placed where they’re needed.',
     intro:
-      'High-resolution IP cameras, network video recorders and remote viewing — placed for the views that matter and connected to a network built to carry them. Plus LED perimeter and yard lighting so cameras see at night.',
+      'High-resolution IP cameras, network video recorders and remote viewing, with cameras placed where they’re needed and a network that can carry the video. Plus LED perimeter and yard lighting so cameras see at night.',
     capabilities: [
       {
         title: 'Camera design & placement',
-        body: 'Each camera chosen and aimed for its job — identifying faces at entrances, reading activity across lots and hallways — with lighting and mounting height accounted for day and night.',
+        body: 'Each camera is chosen and aimed for its job, such as identifying faces at entrances or watching activity across lots and hallways, with lighting and mounting height accounted for day and night.',
       },
       {
         title: 'IP cameras & NVRs',
@@ -234,7 +234,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'LED perimeter & yard lighting',
-        body: 'LED lighting for perimeters, yards and lots that supports security and operations — and gives cameras the light they need for usable night footage.',
+        body: 'LED lighting for perimeters, yards and lots that supports security and operations and gives cameras the light they need for usable night footage.',
       },
     ],
     standards: [
@@ -256,7 +256,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         q: 'Is a higher-megapixel camera always better?',
-        a: 'Not necessarily. What matters is pixel density on the subject: a 4K camera covering a whole parking lot can capture less facial detail than a 1080p camera aimed at a doorway. Good designs start from each camera’s purpose — detect, observe, recognize or identify — and pick the lens, resolution and position to match.',
+        a: 'Not necessarily. What matters is pixel density on the subject: a 4K camera covering a whole parking lot can capture less facial detail than a 1080p camera aimed at a doorway. Good designs start from each camera’s purpose: detect, observe, recognize or identify — and pick the lens, resolution and position to match.',
       },
       {
         q: 'Is it safe to view our cameras remotely?',
@@ -264,22 +264,22 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
     ],
     metaDescription:
-      'IP cameras, NVRs and remote monitoring for Southern California businesses — video surveillance systems designed and installed for usable footage.',
+      'IP cameras, NVRs and remote monitoring for Southern California businesses. Video surveillance systems designed and installed for usable footage.',
   },
 
   /* ── A-04 ─────────────────────────────────────────────────────────── */
   'access-control': {
-    headline: 'Every door, on your terms.',
+    headline: 'Control who gets in, and when.',
     intro:
-      'Card and mobile credentials, electric strikes, maglocks and video intercoms that let the right people in — and keep a record of who did. Plus modern time and attendance for any workforce.',
+      'Card and mobile credentials, electric strikes, maglocks and video intercoms that let the right people in and keep a record of who did. Plus modern time and attendance for any workforce.',
     capabilities: [
       {
         title: 'Card & mobile access',
-        body: 'Smart-card readers or mobile credentials on employees’ phones, managed from one system — add or revoke access instantly, set schedules by door and group, and review who entered where.',
+        body: 'Smart-card readers or mobile credentials on employees’ phones, managed from one system. Add or revoke access instantly, set schedules by door and group, and review who entered where.',
       },
       {
         title: 'Strikes & maglocks',
-        body: 'The right locking hardware for each opening — electric strikes, maglocks, power supplies and request-to-exit devices — matched to the door, frame and life-safety requirements.',
+        body: 'The right locking hardware for each opening (electric strikes, maglocks, power supplies and request-to-exit devices), matched to the door, frame and life-safety requirements.',
       },
       {
         title: 'Video intercom',
@@ -287,7 +287,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'Time & attendance',
-        body: 'Modern time clocks and admin control for any workforce — accurate punches, simpler payroll and fewer disputes over hours.',
+        body: 'Modern time clocks and admin control for any workforce: accurate punches, simpler payroll and fewer disputes over hours.',
       },
       {
         title: 'Schedules & audit trails',
@@ -309,11 +309,11 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         q: 'What’s the difference between fail-safe and fail-secure?',
-        a: 'A fail-safe lock — like most maglocks — releases when it loses power. A fail-secure lock — like many electric strikes — stays locked from the outside when power is lost, while the inside handle still lets people exit freely. The right choice depends on the door’s role, fire and life-safety requirements and how much security the opening needs during an outage.',
+        a: 'A fail-safe lock (like most maglocks) releases when it loses power. A fail-secure lock (like many electric strikes) stays locked from the outside when power is lost, while the inside handle still lets people exit freely. The right choice depends on the door’s role, fire and life-safety requirements and how much security the opening needs during an outage.',
       },
       {
         q: 'Can we put a maglock on any door?',
-        a: 'Not without meeting code. Maglocks on egress doors generally need a motion-sensor release, a manual push-to-exit button and automatic release when the fire alarm activates, and requirements vary by jurisdiction and occupancy. That’s why hardware should be chosen with the local building and fire codes in mind, not just the door.',
+        a: 'Not without meeting code. Maglocks on egress doors generally need a motion-sensor release, a manual push-to-exit button and automatic release when the fire alarm activates, and requirements vary by jurisdiction and occupancy. That’s why hardware should be chosen with the local building and fire codes in mind.',
       },
       {
         q: 'Can we manage access remotely?',
@@ -326,13 +326,13 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
 
   /* ── A-05 ─────────────────────────────────────────────────────────── */
   'voip-unified-comms': {
-    headline: 'Business phones that just work.',
+    headline: 'Business phones that are simple to use and manage.',
     intro:
       'Cloud phone systems, call flows that send callers to the right person, and onboarding that gets your team comfortable from the first call. Paging, messaging and backup tie it all together.',
     capabilities: [
       {
         title: 'Cloud phone systems',
-        body: 'Hosted VoIP in place of an on-site phone server — desk phones, softphones and mobile apps on one number plan, managed from a web portal.',
+        body: 'Hosted VoIP in place of an on-site phone server: desk phones, softphones and mobile apps on one number plan, managed from a web portal.',
       },
       {
         title: 'Call flows & auto attendants',
@@ -348,7 +348,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'PA & zone paging',
-        body: 'Zone paging and network-integrated PA — announcements to one area or the whole building through ceiling speakers and phones.',
+        body: 'Zone paging and network-integrated PA for announcements to one area or the whole building through ceiling speakers and phones.',
       },
       {
         title: 'Voice-ready networks',
@@ -370,7 +370,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         q: 'What does our network need for VoIP?',
-        a: 'Voice uses little bandwidth — roughly 100 kbps per call with a standard codec — but it is very sensitive to latency, jitter and packet loss. Quality-of-service prioritization, a dedicated voice VLAN, PoE switches for desk phones and a reliable internet connection (ideally with a backup) make the difference between clear calls and choppy ones.',
+        a: 'Voice uses little bandwidth (roughly 100 kbps per call with a standard codec), but it is very sensitive to latency, jitter and packet loss. Quality-of-service prioritization, a dedicated voice VLAN, PoE switches for desk phones and a reliable internet connection (ideally with a backup) make the difference between clear calls and choppy ones.',
       },
       {
         q: 'What happens to our phones if the internet goes down?',
@@ -378,18 +378,18 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         q: 'Can paging run through our phone system?',
-        a: 'Yes. Many VoIP phones support multicast paging, and SIP paging adapters connect the phone system to overhead speakers and amplifiers — so one system handles calls, intercom and zone announcements.',
+        a: 'Yes. Many VoIP phones support multicast paging, and SIP paging adapters connect the phone system to overhead speakers and amplifiers, so one system handles calls, intercom and zone announcements.',
       },
     ],
     metaDescription:
-      'Cloud VoIP phone systems, call flows, onboarding and zone paging for businesses across Southern California — installed and supported by Armak.',
+      'Cloud VoIP phone systems, call flows, onboarding and zone paging for businesses across Southern California, installed and supported by Armak.',
   },
 
   /* ── A-06 ─────────────────────────────────────────────────────────── */
   'audio-video': {
     headline: 'Rooms that work when the meeting starts.',
     intro:
-      'Displays, speakers, mounts and tuning for any space or scale — conference rooms, digital signage and distributed audio, installed cleanly and set up so people can walk in and start.',
+      'Displays, speakers, mounts and tuning for any space or scale: conference rooms, digital signage and distributed audio, set up so people can walk in and start a meeting.',
     capabilities: [
       {
         title: 'Conference & huddle rooms',
@@ -405,7 +405,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'Mounting & clean installs',
-        body: 'Wall, ceiling and furniture mounts with concealed cabling — equipment that looks intentional, not added later.',
+        body: 'Wall, ceiling and furniture mounts with concealed cabling, so the equipment looks like it belongs there.',
       },
       {
         title: 'Tuning & commissioning',
@@ -423,7 +423,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
     faqs: [
       {
         q: 'Why use a commercial display instead of a consumer TV?',
-        a: 'Commercial displays are built for longer daily operating hours, often run brighter, include control ports for room systems and carry warranties that cover business use — many consumer TV warranties don’t. They also skip consumer features like on-screen ads and surprise software updates.',
+        a: 'Commercial displays are built for longer daily operating hours, often run brighter, include control ports for room systems and carry warranties that cover business use, which many consumer TV warranties don’t. They also skip consumer features like on-screen ads and surprise software updates.',
       },
       {
         q: 'What makes a conference room good for video calls?',
@@ -435,10 +435,10 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         q: 'How far can we run HDMI?',
-        a: 'Passive HDMI cables are reliable only over fairly short distances — roughly 15 meters, less at higher resolutions. For longer runs, HDBaseT extenders carry video up to 100 meters over a single Cat 6A cable, and AV-over-IP distributes video across a network to many displays.',
+        a: 'Passive HDMI cables are reliable only over fairly short distances: roughly 15 meters, less at higher resolutions. For longer runs, HDBaseT extenders carry video up to 100 meters over a single Cat 6A cable, and AV-over-IP distributes video across a network to many displays.',
       },
     ],
     metaDescription:
-      'Conference room AV, commercial displays, digital signage and distributed audio for Southern California businesses — installed and tuned by Armak.',
+      'Conference room AV, commercial displays, digital signage and distributed audio for Southern California businesses, installed and tuned by Armak.',
   },
 };

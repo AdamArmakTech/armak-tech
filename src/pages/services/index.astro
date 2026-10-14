@@ -11,10 +11,10 @@ import ServiceCta from '../../components/services/ServiceCta.astro';
 import { services, site, FOUNDED, yearsInBusiness } from '../../data/site';
 import { credentials } from '../../data/content';
 // TODO(photo): replace with a real Armak install photo
-import heroPhoto from '../../assets/photos/data-hall.webp';
+import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
 
 const description =
-  'Structured cabling, networking, video surveillance, access control, VoIP and AV — designed, installed and supported across Southern California since 1998.';
+  'Structured cabling, networking, video surveillance, access control, VoIP and AV, designed, installed and supported across Southern California since 1998.';
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -35,11 +35,11 @@ const jsonLd = {
   <section class="svc-index-hero container" aria-labelledby="services-title">
     <div class="svc-index-hero__copy">
       <Label code="A-00">Services</Label>
-      <h1 id="services-title" class="t-h1 svc-index-hero__title">Every low-voltage system, one standard.</h1>
+      <h1 id="services-title" class="t-h1 svc-index-hero__title">Every low-voltage system, from one team.</h1>
       <p class="t-lead" data-reveal>
-        Cabling, networks, cameras, doors, voice and AV — designed, installed, certified and supported by
-        one Southern California team for {yearsInBusiness} years. One crew, one point of contact, from the
-        first conduit to the final report.
+        Cabling, networks, cameras, doors, voice and AV, designed, installed, tested and supported by one
+        Southern California team for {yearsInBusiness} years. You get one point of contact from the first
+        walk-through to the final report.
       </p>
       <div class="svc-index-hero__ctas" data-reveal style="--reveal-delay: 120ms">
         <Button href="/contact/" size="lg">Request a site assessment</Button>
@@ -49,12 +49,11 @@ const jsonLd = {
     <figure class="svc-index-hero__media" data-reveal style="--reveal-delay: 150ms">
       <Image
         src={heroPhoto}
-        alt="An aisle of network cabinets with color-coded patching in a data hall"
+        alt="A technician in a hi-vis vest working at a network rack"
         widths={[560, 840, 1120]}
         sizes="(min-width: 1000px) 40vw, 100vw"
         loading="eager"
       />
-      <span class="svc-index-hero__tag t-mono">Fig. A-00 · Data hall</span>
     </figure>
     <SpecStrip
       class="svc-index-hero__spec"
@@ -105,7 +104,7 @@ const jsonLd = {
   <ServiceCta
     code="A-00.2"
     title="Not sure where to start?"
-    body="Most projects touch more than one system. Tell us about the site — we’ll walk it with you, document what’s there and scope the job before anything is priced."
+    body="Most projects touch more than one system. Tell us about the site. We’ll walk it with you, document what’s there and scope the job before anything is priced."
   />
 </Base>
 

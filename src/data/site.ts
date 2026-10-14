@@ -14,7 +14,7 @@ export const site = {
   url: 'https://armak.tech',
   tagline: 'Low-voltage, networking & security infrastructure for Southern California.',
   description:
-    'Armak Technologies designs, installs and supports structured cabling, enterprise networks, video surveillance, access control, voice and AV systems across Southern California — since 1998.',
+    'Armak Technologies designs, installs and supports structured cabling, enterprise networks, video surveillance, access control, voice and AV systems across Southern California since 1998.',
   phone: '(818) 858-4615',
   phoneHref: 'tel:+18188584615',
   email: 'sales@armak.tech',
@@ -52,7 +52,7 @@ export const services: Service[] = [
     slug: 'structured-cabling',
     code: 'A-01',
     name: 'Structured Cabling & Fiber',
-    short: 'Cat 6A, Cat 8 and fiber installations built to ANSI/TIA standards — every run tested, labeled and certified.',
+    short: 'Cat 6A, Cat 8 and fiber installed to ANSI/TIA standards. Every run is tested, labeled and certified.',
     layer: 'Physical layer',
     includes: [
       'Cat 6A / Cat 8 copper',
