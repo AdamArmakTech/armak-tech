@@ -1,55 +1,45 @@
 # Project State
 
-## Current Focus — Full redesign (branch `redesign`)
-Plan: `ai/plans/redesign.md` ("Precision Infrastructure", light editorial, Astro, full multi-page).
+## Status — the redesign is LIVE on armak.tech (since 2026-10-12)
+- `main` = live site (Vercel builds every push to `main` to production; other branches get previews).
+- `redesign` = same as `main` (kept in sync).
+- `old-site` = the previous Vite + EJS site, untouched backup (commit 757cf43). Its Vercel deployment
+  is also still in the dashboard for one-click rollback.
+- Plan / design rationale: `ai/plans/redesign.md` ("Precision Infrastructure", light editorial, Astro).
 
-- [x] Phase 0: Research industry leaders + write plan; decisions made (light editorial, Astro, full site, stock photos for now)
-- [x] Phase 1: Design system
-  - [x] Migrate to Astro 7; old Vite + EJS source moved to `legacy/` (delete at launch)
-  - [x] Tokens (`src/styles/tokens.css`), global styles, Geist + Geist Mono (self-hosted)
-  - [x] Components: Logo, Label (TIA-606), Stripe (T568B), Button, SectionHead, SpecStrip, TestCard, ServiceTile, Stat
-  - [x] Header (services mega-menu + mobile menu), Footer
-  - [x] Motion: Lenis, reveals, GSAP SplitText headings (on demand), count-ups; reduced-motion safe
-  - [x] `/styleguide/` review page (noindex, excluded from sitemap)
-- [x] Phase 2: Homepage — hero, partner strip, building explorer (signature), services bento,
-      process, numbers, projects (placeholders), industries, service-area map, 2-step contact form
-- [x] Phase 3: Inner pages — /services/ + 6 service pages (FAQ/Service/Breadcrumb JSON-LD),
-      /about/, /industries/, /projects/ + 3 placeholder case studies (noindex), /contact/, 404
-- [x] Stock photos: 7 approved and downloaded (credits: src/assets/photos/CREDITS.md;
-      shortlist + alternates: ai/plans/stock-photos.md). Team photo (#8) declined by user.
-- [x] Glossary: /glossary/ — 140 plain-English terms, 342 Q&As (5 parallel agents, one per
-      alphabet range: src/data/glossary/{a-c,d-h,i-n,o-r,s-z}.ts, merged + validated in index.ts).
-      Click a term → drawer (bottom sheet on phones); search, category filter, A–Z bar,
-      shareable #slug links, DefinedTermSet JSON-LD. Linked from the footer.
-- [x] Process section stepper with a live demo per step (Assess, Design, Install, Certify, Support)
-- [x] SEO basics: business JSON-LD (src/data/seo.ts), og-image + favicons (scripts/make-brand-images.mjs), robots.txt, unique titles/descriptions
-- [ ] Demo polish (stopped by usage limit 2026-10-12): Assess done (readable SVG labels via fitSvgText);
-      still to do — Design/Install/Support/CableTest: compact phone layouts (currently 700–1400px tall at 375px), readable SVG labels
-- [ ] Launch checklist (ai/plans/launch-checklist.md) — audit agent stopped by usage limit before writing it
-- [ ] Phase 4 remainder: Lighthouse pass on the Vercel preview — LocalBusiness JSON-LD in Base, OG image, robots.txt,
-      Lighthouse pass on a deployed preview
-- [ ] Phase 5: Launch — remove `legacy/`, `src/pages/dev/`, unused `public/` images; replace placeholders; deploy
+## Done
+- [x] Design system, homepage, 6 service pages + overview, About, Industries, Contact, 404 (Astro 7)
+- [x] Glossary: /glossary/ — 140 plain-English terms with Q&A (drawer), search, A–Z, JSON-LD; in the main menu
+- [x] "How every job runs" stepper: live demo per step (Assess, Design, Install, Certify cable test, Support)
+- [x] SEO basics: business JSON-LD (src/data/seo.ts), og-image + favicons (scripts/make-brand-images.mjs), robots.txt, sitemap
+- [x] Launch prep: About placeholders hidden (`SHOW_PLACEHOLDERS` in about.astro), Projects area hidden
+      until a real project exists (`showProjects` in content.ts), internal dev pages removed
+- [x] Tagline changed to "Built for the future." (hero + share image) — 2026-10-12
+- [x] AI-slop cleanup — 2026-10-13: AI-looking original photos replaced/removed (old public/ images gone),
+      stock phrases rewritten ("no guesswork, no surprises", "Global-grade excellence", "Zero shortcuts", …),
+      most em-dashes cut from page copy, decorative "Fig." tags removed. Facts unchanged.
 
-Built by a manager + 5 parallel agents (sections, map/contact, photo research, service pages,
-inner pages). Verified: `astro check` 0 errors (57 files), 21 pages build, automated audit of
-14 routes × 375/1440px (no overflow, one h1, alt text), map + worker load in production build.
+## Still to do
+- [ ] Demo phone polish: Assess done; Design / Install / Support / cable test still tall on phones
+      (≈700–1400px at 375px) with some small SVG labels — use `fitSvgText` + `data-fit-text` like AssessDemo
+- [ ] Launch checklist audit (ai/plans/launch-checklist.md) — never written (agent hit usage limit)
+- [ ] Lighthouse / performance pass on the live site
+- [ ] Decide whether to delete `legacy/` (redundant now that the `old-site` branch exists)
 
-## Needed from Armak before launch (not blocking)
-- License number + classification (`site.license` in `src/data/site.ts`)
+## Marketing direction to build in (from the owner)
+"We engineer with the future in mind" — see the user's memory note; needs real examples from Armak first.
+
+## Needed from Armak (blocking some hidden sections)
+- Street address + ZIP, social profiles (for Google business data)
+- License number + classification (`site.license` in `src/data/site.ts`) → unhides the license row on About
 - Certifications list (BICSI is claimed on the old site — confirm)
-- 3 real projects with scope numbers (`projects` in `src/data/content.ts` — build log warns while placeholders remain)
+- 3 real projects with scope numbers (`projects` in `src/data/content.ts`, `placeholder: false`) → unhides Projects
 - 2–3 testimonials with permission, client-logo permissions
-- Which industries they actually serve (`industries` in content.ts) and real milestones since 1998
-- Team names/roles/photos for the About page slot
+- Which industries they actually serve, milestones since 1998, team names/roles/photos
 - Real job-site photos (all photos are interim stock; never caption them as Armak work)
-- Vector (SVG) logo if one exists — current logo is a cleaned-up PNG
+- Vector (SVG) logo if one exists
 - Confirm service-page capabilities "Racks, patching & cable management" and "Firewalls / site-to-site VPN";
-  TIA-606 labeling; which cable tester brand; any voice/UC vendor partners
-
-## Review copy (written during the redesign, not from Armak)
-Section headlines on the homepage and inner pages, plus general technology facts on service pages
-(Cat 6A 10GBASE-T @100 m, Cat 8 25/40G @30 m, PoE 15.4/30/60–90 W, HDBaseT 100 m, etc. — checked).
+  TIA-606 labeling; cable tester brand; any voice/UC vendor partners
 
 ## Backlog
-- [ ] Partner logos: re-export as clean monochrome SVG/PNG for the proof strip
 - [ ] Automated verification/linting beyond `astro check`

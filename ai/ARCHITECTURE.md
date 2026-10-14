@@ -25,7 +25,7 @@ interactive pieces load only where used. Output is plain HTML/CSS/JS in `dist/`.
 - **`data/content.ts`** — partners, process, pillars, credentials, industries, projects
   (`placeholder: true` → visible tag + noindex + build warning), testimonials.
 - **`data/services-detail.ts`** — per-service page content + photos.
-- **`pages/dev/`** — internal preview pages (noindex, not in sitemap). Delete at launch.
+- **`components/process/`** — the five step demos (DemoFrame, OfficePlan, Assess/Design/Install/Support); helpers in `scripts/demo.ts`.
 - **`scripts/prepare-logos.mjs`** — regenerates the ink partner logos from `/public`.
 - **`scripts/motion.ts`** — Lenis smooth scroll (exposed as `window.armakLenis`), `[data-reveal]`,
   `[data-reveal-stagger]`, `[data-split]` (GSAP SplitText, dynamically imported), `[data-count]`.
@@ -40,7 +40,7 @@ interactive pieces load only where used. Output is plain HTML/CSS/JS in `dist/`.
 - `compressHTML: true` is set deliberately (Astro 7's default strips spaces between inline elements).
 
 ## Legacy
-`/legacy` holds the previous Vite + EJS site for reference only. It is not built. Delete at launch.
+`/legacy` holds the previous Vite + EJS site for reference only (not built). The `old-site` git branch is the full backup of the old live site.
 
 ## AI workspace
 State in `ai/PROJECT_STATE.md`, plans in `ai/plans/`, rules in `ai/AGENTS.md`.
