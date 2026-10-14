@@ -26,7 +26,7 @@ interactive pieces load only where used. Output is plain HTML/CSS/JS in `dist/`.
   (`placeholder: true` → visible tag + noindex + build warning), testimonials.
 - **`data/services-detail.ts`** — per-service page content + photos.
 - **`components/process/`** — the five step demos (DemoFrame, OfficePlan, Assess/Design/Install/Support); helpers in `scripts/demo.ts`.
-- **`scripts/prepare-logos.mjs`** — regenerates the ink partner logos from `/public`.
+- **`scripts/prepare-logos.mjs`** — regenerates the ink partner logos from `scripts/logo-sources/`.
 - **`scripts/motion.ts`** — Lenis smooth scroll (exposed as `window.armakLenis`), `[data-reveal]`,
   `[data-reveal-stagger]`, `[data-split]` (GSAP SplitText, dynamically imported), `[data-count]`.
   All skipped under `prefers-reduced-motion`; CSS failsafes show content if the script never runs.
