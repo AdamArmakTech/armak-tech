@@ -18,7 +18,6 @@ import {
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
-import Button from '../components/ui/Button.astro';
 import { services, type ServiceSlug } from '../data/site';
 import { industries, type Industry } from '../data/content';
 
@@ -104,7 +103,6 @@ const description =
               </li>
             ))}
           </ul>
-          <Button href="/contact/" icon="arrow" class="sector__cta">Request a site assessment</Button>
         </div>
       </section>
     ))}
@@ -216,11 +214,6 @@ const description =
     display: grid;
     gap: 0.75rem;
     align-content: start;
-  }
-
-  .sector__systems :global(.sector__cta) {
-    justify-self: start;
-    margin-top: 0.5rem;
   }
 
   .sector__systems-head {
