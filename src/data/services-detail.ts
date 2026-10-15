@@ -173,7 +173,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'Internet service brokerage',
-        body: 'Carrier sourcing, redundancy planning and SLA negotiation, so you get the right circuits, a backup path and terms you understand.',
+        body: 'Carrier sourcing, redundancy planning and SLA negotiation, so you end up with the right circuits and a backup path on terms you understand.',
       },
       {
         title: 'POS install & training',
@@ -214,7 +214,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
   'video-surveillance': {
     headline: 'Cameras placed where they’re needed.',
     intro:
-      'High-resolution IP cameras, network video recorders and remote viewing, with cameras placed where they’re needed and a network that can carry the video. Plus LED perimeter and yard lighting so cameras see at night.',
+      'High-resolution IP cameras, network video recorders and remote viewing, on a network sized to carry the video. We also install LED perimeter and yard lighting so the cameras have light to work with at night.',
     capabilities: [
       {
         title: 'Camera design & placement',
@@ -226,7 +226,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'Remote monitoring',
-        body: 'Secure live and recorded viewing from phones and browsers, so owners and managers can check in on every site without being on site.',
+        body: 'Secure live and recorded viewing from phones and browsers, so owners and managers can check any location from wherever they are.',
       },
       {
         title: 'Network-ready installs',
@@ -248,7 +248,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
     faqs: [
       {
         q: 'How much recording storage do we need?',
-        a: 'It depends on camera count, resolution, frame rate, compression (H.265 typically needs considerably less space than H.264), how busy each scene is, and whether cameras record continuously or on motion. Start from how many days of footage you need to keep, then size the recorder to match — not the other way around.',
+        a: 'It depends on camera count, resolution, frame rate, compression (H.265 typically needs considerably less space than H.264), how busy each scene is, and whether cameras record continuously or on motion. Start from how many days of footage you need to keep and size the recorder to that, not the other way around.',
       },
       {
         q: 'Cloud or on-premises video recording?',
@@ -256,7 +256,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         q: 'Is a higher-megapixel camera always better?',
-        a: 'Not necessarily. What matters is pixel density on the subject: a 4K camera covering a whole parking lot can capture less facial detail than a 1080p camera aimed at a doorway. Good designs start from each camera’s purpose: detect, observe, recognize or identify — and pick the lens, resolution and position to match.',
+        a: 'Not necessarily. What matters is pixel density on the subject: a 4K camera covering a whole parking lot can capture less facial detail than a 1080p camera aimed at a doorway. A good design starts from each camera’s job (detect, observe, recognize or identify) and picks the lens, resolution and mounting position to match.',
       },
       {
         q: 'Is it safe to view our cameras remotely?',
@@ -271,7 +271,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
   'access-control': {
     headline: 'Control who gets in, and when.',
     intro:
-      'Card and mobile credentials, electric strikes, maglocks and video intercoms that let the right people in and keep a record of who did. Plus modern time and attendance for any workforce.',
+      'Card and mobile credentials, electric strikes, maglocks and video intercoms that let the right people in and keep a record of who did. We also install time and attendance systems for any size workforce.',
     capabilities: [
       {
         title: 'Card & mobile access',
@@ -389,7 +389,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
   'audio-video': {
     headline: 'Rooms that work when the meeting starts.',
     intro:
-      'Displays, speakers, mounts and tuning for any space or scale: conference rooms, digital signage and distributed audio, set up so people can walk in and start a meeting.',
+      'Displays, speakers, mounts and tuning for any space or scale: conference rooms, digital signage and distributed audio. Meeting rooms are set up so anyone can walk in and start a call.',
     capabilities: [
       {
         title: 'Conference & huddle rooms',

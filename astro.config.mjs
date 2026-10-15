@@ -10,6 +10,30 @@ export default defineConfig({
   // Inline each page's CSS (~13 KB brotli on the homepage) instead of 5 render-blocking files:
   // first paint no longer waits an extra round trip, which matters most on phones.
   build: { inlineStylesheets: 'always' },
+  // Content-Security-Policy, emitted as a <meta> tag on every page. Astro hashes the inline
+  // scripts and styles at build time, so the policy can't drift from the code. frame-ancestors
+  // can't be set from a <meta> tag; it lives in vercel.json with the other headers.
+  security: {
+    csp: {
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data: blob:",
+        "font-src 'self'",
+        // Contact form (Web3Forms) and the service-area map tiles (OpenFreeMap).
+        "connect-src 'self' https://api.web3forms.com https://tiles.openfreemap.org",
+        "worker-src 'self' blob:",
+        "child-src 'self' blob:",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self' https://api.web3forms.com",
+        'upgrade-insecure-requests',
+      ],
+      // style="" attributes (reveal delays, SVG fills) can't be hashed.
+      styleDirective: {
+        resources: ["'self'", { resource: "'unsafe-inline'", kind: 'attribute' }],
+      },
+    },
+  },
   integrations: [
     sitemap({
       // Internal review pages never go in the sitemap.

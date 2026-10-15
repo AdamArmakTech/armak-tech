@@ -17,7 +17,7 @@ interface Props {
 const { code, title, body } = Astro.props;
 ---
 
-<section class="page-cta container" aria-labelledby={`${code}-cta-title`}>
+<section class="page-cta container" aria-labelledby={`${code}-cta-title`} data-dock-hide>
   <div class="page-cta__panel surface-ink">
     <Stripe height={4} />
     <div class="page-cta__body">

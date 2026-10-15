@@ -38,7 +38,7 @@ export const entries: GlossaryEntry[] = [
     aka: ['802.3af', '802.3at', '802.3bt', 'PoE+', 'PoE++'],
     category: 'standards',
     definition:
-      'IEEE 802.3 is the official family of Ethernet standards. Its Power over Ethernet versions define how much electrical power a network cable can safely deliver to a device: 802.3af, 802.3at (PoE+) and 802.3bt (PoE++).',
+      'IEEE 802.3 is the official family of Ethernet standards. Its Power over Ethernet versions, 802.3af, 802.3at (PoE+) and 802.3bt (PoE++), define how much electrical power a network cable can safely deliver to a device.',
     why_it_matters:
       'Matching each device’s power class to the switch prevents cameras, access points or displays from rebooting, losing features or not turning on at all.',
     analogy:
@@ -119,7 +119,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'A numeric label, such as 192.168.1.20, that identifies each device on a network so data reaches the right place. Devices on your internal network get private addresses; your internet connection has a public one.',
     why_it_matters:
-      'Organized IP addressing makes cameras, phones and printers easy to find and troubleshoot, and avoids two devices clashing over the same address.',
+      'Organized IP addressing makes cameras, phones and printers easy to find and troubleshoot, and keeps two devices from clashing over the same address.',
     analogy: 'Like a street address for every device, so deliveries go to the right door.',
     qa: [
       {
@@ -180,11 +180,11 @@ export const entries: GlossaryEntry[] = [
     qa: [
       {
         q: 'Is an IP rating related to an IP address?',
-        a: 'No, it’s just the same two letters. In an IP rating, “IP” means Ingress Protection, a measure of how sealed a device is. An IP address is a network identifier.',
+        a: 'No. It’s just the same two letters. In an IP rating, “IP” means Ingress Protection, a measure of how sealed a device is. An IP address is a network identifier.',
       },
       {
         q: 'What do the numbers mean?',
-        a: 'The first digit (0–6) rates protection from solids and dust; 6 means dust-tight. The second (0–9) rates water protection: 5 and 6 cover water jets, 7 covers temporary immersion. Higher is not automatically better for every use, so check the specific tests listed.',
+        a: 'The first digit (0–6) rates protection from solids and dust; 6 means dust-tight. The second (0–9) rates water protection: 5 and 6 cover water jets, 7 covers temporary immersion. Higher is not automatically better for every use. Check the specific tests listed.',
       },
       {
         q: 'What’s an IK rating?',
@@ -227,12 +227,11 @@ export const entries: GlossaryEntry[] = [
     definition:
       'The company that brings internet service into your building, over fiber, cable, copper, wireless or satellite. The ISP’s responsibility usually ends at the demarc, where its line meets your building’s own network.',
     why_it_matters:
-      'Your ISP and plan set the speed and reliability ceiling for everything online: cloud apps, VoIP phones and remote camera viewing.',
-    analogy: 'Like the water utility: it delivers service to your meter, and the plumbing inside is yours.',
+      'Your ISP and plan set the speed and reliability ceiling for everything online, including cloud apps, VoIP phones and remote camera viewing.',
     qa: [
       {
         q: 'Should a business have two ISPs?',
-        a: 'If downtime is costly, a second connection from a different provider (ideally on a different type of line) lets a firewall or router fail over automatically when the main service goes down.',
+        a: 'If downtime is costly, a second connection from a different provider, ideally on a different type of line, lets a firewall or router fail over automatically when the main service goes down.',
       },
       {
         q: 'Who fixes problems: the ISP or my IT/cabling contractor?',
@@ -283,7 +282,7 @@ export const entries: GlossaryEntry[] = [
     why_it_matters:
       'Jitter is a common hidden cause of poor VoIP and video calls, even on fast internet connections.',
     analogy:
-      'Like a bus that’s scheduled every 10 minutes but shows up after 2, then 18, then 5. The average is fine, the experience isn’t.',
+      'Like a bus that’s due every 10 minutes but shows up after 2, then 18, then 5. The average is fine; the wait isn’t.',
     qa: [
       {
         q: 'How is jitter different from latency?',
@@ -355,7 +354,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'The private network inside your building or campus that connects computers, phones, cameras, printers and Wi-Fi so they can talk to each other and share an internet connection.',
     why_it_matters:
-      'Nearly every modern building system (phones, cameras, door access, AV) now runs on the LAN, so its design affects all of them.',
+      'Phones, cameras, door access and AV now all run on the LAN, so its design affects every one of them.',
     analogy: 'Like your building’s private road system, with the internet as the highway outside.',
     qa: [
       {
@@ -428,7 +427,7 @@ export const entries: GlossaryEntry[] = [
     why_it_matters:
       'Low-voltage work needs its own planning, licensing and code compliance, separate from the electrician’s high-voltage scope, so it should be coordinated early in any project.',
     analogy:
-      'Like a building’s nervous system, carrying signals, while the electrical system is the heart pumping the power.',
+      'Like a building’s nervous system: it carries the signals, while the electrical system carries the power.',
     qa: [
       {
         q: 'Is low-voltage work regulated?',
@@ -439,7 +438,7 @@ export const entries: GlossaryEntry[] = [
         a: 'Lower risk, not zero. Low-voltage circuits are designed to limit energy, but work often happens near high-voltage wiring, and equipment like UPS units and PoE switches still connect to normal power.',
       },
       {
-        q: 'Does my electrician install low-voltage systems?',
+        q: 'Who installs low-voltage systems: my electrician?',
         a: 'Some electricians do, but many projects use a specialized low-voltage contractor for cabling, networking, security and AV, coordinating with the electrician who provides power to the equipment.',
       },
     ],
@@ -459,7 +458,7 @@ export const entries: GlossaryEntry[] = [
     qa: [
       {
         q: 'Is this the same as a MAC address?',
-        a: 'No. In cabling and telecom, “MAC” or “MACs” means moves, adds and changes (routine service work). A MAC address is a hardware ID built into network devices. Context usually tells you which one is meant.',
+        a: 'No. In cabling and telecom, “MAC” or “MACs” means moves, adds and changes: routine service work. A MAC address is a hardware ID built into network devices. Context usually tells you which one is meant.',
       },
       {
         q: 'How can we keep MAC work affordable?',
@@ -478,12 +477,12 @@ export const entries: GlossaryEntry[] = [
     definition:
       'A unique hardware ID assigned to every network-connected device by its manufacturer, written as six pairs of characters like 00:1A:2B:3C:4D:5E. Switches use it to deliver data to the right device on the local network.',
     why_it_matters:
-      'MAC addresses help IT staff identify, track and control which devices (cameras, phones, laptops) are connected to the network.',
+      'MAC addresses help IT staff identify, track and control which cameras, phones, laptops and other devices are on the network.',
     analogy: 'Like a car’s VIN: it identifies the device itself, while the IP address is more like its current parking spot.',
     qa: [
       {
         q: 'Is a MAC address the same as “MACs” in cabling?',
-        a: 'No. In cabling, “MACs” means moves, adds and changes (routine service work). A MAC address is a device’s hardware ID. They just share an abbreviation.',
+        a: 'No. In cabling, “MACs” means moves, adds and changes: routine service work. A MAC address is a device’s hardware ID. They just share an abbreviation.',
       },
       {
         q: 'What’s the difference between a MAC address and an IP address?',
@@ -534,7 +533,7 @@ export const entries: GlossaryEntry[] = [
       'A unit of data speed: one million bits per second. Internet plans, Wi-Fi speeds and camera video streams are commonly quoted in Mbps; 1,000 Mbps equals 1 Gbps.',
     why_it_matters:
       'Knowing Mbps lets you compare internet plans and check whether your connection can handle your calls, cameras and cloud apps at the same time.',
-    analogy: 'Like gallons per minute for a water pipe: it measures how much flows through each second.',
+    analogy: 'Like gallons per minute for a water pipe: how much flows through each second.',
     qa: [
       {
         q: 'What’s the difference between Mbps and MBps?',
@@ -585,7 +584,7 @@ export const entries: GlossaryEntry[] = [
       'One million pixels, the tiny dots that make up a digital image. Camera resolution is quoted in megapixels: a 4 MP camera captures about four million dots per frame, and 8 MP is roughly 4K.',
     why_it_matters:
       'More megapixels can capture more detail, like faces and plates, but also use more storage and bandwidth, so resolution should match each camera’s job.',
-    analogy: 'Like the number of tiles in a mosaic: more tiles allow a finer picture.',
+    analogy: 'Like the number of tiles in a mosaic: more tiles, finer picture.',
     qa: [
       {
         q: 'Are more megapixels always better?',
@@ -636,7 +635,7 @@ export const entries: GlossaryEntry[] = [
     why_it_matters:
       'Multimode is a cost-effective choice for backbone runs within a building, but its distance limits shrink as speeds rise, so it must match your growth plans.',
     analogy:
-      'Like a wide highway where cars drift between lanes: fine for short trips, but they arrive spread out over long distances.',
+      'Like a wide highway where cars drift between lanes: fine for short trips, but over long distances they arrive spread out.',
     qa: [
       {
         q: 'What’s the difference between multimode and singlemode fiber?',
@@ -663,8 +662,8 @@ export const entries: GlossaryEntry[] = [
     definition:
       'The U.S. model code for safe electrical and communications wiring, published by the National Fire Protection Association. States and cities adopt it, sometimes with changes; California’s version is the California Electrical Code.',
     why_it_matters:
-      'The NEC governs fire ratings of cable, how cables pass through walls and floors, and separation from power. Inspectors check these before signing off.',
-    analogy: 'Like the rulebook a referee uses: it’s about safety, not about how well the network performs.',
+      'The NEC governs fire ratings of cable, how cables pass through walls and floors, and separation from power, and inspectors check these before signing off.',
+    analogy: 'Like a referee’s rulebook: it covers safety, not how well the network performs.',
     qa: [
       {
         q: 'Does the NEC apply to network cabling?',
@@ -698,7 +697,7 @@ export const entries: GlossaryEntry[] = [
       },
       {
         q: 'Managed or unmanaged switch?',
-        a: 'Unmanaged switches are plug-and-play with no settings. Managed switches allow VLANs, traffic prioritization for voice, monitoring and security controls. They are usually worth it for businesses with phones, cameras or guest Wi-Fi.',
+        a: 'Unmanaged switches are plug-and-play with no settings. Managed switches allow VLANs, traffic prioritization for voice, monitoring and security controls, which is usually worth it for businesses with phones, cameras or guest Wi-Fi.',
       },
       {
         q: 'What is a PoE budget?',

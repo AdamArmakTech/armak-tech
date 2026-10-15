@@ -30,7 +30,7 @@ const trail: Crumb[] | undefined = crumbs ? [{ label: 'Home', href: '/' }, ...cr
 const hasAside = Astro.slots.has('aside');
 ---
 
-<section class="page-hero container" aria-labelledby={titleId}>
+<section class="page-hero container" aria-labelledby={titleId} data-dock-start>
   {trail && (
     <nav class="page-hero__crumbs t-mono" aria-label="Breadcrumb">
       <ol role="list">

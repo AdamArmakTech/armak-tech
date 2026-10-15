@@ -1,16 +1,20 @@
 ---
 /** Compact "how we deliver" timeline built from `process` in content.ts. */
 import SectionHead from '../ui/SectionHead.astro';
+import Button from '../ui/Button.astro';
 import { process as steps } from '../../data/content';
 
 interface Props {
   code: string;
   title?: string;
   intro?: string;
+  /** Show the "Request a site assessment" prompt under the steps */
+  cta?: boolean;
 }
 
 const {
   code,
+  cta = false,
   title = 'Five steps, every job.',
   intro = 'The same process from a single-rack retrofit to a multi-site rollout. Nothing is signed off until it has been tested and documented.',
 } = Astro.props;
@@ -29,10 +33,29 @@ const {
         </li>
       ))}
     </ol>
+
+    {cta && (
+      <div class="delivery__next" data-reveal>
+        <p class="t-mono t-muted">Every job starts at step 01.</p>
+        <Button href="/contact/" icon="arrow">Request a site assessment</Button>
+      </div>
+    )}
   </div>
 </section>
 
 <style>
+  .delivery__next {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .delivery__next :global(.btn) {
+    white-space: normal;
+  }
+
   .delivery {
     background: var(--white);
     border-block: 1px solid var(--hairline);

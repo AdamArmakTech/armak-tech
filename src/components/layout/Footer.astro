@@ -13,13 +13,13 @@ const { cta = true } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
-<footer class="site-footer surface-ink">
+<footer class="site-footer surface-ink" data-dock-hide>
   <Stripe height={4} />
 
   <div class="container">
     {cta && (
     <div class="site-footer__cta">
-      <p class="t-h1 site-footer__headline">Let's scope your<br />next build.</p>
+      <p class="t-h1 site-footer__headline">Let’s scope your<br />next build.</p>
       <div class="site-footer__cta-actions">
         <Button href="/contact/" variant="primary" size="lg">Request a site assessment</Button>
         <Button href={site.phoneHref} variant="outline-inverse" size="lg" icon="phone">{site.phone}</Button>

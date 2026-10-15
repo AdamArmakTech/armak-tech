@@ -145,7 +145,6 @@ export const entries: GlossaryEntry[] = [
       'A permanent joint between two strands of fiber optic cable. Fusion splicing lines up the glass ends and melts them together with an electric arc; mechanical splicing holds them aligned in a small clamp.',
     why_it_matters:
       'Good splices lose very little signal, so damaged fiber can be repaired and connectors added cleanly without replacing the whole cable run.',
-    analogy: 'Like welding two pipes into one, so water flows through almost as if the joint weren’t there.',
     qa: [
       {
         q: 'Does a splice weaken the signal?',
@@ -167,7 +166,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'An organized, standards-based way of wiring a building for data and phones. Cables run from each wall jack or device back to labeled patch panels in telecom rooms, following rules on layout, length and testing.',
     why_it_matters:
-      'It turns cabling into reliable, documented infrastructure that supports many generations of equipment, instead of a tangled mess that’s re-run every time something changes.',
+      'Planned, documented cabling supports several generations of equipment. Unplanned cabling tends to get re-run every time something changes.',
     analogy:
       'Like a building’s plumbing: planned pipes to every room, all leading back to a central place where you can manage them.',
     qa: [
@@ -301,7 +300,7 @@ export const entries: GlossaryEntry[] = [
       'Systems that record when employees start and end work and take breaks, using a badge, PIN, fingerprint, face scan or phone app. The hours usually feed straight into payroll software.',
     why_it_matters:
       'Accurate time records reduce payroll errors and support compliance with wage-and-hour rules, which are especially detailed in California.',
-    analogy: 'The modern version of punching a paper time card, without the paper or the guesswork.',
+    analogy: 'Punching a paper time card, minus the paper.',
     qa: [
       {
         q: 'Can it use the same badges as our doors?',
@@ -427,7 +426,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'Software that automatically watches camera video for specific events, such as a person entering an area after hours, a vehicle stopping, someone loitering, or a crowd forming. It can send alerts and make recorded video searchable.',
     why_it_matters:
-      'It turns cameras from something reviewed after an incident into something that can flag problems as they happen and find footage in minutes.',
+      'Cameras can flag problems as they happen instead of only being reviewed afterward, and finding footage takes minutes.',
     analogy: 'Like a security guard who never blinks, watching every screen and tapping you on the shoulder when something matters.',
     qa: [
       {
@@ -476,7 +475,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'Several displays mounted edge to edge and controlled together so they act like one large screen, or show multiple feeds side by side. Thin-border panels keep the seams between screens small.',
     why_it_matters:
-      'Video walls make an impact in lobbies and showrooms and let security staff watch many cameras at once in a monitoring room.',
+      'Video walls give lobbies and showrooms one large display and let security staff watch many cameras at once in a monitoring room.',
     analogy: 'Like tiles on a floor that together form one big picture.',
     qa: [
       {

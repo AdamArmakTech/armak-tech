@@ -341,6 +341,7 @@ const barPos = (b: Bar) =>
         wires[i].classList.add('is-drawn');
         wires[i].classList.toggle('is-bad', bad);
         await sleep(full ? 170 : 150);
+        if (!alive()) return;
         marks[i].textContent = bad ? '✗' : '✓';
         marks[i].classList.toggle('is-bad', bad);
         marks[i].classList.add('is-shown');

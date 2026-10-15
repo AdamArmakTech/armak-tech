@@ -11,7 +11,7 @@ export const entries: GlossaryEntry[] = [
       'A network of small antennas spread through a building to bring cell-phone signal (or emergency-radio signal) indoors where thick walls, glass or basements block it.',
     why_it_matters:
       'Dead zones frustrate staff and visitors, and many fire codes require reliable indoor radio coverage for firefighters before a building can be occupied.',
-    analogy: 'Like sprinkler heads for cell signal: one source, piped to many outlets so every room gets coverage.',
+    analogy: 'Like sprinkler heads for cell signal: one source, piped to outlets in every room.',
     qa: [
       {
         q: 'Is a DAS the same as Wi-Fi?',
@@ -19,7 +19,7 @@ export const entries: GlossaryEntry[] = [
       },
       {
         q: 'Why would the fire department care about a DAS?',
-        a: 'Firefighters rely on handheld radios. Many jurisdictions require an emergency responder radio coverage system (often built as a public-safety DAS) in larger or hard-to-reach buildings, and test signal strength before sign-off.',
+        a: 'Firefighters rely on handheld radios. Many jurisdictions require an emergency responder radio coverage system, often built as a public-safety DAS, in larger or hard-to-reach buildings, and test signal strength before sign-off.',
       },
       {
         q: 'Can I just buy a signal booster instead?',
@@ -64,7 +64,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'The automatic system that hands each device an IP address (its network "street address") and other settings the moment it connects, so nobody has to type them in by hand.',
     why_it_matters:
-      'When DHCP runs out of addresses or stops working, new devices can’t get online. It is a common, easily prevented cause of “the internet is down” calls.',
+      'When DHCP runs out of addresses or stops working, new devices can’t get online. It’s a common, easily prevented cause of “the internet is down” calls.',
     analogy: 'Like a hotel front desk assigning room numbers to guests as they check in.',
     qa: [
       {
@@ -87,7 +87,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'Screens used to show menus, wayfinding, announcements or advertising, with content managed from a computer or online dashboard instead of printed posters.',
     why_it_matters:
-      'Messages can be updated across every screen in minutes, without reprinting, but each screen needs power, a network connection and a sturdy, correctly placed mount.',
+      'Messages can be updated across every screen in minutes without reprinting, but each screen needs power, a network connection and a sturdy, correctly placed mount.',
     analogy: 'Like a bulletin board you can rewrite from your desk.',
     qa: [
       {
@@ -115,7 +115,7 @@ export const entries: GlossaryEntry[] = [
       'The internet’s phone book: it translates names people type, like a website address, into the numeric IP addresses computers actually use to connect.',
     why_it_matters:
       'If DNS fails, websites and cloud apps appear "down" even though the internet connection works, and DNS filtering can block many malicious sites before they load.',
-    analogy: 'Like a contacts app: you tap a name, and it dials the number for you.',
+    analogy: 'Like a contacts app: you tap a name and it dials the number for you.',
     qa: [
       {
         q: 'How do I know if a problem is DNS?',
@@ -142,7 +142,7 @@ export const entries: GlossaryEntry[] = [
     qa: [
       {
         q: 'What is a "door held open" alarm?',
-        a: 'If the switch reports the door stayed open longer than an allowed time after someone badged in, the system raises an alert (often with a local beeper) so staff can close it.',
+        a: 'If the switch reports the door stayed open longer than an allowed time after someone badged in, the system raises an alert, often with a local beeper, so staff can close it.',
       },
       {
         q: 'What does "door forced open" mean?',
@@ -160,12 +160,12 @@ export const entries: GlossaryEntry[] = [
     definition:
       'One network cable run from the telecom room to a single jack at a desk, ceiling or wall, where a computer, phone, camera or Wi-Fi access point plugs in.',
     why_it_matters:
-      'Cabling projects are usually planned and quoted per drop, so counting drops accurately, including spares for future growth, shapes both the budget and the building’s flexibility.',
+      'Cabling projects are usually planned and quoted per drop, so an accurate count, including spares for growth, sets both the budget and how easily the building can change later.',
     analogy: 'Like a single water line from the main pipe to one faucet.',
     qa: [
       {
         q: 'How many drops does a desk need?',
-        a: 'It varies by business. Many offices plan at least two per workstation (for example a computer and a phone), plus extras for printers, wall displays and future needs.',
+        a: 'It varies by business. Many offices plan at least two per workstation, for example a computer and a phone, plus extras for printers, wall displays and future needs.',
       },
       {
         q: 'Do cameras and Wi-Fi need their own drops?',
@@ -209,7 +209,7 @@ export const entries: GlossaryEntry[] = [
       'An electrically controlled replacement for the metal plate in a door frame that the latch catches on. When the access system unlocks it, a hinged piece swings free so the door can be pulled open.',
     why_it_matters:
       'It lets a normal door with an existing lever handle work with badges or buttons, while the inside handle still lets people walk out freely.',
-    analogy: 'Like the buzzer door at an apartment building: the latch stays put, but the frame lets go.',
+    analogy: 'Like the buzzer door at an apartment building: the latch stays put and the frame lets go.',
     qa: [
       {
         q: 'What happens if the power goes out?',
@@ -236,7 +236,7 @@ export const entries: GlossaryEntry[] = [
       'The standard way computers, phones, cameras and other devices connect to a network with a cable. It defines how data travels over copper or fiber, at speeds from about 10 megabits up to hundreds of gigabits per second.',
     why_it_matters:
       'Wired Ethernet is generally faster, steadier and more secure than Wi-Fi, which is why cameras, access points, phones and servers are usually cabled.',
-    analogy: 'Like the rules of the road for wired networks: every brand of car follows the same ones.',
+    analogy: 'Like traffic rules for wired networks: every brand of car follows the same ones.',
     qa: [
       {
         q: 'Is an Ethernet cable the same as a network cable?',
@@ -261,7 +261,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'Two ways an electric lock can behave when it loses power. Fail-safe locks unlock; fail-secure locks stay locked from the outside. "Safe" refers to people being able to pass, "secure" to the door staying protected.',
     why_it_matters:
-      'Choosing wrong can trap people, fail fire inspection, or leave a sensitive room wide open during an outage, so each door’s role should drive the choice.',
+      'Choosing wrong can trap people, fail fire inspection, or leave a sensitive room wide open during an outage. Each door’s role should drive the choice.',
     analogy: 'Fail-safe is a door that swings open when the power drops; fail-secure is a safe that stays shut.',
     qa: [
       {
@@ -343,14 +343,14 @@ export const entries: GlossaryEntry[] = [
   {
     term: 'Frame rate',
     slug: 'frame-rate',
-    stands_for: 'Frames per second (FPS)',
+    stands_for: 'Frames per second',
     aka: ['FPS'],
     category: 'security',
     definition:
       'How many still pictures a camera captures each second to make video. Higher frame rates show smoother motion; lower rates look choppier but use less storage.',
     why_it_matters:
       'Frame rate directly affects how much recording storage you need and whether fast events, like a hand at a register, are clearly captured.',
-    analogy: 'Like a flip book: more pages per second makes the motion smoother.',
+    analogy: 'Like a flip book: more pages per second, smoother motion.',
     qa: [
       {
         q: 'What frame rate do security cameras usually use?',
@@ -397,7 +397,6 @@ export const entries: GlossaryEntry[] = [
       'A measure of network speed: one billion bits of data per second. 1 Gbps equals 1,000 Mbps (megabits per second).',
     why_it_matters:
       'Comparing internet plans, switches and cable categories in Gbps helps you avoid paying for speed one weak link can’t deliver.',
-    analogy: 'Like the number of lanes on a highway: more lanes move more cars at once.',
     qa: [
       {
         q: 'Why does a 1 Gbps download not show 1 GB per second?',
@@ -420,7 +419,7 @@ export const entries: GlossaryEntry[] = [
       'Connecting racks, cable trays, shielded cables and equipment with copper conductors to the building’s electrical ground, so they share the same electrical level and stray currents have a safe path.',
     why_it_matters:
       'Proper grounding protects people and equipment from shocks and surges, reduces electrical noise on network gear, and is required by electrical code and telecom standards.',
-    analogy: 'Like a lightning rod for your equipment room: it gives stray electricity a safe route to the earth.',
+    analogy: 'Like a lightning rod for your equipment room: it gives stray electricity a safe path to earth.',
     qa: [
       {
         q: 'Isn’t the electrical outlet ground enough?',
@@ -443,7 +442,7 @@ export const entries: GlossaryEntry[] = [
       'Standard ways of shrinking (compressing) video so it takes less space to store and less network capacity to send. H.265 is the newer one and typically produces files about half the size for similar quality.',
     why_it_matters:
       'Compression choice largely determines how many days of camera footage your recorder can keep and how much network bandwidth cameras consume.',
-    analogy: 'Like vacuum-packing clothes for a suitcase: the same contents, packed into less space.',
+    analogy: 'Like vacuum-packing clothes for a suitcase: same contents, less space.',
     qa: [
       {
         q: 'Should every camera use H.265?',
@@ -495,7 +494,7 @@ export const entries: GlossaryEntry[] = [
     qa: [
       {
         q: 'How long can an HDMI cable be?',
-        a: 'Standard passive cables are dependable only over fairly short distances (roughly 15 meters, less at 4K). Longer runs typically use active or fiber HDMI cables, HDBaseT extenders, or AV-over-IP.',
+        a: 'Standard passive cables are dependable only over fairly short distances, roughly 15 meters, less at 4K. Longer runs typically use active or fiber HDMI cables, HDBaseT extenders, or AV-over-IP.',
       },
       {
         q: 'Why does the screen sometimes go black or say "HDCP error"?',
@@ -536,9 +535,9 @@ export const entries: GlossaryEntry[] = [
     slug: 'horizontal-cabling',
     category: 'cabling',
     definition:
-      'The cables that run from a floor’s telecom room out to each outlet where devices plug in: desks, ceilings, cameras and access points. Each cable runs on its own, without splices, from the room to its jack.',
+      'The cables that run from a floor’s telecom room out to each outlet where devices plug in (desks, ceilings, cameras and access points). Each cable runs on its own, without splices, from the room to its jack.',
     why_it_matters:
-      'Horizontal cabling is usually the largest share of a cabling project and the hardest to replace later, so choosing the right category up front protects your investment.',
+      'Horizontal cabling is usually the largest share of a cabling project and the hardest to replace later, so it pays to choose the right category up front.',
     analogy: 'Like the branches of a tree, each spreading from the trunk (the telecom room) to a single leaf (the outlet).',
     qa: [
       {

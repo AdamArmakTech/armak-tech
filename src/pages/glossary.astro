@@ -10,6 +10,7 @@ import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
 import TermDetail from '../components/glossary/TermDetail.astro';
+import Button from '../components/ui/Button.astro';
 import { glossary, groups, alphabet, categoryLabels, type GlossaryCategory } from '../data/glossary';
 import { site } from '../data/site';
 
@@ -42,12 +43,12 @@ const jsonLd = {
   description="Plain-English A–Z of cabling, networking, security camera, access control, phone and AV terms, with answers to the questions people ask."
   footerCta={false}
 >
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
 
   <PageHero
     code="R-01"
     label="Glossary"
-    title="Every term, in plain English."
+    title="Low-voltage terms, in plain English."
     lead="Cabling, networks, cameras, doors, phones and AV come with a lot of jargon. Here’s what each word means, why it matters to your building, and the questions people usually ask. No background needed."
     crumbs={[{ label: 'Glossary' }]}
     spec={[`${glossary.length} terms`, `${usedCategories.length} categories`, 'Tap any term for Q&A']}
@@ -117,6 +118,10 @@ const jsonLd = {
     </div>
     <h2 class="t-h2 gl-drawer__title" id="gl-drawer-title" data-gl-drawer-title></h2>
     <div class="gl-drawer__body" data-gl-drawer-body></div>
+    <div class="gl-drawer__cta">
+      <p class="t-mono t-muted">Not sure what your building needs?</p>
+      <Button href="/contact/" icon="arrow">Request a site assessment</Button>
+    </div>
   </dialog>
 
   <PageCta
@@ -191,7 +196,12 @@ const jsonLd = {
     // Shared links like /glossary/#poe open straight to the term — on load, and when only the
     // hash changes on an already-open page (in-page links, back/forward)
     const openFromHash = () => {
-      const slug = decodeURIComponent(location.hash.slice(1));
+      let slug = '';
+      try {
+        slug = decodeURIComponent(location.hash.slice(1));
+      } catch {
+        return; // malformed hash: ignore it rather than stop the search and filters below
+      }
       if (slug && document.getElementById(slug)?.matches('details.term')) {
         requestAnimationFrame(() => openTerm(slug, { updateHash: false }));
       }
@@ -492,6 +502,19 @@ const jsonLd = {
 
   .gl-drawer__title {
     max-width: 18ch;
+  }
+
+  .gl-drawer__cta {
+    display: grid;
+    justify-items: start;
+    gap: 1rem;
+    margin-top: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .gl-drawer__cta :global(.btn) {
+    white-space: normal;
   }
 
   @media (prefers-reduced-motion: no-preference) {

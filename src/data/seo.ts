@@ -8,7 +8,7 @@ import { site, services, serviceArea, FOUNDED } from './site';
 const abs = (path: string) => new URL(path, site.url).href;
 
 /** Homepage <title> (pages with their own title get "<title> | Armak Technologies") */
-export const defaultTitle = `${site.name} — Low-Voltage & Network Contractor, SoCal`;
+export const defaultTitle = `${site.name} | Low-Voltage & Network Contractor, SoCal`;
 
 /** Homepage meta description (120–155 chars) */
 export const defaultDescription = `${site.name} designs, installs and supports cabling, networks, cameras, access control, voice and AV across Southern California. Since ${FOUNDED}.`;

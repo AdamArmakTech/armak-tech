@@ -75,7 +75,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       </ul>
       <aside class="mega__aside">
         <p class="t-mono t-muted">Not sure what you need?</p>
-        <p class="t-h4">Book a free site assessment. We'll walk the space and scope it with you.</p>
+        <p class="t-h4">Book a site assessment. We’ll walk the space and scope it with you.</p>
         <Button href="/contact/" variant="ink">Request assessment</Button>
         <a class="mega__all" href="/services/">All services →</a>
       </aside>
@@ -145,9 +145,9 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       }
     };
 
-    // While the full-screen mobile menu is open, keep keyboard focus out of the page behind it
-    const setBackgroundInert = (on: boolean) => {
-      document.querySelectorAll<HTMLElement>('#main, .site-footer').forEach((el) => (el.inert = on));
+    // Keep keyboard focus inside the open mobile menu
+    const setBackgroundInert = (inert: boolean) => {
+      document.querySelectorAll('main, footer').forEach((el) => el.toggleAttribute('inert', inert));
     };
 
     menuToggle?.addEventListener('click', () => {
@@ -161,21 +161,23 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       const menuWasOpen = menuToggle?.getAttribute('aria-expanded') === 'true';
       setOpen(megaToggle, mega, false);
       setOpen(menuToggle, menu, false);
-      if (menuWasOpen) lockScroll(false);
-      setBackgroundInert(false);
+      if (menuWasOpen) {
+        lockScroll(false);
+        setBackgroundInert(false);
+      }
     };
 
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       const wasMega = megaToggle?.getAttribute('aria-expanded') === 'true';
-      const menuWasOpen = menuToggle?.getAttribute('aria-expanded') === 'true';
+      const wasMenu = menuToggle?.getAttribute('aria-expanded') === 'true';
       closeAll();
       if (wasMega) megaToggle?.focus();
-      if (menuWasOpen) menuToggle?.focus();
+      else if (wasMenu) menuToggle?.focus();
     });
 
     // Close the panels once keyboard focus moves to something outside the header.
-    // A null relatedTarget (click on blank space, window blur) is left to the click handler below.
+    // A null relatedTarget (click on blank space, window blur) is left to the click handler.
     header.addEventListener('focusout', (e) => {
       const to = e.relatedTarget as Node | null;
       if (to && !header.contains(to)) closeAll();
