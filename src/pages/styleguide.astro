@@ -196,7 +196,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
 
   <!-- ─────────── Calls to action ─────────── -->
   <section class="container sg-block">
-    <SectionHead code="SG-08" label="Calls to action" title="One ask, in the right place." intro="Red stays with the hero, the phone bar and the closing panels. Prompts in between use ink or a text link." split={false} />
+    <SectionHead code="SG-08" label="Calls to action" title="One ask, in the right place." intro="Header, hero, at most one mid-page prompt, and a closing panel. On phones the bar stands in for the header button." split={false} />
     <div class="sg-grid-2">
       <div class="sg-panel">
         <p class="t-mono t-muted">Phone bar (under 640px, after the hero CTAs)</p>
@@ -206,18 +206,8 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
         <p class="t-mono t-muted">Mid-page prompt</p>
         <div class="sg-wrap">
           <p class="t-mono t-muted">Every job starts at step 01.</p>
-          <Button href="/contact/" variant="ink">Request a site assessment</Button>
+          <Button href="/contact/" icon="arrow">Request a site assessment</Button>
         </div>
-      </div>
-      <div class="sg-panel">
-        <p class="t-mono t-muted">Quiet link (repeated rows)</p>
-        <div class="sg-wrap">
-          <Button href="/contact/" variant="link">Request a site assessment</Button>
-        </div>
-      </div>
-      <div class="sg-panel">
-        <p class="t-mono t-muted">FAQ follow-up</p>
-        <p class="t-small t-muted sg-faq-more">Question not here? Call <a href={site.phoneHref}>{site.phone}</a> or <a href="/contact/">send us the details</a>.</p>
       </div>
     </div>
   </section>
@@ -378,12 +368,6 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
   .sg-panel--ink {
     background: var(--ink);
     border-color: var(--ink);
-  }
-
-  .sg-faq-more a {
-    color: var(--ink);
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
   }
 
   .sg-wrap {

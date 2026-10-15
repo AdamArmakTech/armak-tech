@@ -3,7 +3,6 @@
 import { Plus } from '@lucide/astro';
 import SectionHead from '../ui/SectionHead.astro';
 import type { Faq } from '../../data/services-detail';
-import { site } from '../../data/site';
 
 interface Props {
   code: string;
@@ -29,25 +28,10 @@ const { code, title = 'Common questions.', faqs } = Astro.props;
         </details>
       ))}
     </div>
-    <p class="faq__more t-small t-muted">Question not here? Call <a href={site.phoneHref}>{site.phone}</a> or <a href="/contact/">send us the details</a>.</p>
   </div>
 </section>
 
 <style>
-  .faq__more {
-    margin-top: 1.5rem;
-  }
-
-  .faq__more a {
-    color: var(--ink);
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-
-  .faq__more a:hover {
-    color: var(--signal);
-  }
-
   .faq__list {
     border-bottom: 1px solid var(--hairline);
   }
