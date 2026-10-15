@@ -9,6 +9,7 @@ import SpecStrip from '../components/ui/SpecStrip.astro';
 import CableTest from '../components/ui/CableTest.astro';
 import ServiceTile from '../components/ui/ServiceTile.astro';
 import Stat from '../components/ui/Stat.astro';
+import CtaDock from '../components/layout/CtaDock.astro';
 import { services, site, yearsInBusiness, FOUNDED, serviceArea } from '../data/site';
 
 import cableBundles from '../assets/photos/cabling-bundles-white.jpg';
@@ -70,7 +71,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
       </div>
       <div class="hero-preview__media" data-reveal>
         <Image src={cableBundles} alt="Neatly dressed blue Cat 6A cable bundles terminating into patch panels" widths={[640, 960, 1400]} sizes="(min-width: 900px) 50vw, 100vw" loading="eager" />
-        <CableTest variant="compact" class="hero-preview__card" />
+        <CableTest variant="compact" class="hero-preview__card" demoHref="/#cable-test" />
       </div>
     </div>
   </section>
@@ -173,7 +174,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
   <!-- ─────────── Form ─────────── -->
   <section class="container sg-block">
     <SectionHead code="SG-07" label="Form" title="Two steps, no friction." intro="Step 1 is a tap. Step 2 is contact details. Shorter forms get more site assessments." split={false} />
-    <form class="sg-form" onsubmit="return false">
+    <form class="sg-form">
       <fieldset class="sg-form__chips">
         <legend class="field__label">What are you building?</legend>
         <div class="sg-wrap">
@@ -192,7 +193,42 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
       <Button variant="primary" size="lg" type="submit">Request my site assessment</Button>
     </form>
   </section>
+
+  <!-- ─────────── Calls to action ─────────── -->
+  <section class="container sg-block">
+    <SectionHead code="SG-08" label="Calls to action" title="One ask, in the right place." intro="Red stays with the hero, the phone bar and the closing panels. Prompts in between use ink or a text link." split={false} />
+    <div class="sg-grid-2">
+      <div class="sg-panel">
+        <p class="t-mono t-muted">Phone bar (under 640px, after the hero CTAs)</p>
+        <CtaDock preview />
+      </div>
+      <div class="sg-panel">
+        <p class="t-mono t-muted">Mid-page prompt</p>
+        <div class="sg-wrap">
+          <p class="t-mono t-muted">Every job starts at step 01.</p>
+          <Button href="/contact/" variant="ink">Request a site assessment</Button>
+        </div>
+      </div>
+      <div class="sg-panel">
+        <p class="t-mono t-muted">Quiet link (repeated rows)</p>
+        <div class="sg-wrap">
+          <Button href="/contact/" variant="link">Request a site assessment</Button>
+        </div>
+      </div>
+      <div class="sg-panel">
+        <p class="t-mono t-muted">FAQ follow-up</p>
+        <p class="t-small t-muted sg-faq-more">Question not here? Call <a href={site.phoneHref}>{site.phone}</a> or <a href="/contact/">send us the details</a>.</p>
+      </div>
+    </div>
+  </section>
 </Base>
+
+<script>
+  // Demo form only: never submit (no inline handler, so it works under the site CSP)
+  document.querySelectorAll<HTMLFormElement>('.sg-form').forEach((f) =>
+    f.addEventListener('submit', (e) => e.preventDefault()),
+  );
+</script>
 
 <style>
   .sg-intro {
@@ -342,6 +378,12 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
   .sg-panel--ink {
     background: var(--ink);
     border-color: var(--ink);
+  }
+
+  .sg-faq-more a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   .sg-wrap {

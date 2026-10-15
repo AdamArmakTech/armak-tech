@@ -14,7 +14,7 @@ export const entries: GlossaryEntry[] = [
     qa: [
       {
         q: 'Does ONVIF mean any camera works perfectly with any recorder?',
-        a: 'Not quite. ONVIF guarantees the basics — live video, recording and common settings. Advanced features like a maker’s own analytics or special motion rules often only work when the camera and recorder come from the same brand. Check which ONVIF profiles both devices support.',
+        a: 'Not quite. ONVIF guarantees the basics: live video, recording and common settings. Advanced features like a maker’s own analytics or special motion rules often only work when the camera and recorder come from the same brand. Check which ONVIF profiles both devices support.',
       },
       {
         q: 'Which ONVIF profile should I look for?',
@@ -63,7 +63,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'A fiber optic test instrument that sends pulses of light down a fiber and measures what bounces back. It produces a map of the cable showing where connectors, splices, bends and breaks are, and how much signal each one loses.',
     why_it_matters:
-      'An OTDR trace pinpoints exactly where a fiber problem is, saving hours of guesswork and serving as a baseline record if the cable is damaged later.',
+      'An OTDR trace shows exactly where a fiber problem is, so a technician can go straight to it. It also serves as a baseline record if the cable is damaged later.',
     analogy: 'Like sonar for glass: send a ping down the fiber and listen for echoes to find what’s along the way.',
     qa: [
       {
@@ -72,7 +72,7 @@ export const entries: GlossaryEntry[] = [
       },
       {
         q: 'Can an OTDR find where a fiber is broken?',
-        a: 'Yes — that’s one of its main uses. It shows the distance from the tester to the break or bad splice, so a technician can go to that spot instead of pulling or replacing the whole cable.',
+        a: 'Yes. That’s one of its main uses. It shows the distance from the tester to the break or bad splice, so a technician can go to that spot instead of pulling or replacing the whole cable.',
       },
     ],
     related: ['fiber-optic-cable', 'cable-certification', 'insertion-loss', 'backbone-cabling', 'singlemode-fiber', 'multimode-fiber'],
@@ -86,7 +86,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'A system for making spoken announcements through speakers in ceilings, walls or horns across a building. Announcements can go to everywhere at once or to specific “zones” such as the warehouse or the front office.',
     why_it_matters:
-      'Paging reaches people who aren’t at a desk or phone — warehouses, shop floors, schools, retail — and can tie into the phone system so any phone can make announcements.',
+      'Paging reaches people who aren’t at a desk or phone, in warehouses, shop floors, schools and stores, and can tie into the phone system so any phone can make announcements.',
     analogy: 'The building’s own loudspeaker voice, like announcements at an airport gate.',
     qa: [
       {
@@ -95,7 +95,7 @@ export const entries: GlossaryEntry[] = [
       },
       {
         q: 'What are paging zones?',
-        a: 'Zones are groups of speakers you can address separately — for example “warehouse only” or “all call.” They keep announcements from disturbing people who don’t need to hear them.',
+        a: 'Zones are groups of speakers you can address separately, for example “warehouse only” or “all call.” They keep announcements from disturbing people who don’t need to hear them.',
       },
       {
         q: 'Can paging also play background music?',
@@ -111,7 +111,7 @@ export const entries: GlossaryEntry[] = [
     aka: ['Patch cord', 'Jumper', 'Network cable'],
     category: 'cabling',
     definition:
-      'A short, flexible network cable with a connector on each end, used to plug equipment into the permanent cabling — for example, a computer into a wall jack, or a patch panel port into a network switch.',
+      'A short, flexible network cable with a connector on each end, used to plug equipment into the permanent cabling, for example a computer into a wall jack, or a patch panel port into a network switch.',
     why_it_matters:
       'Patch cables are the most handled and most damaged part of a network; a cheap or crushed cord can cause slow or dropped connections that look like bigger problems.',
     analogy: 'The extension cord of the network: the permanent wiring is in the walls, the patch cable gets you from the outlet to the device.',
@@ -126,7 +126,7 @@ export const entries: GlossaryEntry[] = [
       },
       {
         q: 'Why are the cables in the network rack different colors?',
-        a: 'Color-coding is a common way to show what each connection is for — for example phones, cameras or Wi-Fi. It makes moves and troubleshooting faster, as long as the scheme is written down.',
+        a: 'Color-coding is a common way to show what each connection is for, for example phones, cameras or Wi-Fi. It makes moves and troubleshooting faster, as long as the scheme is written down.',
       },
     ],
     related: ['patch-panel', 'rj45', 'channel', 'network-switch', 'cat-6', 'cat-6a'],
@@ -159,14 +159,14 @@ export const entries: GlossaryEntry[] = [
     slug: 'pathway',
     category: 'cabling',
     definition:
-      'The physical route and support system that cables travel through and rest on — conduit, cable trays, J-hooks, wall sleeves and floor penetrations. The pathway is the “road”; the cables are the traffic.',
+      'The physical route and support system that cables travel through and rest on: conduit, cable trays, J-hooks, wall sleeves and floor penetrations. The pathway is the “road”; the cables are the traffic.',
     why_it_matters:
       'Good pathways protect cables, keep them away from electrical interference, satisfy fire codes, and leave room so future cables can be added without opening walls.',
     analogy: 'Like plumbing chases and pipe hangers, but for data cables.',
     qa: [
       {
         q: 'Can cables just lie on top of the ceiling tiles?',
-        a: 'No. Codes and cabling standards call for cables to be supported independently — on J-hooks, trays or similar — not resting on ceiling tiles, pipes or light fixtures.',
+        a: 'No. Codes and cabling standards call for cables to be supported independently, on J-hooks, trays or similar, not resting on ceiling tiles, pipes or light fixtures.',
       },
       {
         q: 'Why should pathways have spare room?',
@@ -216,7 +216,7 @@ export const entries: GlossaryEntry[] = [
     qa: [
       {
         q: 'What’s the difference between a permanent link and a channel?',
-        a: 'The permanent link is the installed cable from panel to jack. The channel is the whole connection, including the patch cables at both ends — up to 100 meters total. Installers usually certify the permanent link.',
+        a: 'The permanent link is the installed cable from panel to jack. The channel is the whole connection, including the patch cables at both ends, up to 100 meters total. Installers usually certify the permanent link.',
       },
       {
         q: 'Why is the limit 90 meters?',
@@ -232,7 +232,7 @@ export const entries: GlossaryEntry[] = [
     aka: ['CMP cable', 'Plenum-rated cable'],
     category: 'cabling',
     definition:
-      'Cable with a special fire-resistant, low-smoke jacket, rated for use in a “plenum” — a space such as above a drop ceiling or below a raised floor that the building uses to circulate air. It’s marked “CMP” on the jacket.',
+      'Cable with a special fire-resistant, low-smoke jacket, rated for use in a “plenum.” A plenum is a space such as above a drop ceiling or below a raised floor that the building uses to circulate air. It’s marked “CMP” on the jacket.',
     why_it_matters:
       'If your ceiling is used for air return, electrical code requires plenum-rated cable there, so ordinary cable could fail inspection and spread toxic smoke in a fire.',
     analogy: 'Like flame-retardant fabric for curtains in a theater: required where a fire could spread to many people quickly.',
@@ -257,7 +257,7 @@ export const entries: GlossaryEntry[] = [
     definition:
       'A way to send electrical power and network data through the same Ethernet cable. A PoE network switch powers devices like Wi-Fi access points, security cameras, phones and card readers, so they don’t need a separate outlet.',
     why_it_matters:
-      'PoE lets devices go wherever a network cable can reach — ceilings, walls, parking lots — and puts their power on one backup battery in the network closet.',
+      'PoE lets devices go anywhere a network cable can reach, like ceilings, walls and parking lots, and puts their power on one backup battery in the network closet.',
     analogy: 'Like a USB cable that both charges your phone and transfers files.',
     qa: [
       {
@@ -281,14 +281,14 @@ export const entries: GlossaryEntry[] = [
     slug: 'port',
     category: 'networking',
     definition:
-      'A physical socket where a cable plugs in — on a network switch, patch panel, wall jack or computer. In software, “port” also means a numbered channel a computer uses to tell different kinds of traffic apart, such as web or email.',
+      'A physical socket where a cable plugs in, on a network switch, patch panel, wall jack or computer. In software, “port” also means a numbered channel a computer uses to tell different kinds of traffic apart, such as web or email.',
     why_it_matters:
-      'Counting ports — on switches, patch panels and walls — is how you size equipment and make sure every device, plus room for growth, has a place to connect.',
+      'Counting ports on switches, patch panels and walls is how you size equipment and make sure every device, plus room for growth, has a place to connect.',
     analogy: 'Physical ports are like electrical outlets; software port numbers are like apartment numbers at the same street address.',
     qa: [
       {
         q: 'How many switch ports do I need?',
-        a: 'Count every wired device — computers, phones, printers, access points, cameras — then add spare capacity for growth, commonly 20% or more. PoE devices also need PoE-capable ports.',
+        a: 'Count every wired device (computers, phones, printers, access points, cameras), then add spare capacity for growth, commonly 20% or more. PoE devices also need PoE-capable ports.',
       },
       {
         q: 'Why do I hear about “opening a port” on the firewall?',
@@ -307,7 +307,7 @@ export const entries: GlossaryEntry[] = [
       'The checkout system where a business takes payments: terminals, card readers, receipt printers, cash drawers and the software that runs them. Modern POS systems depend on a reliable network and internet connection.',
     why_it_matters:
       'When the network or internet drops, a POS system may not be able to take cards, and payment-card security rules affect how its network must be set up.',
-    analogy: 'The modern cash register — now a networked computer.',
+    analogy: 'A cash register that’s now a networked computer.',
     qa: [
       {
         q: 'Should my POS be on its own network?',
@@ -362,7 +362,7 @@ export const entries: GlossaryEntry[] = [
     qa: [
       {
         q: 'Do I still need landlines?',
-        a: 'Most office calling can move to VoIP. But check alarm panels, elevator emergency phones, gate callboxes and fax lines — some need an analog line or an approved replacement such as a cellular or VoIP adapter, depending on local code.',
+        a: 'Most office calling can move to VoIP. But check alarm panels, elevator emergency phones, gate callboxes and fax lines. Some need an analog line or an approved replacement such as a cellular or VoIP adapter, depending on local code.',
       },
       {
         q: 'What is a POTS line?',
@@ -381,7 +381,7 @@ export const entries: GlossaryEntry[] = [
       'A security camera that can turn side to side (pan), up and down (tilt), and zoom in, either controlled by an operator or following preset tours. It covers large areas like parking lots, yards and warehouses.',
     why_it_matters:
       'A PTZ can zoom in on details from far away, but it only records where it’s pointed, so it usually works alongside fixed cameras rather than replacing them.',
-    analogy: 'Like a security guard who can turn their head and use binoculars — but can only look in one direction at a time.',
+    analogy: 'Like a security guard who can turn their head and use binoculars, but can only look one way at a time.',
     qa: [
       {
         q: 'Can one PTZ camera replace several fixed cameras?',
@@ -404,7 +404,7 @@ export const entries: GlossaryEntry[] = [
       'The method of attaching each tiny wire of a network or phone cable to a jack or patch panel by pressing it into a metal slot with a special tool. The slot cuts through the insulation and grips the copper.',
     why_it_matters:
       'Neat, correct punch-downs are what make a cable pass certification; sloppy ones cause slow speeds or connections that drop intermittently.',
-    analogy: 'Like pressing a wire into a clip that bites through the plastic to touch the metal inside — no soldering or stripping needed.',
+    analogy: 'Like pressing a wire into a clip that bites through the plastic to reach the metal inside. No soldering or stripping needed.',
     qa: [
       {
         q: 'What tool is used?',
@@ -431,7 +431,7 @@ export const entries: GlossaryEntry[] = [
     qa: [
       {
         q: 'Does QoS make my internet faster?',
-        a: 'No. It doesn’t add bandwidth — it decides who goes first when the connection is busy. If the link is constantly overloaded, you may need more bandwidth as well.',
+        a: 'No. It doesn’t add bandwidth. It decides who goes first when the connection is busy. If the link is constantly overloaded, you may need more bandwidth as well.',
       },
       {
         q: 'Do I need QoS for VoIP phones?',
@@ -447,7 +447,7 @@ export const entries: GlossaryEntry[] = [
     aka: ['Equipment rack', '19-inch rack', 'Network cabinet'],
     category: 'cabling',
     definition:
-      'A metal frame or cabinet that holds network equipment — patch panels, switches, servers and backup batteries — stacked on standard 19-inch-wide mounting rails. Racks can be open frames, enclosed cabinets or small wall-mounted units.',
+      'A metal frame or cabinet that holds network equipment (patch panels, switches, servers and backup batteries), stacked on standard 19-inch-wide mounting rails. Racks can be open frames, enclosed cabinets or small wall-mounted units.',
     why_it_matters:
       'A properly sized, organized and secured rack keeps equipment cool, accessible and protected, and leaves space for growth.',
     analogy: 'A bookshelf built to a universal size, so any manufacturer’s equipment fits on the shelves.',
@@ -504,7 +504,7 @@ export const entries: GlossaryEntry[] = [
     qa: [
       {
         q: 'Do I need two internet connections?',
-        a: 'If an outage would stop sales, phones or operations, a second connection from a different provider — ideally using different physical routes, or cellular — is worth considering. A firewall or router can switch over automatically.',
+        a: 'If an outage would stop sales, phones or operations, a second connection from a different provider, ideally using different physical routes or cellular, is worth considering. A firewall or router can switch over automatically.',
       },
       {
         q: 'Isn’t a second connection from the same provider enough?',
@@ -523,12 +523,12 @@ export const entries: GlossaryEntry[] = [
     definition:
       'A device on the secure side of an access-controlled door that tells the system someone is leaving. It can be a motion sensor above the door, a push button, or a switch in the door handle.',
     why_it_matters:
-      'REX devices prevent false “door forced open” alarms and, on doors with magnetic locks, release the lock so people can get out — which is a life-safety issue.',
+      'REX devices prevent false “door forced open” alarms and, on doors with magnetic locks, release the lock so people can get out, which is a life-safety issue.',
     analogy: 'A polite signal to the security system: “It’s fine, someone is walking out, not breaking in.”',
     qa: [
       {
         q: 'Why does the door alarm when people leave?',
-        a: 'Usually because the REX isn’t detecting them — a misaimed motion sensor, a bad switch or wiring problem. The system then sees the door open without a valid card or exit request and reports a forced door.',
+        a: 'Usually because the REX isn’t detecting them, for example a misaimed motion sensor, a bad switch or wiring problem. The system then sees the door open without a valid card or exit request and reports a forced door.',
       },
       {
         q: 'Is a motion sensor enough on a maglock door?',
@@ -601,7 +601,7 @@ export const entries: GlossaryEntry[] = [
       },
       {
         q: 'Can plenum cable be used in a riser?',
-        a: 'Yes. Plenum cable has a higher fire rating and can substitute for riser cable — but not the other way around.',
+        a: 'Yes. Plenum cable has a higher fire rating and can substitute for riser cable, but not the other way around.',
       },
     ],
     related: ['plenum-cable', 'backbone-cabling', 'nec', 'pathway'],
@@ -625,7 +625,7 @@ export const entries: GlossaryEntry[] = [
       },
       {
         q: 'What are T568A and T568B?',
-        a: 'They’re the two standard color orders for wiring the eight wires into an RJ45. Either works, but both ends of a cable — and ideally the whole building — should use the same one.',
+        a: 'They’re the two standard color orders for wiring the eight wires into an RJ45. Either works, but both ends of a cable, and ideally the whole building, should use the same one.',
       },
     ],
     related: ['ethernet', 'keystone-jack', 'patch-cable', 'ansi-tia-568', 'termination'],
@@ -636,7 +636,7 @@ export const entries: GlossaryEntry[] = [
     slug: 'router',
     category: 'networking',
     definition:
-      'A device that connects different networks together and decides where data should go — most commonly linking your office network to the internet. Business routers often include a firewall and can handle multiple internet connections.',
+      'A device that connects different networks together and decides where data should go, most commonly linking your office network to the internet. Business routers often include a firewall and can handle multiple internet connections.',
     why_it_matters:
       'The router is your gateway to the internet and other sites, so its speed, security features and reliability affect everyone in the building.',
     analogy: 'Like a post office sorting center: it reads the address on each package and sends it toward the right city.',

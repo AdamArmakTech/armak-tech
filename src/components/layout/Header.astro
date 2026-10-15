@@ -75,7 +75,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       </ul>
       <aside class="mega__aside">
         <p class="t-mono t-muted">Not sure what you need?</p>
-        <p class="t-h4">Book a free site assessment. We'll walk the space and scope it with you.</p>
+        <p class="t-h4">Book a site assessment. We’ll walk the space and scope it with you.</p>
         <Button href="/contact/" variant="ink">Request assessment</Button>
         <a class="mega__all" href="/services/">All services →</a>
       </aside>
@@ -142,24 +142,35 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       }
     };
 
+    // Keep keyboard focus inside the open mobile menu
+    const setBackgroundInert = (inert: boolean) => {
+      document.querySelectorAll('main, footer').forEach((el) => el.toggleAttribute('inert', inert));
+    };
+
     menuToggle?.addEventListener('click', () => {
       const open = menuToggle.getAttribute('aria-expanded') !== 'true';
       setOpen(menuToggle, menu, open);
       lockScroll(open);
+      setBackgroundInert(open);
     });
 
     const closeAll = () => {
       const menuWasOpen = menuToggle?.getAttribute('aria-expanded') === 'true';
       setOpen(megaToggle, mega, false);
       setOpen(menuToggle, menu, false);
-      if (menuWasOpen) lockScroll(false);
+      if (menuWasOpen) {
+        lockScroll(false);
+        setBackgroundInert(false);
+      }
     };
 
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       const wasMega = megaToggle?.getAttribute('aria-expanded') === 'true';
+      const wasMenu = menuToggle?.getAttribute('aria-expanded') === 'true';
       closeAll();
       if (wasMega) megaToggle?.focus();
+      else if (wasMenu) menuToggle?.focus();
     });
 
     document.addEventListener('click', (e) => {

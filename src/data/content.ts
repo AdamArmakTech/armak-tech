@@ -6,7 +6,7 @@
  * nothing invented ships unnoticed. Replace with real content before launch.
  */
 import type { ImageMetadata } from 'astro';
-import type { ServiceSlug } from './site';
+import { site, type ServiceSlug } from './site';
 
 import cisco from '../assets/partners/cisco.png';
 import meraki from '../assets/partners/meraki.png';
@@ -81,13 +81,13 @@ export const process = [
 ];
 
 /* ── Credentials & pillars — wording carried over from the original site ── */
-export const credentials = ['Licensed · Bonded · Insured', 'BICSI-certified technicians', '24/7 emergency response'];
+export const credentials = ['Licensed · Bonded · Insured', 'BICSI-certified technicians', site.support];
 
 export const pillars = [
   { title: 'Built to standard', body: 'ANSI/TIA-compliant installs. Every cable tested, every port labeled, every job documented to spec.' },
   { title: 'From closet to campus', body: 'From a single rack to a multi-site rollout, you work with the same team and one point of contact.' },
   { title: 'Cutover-ready', body: 'Materials are prepared ahead of time, noisy work happens after hours, and cutovers are phased so your business keeps running.' },
-  { title: 'Lifecycle support', body: 'Post-install MAC work, warranty response and managed service contracts. We stay available after the job is done.' },
+  { title: 'After the install', body: 'Moves, adds and changes, warranty response and managed service contracts.' },
 ];
 
 /* ── Industries ──
@@ -105,7 +105,7 @@ export const industries: Industry[] = [
   { slug: 'education', name: 'Education', icon: 'graduation-cap', need: 'Campus-wide Wi-Fi, classroom AV and access control, scheduled around the academic calendar.' },
   { slug: 'retail', name: 'Retail', icon: 'store', need: 'POS, cameras and in-store networks rolled out consistently across locations.' },
   { slug: 'hospitality', name: 'Hospitality', icon: 'hotel', need: 'Guest Wi-Fi, back-of-house networks, paging and POS that stay invisible to guests.' },
-  { slug: 'multifamily', name: 'Multifamily', icon: 'building', need: 'Building-wide cabling, intercom and entry systems residents actually like using.' },
+  { slug: 'multifamily', name: 'Multifamily', icon: 'building', need: 'Building-wide cabling, intercoms and entry systems that are easy for residents to use.' },
   { slug: 'government', name: 'Public sector', icon: 'landmark', need: 'Documented, standards-compliant installs with the paperwork to match.' },
   { slug: 'industrial', name: 'Industrial & warehouse', icon: 'warehouse', need: 'Long fiber runs, rugged Wi-Fi and perimeter cameras across large footprints.' },
 ];
@@ -136,7 +136,7 @@ export const projects: Project[] = [
       { value: '—', label: 'Wireless APs' },
       { value: '—', label: 'Doors secured' },
     ],
-    summary: 'Placeholder — a real Armak project goes here: the challenge, what was installed, and the outcome.',
+    summary: 'Placeholder: a real Armak project goes here: the challenge, what was installed, and the outcome.',
     image: cableBundles,
     placeholder: true,
   },
@@ -151,7 +151,7 @@ export const projects: Project[] = [
       { value: '—', label: 'Cameras' },
       { value: '—', label: 'Days per site' },
     ],
-    summary: 'Placeholder — a real Armak project goes here: the challenge, what was installed, and the outcome.',
+    summary: 'Placeholder: a real Armak project goes here: the challenge, what was installed, and the outcome.',
     image: patchColors,
     placeholder: true,
   },
@@ -166,7 +166,7 @@ export const projects: Project[] = [
       { value: '—', label: 'Fiber strands' },
       { value: '—', label: 'Hours downtime' },
     ],
-    summary: 'Placeholder — a real Armak project goes here: the challenge, what was installed, and the outcome.',
+    summary: 'Placeholder: a real Armak project goes here: the challenge, what was installed, and the outcome.',
     image: rackRow,
     placeholder: true,
   },

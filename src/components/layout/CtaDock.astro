@@ -1,0 +1,178 @@
+---
+/**
+ * Phone-only CTA bar that follows the reader. Wider screens already have the sticky header CTA.
+ * Appears once every [data-dock-start] element has scrolled above the viewport; hides while any
+ * [data-dock-hide] element (closing CTA panels, contact form, footer) is on screen, while the
+ * mobile menu is open, and while a form field has focus.
+ */
+import Button from '../ui/Button.astro';
+import { site } from '../../data/site';
+
+interface Props {
+  /** Static, in-flow copy for /styleguide/ (no behaviour, always visible) */
+  preview?: boolean;
+}
+
+const { preview = false } = Astro.props;
+---
+
+<aside
+  class:list={['cta-dock', { 'cta-dock--preview': preview }]}
+  aria-label={preview ? undefined : 'Quick contact'}
+  data-cta-dock={preview ? undefined : ''}
+  inert={!preview}
+>
+  <Button href="/contact/" class="cta-dock__primary">Request a site assessment</Button>
+  <Button href={site.phoneHref} variant="outline" icon="phone" class="cta-dock__call"><span class="visually-hidden">Call {site.phone}</span></Button>
+</aside>
+
+<script>
+  const dock = document.querySelector<HTMLElement>('[data-cta-dock]');
+  const mq = matchMedia('(max-width: 639px)');
+  if (dock) {
+    const starts = [...document.querySelectorAll<HTMLElement>('[data-dock-start]')];
+    if (!starts.length) {
+      const first = document.querySelector<HTMLElement>('main > :first-child');
+      if (first) starts.push(first);
+    }
+    const passed = new Set<Element>(); // start sentinels fully above the viewport
+    const blocking = new Set<Element>(); // hide targets currently on screen
+    let menuOpen = false;
+    let fieldFocus = false;
+
+    const update = () => {
+      const show =
+        mq.matches &&
+        starts.length > 0 &&
+        passed.size === starts.length &&
+        blocking.size === 0 &&
+        !menuOpen &&
+        !fieldFocus;
+      // Never pull it away from a keyboard user who is inside it
+      if (!show && dock.contains(document.activeElement)) return;
+      dock.classList.toggle('is-shown', show);
+      dock.inert = !show;
+    };
+
+    const startIO = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting && e.boundingClientRect.bottom <= 0) passed.add(e.target);
+        else passed.delete(e.target);
+      }
+      update();
+    });
+    starts.forEach((el) => startIO.observe(el));
+
+    const hideIO = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) blocking.add(e.target);
+        else blocking.delete(e.target);
+      }
+      update();
+    });
+    document.querySelectorAll('[data-dock-hide]').forEach((el) => hideIO.observe(el));
+
+    const header = document.querySelector('[data-header]');
+    if (header) {
+      new MutationObserver(() => {
+        menuOpen = header.hasAttribute('data-open');
+        update();
+      }).observe(header, { attributes: true, attributeFilter: ['data-open'] });
+    }
+
+    const isField = (t: EventTarget | null) =>
+      t instanceof HTMLElement && t.matches('input, textarea, select');
+    document.addEventListener('focusin', (e) => {
+      if (isField(e.target)) { fieldFocus = true; update(); }
+    });
+    document.addEventListener('focusout', (e) => {
+      if (isField(e.target)) { fieldFocus = false; update(); }
+    });
+    dock.addEventListener('focusout', () => queueMicrotask(update));
+    mq.addEventListener('change', update);
+  }
+</script>
+
+<style>
+  .cta-dock {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 90; /* below the header (100), so the mobile menu always covers it */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem var(--gutter) calc(0.625rem + env(safe-area-inset-bottom, 0px));
+    background: color-mix(in srgb, var(--paper) 96%, transparent);
+    border-top: 1px solid var(--hairline);
+    transform: translateY(100%);
+    visibility: hidden;
+    transition:
+      transform var(--dur) var(--ease-out),
+      visibility 0s linear var(--dur);
+  }
+
+  /* Blur on a pseudo-element, same as the header */
+  .cta-dock::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+  }
+
+  .cta-dock.is-shown {
+    transform: none;
+    visibility: visible;
+    transition:
+      transform var(--dur) var(--ease-out),
+      visibility 0s;
+  }
+
+  .cta-dock :global(.cta-dock__primary) {
+    flex: 1 1 auto;
+    padding-inline: 1rem;
+  }
+
+  .cta-dock :global(.cta-dock__call) {
+    flex: 0 0 48px;
+    width: 48px;
+    padding-inline: 0;
+    gap: 0;
+  }
+
+  @media (max-width: 359px) {
+    .cta-dock :global(.cta-dock__primary .btn__icon--trail) {
+      display: none;
+    }
+  }
+
+  @media (min-width: 640px) {
+    .cta-dock:not(.cta-dock--preview) {
+      display: none;
+    }
+  }
+
+  /* Keep focused fields and anchor targets clear of the bar on phones */
+  @media (max-width: 639px) {
+    :global(html) {
+      scroll-padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  @media print {
+    .cta-dock {
+      display: none !important;
+    }
+  }
+
+  .cta-dock--preview {
+    position: relative;
+    inset: auto;
+    z-index: auto;
+    max-width: 400px;
+    transform: none;
+    visibility: visible;
+    border: 1px solid var(--hairline);
+  }
+</style>

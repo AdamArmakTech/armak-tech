@@ -6,6 +6,7 @@
  * interaction hands control to the visitor. Without JS every step + demo is shown stacked.
  */
 import SectionHead from '../ui/SectionHead.astro';
+import Button from '../ui/Button.astro';
 import Label from '../ui/Label.astro';
 import CableTest from '../ui/CableTest.astro';
 import AssessDemo from '../process/AssessDemo.astro';
@@ -79,6 +80,11 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
           );
         })}
       </div>
+    </div>
+
+    <div class="process__next" data-reveal>
+      <p class="t-mono t-muted">Every job starts at step 01.</p>
+      <Button href="#contact" variant="ink">Request a site assessment</Button>
     </div>
 
     <div class="pillars">
@@ -220,6 +226,18 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 </script>
 
 <style>
+  .process__next {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: 2rem;
+  }
+
+  .process__next :global(.btn) {
+    white-space: normal;
+  }
+
   /* ── Stepper ── */
   .steps {
     display: grid;

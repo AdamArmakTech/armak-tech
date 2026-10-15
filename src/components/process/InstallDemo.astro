@@ -204,6 +204,7 @@ const steps = [
       announce(root, 'After: dressed and labeled');
       await sleep(350);
       await tween(0, 50, 600, alive);
+      if (!alive()) return;
       sweeping = false;
       for (const s of steps) {
         if (!alive()) return;

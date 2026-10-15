@@ -18,6 +18,7 @@ import {
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
+import Button from '../components/ui/Button.astro';
 import { services, type ServiceSlug } from '../data/site';
 import { industries, type Industry } from '../data/content';
 
@@ -60,7 +61,7 @@ const description =
     code="G-00"
     label="Industries"
     title="The buildings we work in."
-    lead="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan each install around them and build every system to the same ANSI/TIA standard."
+    lead="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan each install around them, and the cabling behind every system goes in to ANSI/TIA standards."
     crumbs={[{ label: 'Industries' }]}
   >
     <nav class="jump" aria-label="Jump to an industry" data-reveal style="--reveal-delay: 120ms">
@@ -103,6 +104,7 @@ const description =
               </li>
             ))}
           </ul>
+          <Button href="/contact/" variant="link" class="sector__cta">Request a site assessment</Button>
         </div>
       </section>
     ))}
@@ -111,7 +113,7 @@ const description =
   <PageCta
     code="G-09"
     title="Tell us about your building."
-    body="Don’t see your sector? Every site is different. We’ll walk it with you, document what’s there and scope the job before anything is priced."
+    body="Don’t see your sector? Call anyway. We’ll walk the building with you, document what’s there and scope the job before anything is priced."
   />
 </Base>
 
@@ -214,6 +216,11 @@ const description =
     display: grid;
     gap: 0.75rem;
     align-content: start;
+  }
+
+  .sector__systems :global(.sector__cta) {
+    justify-self: start;
+    margin-top: 0.5rem;
   }
 
   .sector__systems-head {

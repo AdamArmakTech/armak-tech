@@ -6,9 +6,10 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/csp-hashes.mjs",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "csp:update": "astro build && node scripts/csp-hashes.mjs --write"
   },
   "repository": {
     "type": "git",

@@ -13,8 +13,7 @@ import { credentials } from '../../data/content';
 // TODO(photo): replace with a real Armak install photo
 import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
 
-const description =
-  'Structured cabling, networking, video surveillance, access control, VoIP and AV, designed, installed and supported across Southern California since 1998.';
+const description = `Structured cabling, networking, video surveillance, access control, VoIP and AV, designed, installed and supported across Southern California since ${FOUNDED}.`;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -30,7 +29,7 @@ const jsonLd = {
 ---
 
 <Base title="Low-Voltage, Network & Security Services" description={description} footerCta={false}>
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
 
   <section class="svc-index-hero container" aria-labelledby="services-title">
     <div class="svc-index-hero__copy">
@@ -41,7 +40,7 @@ const jsonLd = {
         Southern California team for {yearsInBusiness} years. You get one point of contact from the first
         walk-through to the final report.
       </p>
-      <div class="svc-index-hero__ctas" data-reveal style="--reveal-delay: 120ms">
+      <div class="svc-index-hero__ctas" data-reveal data-dock-start style="--reveal-delay: 120ms">
         <Button href="/contact/" size="lg">Request a site assessment</Button>
         <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
       </div>

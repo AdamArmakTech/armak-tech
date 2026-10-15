@@ -33,7 +33,7 @@ const { service, detail } = Astro.props;
         <span class="t-h1 svc-hero__headline">{detail.headline}</span>
       </h1>
       <p class="t-lead" data-reveal>{detail.intro}</p>
-      <div class="svc-hero__ctas" data-reveal style="--reveal-delay: 120ms">
+      <div class="svc-hero__ctas" data-reveal data-dock-start style="--reveal-delay: 120ms">
         <Button href="/contact/" size="lg">Request a site assessment</Button>
         <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
       </div>

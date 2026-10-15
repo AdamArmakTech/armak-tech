@@ -18,7 +18,7 @@ const width = Math.round((src.width / src.height) * height);
 const Tag = href ? 'a' : 'span';
 ---
 
-<Tag class:list={['logo', className]} href={href ?? undefined} aria-label={href ? `${site.name} — home` : undefined}>
+<Tag class:list={['logo', className]} href={href ?? undefined} aria-label={href ? `${site.name}, home` : undefined}>
   <Image
     src={src}
     alt={href ? '' : site.name}

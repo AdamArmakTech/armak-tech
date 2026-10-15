@@ -68,7 +68,7 @@ export const entries: GlossaryEntry[] = [
       "An electronic system that decides who can open which doors, and when. People present a card, fob, phone or code at a reader, and the system unlocks the door only if that person is allowed in at that time.",
     why_it_matters:
       "You can add or cancel someone’s access instantly instead of re-keying locks, and every entry is logged for security and investigations.",
-    analogy: "Like a guest list at the door, kept by a bouncer who never forgets a face or a time.",
+    analogy: "Like a guest list at the door, with the hours each guest is allowed in.",
     qa: [
       {
         q: "What happens if an employee loses their card?",
@@ -267,7 +267,6 @@ export const entries: GlossaryEntry[] = [
       "The tightest curve a cable can be bent without damage or loss of performance. A common rule for office network cable is no tighter than four times the cable’s own diameter; fiber optic cable has its own, often larger, limits.",
     why_it_matters:
       "Cables kinked or bent too sharply can fail testing or slow down, often in ways that are hard to find once ceilings are closed.",
-    analogy: "Like a garden hose: bend it too sharply and the flow drops.",
     qa: [
       {
         q: "How would I know if a cable is bent too tightly?",
@@ -337,7 +336,7 @@ export const entries: GlossaryEntry[] = [
     analogy: "Like a flashlight: it points one way and reaches far.",
     qa: [
       {
-        q: "Bullet or dome camera — which is better?",
+        q: "Bullet or dome camera: which is better?",
         a: "Neither is always better. Bullets are visible and often reach farther; domes are more discreet and harder to knock out of position. Many sites use both, chosen per location.",
       },
       {
@@ -409,7 +408,7 @@ export const entries: GlossaryEntry[] = [
     analogy: "Like a shelf or rain gutter for cables running overhead.",
     qa: [
       {
-        q: "Cable tray or J-hooks — which do I need?",
+        q: "Cable tray or J-hooks: which do I need?",
         a: "Tray is common along main corridors where many cables run together. J-hooks are lighter supports often used for smaller branches heading to individual rooms. Many buildings use both.",
       },
       {
@@ -480,7 +479,7 @@ export const entries: GlossaryEntry[] = [
     analogy: "Like a good four-lane road: plenty for most daily traffic.",
     qa: [
       {
-        q: "Cat 6 or Cat 6A — which should I choose?",
+        q: "Cat 6 or Cat 6A: which should I choose?",
         a: "Cat 6 is cheaper and thinner. Cat 6A supports 10 Gb/s to the full 100 meters and handles heavy PoE power better. For new Wi-Fi access points and long-term buildings, many designers prefer Cat 6A.",
       },
       {
