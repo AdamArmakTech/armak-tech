@@ -9,7 +9,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw=' 'sha256-8F+AeelCSviVELB6thhXgmO7DhW71TOR3akJ+oyImlo=' 'sha256-AiRMHNDb35y4sQqVPyfuBUiFAocGmgC6C9hqpNPgrTI=' 'sha256-CWcTCd0Us37qOpav3gtnmofuu4t2z//hfrf05EN6pDY=' 'sha256-Dq/iHzWFBGP+sNQXfJDC1XJ07i/xDI9qXno/2/kFVWg=' 'sha256-FVF5A+Et4f1G7u1hsAAj1rrKHCdJbOpz/9bew+kY5O4=' 'sha256-NYBO0DM4z73wo0mxDwYQwXC9A0YUCxjHOVCyq5qYMn0=' 'sha256-U6kIrHLdPxAPron3M+/klv1IQLDACkao667cRTCtJmo=' 'sha256-nx8W5ZZ7De+vAliM2FZOqBeCH6oCul1A0VjuTax0/Po='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.web3forms.com https://tiles.openfreemap.org; worker-src 'self' blob:; child-src 'self' blob:; manifest-src 'self'; media-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://api.web3forms.com; frame-ancestors 'none'; upgrade-insecure-requests"
+          "value": "frame-ancestors 'none'"
         },
         {
           "key": "Strict-Transport-Security",
