@@ -56,7 +56,7 @@ export const process = [
   {
     code: '01',
     title: 'Assess',
-    body: 'We walk the site with you and write down what’s actually there: pathways, closets, power and existing systems. Nothing is priced until that’s done.',
+    body: 'We walk the site with you and write down what’s there: pathways, closets, power and existing systems. Nothing is priced until that’s done.',
   },
   {
     code: '02',
@@ -81,7 +81,7 @@ export const process = [
 ];
 
 /* ── Credentials & pillars — wording carried over from the original site ── */
-export const credentials = ['Licensed · Bonded · Insured', 'BICSI-certified technicians', '24/7 emergency response'];
+export const credentials = ['Licensed · Bonded · Insured', 'BICSI-certified technicians', '24/7 response for contracted clients'];
 
 export const pillars = [
   { title: 'Built to standard', body: 'ANSI/TIA-compliant installs. Every cable tested, every port labeled, every job documented to spec.' },
@@ -105,7 +105,7 @@ export const industries: Industry[] = [
   { slug: 'education', name: 'Education', icon: 'graduation-cap', need: 'Campus-wide Wi-Fi, classroom AV and access control, scheduled around the academic calendar.' },
   { slug: 'retail', name: 'Retail', icon: 'store', need: 'POS, cameras and in-store networks rolled out consistently across locations.' },
   { slug: 'hospitality', name: 'Hospitality', icon: 'hotel', need: 'Guest Wi-Fi, back-of-house networks, paging and POS that stay invisible to guests.' },
-  { slug: 'multifamily', name: 'Multifamily', icon: 'building', need: 'Building-wide cabling, intercom and entry systems residents actually like using.' },
+  { slug: 'multifamily', name: 'Multifamily', icon: 'building', need: 'Building-wide cabling, intercom and entry systems residents find easy to use.' },
   { slug: 'government', name: 'Public sector', icon: 'landmark', need: 'Documented, standards-compliant installs with the paperwork to match.' },
   { slug: 'industrial', name: 'Industrial & warehouse', icon: 'warehouse', need: 'Long fiber runs, rugged Wi-Fi and perimeter cameras across large footprints.' },
 ];

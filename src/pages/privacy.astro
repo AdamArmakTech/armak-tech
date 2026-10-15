@@ -1,0 +1,133 @@
+---
+/**
+ * Privacy policy (CalOPPA). Plain English and limited to what the site really does:
+ * contact form → Web3Forms → sales inbox; Vercel hosting logs; OpenFreeMap map tiles;
+ * no cookies, analytics or ads (checked in the code 2026-10-14). Armak should review the wording.
+ */
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/pages/PageHero.astro';
+import { site } from '../data/site';
+
+const effective = 'October 14, 2026';
+const description = `How ${site.name} handles the information you send through armak.tech, including the contact form. No ads, no tracking, and your details are never sold.`;
+---
+
+<Base title="Privacy Policy" description={description}>
+  <PageHero
+    code="P-00"
+    label="Privacy"
+    title="Privacy policy."
+    lead={`What ${site.name} collects through this website, why, and what you can ask us to do with it. Effective ${effective}.`}
+    crumbs={[{ label: 'Privacy' }]}
+  />
+
+  <article class="privacy container">
+    <section>
+      <h2 class="t-h3">What we collect</h2>
+      <p>
+        We only collect what you choose to send us through the contact form: your name, company, email address,
+        phone number, the kind of project you have in mind and your message.
+      </p>
+      <p>
+        Like nearly every website, the servers that host this site keep standard technical logs, such as your IP
+        address, browser type and the pages you visit.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">How we use it</h2>
+      <p>
+        We use what you send us to reply to you, schedule a site assessment and scope your project. We don’t use it
+        for anything else, and we don’t sell it, rent it or share it with anyone for marketing.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">Who else handles it</h2>
+      <ul>
+        <li>
+          <strong>Web3Forms</strong> delivers the contact form to our inbox ({site.email}) by email.
+        </li>
+        <li>
+          <strong>Vercel</strong> hosts this website and keeps the standard server logs described above.
+        </li>
+        <li>
+          <strong>OpenFreeMap</strong> supplies the service-area map. When the map loads, your browser requests map
+          images from their servers, so they receive your IP address.
+        </li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="t-h3">Cookies and tracking</h2>
+      <p>
+        This site doesn’t use advertising, analytics or tracking cookies, and it doesn’t follow you across other
+        websites. Because of that, your browser’s “Do Not Track” setting doesn’t change anything here.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">Your choices</h2>
+      <p>
+        You can ask for a copy of the information you’ve sent us, ask us to correct it, or ask us to delete it. Email
+        <a href={site.emailHref}>{site.email}</a> or call <a href={site.phoneHref}>{site.phone}</a>.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">Children</h2>
+      <p>This website is for businesses and isn’t directed at children under 13.</p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">Changes</h2>
+      <p>
+        If we change this policy, we’ll post the new version on this page with a new effective date.
+        This version is effective {effective}.
+      </p>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .privacy {
+    display: grid;
+    gap: 2.5rem;
+    max-width: 46rem;
+    padding-block: 1rem var(--space-section);
+  }
+
+  .privacy section {
+    display: grid;
+    gap: 0.875rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .privacy p,
+  .privacy li {
+    color: var(--steel);
+    line-height: 1.65;
+  }
+
+  .privacy strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .privacy ul {
+    display: grid;
+    gap: 0.625rem;
+    padding-left: 1.25rem;
+  }
+
+  .privacy a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .privacy a:hover {
+    color: var(--signal);
+  }
+</style>

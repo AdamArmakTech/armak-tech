@@ -15,6 +15,7 @@ const uid = `in${Math.random().toString(36).slice(2, 8)}`;
 const portX = (i: number) => 133 + i * 11; // 12 ports per row
 const PANEL_TOP = 32; // top-row ports y
 const SWITCH_TOP = 104; // switch top-row ports y
+const LABEL_X = 284; // right-hand label column, just outside the rack rail
 
 // Deterministic "random" for the tangled version
 let seed = 7;
@@ -61,7 +62,7 @@ const steps = [
 >
   <div class="in">
     <div class="in__compare">
-      <svg class="in__rack" viewBox="0 0 400 215" role="img" aria-label="A network rack shown two ways: on the left, tangled unlabeled cables; on the right, neatly bundled, labeled cables with short patch cords">
+      <svg class="in__rack" viewBox="0 0 400 215" role="img" data-fit-text aria-label="A network rack shown two ways: on the left, tangled unlabeled cables; on the right, neatly bundled, labeled cables with short patch cords">
         <defs>
           <clipPath id={`${uid}-before`}><rect x="0" y="0" width="200" height="215" data-in-clip-before /></clipPath>
           <clipPath id={`${uid}-after`}><rect x="200" y="0" width="200" height="215" data-in-clip-after /></clipPath>
@@ -75,7 +76,7 @@ const steps = [
           <rect x="128" y="64" width="144" height="14" />
           <rect x="128" y="100" width="144" height="30" />
           <rect x="128" y="160" width="144" height="36" />
-          <text x="200" y="183" text-anchor="middle" class="in__tiny">UPS</text>
+          <text x="138" y="178" dy="0.35em" class="in__unit">UPS</text>
           {Array.from({ length: 12 }, (_, i) => (
             <g>
               <rect x={portX(i)} y={PANEL_TOP} width="8" height="7" class="in__port" />
@@ -91,8 +92,12 @@ const steps = [
         <g clip-path={`url(#${uid}-before)`} class="in__before">
           {messyFeeds.map((c) => <path d={c.d} style={`stroke:${c.c}`} />)}
           {messyCords.map((c) => <path d={c.d} style={`stroke:${c.c}`} />)}
-          <text x="20" y="30" class="in__tag in__tag--bad">BEFORE</text>
-          <text x="20" y="44" class="in__tiny">no labels · no slack management</text>
+          <text x="10" y="160" class="in__tag in__tag--bad">BEFORE</text>
+          <text x="10" y="160" class="in__note">
+            <tspan x="10" dy="1.3em">no labels ·</tspan>
+            <tspan x="10" dy="1.2em">no slack</tspan>
+            <tspan x="10" dy="1.2em">management</tspan>
+          </text>
         </g>
 
         <!-- AFTER: dressed bundles, labels, short cords -->
@@ -107,12 +112,17 @@ const steps = [
           {cords.map((c) => (
             <line x1={c.x} y1="39" x2={c.x} y2={SWITCH_TOP} class:list={['in__cord', { 'in__cord--uplink': c.uplink }]} />
           ))}
-          <text x={portX(0)} y="26" class="in__label">A-01</text>
-          <text x={portX(11) + 8} y="26" class="in__label" text-anchor="end">A-12</text>
-          <text x={portX(0)} y="66" class="in__label">A-13 … A-24 spare</text>
-          <text x="132" y="146" class="in__label">SW-1 · ports 1–12</text>
-          <text x="380" y="30" class="in__tag in__tag--good" text-anchor="end">AFTER</text>
-          <text x="380" y="44" class="in__tiny" text-anchor="end">dressed · labeled · tested</text>
+          <!-- labels sit outside the rails, level with what they name (room for phone-size text) -->
+          <text x="116" y={PANEL_TOP + 2.5} dy="0.35em" class="in__label" text-anchor="end">A-01</text>
+          <text x={LABEL_X} y={PANEL_TOP + 2.5} dy="0.35em" class="in__label">A-12</text>
+          <text x={LABEL_X} y={PANEL_TOP + 17.5} dy="0.35em" class="in__label">A-13 … A-24<tspan x={LABEL_X} dy="1.2em" class="in__note">spare</tspan></text>
+          <text x={LABEL_X} y={SWITCH_TOP + 3.5} dy="0.35em" class="in__label">SW-1<tspan x={LABEL_X} dy="1.2em" class="in__note">ports 1–12</tspan></text>
+          <text x={LABEL_X} y="160" class="in__tag in__tag--good">AFTER</text>
+          <text x={LABEL_X} y="160" class="in__note">
+            <tspan x={LABEL_X} dy="1.3em">dressed ·</tspan>
+            <tspan x={LABEL_X} dy="1.2em">labeled ·</tspan>
+            <tspan x={LABEL_X} dy="1.2em">tested</tspan>
+          </text>
         </g>
 
         <!-- divider -->
@@ -145,7 +155,7 @@ const steps = [
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="install"]').forEach((root) => {
     const range = root.querySelector<HTMLInputElement>('[data-in-range]')!;
@@ -153,6 +163,8 @@ const steps = [
     const clipAfter = root.querySelector<SVGRectElement>('[data-in-clip-after]')!;
     const divider = root.querySelector<SVGGElement>('[data-in-divider]')!;
     const steps = [...root.querySelectorAll<HTMLElement>('[data-in-step]')];
+
+    fitSvgText(root);
 
     // value = how much of the BEFORE picture shows, from the left (0–100%)
     const setSplit = (v: number) => {
@@ -199,15 +211,17 @@ const steps = [
       announce(root, 'Before: tangled, unlabeled cables');
       await sleep(600);
       if (!alive()) return;
-      await tween(100, 0, 1500, alive);
+      await tween(100, 0, 1700, alive);
       if (!alive()) return;
       announce(root, 'After: dressed and labeled');
-      await sleep(350);
-      await tween(0, 50, 600, alive);
+      await sleep(400);
+      if (!alive()) return; // a replay has taken over; don't touch its sweep
+      await tween(0, 50, 650, alive);
+      if (!alive()) return;
       sweeping = false;
       for (const s of steps) {
+        await sleep(420);
         if (!alive()) return;
-        await sleep(380);
         s.classList.add('is-on');
       }
       announce(root, 'Pre-staged, installed after hours, cut over in phases');
@@ -287,10 +301,13 @@ const steps = [
     stroke: var(--t568-green);
   }
 
+  /* SVG text is sized in screen pixels via --u (see fitSvgText), capped to fit the drawing:
+     the label column right of the rack and the corner notes leave room for the largest sizes */
   .in__label,
-  .in__tiny {
+  .in__note,
+  .in__unit {
     font-family: var(--font-mono);
-    font-size: 6.5px;
+    font-size: clamp(7px, calc(var(--u, 1) * 10px), 12.5px);
     letter-spacing: 0.06em;
     fill: var(--steel);
   }
@@ -301,9 +318,18 @@ const steps = [
 
   .in__tag {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: clamp(9px, calc(var(--u, 1) * 11px), 14px);
     font-weight: 600;
     letter-spacing: 0.1em;
+  }
+
+  /* Paper halo keeps text readable where it crosses cables */
+  .in__before text,
+  .in__after text {
+    paint-order: stroke;
+    stroke: var(--paper);
+    stroke-width: calc(var(--u, 1) * 3px);
+    stroke-linejoin: round;
   }
 
   .in__tag--bad {
@@ -344,6 +370,8 @@ const steps = [
 
   .in__slider input {
     width: 100%;
+    height: 40px; /* touch target; the track stays thin */
+    margin: 0;
     accent-color: var(--ink);
     cursor: ew-resize;
   }
@@ -413,6 +441,48 @@ const steps = [
     .in {
       grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
       align-items: start;
+    }
+  }
+
+  /* Phones: no-JS fallback for the label scale (the script sets the exact value) */
+  @container (max-width: 520px) {
+    .in__rack {
+      --u: 1.25;
+    }
+  }
+
+  /* Phones: tighter slider row and timeline so the demo fits on one screen */
+  @container (max-width: 599px) {
+    .in {
+      gap: 0.75rem;
+    }
+
+    .in__compare {
+      gap: 0.25rem;
+    }
+
+    .in__step {
+      grid-template-columns: 26px minmax(0, 1fr);
+      gap: 0.625rem;
+      padding-block: 0.5rem;
+    }
+
+    .in__icon {
+      width: 26px;
+      height: 26px;
+    }
+
+    .in__step-text {
+      gap: 0.0625rem;
+      line-height: 1.35;
+    }
+
+    .in__step-title {
+      font-size: 0.875rem;
+    }
+
+    .in__step-detail {
+      font-size: 0.78125rem;
     }
   }
 </style>

@@ -153,11 +153,11 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
   networking: {
     headline: 'Networks that stay up long after install day.',
     intro:
-      'Switches, firewalls, VLANs, UPS power and enterprise Wi-Fi, designed around how your building actually works. One team from the patch panel to the access point.',
+      'Switches, firewalls, VLANs, UPS power and enterprise Wi-Fi, designed around how your building works. One team from the patch panel to the access point.',
     capabilities: [
       {
         title: 'Switching & VLANs',
-        body: 'Managed switching with VLANs that keep staff, guest, voice, camera and building-system traffic apart, with PoE budgets sized for the devices you actually run.',
+        body: 'Managed switching with VLANs that keep staff, guest, voice, camera and building-system traffic apart, with PoE budgets sized for the devices you run.',
       },
       {
         title: 'Firewalls & secure edge',

@@ -8,14 +8,18 @@
  */
 import DemoFrame from './DemoFrame.astro';
 
-// Panel / switch geometry (viewBox 300 × 150): 12 ports per row
+// Panel / switch geometry (viewBox 300 × 133): 12 ports per row
 const px = (i: number) => 22 + i * 22;
 const OLD = 1; // panel A-14 = bottom row, index 1
 const NEW = 9; // panel A-22 = bottom row, index 9
 const cx = (i: number) => px(i) + 6;
-const oldCord = `M${cx(OLD)} 44 V102`;
-const newCord = `M${cx(NEW)} 44 C ${cx(NEW)} 78, ${cx(OLD)} 70, ${cx(OLD)} 102`;
-const otherCords = [0, 2, 3, 4, 5].map((i) => `M${cx(i)} 44 V102`);
+const PANEL_Y = 15; // patch panel box top
+const SWITCH_Y = 82; // switch box top
+const CORD_TOP = PANEL_Y + 32; // just below the panel's bottom-row port
+const CORD_END = SWITCH_Y + 5; // top of the switch's top-row port
+const oldCord = `M${cx(OLD)} ${CORD_TOP} V${CORD_END}`;
+const newCord = `M${cx(NEW)} ${CORD_TOP} C ${cx(NEW)} ${CORD_TOP + 23}, ${cx(OLD)} ${CORD_END - 23}, ${cx(OLD)} ${CORD_END}`;
+const otherCords = [0, 2, 3, 4, 5].map((i) => `M${cx(i)} ${CORD_TOP} V${CORD_END}`);
 
 const records = [
   { jack: '2B-13', port: 'A-13', key: '' },
@@ -66,23 +70,23 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       </div>
 
       <div class="sp__right">
-        <svg class="sp__panel" viewBox="0 0 300 150" role="img" aria-label="Patch panel A above a network switch; the patch cord for the moved desk goes from port A-22 down to the switch">
+        <svg class="sp__panel" viewBox="0 0 300 133" role="img" data-fit-text aria-label="Patch panel A above a network switch; the patch cord for the moved desk goes from port A-22 down to the switch">
           <!-- panel A -->
-          <rect x="10" y="10" width="280" height="40" class="sp__box" />
-          <text x="14" y="8" class="sp__tiny">PATCH PANEL A</text>
+          <rect x="10" y={PANEL_Y} width="280" height="36" class="sp__box" />
+          <text x="10" y={PANEL_Y - 5} class="sp__tiny">PATCH PANEL A</text>
           {Array.from({ length: 12 }, (_, i) => (
             <g>
-              <rect x={px(i)} y="15" width="12" height="10" class="sp__port" />
-              <rect x={px(i)} y="32" width="12" height="10" class="sp__port" />
+              <rect x={px(i)} y={PANEL_Y + 5} width="12" height="10" class="sp__port" />
+              <rect x={px(i)} y={PANEL_Y + 20} width="12" height="10" class="sp__port" />
             </g>
           ))}
           <!-- switch -->
-          <rect x="10" y="98" width="280" height="40" class="sp__box" />
-          <text x="14" y="148" class="sp__tiny">SWITCH</text>
+          <rect x="10" y={SWITCH_Y} width="280" height="36" class="sp__box" />
+          <text x="10" y={SWITCH_Y + 48} class="sp__tiny">SWITCH</text>
           {Array.from({ length: 12 }, (_, i) => (
             <g>
-              <rect x={px(i)} y="102" width="12" height="10" class="sp__port" />
-              <rect x={px(i)} y="120" width="12" height="10" class="sp__port" />
+              <rect x={px(i)} y={SWITCH_Y + 5} width="12" height="10" class="sp__port" />
+              <rect x={px(i)} y={SWITCH_Y + 20} width="12" height="10" class="sp__port" />
             </g>
           ))}
 
@@ -95,12 +99,12 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
 
           <!-- port highlights + labels -->
           <g class="sp__mark sp__mark--from is-on" data-sp-mark="from">
-            <rect x={px(OLD) - 3} y="29" width="18" height="16" rx="2" />
-            <text x={cx(OLD)} y="62" text-anchor="middle">A-14</text>
+            <rect x={px(OLD) - 3} y={PANEL_Y + 17} width="18" height="16" rx="2" />
+            <text x={cx(OLD)} y={PANEL_Y + 50} text-anchor="middle">A-14</text>
           </g>
           <g class="sp__mark sp__mark--to is-on" data-sp-mark="to">
-            <rect x={px(NEW) - 3} y="29" width="18" height="16" rx="2" />
-            <text x={cx(NEW)} y="62" text-anchor="middle">A-22</text>
+            <rect x={px(NEW) - 3} y={PANEL_Y + 17} width="18" height="16" rx="2" />
+            <text x={cx(NEW) + 7} y={PANEL_Y + 50} text-anchor="middle">A-22</text>
           </g>
         </svg>
 
@@ -114,9 +118,10 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="support"]').forEach((root) => {
+    fitSvgText(root);
     const box = root.querySelector<HTMLElement>('.sp')!;
     const stages = [...root.querySelectorAll<HTMLElement>('[data-sp-stage]')];
     const ticket = root.querySelector<HTMLElement>('[data-sp-ticket]')!;
@@ -393,9 +398,10 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     fill: var(--ink);
   }
 
+  /* SVG text is sized in screen pixels via --u (see fitSvgText), capped to fit the drawing */
   .sp__tiny {
     font-family: var(--font-mono);
-    font-size: 6.5px;
+    font-size: clamp(6.5px, calc(var(--u, 1) * 9.5px), 10px);
     letter-spacing: 0.08em;
     fill: var(--steel);
   }
@@ -448,10 +454,15 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     stroke-width: 2;
   }
 
+  /* Port labels sit over the cords, so they get a paper-coloured halo */
   .sp__mark text {
     font-family: var(--font-mono);
-    font-size: 8px;
+    font-size: clamp(7.5px, calc(var(--u, 1) * 10.5px), 11.5px);
     font-weight: 600;
+    paint-order: stroke;
+    stroke: var(--paper);
+    stroke-width: 3px;
+    stroke-linejoin: round;
   }
 
   .sp__mark--from rect {
@@ -501,6 +512,75 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     .sp__grid {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
       align-items: start;
+    }
+  }
+
+  /* Phones (narrow stepper stage): one-line stage strip, tighter ticket, table and spacing
+     so the whole demo fits on one screen */
+  @container (max-width: 520px) {
+    .sp,
+    .sp__grid {
+      gap: 0.625rem;
+    }
+
+    .sp__left,
+    .sp__right {
+      gap: 0.5rem;
+    }
+
+    .sp__stages {
+      justify-content: space-between;
+      gap: 0.35rem 0.5rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.01em;
+    }
+
+    .sp__stage {
+      gap: 0.3rem;
+    }
+
+    .sp__stage-dot {
+      width: 7px;
+      height: 7px;
+    }
+
+    .sp__ticket {
+      gap: 0.2rem;
+      padding: 0.45rem 0.75rem;
+      line-height: 1.4;
+    }
+
+    .sp__status {
+      padding-block: 0.1rem;
+    }
+
+    .sp__records {
+      font-size: 0.75rem;
+      line-height: 1.35;
+    }
+
+    .sp__records caption {
+      padding-bottom: 0.25rem;
+    }
+
+    .sp__records th {
+      padding: 0.25rem 0.5rem;
+    }
+
+    .sp__records td {
+      padding: 0.3rem 0.5rem;
+    }
+
+    /* No-JS fallback for the label scale (the script sets the exact value) */
+    .sp__panel {
+      --u: 1.02;
+      padding: 0;
+    }
+
+    .sp__checks {
+      gap: 0.25rem;
+      font-size: 0.8125rem;
+      line-height: 1.4;
     }
   }
 </style>

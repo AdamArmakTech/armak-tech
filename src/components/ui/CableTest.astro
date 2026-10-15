@@ -24,8 +24,8 @@ const { variant = 'full', id, demoHref = '#cable-test', class: className } = Ast
 const full = variant === 'full';
 const uid = `ct${Math.random().toString(36).slice(2, 8)}`;
 
-/* ── Wire map geometry (viewBox 320 × 210) ── */
-const pinY = (i: number) => 36 + i * 22;
+/* ── Wire map geometry (viewBox 320 × 174) ── */
+const pinY = (i: number) => 30 + i * 19;
 const X1 = 48;
 const X2 = 272;
 const curve = (from: number, to: number) =>
@@ -152,15 +152,15 @@ const barPos = (b: Bar) =>
       </button>
       <fieldset class="ct__mode">
         <legend class="visually-hidden">Which cable to test</legend>
-        <label><input type="radio" name={`${uid}-mode`} value="pass" checked data-ct-mode /><span>Passing cable</span></label>
-        <label><input type="radio" name={`${uid}-mode`} value="fail" data-ct-mode /><span>Failing cable</span></label>
+        <label><input type="radio" name={`${uid}-mode`} value="pass" checked data-ct-mode /><span>Passing<span class="ct__mode-word"> cable</span></span></label>
+        <label><input type="radio" name={`${uid}-mode`} value="fail" data-ct-mode /><span>Failing<span class="ct__mode-word"> cable</span></span></label>
       </fieldset>
     </div>
   )}
 
   <!-- Wire map: wall jack (left) ↔ patch panel (right) -->
   <div class="ct__map">
-    <svg viewBox="0 0 320 210" role="img" aria-label="Wire map: the 8 wires connecting wall jack pins to patch panel pins">
+    <svg viewBox="0 0 320 174" role="img" data-fit-text aria-label="Wire map: the 8 wires connecting wall jack pins to patch panel pins">
       <defs>
         {stripeColors.map((c) => (
           <pattern id={`${uid}-${c.replace(/\W/g, '')}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -169,8 +169,8 @@ const barPos = (b: Bar) =>
           </pattern>
         ))}
       </defs>
-      <text x={X1} y="14" class="ct__map-label">WALL JACK</text>
-      <text x={X2} y="14" class="ct__map-label" text-anchor="end">PATCH PANEL</text>
+      <text x={X1} y="12" class="ct__map-label">WALL JACK</text>
+      <text x={X2} y="12" class="ct__map-label" text-anchor="end">PATCH PANEL</text>
 
       {pins.map((p) => (
         <g class="ct__wire is-drawn" data-wire={p.i} data-bad={p.bad ? '' : undefined}>
@@ -204,7 +204,7 @@ const barPos = (b: Bar) =>
             <div class="ct__check-main">
               <div class="ct__check-top">
                 <span class="ct__check-name">
-                  {c.plain}
+                  <span class="ct__check-plain">{c.plain}</span>
                   <span class="t-mono ct__check-term">{c.name}</span>
                 </span>
                 <span class="ct__check-value t-mono" data-ct-value>{c.passText}</span>
@@ -256,10 +256,13 @@ const barPos = (b: Bar) =>
 </figure>
 
 <script>
+  import { fitSvgText } from '../../scripts/demo';
+
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   document.querySelectorAll<HTMLElement>('[data-ct]').forEach((root) => {
+    fitSvgText(root);
     const full = root.dataset.variant === 'full';
     const wires = [...root.querySelectorAll<SVGGElement>('[data-wire]')];
     const marks = [...root.querySelectorAll<SVGTextElement>('[data-pin-mark]')];
@@ -486,7 +489,7 @@ const barPos = (b: Bar) =>
     cursor: pointer;
   }
 
-  .ct__mode span {
+  .ct__mode label > span {
     display: block;
     padding: 0.45rem 0.75rem;
     border-radius: var(--radius);
@@ -523,9 +526,10 @@ const barPos = (b: Bar) =>
     overflow: visible;
   }
 
+  /* SVG text is sized in screen pixels via --u (see fitSvgText), capped to fit the drawing */
   .ct__map-label {
     font-family: var(--font-mono);
-    font-size: 9px;
+    font-size: clamp(7.5px, calc(var(--u, 1) * 9.5px), 12px);
     letter-spacing: 0.08em;
     fill: var(--steel);
   }
@@ -538,7 +542,7 @@ const barPos = (b: Bar) =>
 
   .ct__pin-num {
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: clamp(8px, calc(var(--u, 1) * 10px), 13px);
     fill: var(--steel);
   }
 
@@ -585,7 +589,7 @@ const barPos = (b: Bar) =>
   }
 
   .ct__pin-mark {
-    font-size: 12px;
+    font-size: clamp(10px, calc(var(--u, 1) * 12px), 14px);
     font-weight: 700;
     fill: var(--pass);
     opacity: 0;
@@ -997,6 +1001,150 @@ const barPos = (b: Bar) =>
 
     .ct--full .ct__bar {
       margin-bottom: 0.9rem;
+    }
+  }
+
+  /* Narrow stage (phones): controls on one line, check rows condensed (term + value share a
+     line, bar + "What's this?" share a line), result text runs under the stamp. */
+  @container (max-width: 520px) {
+    .ct--full {
+      gap: 0.75rem;
+      padding: 1rem;
+    }
+
+    .ct--full .ct__sub {
+      margin-top: -0.375rem;
+      letter-spacing: 0.03em;
+    }
+
+    .ct--full .ct__controls {
+      flex-wrap: nowrap;
+      gap: 0.5rem;
+    }
+
+    .ct--full .ct__run {
+      flex-shrink: 0;
+      padding-inline: 0.875rem;
+    }
+
+    .ct--full .ct__mode {
+      flex: 1;
+      width: auto;
+      min-width: 0;
+    }
+
+    .ct--full .ct__mode label {
+      flex: 1;
+      text-align: center;
+    }
+
+    .ct--full .ct__mode label > span {
+      padding-inline: 0.5rem;
+    }
+
+    .ct__mode-word {
+      display: none;
+    }
+
+    .ct--full .ct__margin-note {
+      font-size: 0.8125rem;
+      line-height: 1.45;
+    }
+
+    .ct--full .ct__check {
+      grid-template-columns: 20px minmax(0, 1fr);
+      gap: 0.625rem;
+      padding-block: 0.5rem;
+    }
+
+    .ct--full .ct__check-main {
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 1rem;
+      row-gap: 0.375rem;
+      align-items: start;
+    }
+
+    .ct--full .ct__check-top {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 0.75rem;
+      row-gap: 0.125rem;
+    }
+
+    .ct--full .ct__check-name {
+      display: contents;
+    }
+
+    .ct--full .ct__check-plain {
+      grid-column: 1 / -1;
+      font-size: 0.875rem;
+      line-height: 1.4;
+    }
+
+    .ct--full .ct__check-value {
+      grid-column: 2;
+    }
+
+    .ct--full .ct__check[data-state='skip'] .ct__check-value {
+      max-width: 8.5rem;
+    }
+
+    .ct--full .ct__bar {
+      margin-block: 0 1rem;
+    }
+
+    /* Skipped checks have no reading: drop the limit caption so the wrapped "Skipped…" text
+       doesn't make the failing report much taller than the passing one */
+    .ct--full .ct__check[data-state='skip'] .ct__bar {
+      margin-bottom: 0.25rem;
+    }
+
+    .ct--full .ct__check[data-state='skip'] .ct__bar-limit .t-mono {
+      visibility: hidden;
+    }
+
+    /* Summary sits beside the bar, centred on it; opened, the explanation spans the row */
+    .ct--full .ct__explain {
+      grid-column: 2;
+      margin-top: -0.4rem;
+    }
+
+    .ct--full .ct__check-top + .ct__explain,
+    .ct--full .ct__explain[open] {
+      grid-column: 1 / -1;
+      margin-top: 0;
+    }
+
+    .ct--full .ct__result {
+      column-gap: 0.875rem;
+      row-gap: 0.625rem;
+      padding: 0.75rem 0.875rem;
+    }
+
+    .ct--full .ct__result-text {
+      display: contents;
+    }
+
+    .ct--full .ct__stamp {
+      grid-area: 1 / 1;
+    }
+
+    .ct--full .ct__learn {
+      grid-area: 1 / 2;
+    }
+
+    .ct--full .ct__result-pass,
+    .ct--full .ct__result-fail {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+
+  /* Phones: no-JS fallback for the label scale (the script sets the exact value) */
+  @media (max-width: 520px) {
+    .ct__map svg {
+      --u: 1.2;
     }
   }
 

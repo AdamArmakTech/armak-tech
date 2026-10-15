@@ -48,7 +48,7 @@ const layers = [
   caption="The walk becomes a drawing: every jack, access point and camera placed, Wi-Fi coverage overlapping so there are no dead zones, and every cable routed home to the closet. The quote comes from this plan."
 >
   <div class="ds" data-focus="">
-    <svg class="ds__plan" viewBox="0 0 400 262" role="img" aria-label="Office floor plan with planned data drops, Wi-Fi coverage, camera views and cable routes back to the telecom closet">
+    <svg class="ds__plan" viewBox="0 0 400 262" role="img" data-fit-text aria-label="Office floor plan with planned data drops, Wi-Fi coverage, camera views and cable routes back to the telecom closet">
       <!-- Wi-Fi coverage (under everything) -->
       <g class="ds__layer is-on" data-ds-layer="wifi">
         {aps.map((a) => <circle class="ds__cover" cx={a.x} cy={a.y} r={a.r} />)}
@@ -104,13 +104,13 @@ const layers = [
         </li>
       </ul>
       <p class="ds__hint t-small" data-ds-hint>Tap a layer to highlight it.</p>
-      <p class="ds__done is-on t-mono" data-ds-done>✓ Plan ready · priced from the drawing</p>
+      <p class="ds__done is-on t-mono" data-ds-done>✓ Plan ready&nbsp;· priced from the drawing</p>
     </div>
   </div>
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="design"]').forEach((root) => {
     const box = root.querySelector<HTMLElement>('.ds')!;
@@ -121,6 +121,8 @@ const layers = [
     const done = root.querySelector<HTMLElement>('[data-ds-done]')!;
     const hint = root.querySelector<HTMLElement>('[data-ds-hint]')!;
     const groups = ['drops', 'wifi', 'wifi-dev', 'cams', 'cams-dev', 'routes'];
+
+    fitSvgText(root);
 
     const chipFor = (id: string) => chips.find((c) => c.dataset.dsChip === id)!;
 
@@ -334,7 +336,8 @@ const layers = [
     gap: 0.625rem;
     align-items: center;
     width: 100%;
-    padding: 0.55rem 0.25rem;
+    min-height: 40px;
+    padding: 0.5rem 0.25rem;
     border-bottom: 1px solid var(--hairline);
     text-align: left;
     opacity: 0.3;
@@ -418,6 +421,85 @@ const layers = [
     .ds {
       grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
       align-items: start;
+    }
+  }
+
+  /* Phones: no-JS fallback for the label scale (the script sets the exact value) */
+  @container (max-width: 520px) {
+    .ds__plan {
+      --u: 1.25;
+    }
+  }
+
+  /* Phones: legend in two columns, and the "plan ready" note fills the empty sixth cell
+     instead of adding a row */
+  @container (min-width: 300px) and (max-width: 599px) {
+    .ds {
+      gap: 0.75rem;
+    }
+
+    .ds__side {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 0.75rem;
+      row-gap: 0;
+    }
+
+    .ds__side-title {
+      grid-column: 1 / -1;
+      margin-bottom: 0.375rem;
+    }
+
+    .ds__legend {
+      grid-column: 1 / -1;
+      grid-template-columns: subgrid;
+    }
+
+    .ds__legend > li {
+      display: grid;
+    }
+
+    .ds__chip {
+      grid-template-columns: 12px minmax(0, 1fr) auto;
+      gap: 0.5rem;
+      min-height: 44px;
+      padding: 0.375rem 0.25rem;
+    }
+
+    .ds__chip-label {
+      font-size: 0.8125rem;
+      line-height: 1.25;
+    }
+
+    .ds__count {
+      font-size: 0.8125rem;
+    }
+
+    .ds__hint {
+      grid-column: 1 / -1;
+      margin-top: 0.5rem;
+      font-size: 0.8125rem;
+    }
+
+    .ds__done {
+      margin-top: 0.5rem;
+      font-size: 0.6875rem;
+      letter-spacing: 0.04em;
+      line-height: 1.4;
+    }
+
+    @supports (grid-template-rows: subgrid) {
+      .ds__legend {
+        grid-row: 2 / span 3;
+        grid-template-rows: subgrid;
+      }
+
+      .ds__done {
+        grid-column: 2;
+        grid-row: 4;
+        align-self: center;
+        margin-block: 0.375rem;
+        text-wrap: balance;
+      }
     }
   }
 </style>

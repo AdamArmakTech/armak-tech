@@ -11,7 +11,7 @@ const abs = (path: string) => new URL(path, site.url).href;
 export const defaultTitle = `${site.name} — Low-Voltage & Network Contractor, SoCal`;
 
 /** Homepage meta description (120–155 chars) */
-export const defaultDescription = `${site.name} designs, installs and supports cabling, networks, cameras, access control, voice and AV across Southern California. In business since ${FOUNDED}.`;
+export const defaultDescription = `${site.name} designs, installs and supports cabling, networks, cameras, access control, voice and AV across Southern California. Since ${FOUNDED}.`;
 
 /** Default social share card — regenerate with `node scripts/make-brand-images.mjs` */
 export const defaultOgImage = {

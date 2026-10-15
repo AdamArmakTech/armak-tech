@@ -440,6 +440,9 @@ const groups = counties.map((county) => ({
 
 <script>
   import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url';
+  // ?url (not a CSS import): a bundled import, even a dynamic one, makes Astro add MapLibre's
+  // stylesheet to the page <head> as a render-blocking file. Linked only when the map loads.
+  import maplibreCssUrl from 'maplibre-gl/dist/maplibre-gl.css?url';
   import type { GeoJSONSourceSpecification, Map as MapLibreMap } from 'maplibre-gl';
 
   // MapLibre cannot read CSS custom properties — literal token values.
@@ -456,6 +459,17 @@ const groups = counties.map((county) => ({
   }
 
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function loadStylesheet(href: string) {
+    return new Promise<void>((resolve, reject) => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      link.onload = () => resolve();
+      link.onerror = () => reject(new Error(`stylesheet failed: ${href}`));
+      document.head.append(link);
+    });
+  }
 
   function hasWebGL() {
     try {
@@ -601,10 +615,7 @@ const groups = counties.map((county) => ({
 
     let map: MapLibreMap | undefined;
     try {
-      const [maplibregl] = await Promise.all([
-        import('maplibre-gl'),
-        import('maplibre-gl/dist/maplibre-gl.css'),
-      ]);
+      const [maplibregl] = await Promise.all([import('maplibre-gl'), loadStylesheet(maplibreCssUrl)]);
       // MapLibre resolves its worker relative to its own module URL, which breaks once bundled.
       maplibregl.setWorkerUrl(workerUrl);
 

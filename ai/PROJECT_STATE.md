@@ -19,12 +19,21 @@
       stock phrases rewritten ("no guesswork, no surprises", "Global-grade excellence", "Zero shortcuts", …),
       most em-dashes cut from page copy, decorative "Fig." tags removed. Facts unchanged.
 
-## Still to do
-- [ ] Demo phone polish: Assess done; Design / Install / Support / cable test still tall on phones
-      (≈700–1400px at 375px) with some small SVG labels — use `fitSvgText` + `data-fit-text` like AssessDemo
-- [ ] Launch checklist audit (ai/plans/launch-checklist.md) — never written (agent hit usage limit)
-- [ ] Lighthouse / performance pass on the live site
-- [ ] Decide whether to delete `legacy/` (redundant now that the `old-site` branch exists)
+## Done 2026-10-14/15 (multi-agent round, stopped by user + usage limits, partial work published)
+- [x] Demo phone polish: Design 633px, Install 634px, Support 625px, cable test 990px at 375px (was 700–1450); readable SVG labels
+- [x] Site audit written: ai/plans/site-audit.md (3 MUST, 11 SHOULD, 11 NICE + questions for Armak)
+- [x] Privacy policy page /privacy/ (draft — Armak should review) + links in footer and under the contact form
+- [x] Partly done from the audit: --pass darkened + --field-line token, mobile menu inert + Escape focus, 404 caption,
+      glossary/em-dash + "actually" cleanup (partial), About timeline hidden, some speed work (inlined CSS, hero tweaks)
+
+## Still to do (see ai/plans/site-audit.md for exact fixes)
+- [ ] MUST 1: www.armak.tech has no TLS cert → Vercel → Settings → Domains → add www.armak.tech as redirect to armak.tech (owner action)
+- [ ] MUST 2: 24/7 wording — confirm policy with Armak, then make every mention match
+- [ ] SHOULD: apply --field-line to form fields (global.css); real /projects/ redirect + security headers in vercel.json;
+      mega-menu focus; explorer pause on focus/hover; contact heading levels; Hero quick links (add Services, phone wrapping)
+- [ ] Finish speed pass (measure LCP/bytes, font subsets, cache headers) and verify nothing changed visually
+- [ ] Proofreading pass over everything changed in this round
+- [ ] Decide whether to delete legacy/ (redundant with the old-site branch)
 
 ## Marketing direction to build in (from the owner)
 "We engineer with the future in mind" — see the user's memory note; needs real examples from Armak first.

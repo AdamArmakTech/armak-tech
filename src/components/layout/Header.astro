@@ -129,7 +129,10 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     };
 
     megaToggle?.addEventListener('click', () => {
-      setOpen(megaToggle, mega, megaToggle.getAttribute('aria-expanded') !== 'true');
+      const open = megaToggle.getAttribute('aria-expanded') !== 'true';
+      setOpen(megaToggle, mega, open);
+      // The panel sits after the header actions in the DOM, so move focus into it
+      if (open) mega?.querySelector<HTMLElement>('.mega__item')?.focus();
     });
 
     // Pause smooth scroll (Lenis) while the menu is open; fall back to overflow when it isn't running
@@ -142,10 +145,16 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       }
     };
 
+    // While the full-screen mobile menu is open, keep keyboard focus out of the page behind it
+    const setBackgroundInert = (on: boolean) => {
+      document.querySelectorAll<HTMLElement>('#main, .site-footer').forEach((el) => (el.inert = on));
+    };
+
     menuToggle?.addEventListener('click', () => {
       const open = menuToggle.getAttribute('aria-expanded') !== 'true';
       setOpen(menuToggle, menu, open);
       lockScroll(open);
+      setBackgroundInert(open);
     });
 
     const closeAll = () => {
@@ -153,13 +162,23 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       setOpen(megaToggle, mega, false);
       setOpen(menuToggle, menu, false);
       if (menuWasOpen) lockScroll(false);
+      setBackgroundInert(false);
     };
 
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
       const wasMega = megaToggle?.getAttribute('aria-expanded') === 'true';
+      const menuWasOpen = menuToggle?.getAttribute('aria-expanded') === 'true';
       closeAll();
       if (wasMega) megaToggle?.focus();
+      if (menuWasOpen) menuToggle?.focus();
+    });
+
+    // Close the panels once keyboard focus moves to something outside the header.
+    // A null relatedTarget (click on blank space, window blur) is left to the click handler below.
+    header.addEventListener('focusout', (e) => {
+      const to = e.relatedTarget as Node | null;
+      if (to && !header.contains(to)) closeAll();
     });
 
     document.addEventListener('click', (e) => {

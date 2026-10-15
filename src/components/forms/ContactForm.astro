@@ -12,9 +12,12 @@ import { site, services } from '../../data/site';
 interface Props {
   id?: string;
   class?: string;
+  /** Heading level for the step titles: 3 under a section h2 (homepage), 2 directly under the page h1 (/contact/). */
+  headingLevel?: 2 | 3;
 }
 
-const { id = 'assessment', class: className } = Astro.props;
+const { id = 'assessment', class: className, headingLevel = 3 } = Astro.props;
+const H = `h${headingLevel}` as 'h2' | 'h3';
 
 // Server-side at build time only (from .env). Never log this value.
 // Build-time env: .env locally, Vercel project env vars in production (process.env as a fallback)
@@ -25,7 +28,7 @@ const projectTypes = [...services.map((s) => s.name), 'Not sure yet'];
 const f = (name: string) => `${id}-${name}`;
 ---
 
-<div class:list={['cform', className]} data-contact-form data-phone={site.phone}>
+<div class:list={['cform', className]} data-contact-form data-phone={site.phone} data-email={site.email}>
   <form class="cform__form" action={endpoint} method="POST" data-cform-form>
     <!-- Web3Forms config (same fields as the original site's form) -->
     <input type="hidden" name="access_key" value={accessKey} />
@@ -40,7 +43,7 @@ const f = (name: string) => `${id}-${name}`;
         <p class="t-mono cform__count">Step 1 of 2</p>
         <span class="cform__bars" aria-hidden="true"><span class="is-on"></span><span></span></span>
       </div>
-      <h3 class="t-h3 cform__title" id={f('s1-title')} tabindex="-1">What are you building?</h3>
+      <H class="t-h3 cform__title" id={f('s1-title')} tabindex="-1">What are you building?</H>
 
       <fieldset class="cform__chips" aria-describedby={f('type-error')}>
         <legend class="field__label">Select all that apply</legend>
@@ -66,27 +69,27 @@ const f = (name: string) => `${id}-${name}`;
         <p class="t-mono cform__count">Step 2 of 2</p>
         <span class="cform__bars" aria-hidden="true"><span class="is-on"></span><span class="is-on"></span></span>
       </div>
-      <h3 class="t-h3 cform__title" id={f('s2-title')} tabindex="-1">Where can we reach you?</h3>
+      <H class="t-h3 cform__title" id={f('s2-title')} tabindex="-1">Where can we reach you?</H>
       <p class="t-mono t-muted cform__req-note"><span class="cform__req" aria-hidden="true">*</span> Required</p>
 
       <div class="cform__fields">
         <div class="field">
           <label class="field__label" for={f('name')}>Name <span class="cform__req" aria-hidden="true">*</span></label>
-          <input class="field__control" id={f('name')} name="name" type="text" autocomplete="name" required placeholder="Jane Cooper" aria-describedby={f('name-error')} />
+          <input class="field__control" id={f('name')} name="name" type="text" autocomplete="name" required aria-describedby={f('name-error')} />
           <p class="cform__error" id={f('name-error')} data-error-for="name"></p>
         </div>
         <div class="field">
           <label class="field__label" for={f('company')}>Company</label>
-          <input class="field__control" id={f('company')} name="company" type="text" autocomplete="organization" placeholder="Company name" />
+          <input class="field__control" id={f('company')} name="company" type="text" autocomplete="organization" />
         </div>
         <div class="field">
           <label class="field__label" for={f('email')}>Email <span class="cform__req" aria-hidden="true">*</span></label>
-          <input class="field__control" id={f('email')} name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" required placeholder="jane@company.com" aria-describedby={f('email-error')} />
+          <input class="field__control" id={f('email')} name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" required aria-describedby={f('email-error')} />
           <p class="cform__error" id={f('email-error')} data-error-for="email"></p>
         </div>
         <div class="field">
           <label class="field__label" for={f('phone')}>Phone <span class="cform__req" aria-hidden="true">*</span></label>
-          <input class="field__control" id={f('phone')} name="phone" type="tel" inputmode="tel" autocomplete="tel" required placeholder="(818) 555-0100" aria-describedby={f('phone-error')} />
+          <input class="field__control" id={f('phone')} name="phone" type="tel" inputmode="tel" autocomplete="tel" required aria-describedby={f('phone-error')} />
           <p class="cform__error" id={f('phone-error')} data-error-for="phone"></p>
         </div>
         <div class="field cform__full">
@@ -100,6 +103,9 @@ const f = (name: string) => `${id}-${name}`;
         <Button type="button" variant="outline" size="lg" icon="none" data-back data-js-only hidden>Back</Button>
         <Button type="submit" variant="primary" size="lg" data-submit>Request my site assessment</Button>
       </div>
+      <p class="t-small t-muted cform__privacy">
+        We only use your details to reply to you. <a class="cform__link" href="/privacy/">Privacy policy</a>
+      </p>
     </div>
 
     <p class="cform__status" role="status" aria-live="polite" data-status></p>
@@ -107,7 +113,7 @@ const f = (name: string) => `${id}-${name}`;
 
   <div class="cform__success" data-success hidden>
     <p class="t-mono cform__success-label"><span class="cform__success-mark" aria-hidden="true"></span>Request received</p>
-    <h3 class="t-h3 cform__title" tabindex="-1" data-success-title>Thanks. We’ve got your project details.</h3>
+    <H class="t-h3 cform__title" tabindex="-1" data-success-title>Thanks. We’ve got your project details.</H>
     <ol role="list" class="cform__next">
       <li><span class="t-mono">01</span>We review what you’re building and where.</li>
       <li><span class="t-mono">02</span>We reach out to schedule a site assessment.</li>
@@ -211,7 +217,8 @@ const f = (name: string) => `${id}-${name}`;
     color: var(--signal);
   }
 
-  .cform__req-note {
+  .cform__req-note,
+  .cform__privacy {
     margin-top: -0.75rem;
   }
 
@@ -371,6 +378,7 @@ const f = (name: string) => `${id}-${name}`;
 
     const phone = root.dataset.phone ?? '';
     const phoneHref = `tel:+1${phone.replace(/\D/g, '')}`;
+    const email = root.dataset.email ?? '';
     const submitLabel = submit.querySelector<HTMLElement>('.btn__label');
     const submitText = submitLabel?.textContent ?? '';
     let sending = false;
@@ -462,8 +470,10 @@ const f = (name: string) => `${id}-${name}`;
     function showError() {
       status!.classList.add('is-error');
       status!.replaceChildren(
-        'Something went wrong sending your request. Please try again, or call us at ',
+        'Something went wrong sending your request. Please try again, call us at ',
         Object.assign(document.createElement('a'), { href: phoneHref, textContent: phone }),
+        ' or email ',
+        Object.assign(document.createElement('a'), { href: `mailto:${email}`, textContent: email }),
         '.',
       );
     }

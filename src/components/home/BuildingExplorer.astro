@@ -83,6 +83,8 @@ import { services } from '../../data/site';
     let index = 0;
     let timer: number | undefined;
     let userTookOver = false;
+    let inView = false;
+    let hovering = false;
 
     const select = (i: number, { focus = false } = {}) => {
       index = (i + tabs.length) % tabs.length;
@@ -127,7 +129,7 @@ import { services } from '../../data/site';
     };
 
     const startAuto = () => {
-      if (reduceMotion || userTookOver || timer) return;
+      if (reduceMotion || userTookOver || timer || !inView || hovering) return;
       restartProgress(tabs[index]);
       timer = window.setInterval(() => select(index + 1), AUTO_MS);
     };
@@ -155,10 +157,26 @@ import { services } from '../../data/site';
 
     // Any press inside the explorer (e.g. tapping the drawing) hands control to the visitor
     root.addEventListener('pointerdown', takeOver, { once: true });
+    // Keyboard users who tab into it (tabs, panel or the "Explore" link) keep it where it is
+    root.addEventListener('focusin', takeOver, { once: true });
 
-    // Only auto-advance while the section is actually on screen
+    // Hold still while the mouse is over it; carry on when it leaves (unless the visitor took over)
+    root.addEventListener('mouseenter', () => {
+      hovering = true;
+      stopAuto();
+    });
+    root.addEventListener('mouseleave', () => {
+      hovering = false;
+      startAuto();
+    });
+
+    // Only auto-advance while the section is on screen
     new IntersectionObserver(
-      ([entry]) => (entry.isIntersecting ? startAuto() : stopAuto()),
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        if (inView) startAuto();
+        else stopAuto();
+      },
       { threshold: 0.35 },
     ).observe(root);
 

@@ -61,7 +61,7 @@ const SHOW_PLACEHOLDERS = false;
     title={`Low-voltage and network installs since ${FOUNDED}.`}
     lead={`For ${yearsInBusiness} years, organizations across Southern California have relied on Armak Technologies to design, install and support the cabling, networks and security systems they run on.`}
     crumbs={[{ label: 'About' }]}
-    spec={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`, ...credentials]}
+    spec={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`]}
   />
 
   <!-- K-01 · Story -->
@@ -97,7 +97,9 @@ const SHOW_PLACEHOLDERS = false;
         </ol>
       </div>
 
-      <!-- Milestones: only the founding year and current totals are facts; the rest is a slot. -->
+      <!-- Milestones: only the founding year and current totals are facts; the rest is a slot.
+           Hidden until Armak supplies real milestones (two rows alone read as an empty template). -->
+      {SHOW_PLACEHOLDERS && (
       <div class="timeline" data-reveal>
         <Label code="K-01.1">Milestones</Label>
         <ol role="list" class="timeline__rows">
@@ -121,6 +123,7 @@ const SHOW_PLACEHOLDERS = false;
           </li>
         </ol>
       </div>
+      )}
     </div>
   </section>
 

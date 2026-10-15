@@ -14,6 +14,7 @@
   --steel-light: #8a919c;    /* tertiary text on ink */
   --hairline: #d9d7d0;       /* 1px rules */
   --hairline-strong: #b9b6ad;
+  --field-line: #85827a;     /* form field underline. 3.5:1 on paper, 3.8:1 on white (WCAG 1.4.11) */
   --hairline-inverse: #2a2e35;
 
   /* ── Brand ────────────────────────────────────────────── */
@@ -21,7 +22,7 @@
   --signal-hover: #b30d15;
   --logo-red: #fe2322;       /* sampled from logo — large/decorative only */
   --armak-blue: #1d3f8f;     /* from logo "TECHNOLOGIES" — diagrams & map only */
-  --pass: #1f8a4c;           /* certification PASS state */
+  --pass: #187a43;           /* certification PASS state. 4.8:1 on paper, 5.4:1 on white */
 
   /* ── T568B pair colors (stripe motif only) ────────────── */
   --t568-orange: #e8731a;

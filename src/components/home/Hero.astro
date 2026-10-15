@@ -20,26 +20,30 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
     </nav>
     <!-- CSS-only entrance (no data-split): the LCP headline must never wait on a JS download -->
     <h1 id="hero-title" class="t-display hero__title">Built for the future.</h1>
-    <p class="t-lead" data-reveal>
+    <!-- hero-in = the same fade/rise as [data-reveal], but CSS-only so the hero (and its LCP photo)
+         paints on first render instead of waiting for motion.ts to download and boot -->
+    <p class="t-lead hero-in">
       {yearsInBusiness} years designing, installing and certifying the cabling, networks and security
       systems Southern California businesses run on.
     </p>
-    <div class="hero__ctas" data-reveal style="--reveal-delay: 120ms">
+    <div class="hero__ctas hero-in" style="--reveal-delay: 120ms">
       <Button href="#contact" size="lg">Request a site assessment</Button>
       <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
     </div>
-    <ul role="list" class="hero__creds t-mono" data-reveal style="--reveal-delay: 220ms">
+    <ul role="list" class="hero__creds t-mono hero-in" style="--reveal-delay: 220ms">
       {credentials.map((c) => <li>{c}</li>)}
     </ul>
   </div>
 
-  <div class="hero__media" data-reveal style="--reveal-delay: 150ms">
+  <div class="hero__media hero-in" style="--reveal-delay: 150ms">
     <div class="hero__frame">
+      <!-- sizes = the photo's real rendered width: 5/12 of the container on desktop (520px at the
+           1360px cap), full width minus the side gutters below 1000px -->
       <Image
         src={heroPhoto}
         alt="A technician in a hi-vis vest working at a network rack with tools laid out on the floor"
-        widths={[560, 840, 1120, 1600]}
-        sizes="(min-width: 1000px) 42vw, 100vw"
+        widths={[560, 720, 840, 1120, 1280, 1600]}
+        sizes="(min-width: 1360px) 520px, (min-width: 1000px) 39vw, calc(100vw - 2rem)"
         loading="eager"
         fetchpriority="high"
       />
@@ -108,6 +112,24 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
   @media (prefers-reduced-motion: no-preference) {
     .hero__title {
       animation: hero-title-in 1.1s var(--ease-out) both;
+    }
+  }
+
+  /* Same values as the global [data-reveal] transition (opacity + 24px rise, --dur-slow, --ease-out) */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-in {
+      animation: hero-in var(--dur-slow) var(--ease-out) var(--reveal-delay, 0ms) both;
+    }
+  }
+
+  @keyframes hero-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 24px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
     }
   }
 

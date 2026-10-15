@@ -337,7 +337,7 @@ export const entries: GlossaryEntry[] = [
     analogy: "Like a flashlight: it points one way and reaches far.",
     qa: [
       {
-        q: "Bullet or dome camera — which is better?",
+        q: "Bullet or dome camera: which is better?",
         a: "Neither is always better. Bullets are visible and often reach farther; domes are more discreet and harder to knock out of position. Many sites use both, chosen per location.",
       },
       {
@@ -409,7 +409,7 @@ export const entries: GlossaryEntry[] = [
     analogy: "Like a shelf or rain gutter for cables running overhead.",
     qa: [
       {
-        q: "Cable tray or J-hooks — which do I need?",
+        q: "Cable tray or J-hooks: which do I need?",
         a: "Tray is common along main corridors where many cables run together. J-hooks are lighter supports often used for smaller branches heading to individual rooms. Many buildings use both.",
       },
       {
@@ -480,7 +480,7 @@ export const entries: GlossaryEntry[] = [
     analogy: "Like a good four-lane road: plenty for most daily traffic.",
     qa: [
       {
-        q: "Cat 6 or Cat 6A — which should I choose?",
+        q: "Cat 6 or Cat 6A: which should I choose?",
         a: "Cat 6 is cheaper and thinner. Cat 6A supports 10 Gb/s to the full 100 meters and handles heavy PoE power better. For new Wi-Fi access points and long-term buildings, many designers prefer Cat 6A.",
       },
       {

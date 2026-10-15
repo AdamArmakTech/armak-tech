@@ -74,9 +74,41 @@ function initCounters() {
   document.querySelectorAll('[data-count]').forEach((el) => io.observe(el));
 }
 
+/**
+ * Resolves once GSAP is worth downloading: a split heading is within one screen of the
+ * viewport, or the page has finished loading and the browser is idle. Keeps ~50 KB of GSAP
+ * off the critical path when every split heading starts below the fold (e.g. the homepage),
+ * while headings near the top still load it straight away.
+ */
+function whenSplitNeeded(headings: NodeListOf<HTMLElement>) {
+  return new Promise<void>((resolve) => {
+    let done = false;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) go();
+      },
+      { rootMargin: '0px 0px 100% 0px' },
+    );
+    function go() {
+      if (done) return;
+      done = true;
+      io.disconnect();
+      resolve();
+    }
+    headings.forEach((el) => io.observe(el));
+
+    const onIdle = () =>
+      'requestIdleCallback' in window ? requestIdleCallback(go, { timeout: 2000 }) : setTimeout(go, 200);
+    if (document.readyState === 'complete') onIdle();
+    else addEventListener('load', onIdle, { once: true });
+  });
+}
+
 async function initSplitHeadings(lenis: Lenis) {
   const headings = document.querySelectorAll<HTMLElement>('[data-split]');
   if (!headings.length) return;
+
+  await whenSplitNeeded(headings);
 
   try {
     const [{ gsap }, { SplitText }, { ScrollTrigger }] = await Promise.all([

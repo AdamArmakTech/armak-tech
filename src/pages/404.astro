@@ -53,7 +53,7 @@ const routes = [
           ))}
         </ul>
       </nav>
-      <figcaption class="visually-hidden">Page not found. Suggested pages: home, services, projects, contact.</figcaption>
+      <figcaption class="visually-hidden">{`Page not found. Suggested pages: ${routes.map((r) => r.label.toLowerCase()).join(', ')}.`}</figcaption>
     </figure>
   </PageHero>
 </Base>

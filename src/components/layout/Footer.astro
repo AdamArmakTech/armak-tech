@@ -74,6 +74,7 @@ const year = new Date().getFullYear();
       <span>© {year} {site.name}</span>
       <span>Est. {FOUNDED}</span>
       {site.license && <span>{site.license}</span>}
+      <a href="/privacy/">Privacy</a>
     </div>
   </div>
 </footer>
@@ -147,12 +148,24 @@ const year = new Date().getFullYear();
     font-size: var(--fs-small);
   }
 
-  .site-footer__col a {
+  /* Taller tap area (≥24px, WCAG 2.5.8) without changing the spacing: the padding is
+     cancelled out by an equal negative margin. */
+  .site-footer__col a,
+  .site-footer__legal a {
+    display: inline-block;
+    padding-block: 0.25rem;
+    margin-block: -0.25rem;
     transition: color var(--dur-fast) ease;
   }
 
-  .site-footer__col a:hover {
+  .site-footer__col a:hover,
+  .site-footer__legal a:hover {
     color: var(--logo-red);
+  }
+
+  .site-footer__legal a {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   address {
