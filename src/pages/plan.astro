@@ -1,0 +1,529 @@
+---
+/**
+ * /plan/ — practical tools for people who are still figuring a project out:
+ * a "before we visit" checklist (printable), a rough quantity estimator, a 3-question cabling
+ * check and a sample certification report. Ends in the standard Next-step block.
+ * Numbers here are planning rules of thumb, never a quote.
+ */
+import { Printer } from '@lucide/astro';
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/pages/PageHero.astro';
+import Label from '../components/ui/Label.astro';
+import NextStep from '../components/ui/NextStep.astro';
+import CableTest from '../components/ui/CableTest.astro';
+import { site } from '../data/site';
+
+const description =
+  'Planning a cabling, network or security project in Southern California? Use the site-walk checklist, a rough quantity estimator and a quick cabling check before you call anyone.';
+
+const checklist = [
+  { title: 'Floor plans, or a sketch', detail: 'Even a phone photo of the fire-evacuation map on the wall works.' },
+  { title: 'Where the internet comes in', detail: 'Your provider, and where the modem or router lives.' },
+  { title: 'Access to the closet and the ceiling', detail: 'The network closet or server room, plus who can let us in and where a ladder can go.' },
+  { title: 'What’s there now', detail: 'Switches, phones, cameras, door readers, Wi-Fi access points. Photos are fine.' },
+  { title: 'Headcount, now and in 2–3 years', detail: 'Desks today, planned hires, any moves or expansions.' },
+  { title: 'Known problems', detail: 'Dead Wi-Fi spots, slow areas, doors that don’t lock, cameras that don’t record.' },
+  { title: 'Building rules', detail: 'After-hours access, landlord requirements, hours when noisy work isn’t OK.' },
+  { title: 'Who decides, and who runs IT day to day', detail: 'So the plan goes to the right people the first time.' },
+];
+
+const upgradeQuestions = [
+  {
+    name: 'cable',
+    label: 'What’s printed on your network cables? (Look at the jacket near a wall jack.)',
+    options: [
+      ['5e', 'Cat 5e'],
+      ['6', 'Cat 6'],
+      ['6a', 'Cat 6A'],
+      ['unknown', 'I can’t tell'],
+    ],
+  },
+  {
+    name: 'age',
+    label: 'How old is the cabling?',
+    options: [
+      ['new', 'Under 5 years'],
+      ['mid', '5 to 10 years'],
+      ['old', 'Over 10 years, or no idea'],
+    ],
+  },
+  {
+    name: 'symptoms',
+    label: 'Any of these happening?',
+    options: [
+      ['none', 'No, it works fine'],
+      ['slow', 'Slow spots or weak Wi-Fi'],
+      ['drops', 'Connections that drop or flap'],
+    ],
+  },
+];
+---
+
+<Base title="Plan a Project: Checklist, Estimator & Cabling Check" description={description} footerCta={false}>
+  <PageHero
+    code="N-00"
+    label="Plan a project"
+    title="Start with the practical bits."
+    lead="Three tools for the planning stage: what to have ready before anyone visits, a rough idea of quantities, and a quick check on whether your cabling is due for an upgrade."
+    crumbs={[{ label: 'Plan a project' }]}
+  >
+    <nav class="plan__jump t-mono" aria-label="On this page">
+      <a href="#checklist">Checklist</a>
+      <a href="#estimator">Estimator</a>
+      <a href="#upgrade">Cabling check</a>
+      <a href="#sample-report">Sample report</a>
+    </nav>
+  </PageHero>
+
+  <div class="plan container">
+    <!-- ── Checklist ── -->
+    <section class="plan__section plan__checklist" id="checklist" aria-labelledby="checklist-title">
+      <div class="plan__head">
+        <Label code="N-01">Before we visit</Label>
+        <h2 id="checklist-title" class="t-h2">The site-walk checklist.</h2>
+        <p class="t-lead">Have these ready and the first visit does the work of two.</p>
+      </div>
+      <ol role="list" class="checklist">
+        {checklist.map((item, i) => (
+          <li class="checklist__item">
+            <span class="t-mono checklist__num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="checklist__text">
+              <span class="checklist__title">{item.title}</span>
+              <span class="checklist__detail">{item.detail}</span>
+            </span>
+          </li>
+        ))}
+      </ol>
+      <div class="plan__tools">
+        <button type="button" class="plan__print" data-print-checklist>
+          <Printer size={18} stroke-width={1.75} aria-hidden="true" />
+          Print or save as PDF
+        </button>
+        <p class="t-small t-muted plan__printnote">Printed from armak.tech/plan · {site.phone}</p>
+      </div>
+    </section>
+
+    <!-- ── Estimator ── -->
+    <section class="plan__section" id="estimator" aria-labelledby="estimator-title">
+      <div class="plan__head">
+        <Label code="N-02">Rough quantities</Label>
+        <h2 id="estimator-title" class="t-h2">About how much will this take?</h2>
+        <p class="t-lead">Planning numbers from typical office layouts. Walls, ceiling height and how you use the space change them; the real count comes from the site walk.</p>
+      </div>
+
+      <form class="est" data-estimator>
+        <div class="est__inputs">
+          <label class="field">
+            <span class="field__label">Floor area (sq ft)</span>
+            <input class="field__control" type="number" inputmode="numeric" min="200" max="500000" step="100" value="5000" name="sqft" />
+          </label>
+          <label class="field">
+            <span class="field__label">Desks or workstations</span>
+            <input class="field__control" type="number" inputmode="numeric" min="0" max="5000" value="20" name="desks" />
+          </label>
+          <label class="field">
+            <span class="field__label">Floors</span>
+            <input class="field__control" type="number" inputmode="numeric" min="1" max="50" value="1" name="floors" />
+          </label>
+          <label class="field">
+            <span class="field__label">Exterior doors</span>
+            <input class="field__control" type="number" inputmode="numeric" min="0" max="100" value="2" name="doors" />
+          </label>
+        </div>
+
+        <dl class="est__out" aria-live="polite">
+          <div class="est__row">
+            <dt>Data drops <a class="est__term" href="/glossary/#drop">what’s a drop?</a></dt>
+            <dd><span data-out="drops">—</span></dd>
+            <dd class="est__how">2 per desk, plus shared devices (printers, TVs) and ceiling devices.</dd>
+          </div>
+          <div class="est__row">
+            <dt>Wi-Fi access points <a class="est__term" href="/glossary/#access-point">what’s that?</a></dt>
+            <dd><span data-out="aps">—</span></dd>
+            <dd class="est__how">About one per 2,000 sq ft of open office, at least one per floor. Walls and dense seating need more.</dd>
+          </div>
+          <div class="est__row">
+            <dt>Cameras <a class="est__term" href="/glossary/#ip-camera">what’s covered?</a></dt>
+            <dd><span data-out="cams">—</span></dd>
+            <dd class="est__how">A starting point: every exterior door, the lobby, and the main corridor on each floor.</dd>
+          </div>
+          <div class="est__row">
+            <dt>Door readers <a class="est__term" href="/glossary/#card-reader">what’s that?</a></dt>
+            <dd><span data-out="readers">—</span></dd>
+            <dd class="est__how">One per controlled door. Interior doors (server room, storage) add to this.</dd>
+          </div>
+        </dl>
+      </form>
+      <p class="t-small t-muted">Want these numbers checked against your actual floor? <a class="plan__link" href="/contact/?about=estimate#form">Send us your plan</a> and we’ll scope it.</p>
+    </section>
+
+    <!-- ── Cabling check ── -->
+    <section class="plan__section" id="upgrade" aria-labelledby="upgrade-title">
+      <div class="plan__head">
+        <Label code="N-03">Three questions</Label>
+        <h2 id="upgrade-title" class="t-h2">Is your cabling due for an upgrade?</h2>
+      </div>
+      <form class="quiz" data-upgrade-check>
+        {upgradeQuestions.map((q) => (
+          <fieldset class="quiz__q">
+            <legend class="quiz__legend">{q.label}</legend>
+            <div class="quiz__options">
+              {q.options.map(([value, label]) => (
+                <label class="chip"><input type="radio" name={q.name} value={value} /><span>{label}</span></label>
+              ))}
+            </div>
+          </fieldset>
+        ))}
+        <div class="quiz__result" data-quiz-result hidden aria-live="polite">
+          <p class="t-mono quiz__verdict" data-quiz-verdict></p>
+          <p class="quiz__why" data-quiz-why></p>
+        </div>
+      </form>
+    </section>
+
+    <!-- ── Sample report ── -->
+    <section class="plan__section" id="sample-report" aria-labelledby="report-title">
+      <div class="plan__head">
+        <Label code="N-04">What you get at handover</Label>
+        <h2 id="report-title" class="t-h2">A sample certification report.</h2>
+        <p class="t-lead">Every cable we install is tested like this. This is the kind of report that comes with the job, one per cable.</p>
+      </div>
+      <div class="plan__report">
+        <CableTest variant="full" />
+      </div>
+    </section>
+
+    <section class="plan__section plan__next" aria-labelledby="plan-next-title">
+      <div class="plan__head">
+        <Label code="N-05">Next step</Label>
+        <h2 id="plan-next-title" class="t-h2">When you’re ready, we’ll walk the site.</h2>
+      </div>
+      <NextStep />
+    </section>
+  </div>
+</Base>
+
+<script>
+  // ── Print just the checklist ──
+  document.querySelectorAll<HTMLButtonElement>('[data-print-checklist]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.documentElement.classList.add('print-checklist');
+      const done = () => document.documentElement.classList.remove('print-checklist');
+      window.addEventListener('afterprint', done, { once: true });
+      window.print();
+    });
+  });
+
+  // ── Estimator ──
+  document.querySelectorAll<HTMLFormElement>('[data-estimator]').forEach((form) => {
+    form.addEventListener('submit', (e) => e.preventDefault());
+    const num = (name: string) => Math.max(0, Number((form.elements.namedItem(name) as HTMLInputElement).value) || 0);
+    const out = (name: string, value: number) => {
+      const el = form.querySelector<HTMLElement>(`[data-out="${name}"]`);
+      if (el) el.textContent = value.toLocaleString('en-US');
+    };
+    const update = () => {
+      const sqft = num('sqft');
+      const desks = num('desks');
+      const floors = Math.max(1, num('floors'));
+      const doors = num('doors');
+
+      const aps = Math.max(floors, Math.ceil(sqft / 2000));
+      const cams = doors + 1 + floors; // doors + lobby + one corridor per floor
+      const shared = 4 * floors; // printers, TVs, copiers
+      const drops = desks * 2 + shared + aps + cams;
+
+      out('drops', drops);
+      out('aps', aps);
+      out('cams', cams);
+      out('readers', doors);
+    };
+    form.addEventListener('input', update);
+    update();
+  });
+
+  // ── Cabling check ──
+  document.querySelectorAll<HTMLFormElement>('[data-upgrade-check]').forEach((form) => {
+    form.addEventListener('submit', (e) => e.preventDefault());
+    const result = form.querySelector<HTMLElement>('[data-quiz-result]')!;
+    const verdict = form.querySelector<HTMLElement>('[data-quiz-verdict]')!;
+    const why = form.querySelector<HTMLElement>('[data-quiz-why]')!;
+    const pick = (name: string) => (form.elements.namedItem(name) as RadioNodeList | null)?.value || '';
+
+    form.addEventListener('change', () => {
+      const cable = pick('cable');
+      const age = pick('age');
+      const symptoms = pick('symptoms');
+      if (!cable || !age || !symptoms) return;
+
+      let v = '';
+      let w = '';
+      if (symptoms === 'drops' || cable === '5e' || age === 'old') {
+        v = 'Worth an assessment now';
+        w =
+          'Dropping connections, Cat 5e, or cabling past ten years are the usual reasons a network feels unreliable. A site walk will show whether the fix is a few bad runs or a refresh.';
+      } else if (symptoms === 'slow' || cable === 'unknown' || age === 'mid') {
+        v = 'Probably fine today; plan ahead';
+        w =
+          'Cat 6 installed in the last decade still handles most office traffic. Slow spots are often a Wi-Fi coverage problem rather than cabling. When you add newer Wi-Fi access points or more powered devices, that is the moment to review it.';
+      } else {
+        v = 'You’re in good shape';
+        w = 'Recent Cat 6A with no symptoms is as good as it gets. Keep the labels and test reports; they make every future change quick.';
+      }
+      verdict.textContent = v;
+      why.textContent = w;
+      result.hidden = false;
+    });
+  });
+</script>
+
+<style>
+  .plan__jump {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .plan__jump a {
+    padding-block: 0.5rem;
+    border-bottom: 1px solid var(--hairline-strong);
+    color: var(--ink);
+  }
+
+  .plan__jump a:hover {
+    border-color: var(--signal);
+  }
+
+  .plan {
+    display: grid;
+    gap: var(--space-section);
+    padding-bottom: var(--space-section);
+  }
+
+  .plan__section {
+    display: grid;
+    gap: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--hairline);
+    scroll-margin-top: calc(var(--header-h) + 1.5rem);
+  }
+
+  .plan__head {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+  }
+
+  .plan__head h2 {
+    max-width: 18ch;
+  }
+
+  .plan__link {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* Checklist */
+  .checklist {
+    display: grid;
+    border-top: 1px solid var(--ink);
+    max-width: 52rem;
+  }
+
+  .checklist__item {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    gap: 1rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .checklist__num {
+    color: var(--signal);
+    padding-top: 0.2rem;
+  }
+
+  .checklist__text {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .checklist__title {
+    font-weight: 600;
+  }
+
+  .checklist__detail {
+    color: var(--steel);
+    font-size: var(--fs-small);
+  }
+
+  .plan__tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+  }
+
+  .plan__print {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-height: 48px;
+    padding: 0.75rem 1.25rem;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--radius);
+    font-weight: 500;
+  }
+
+  .plan__print:hover {
+    background: var(--graphite);
+  }
+
+  .plan__printnote {
+    display: none;
+  }
+
+  /* Estimator */
+  .est {
+    display: grid;
+    gap: 2rem;
+  }
+
+  .est__inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.5rem var(--col-gap);
+    max-width: 52rem;
+  }
+
+  .est__out {
+    display: grid;
+    border-top: 1px solid var(--ink);
+    max-width: 52rem;
+  }
+
+  .est__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem 1.5rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .est__row dt {
+    font-weight: 600;
+  }
+
+  .est__row dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 1.75rem;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .est__how {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    letter-spacing: 0;
+    color: var(--steel);
+  }
+
+  .est__term {
+    margin-left: 0.5rem;
+    font-weight: 400;
+    font-size: 0.8125rem;
+    color: var(--steel);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .est__term:hover {
+    color: var(--signal);
+  }
+
+  /* Cabling check */
+  .quiz {
+    display: grid;
+    gap: 1.75rem;
+    max-width: 52rem;
+  }
+
+  .quiz__q {
+    display: grid;
+    gap: 0.875rem;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  .quiz__legend {
+    padding: 0;
+    margin-bottom: 0.875rem;
+    font-weight: 600;
+  }
+
+  .quiz__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .quiz__result {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.25rem 1.375rem;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--signal);
+    border-radius: var(--radius);
+  }
+
+  .quiz__result[hidden] {
+    display: none;
+  }
+
+  .quiz__verdict {
+    color: var(--signal);
+  }
+
+  .quiz__why {
+    line-height: 1.55;
+  }
+
+  /* Sample report */
+  .plan__report {
+    max-width: 52rem;
+    container-type: inline-size;
+  }
+
+  .plan__next :global(.next) {
+    max-width: 36rem;
+  }
+
+  /* Print: only the checklist */
+  @media print {
+    :global(html.print-checklist .site-header),
+    :global(html.print-checklist .site-footer),
+    :global(html.print-checklist .cta-dock),
+    :global(html.print-checklist .page-hero),
+    :global(html.print-checklist .plan__section:not(.plan__checklist)),
+    :global(html.print-checklist .plan__print) {
+      display: none !important;
+    }
+
+    :global(html.print-checklist .plan__printnote) {
+      display: block;
+    }
+
+    :global(html.print-checklist .plan__checklist) {
+      border: 0;
+      padding: 0;
+    }
+  }
+</style>

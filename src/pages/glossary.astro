@@ -120,7 +120,7 @@ const jsonLd = {
     <div class="gl-drawer__body" data-gl-drawer-body></div>
     <div class="gl-drawer__cta">
       <p class="t-mono t-muted">Not sure what your building needs?</p>
-      <Button href="/contact/" icon="arrow">Request a site assessment</Button>
+      <Button href="/contact/?mode=quick#form" icon="arrow" data-gl-drawer-cta>Ask about this term</Button>
     </div>
   </dialog>
 
@@ -153,6 +153,8 @@ const jsonLd = {
       if (!details || !body) return;
 
       drawerTitle.textContent = body.dataset.termTitle ?? '';
+      const cta = drawer.querySelector<HTMLAnchorElement>('[data-gl-drawer-cta]');
+      if (cta) cta.href = '/contact/?about=' + encodeURIComponent(body.dataset.termTitle ?? '') + '&mode=quick#form';
       drawerBody.replaceChildren(...[...body.children].map((n) => n.cloneNode(true)));
       drawerBody.scrollTop = 0;
 

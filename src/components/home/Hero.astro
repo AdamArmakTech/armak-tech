@@ -1,9 +1,35 @@
 ---
 import { Image } from 'astro:assets';
-import Button from '../ui/Button.astro';
+import { ArrowRight } from '@lucide/astro';
 import CableTest from '../ui/CableTest.astro';
 import { site, yearsInBusiness } from '../../data/site';
 import { credentials } from '../../data/content';
+import { contactHref } from '../../lib/cta';
+
+// The front door: sort visitors by what they came for instead of one button for everyone
+const paths = [
+  {
+    href: contactHref(),
+    title: 'I need a quote',
+    detail: 'You know what you need. Tell us the site and we’ll scope it.',
+    go: 'Request a site assessment',
+    primary: true,
+  },
+  {
+    href: '/plan/',
+    title: 'I’m planning a project',
+    detail: 'Still figuring it out. Get the checklist and a rough estimate.',
+    go: 'Checklist · Estimator',
+    primary: false,
+  },
+  {
+    href: contactHref({ intent: 'support' }),
+    title: 'Something’s broken',
+    detail: 'Existing customer with a problem or a change.',
+    go: 'Call or send a request',
+    primary: false,
+  },
+];
 // TODO(photo): interim stock (Unsplash, see assets/photos/CREDITS.md) — replace with a real Armak install photo
 import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
 ---
@@ -26,9 +52,20 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
       {yearsInBusiness} years designing, installing and certifying the cabling, networks and security
       systems Southern California businesses run on.
     </p>
-    <div class="hero__ctas hero-in" data-dock-start style="--reveal-delay: 120ms">
-      <Button href="#contact" size="lg">Request a site assessment</Button>
-      <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
+    <div class="hero__choose hero-in" data-dock-start style="--reveal-delay: 120ms">
+      <p class="t-mono hero__choose-label" id="hero-paths-label">What brings you here?</p>
+      <ul role="list" class="hero__paths" aria-labelledby="hero-paths-label">
+        {paths.map((p) => (
+          <li>
+            <a class:list={['path', { 'path--primary': p.primary }]} href={p.href}>
+              <span class="path__title">{p.title}</span>
+              <span class="path__detail">{p.detail}</span>
+              <span class="t-mono path__go">{p.go} <ArrowRight size={14} stroke-width={2} aria-hidden="true" /></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="t-small hero__phone">Or call <a href={site.phoneHref}>{site.phone}</a> · {site.hours}</p>
     </div>
     <ul role="list" class="hero__creds t-mono hero-in" style="--reveal-delay: 220ms">
       {credentials.map((c) => <li>{c}</li>)}
@@ -146,10 +183,95 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
     }
   }
 
-  .hero__ctas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+  /* Three-way chooser */
+  .hero__choose {
+    display: grid;
+    gap: 0.875rem;
+    width: 100%;
+  }
+
+  .hero__choose-label {
+    color: var(--steel);
+  }
+
+  .hero__paths {
+    display: grid;
+    gap: 0.625rem;
+  }
+
+  .path {
+    display: grid;
+    gap: 0.35rem;
+    height: 100%;
+    padding: 0.875rem 1rem 1rem;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-top: 2px solid var(--ink);
+    border-radius: var(--radius);
+    transition: border-color var(--dur-fast) ease, transform var(--dur) var(--ease-out);
+  }
+
+  .path--primary {
+    border-top-color: var(--signal);
+  }
+
+  .path:hover {
+    border-color: var(--ink);
+    border-top-color: inherit;
+  }
+
+  .path--primary:hover {
+    border-top-color: var(--signal);
+  }
+
+  .path__title {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .path__detail {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--steel);
+  }
+
+  .path__go {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.4rem;
+    color: var(--ink);
+    transition: color var(--dur-fast) ease;
+  }
+
+  .path--primary .path__go,
+  .path:hover .path__go {
+    color: var(--signal);
+  }
+
+  .path__go :global(svg) {
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .path:hover .path__go :global(svg) {
+    transform: translateX(3px);
+  }
+
+  .hero__phone {
+    color: var(--steel);
+  }
+
+  .hero__phone a {
+    color: var(--ink);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (min-width: 640px) {
+    .hero__paths {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 
   .hero__creds {

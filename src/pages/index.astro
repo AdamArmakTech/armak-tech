@@ -10,6 +10,7 @@ import Numbers from '../components/home/Numbers.astro';
 import Industries from '../components/home/Industries.astro';
 import ServiceArea from '../components/home/ServiceArea.astro';
 import ContactSection from '../components/home/ContactSection.astro';
+import SectionNext from '../components/home/SectionNext.astro';
 import { showProjects } from '../data/content';
 
 if (!showProjects) {
@@ -21,11 +22,14 @@ if (!showProjects) {
   <Hero />
   <PartnerStrip />
   <BuildingExplorer />
+  <SectionNext href="#process" label="See how every job runs" />
   <ServicesGrid />
   <Process />
   <Numbers />
   {showProjects && <FeaturedProjects />}
+  <SectionNext href="#industries" label="The buildings we work in" />
   <Industries />
   <ServiceArea />
+  <SectionNext href="#contact" label="Tell us about your site" tone="cta" />
   <ContactSection />
 </Base>

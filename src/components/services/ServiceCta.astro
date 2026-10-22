@@ -4,16 +4,17 @@
  * footer; pages using it pass footerCta={false} to Base so the footer's generic CTA doesn't repeat.
  */
 import Label from '../ui/Label.astro';
-import Button from '../ui/Button.astro';
-import { site } from '../../data/site';
+import NextStep from '../ui/NextStep.astro';
 
 interface Props {
   code: string;
   title: string;
   body: string;
+  /** Service slug carried into the contact form so it opens with that service selected */
+  about?: string;
 }
 
-const { code, title, body } = Astro.props;
+const { code, title, body, about } = Astro.props;
 ---
 
 <section class="cta container" aria-labelledby="cta-title" data-dock-hide>
@@ -25,14 +26,7 @@ const { code, title, body } = Astro.props;
         <p class="t-lead" data-reveal>{body}</p>
       </div>
       <div class="cta__side" data-reveal style="--reveal-delay: 120ms">
-        <div class="cta__actions">
-          <Button href="/contact/" size="lg">Request a site assessment</Button>
-          <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
-        </div>
-        <ul role="list" class="cta__meta t-mono">
-          <li><a href={site.emailHref}>{site.email}</a></li>
-          <li>{site.hours}</li>
-        </ul>
+        <NextStep about={about} tone="light" />
       </div>
     </div>
   </div>
@@ -70,32 +64,6 @@ const { code, title, body } = Astro.props;
     display: grid;
     gap: 1.5rem;
     align-content: end;
-  }
-
-  .cta__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .cta__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-    color: var(--steel);
-  }
-
-  .cta__meta a {
-    transition: color var(--dur-fast) ease;
-  }
-
-  .cta__meta a:hover {
-    color: var(--ink);
-  }
-
-  /* Long phone/CTA labels must not force horizontal scroll at 375px */
-  .cta__actions :global(.btn) {
-    white-space: normal;
   }
 
   @media (min-width: 1000px) {

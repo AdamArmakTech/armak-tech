@@ -8,6 +8,7 @@ import { ArrowRight } from '@lucide/astro';
 import SectionHead from '../ui/SectionHead.astro';
 import BuildingSvg from './BuildingSvg.astro';
 import { services } from '../../data/site';
+import { contactHref } from '../../lib/cta';
 ---
 
 <section class="explorer section" id="systems" aria-labelledby="explorer-tabs-label">
@@ -57,10 +58,13 @@ import { services } from '../../data/site';
             <ul role="list" class="explorer__includes t-mono">
               {s.includes.map((inc) => <li>{inc}</li>)}
             </ul>
-            <a class="explorer__link" href={`/services/${s.slug}/`}>
-              Explore {s.name.toLowerCase()}
-              <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" />
-            </a>
+            <div class="explorer__actions">
+              <a class="explorer__ask" href={contactHref({ about: s.slug })}>
+                Ask about {s.name.toLowerCase()}
+                <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" />
+              </a>
+              <a class="explorer__link" href={`/services/${s.slug}/`}>Learn more</a>
+            </div>
           </div>
         ))}
       </div>
@@ -316,11 +320,46 @@ import { services } from '../../data/site';
     color: var(--steel);
   }
 
+  .explorer__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.5rem;
+  }
+
+  /* Forward exit first (ask), sideways exit second (learn more) */
+  .explorer__ask {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.625rem 1rem;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--radius);
+    font-weight: 500;
+    font-size: var(--fs-small);
+    transition: background var(--dur-fast) ease;
+  }
+
+  .explorer__ask:hover {
+    background: var(--signal);
+  }
+
+  .explorer__ask :global(svg) {
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .explorer__ask:hover :global(svg) {
+    transform: translateX(3px);
+  }
+
   .explorer__link {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     font-weight: 500;
+    font-size: var(--fs-small);
     padding-bottom: 2px;
     background: linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
     transition: color var(--dur-fast) ease;

@@ -1,0 +1,137 @@
+---
+/**
+ * The site's standard "what now?" block: one red button plus three quieter routes, ordered by how
+ * ready the visitor is. Used at the end of every page (inside PageCta / ServiceCta) and on /plan/,
+ * so people learn it once and recognize it everywhere.
+ *
+ *   about  — a service slug or topic; carried into the contact form so it opens on the right thing
+ *   tone   — 'light' on paper/white panels, 'inverse' on the dark PageCta panel
+ */
+import { MessageSquare, ClipboardList, Phone, ArrowRight } from '@lucide/astro';
+import Button from './Button.astro';
+import { site } from '../../data/site';
+import { contactHref, checklistHref } from '../../lib/cta';
+
+interface Props {
+  about?: string;
+  tone?: 'light' | 'inverse';
+  class?: string;
+}
+
+const { about, tone = 'light', class: className } = Astro.props;
+
+const routes = [
+  {
+    icon: MessageSquare,
+    href: contactHref({ about, mode: 'quick' }),
+    title: 'Ask a quick question',
+    detail: 'No site visit, just an answer.',
+  },
+  {
+    icon: ClipboardList,
+    href: checklistHref,
+    title: 'Get the site-walk checklist',
+    detail: 'What to have ready before we visit.',
+  },
+  {
+    icon: Phone,
+    href: site.phoneHref,
+    title: `Call ${site.phone}`,
+    detail: site.hours,
+  },
+];
+---
+
+<div class:list={['next', `next--${tone}`, className]}>
+  <Button href={contactHref({ about })} size="lg" variant="primary">Request a site assessment</Button>
+  <ul role="list" class="next__routes">
+    {routes.map(({ icon: Icon, href, title, detail }) => (
+      <li>
+        <a class="next__route" href={href}>
+          <Icon class="next__icon" size={18} stroke-width={1.75} aria-hidden="true" />
+          <span class="next__text">
+            <span class="next__title">{title}</span>
+            <span class="next__detail">{detail}</span>
+          </span>
+          <ArrowRight class="next__arrow" size={16} stroke-width={1.75} aria-hidden="true" />
+        </a>
+      </li>
+    ))}
+  </ul>
+</div>
+
+<style>
+  .next {
+    display: grid;
+    gap: 1rem;
+    justify-items: stretch;
+  }
+
+  .next > :global(.btn) {
+    justify-self: start;
+    white-space: normal;
+  }
+
+  .next__routes {
+    display: grid;
+    border-top: 1px solid var(--line, var(--hairline));
+  }
+
+  .next__route {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr) 16px;
+    align-items: center;
+    gap: 0.875rem;
+    min-height: 56px;
+    padding-block: 0.75rem;
+    border-bottom: 1px solid var(--line, var(--hairline));
+    transition: color var(--dur-fast) ease;
+  }
+
+  .next__icon {
+    color: var(--signal);
+  }
+
+  .next__text {
+    display: grid;
+    gap: 0.1rem;
+    line-height: 1.35;
+  }
+
+  .next__title {
+    font-weight: 500;
+  }
+
+  .next__detail {
+    font-size: 0.8125rem;
+    color: var(--muted, var(--steel));
+  }
+
+  .next__arrow {
+    color: var(--muted, var(--steel));
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .next__route:hover .next__arrow {
+    transform: translateX(3px);
+  }
+
+  .next__route:hover .next__title {
+    color: var(--signal);
+  }
+
+  /* Dark panel */
+  .next--inverse {
+    --line: var(--hairline-inverse);
+    --muted: var(--steel-light);
+    color: var(--paper);
+  }
+
+  .next--inverse .next__icon {
+    color: var(--logo-red);
+  }
+
+  .next--inverse .next__route:hover .next__title {
+    color: var(--logo-red);
+  }
+</style>

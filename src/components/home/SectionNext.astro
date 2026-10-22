@@ -1,0 +1,69 @@
+---
+/**
+ * A quiet "Next: …" guide link between homepage sections, so the page reads as a path instead
+ * of a pile of sections. One per transition; keep the label short.
+ */
+import { ArrowDown } from '@lucide/astro';
+
+interface Props {
+  href: string;
+  label: string;
+  /** Use 'cta' for the last one before the contact form (red, slightly louder) */
+  tone?: 'default' | 'cta';
+}
+
+const { href, label, tone = 'default' } = Astro.props;
+---
+
+<div class:list={['snext container', `snext--${tone}`]}>
+  <a class="snext__link" href={href}>
+    <span class="t-mono snext__kicker">{tone === 'cta' ? 'Ready?' : 'Next'}</span>
+    <span class="snext__label">{label}</span>
+    <ArrowDown class="snext__arrow" size={18} stroke-width={1.75} aria-hidden="true" />
+  </a>
+</div>
+
+<style>
+  .snext {
+    display: flex;
+    justify-content: center;
+    padding-block: 0.25rem 2.5rem;
+  }
+
+  .snext__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.875rem;
+    min-height: 48px;
+    padding: 0.5rem 0.25rem;
+    border-bottom: 1px solid var(--hairline-strong);
+    font-weight: 500;
+    transition: border-color var(--dur-fast) ease, color var(--dur-fast) ease;
+  }
+
+  .snext__kicker {
+    color: var(--steel);
+  }
+
+  .snext__arrow {
+    color: var(--signal);
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .snext__link:hover {
+    border-color: var(--ink);
+  }
+
+  .snext__link:hover .snext__arrow {
+    transform: translateY(3px);
+  }
+
+  .snext--cta .snext__link {
+    color: var(--signal);
+    border-color: var(--signal);
+  }
+
+  .snext--cta .snext__kicker {
+    color: var(--signal);
+  }
+</style>

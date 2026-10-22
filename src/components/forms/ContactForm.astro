@@ -24,16 +24,19 @@ const H = `h${headingLevel}` as 'h2' | 'h3';
 const accessKey: string = import.meta.env.WEB3FORMSAPIKEY ?? process.env.WEB3FORMSAPIKEY ?? '';
 if (!accessKey) console.warn('[armak] WEB3FORMSAPIKEY is not set — the contact form will not send. Add it to .env / Vercel env vars.');
 const endpoint = 'https://api.web3forms.com/submit';
-const projectTypes = [...services.map((s) => s.name), 'Not sure yet'];
+// Chips carry the service slug so links like /contact/?about=networking can preselect them
+const projectTypes = [...services.map((s) => ({ name: s.name, slug: s.slug })), { name: 'Not sure yet', slug: 'not-sure' }];
 const f = (name: string) => `${id}-${name}`;
 ---
 
-<div class:list={['cform', className]} data-contact-form data-phone={site.phone} data-email={site.email}>
+<div class:list={['cform', className]} id={id} data-contact-form data-phone={site.phone} data-email={site.email}>
   <form class="cform__form" action={endpoint} method="POST" data-cform-form>
     <!-- Web3Forms config (same fields as the original site's form) -->
     <input type="hidden" name="access_key" value={accessKey} />
     <input type="hidden" name="subject" value="New Site Assessment Inquiry — Armak Technologies" />
     <input type="hidden" name="from_name" value="Armak Website" />
+    <!-- Set from the link that opened the form (a glossary term, "estimate", …); shows up in the email -->
+    <input type="hidden" name="topic" value="" />
     <!-- Honeypot spam protection -->
     <input type="checkbox" name="botcheck" class="cform__hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
@@ -50,8 +53,8 @@ const f = (name: string) => `${id}-${name}`;
         <div class="cform__chip-list">
           {projectTypes.map((p) => (
             <label class="chip">
-              <input type="checkbox" name="project_type" value={p} />
-              <span>{p}</span>
+              <input type="checkbox" name="project_type" value={p.name} data-slug={p.slug} />
+              <span>{p.name}</span>
             </label>
           ))}
         </div>
@@ -69,7 +72,14 @@ const f = (name: string) => `${id}-${name}`;
         <p class="t-mono cform__count">Step 2 of 2</p>
         <span class="cform__bars" aria-hidden="true"><span class="is-on"></span><span class="is-on"></span></span>
       </div>
-      <H class="t-h3 cform__title" id={f('s2-title')} tabindex="-1">Where can we reach you?</H>
+      <H class="t-h3 cform__title" id={f('s2-title')} tabindex="-1" data-s2-title>Where can we reach you?</H>
+      <!-- Filled by the script when the form was opened from a service page, glossary term, etc. -->
+      <p class="cform__about" data-cform-about hidden>
+        <span class="t-mono">Asking about</span>
+        <strong data-about-text></strong>
+        <button type="button" class="cform__about-change" data-about-change>Change</button>
+      </p>
+      <p class="cform__note" data-cform-note hidden></p>
       <p class="t-mono t-muted cform__req-note"><span class="cform__req" aria-hidden="true">*</span> Required</p>
 
       <div class="cform__fields">
@@ -93,7 +103,7 @@ const f = (name: string) => `${id}-${name}`;
           <p class="cform__error" id={f('phone-error')} data-error-for="phone"></p>
         </div>
         <div class="field cform__full">
-          <label class="field__label" for={f('message')}>Project details <span class="cform__req" aria-hidden="true">*</span></label>
+          <label class="field__label" for={f('message')}><span data-message-label>Project details</span> <span class="cform__req" aria-hidden="true">*</span></label>
           <textarea class="field__control" id={f('message')} name="message" rows="4" required placeholder="Site location, scale, timeline." aria-describedby={f('message-error')}></textarea>
           <p class="cform__error" id={f('message-error')} data-error-for="message"></p>
         </div>
@@ -220,6 +230,54 @@ const f = (name: string) => `${id}-${name}`;
   .cform__req-note,
   .cform__privacy {
     margin-top: -0.75rem;
+  }
+
+  /* "Asking about …" context line */
+  .cform__about {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin-top: -0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--signal);
+    border-radius: var(--radius);
+  }
+
+  .cform__about[hidden],
+  .cform__note[hidden] {
+    display: none;
+  }
+
+  .cform__about .t-mono {
+    color: var(--steel);
+  }
+
+  .cform__about-change {
+    margin-left: auto;
+    font-size: var(--fs-small);
+    color: var(--steel);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .cform__about-change:hover {
+    color: var(--ink);
+  }
+
+  .cform__note {
+    margin-top: -0.5rem;
+    font-size: var(--fs-small);
+    color: var(--steel);
+  }
+
+  .cform__note :global(a) {
+    color: var(--ink);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .cform__fields {
@@ -380,7 +438,6 @@ const f = (name: string) => `${id}-${name}`;
     const phoneHref = `tel:+1${phone.replace(/\D/g, '')}`;
     const email = root.dataset.email ?? '';
     const submitLabel = submit.querySelector<HTMLElement>('.btn__label');
-    const submitText = submitLabel?.textContent ?? '';
     let sending = false;
 
     // ── Enhance ────────────────────────────────────────────
@@ -459,12 +516,18 @@ const f = (name: string) => `${id}-${name}`;
     });
 
     // ── Submit ─────────────────────────────────────────────
+    // The submit label can be changed by the link context (quick question, service request),
+    // so remember whatever it says when sending starts.
+    let submitText = submitLabel?.textContent ?? '';
     function setSending(on: boolean) {
       sending = on;
       submit!.disabled = on;
       back!.disabled = on;
       submit!.setAttribute('aria-busy', String(on));
-      if (submitLabel) submitLabel.textContent = on ? 'Sending…' : submitText;
+      if (submitLabel) {
+        if (on) submitText = submitLabel.textContent ?? submitText;
+        submitLabel.textContent = on ? 'Sending…' : submitText;
+      }
     }
 
     function showError() {
@@ -529,6 +592,82 @@ const f = (name: string) => `${id}-${name}`;
       }
     });
 
-    showStep(1, false);
+    // ── Context from the link that opened the form (see src/lib/cta.ts) ──
+    // ?about=<service slug | topic>  ?mode=quick  ?intent=support
+    const params = new URLSearchParams(location.search);
+    const about = (params.get('about') ?? '').trim().slice(0, 80);
+    const quick = params.get('mode') === 'quick';
+    const support = params.get('intent') === 'support';
+
+    const aboutBox = root.querySelector<HTMLElement>('[data-cform-about]');
+    const aboutText = root.querySelector<HTMLElement>('[data-about-text]');
+    const note = root.querySelector<HTMLElement>('[data-cform-note]');
+    const s2Title = root.querySelector<HTMLElement>('[data-s2-title]');
+    const messageLabel = root.querySelector<HTMLElement>('[data-message-label]');
+    const message = form.elements.namedItem('message') as HTMLTextAreaElement | null;
+    const topic = form.elements.namedItem('topic') as HTMLInputElement | null;
+    const subject = form.elements.namedItem('subject') as HTMLInputElement | null;
+    let startStep: 1 | 2 = 1;
+
+    const checkChip = (slug: string) => {
+      const chip = chips().find((c) => c.dataset.slug === slug);
+      if (chip) chip.checked = true;
+      return chip;
+    };
+    const showAbout = (label: string) => {
+      if (aboutBox && aboutText) {
+        aboutText.textContent = label;
+        aboutBox.hidden = false;
+      }
+    };
+
+    if (about) {
+      const chip = checkChip(about.toLowerCase());
+      if (chip) {
+        showAbout(chip.value);
+      } else {
+        // A topic that isn't a service (glossary term, "estimate"): keep it for the email
+        if (topic) topic.value = about;
+        checkChip('not-sure');
+        showAbout(about);
+        if (message) message.placeholder = `Your question about ${about}.`;
+      }
+      startStep = 2;
+    }
+
+    if (quick) {
+      if (!selectedTypes().length) checkChip('not-sure');
+      if (s2Title) s2Title.textContent = 'Ask a quick question';
+      if (messageLabel) messageLabel.textContent = 'Your question';
+      if (message && !about) message.placeholder = 'Ask us anything about your building’s cabling, network, cameras, doors, phones or AV.';
+      if (subject) subject.value = 'Quick question — Armak Website';
+      if (submitLabel) submitLabel.textContent = 'Send my question';
+      startStep = 2;
+    }
+
+    if (support) {
+      checkChip('not-sure');
+      if (s2Title) s2Title.textContent = 'Tell us what’s wrong';
+      if (messageLabel) messageLabel.textContent = 'What’s happening';
+      if (message) message.placeholder = 'What’s happening, where in the building, and since when.';
+      if (subject) subject.value = 'Service request — Armak Website';
+      if (submitLabel) submitLabel.textContent = 'Send request';
+      if (note) {
+        note.replaceChildren(
+          'Existing customer? For the fastest response, call ',
+          Object.assign(document.createElement('a'), { href: phoneHref, textContent: phone }),
+          '. Or describe the problem below and we’ll get back to you.',
+        );
+        note.hidden = false;
+      }
+      startStep = 2;
+    }
+
+    root.querySelector('[data-about-change]')?.addEventListener('click', () => {
+      if (aboutBox) aboutBox.hidden = true;
+      showStep(1);
+    });
+
+    showStep(startStep, false);
   });
 </script>

@@ -4,17 +4,18 @@
  * footer's generic CTA doesn't repeat it.
  */
 import Label from '../ui/Label.astro';
-import Button from '../ui/Button.astro';
+import NextStep from '../ui/NextStep.astro';
 import Stripe from '../ui/Stripe.astro';
-import { site } from '../../data/site';
 
 interface Props {
   code: string;
   title: string;
   body: string;
+  /** Service slug or topic carried into the contact form (see src/lib/cta.ts) */
+  about?: string;
 }
 
-const { code, title, body } = Astro.props;
+const { code, title, body, about } = Astro.props;
 ---
 
 <section class="page-cta container" aria-labelledby={`${code}-cta-title`} data-dock-hide>
@@ -27,14 +28,7 @@ const { code, title, body } = Astro.props;
         <p class="t-lead" data-reveal>{body}</p>
       </div>
       <div class="page-cta__side" data-reveal style="--reveal-delay: 120ms">
-        <div class="page-cta__actions">
-          <Button href="/contact/" size="lg">Request a site assessment</Button>
-          <Button href={site.phoneHref} variant="outline-inverse" size="lg" icon="phone">{site.phone}</Button>
-        </div>
-        <ul role="list" class="page-cta__meta t-mono">
-          <li><a href={site.emailHref}>{site.email}</a></li>
-          <li>{site.hours}</li>
-        </ul>
+        <NextStep about={about} tone="inverse" />
       </div>
     </div>
   </div>
@@ -70,32 +64,6 @@ const { code, title, body } = Astro.props;
     display: grid;
     gap: 1.5rem;
     align-content: end;
-  }
-
-  .page-cta__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  /* Long labels must not force horizontal scroll at 375px */
-  .page-cta__actions :global(.btn) {
-    white-space: normal;
-  }
-
-  .page-cta__meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-    color: var(--steel-light);
-  }
-
-  .page-cta__meta a {
-    transition: color var(--dur-fast) ease;
-  }
-
-  .page-cta__meta a:hover {
-    color: var(--paper);
   }
 
   @media (min-width: 1000px) {

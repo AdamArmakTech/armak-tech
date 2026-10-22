@@ -30,6 +30,11 @@
 - [x] Partly done from the audit: --pass darkened + --field-line token, mobile menu inert + Escape focus, 404 caption,
       glossary/em-dash + "actually" cleanup (partial), About timeline hidden, some speed work (inlined CSS, hero tweaks)
 
+- [x] Guided CTAs — 2026-10-21: hero sorts visitors by intent (quote / planning / something broken), standard NextStep block
+      (src/components/ui/NextStep.astro) at the end of every page, CTAs carry context into the form (src/lib/cta.ts →
+      ?about / ?mode=quick / ?intent=support), Next ↓ guide links between homepage sections, explorer "Ask about X",
+      glossary "Ask about this term", new /plan/ page (site-walk checklist, rough estimator, cabling check, sample report)
+
 ## Still to do (see ai/plans/site-audit.md for exact fixes)
 - [ ] MUST 1: www.armak.tech has no TLS cert → Vercel → Settings → Domains → add www.armak.tech as redirect to armak.tech (owner action)
 - [ ] MUST 2: 24/7 wording — confirm policy with Armak, then make every mention match

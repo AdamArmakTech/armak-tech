@@ -122,17 +122,18 @@ const jsonLd = {
 
   <Capabilities code={codes.caps} serviceName={service.name} items={detail.capabilities} />
 
-  <DeliverySteps code={codes.delivery} cta />
+  <DeliverySteps code={codes.delivery} cta about={service.slug} />
 
   {hasPartners && <PartnerLogos code={codes.partners} categories={detail.partnerCategories} />}
 
   <FaqList code={codes.faq} faqs={detail.faqs} />
 
-  <OtherServices current={service.slug} code={codes.others} />
-
   <ServiceCta
+    about={service.slug}
     code={codes.cta}
     title={`Planning ${service.name.toLowerCase()} work?`}
     body="Tell us about the site. We’ll walk it with you, document what’s there and scope the job before anything is priced."
   />
+
+  <OtherServices current={service.slug} code={codes.others} />
 </Base>
