@@ -56,7 +56,7 @@ photos credited in src/assets/photos/CREDITS.md; /privacy/ exists and is linked 
 - [x] D2 launched; A5 + B5 managers launched
 - [x] Managers A5 B5 C5 D5 DONE
 - [x] Masters M1–M5 launched (Opus)
-- [ ] Merge, check, build, fetch/merge origin/main, push main + redesign, verify live, update PROJECT_STATE
+- [x] Merged, checked, built, pushed main + redesign (d0afa3c); PROJECT_STATE updated; live verification below
 
 ## Worker results (for managers and masters)
 ### Group A

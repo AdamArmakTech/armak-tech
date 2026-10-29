@@ -35,13 +35,19 @@
       ?about / ?mode=quick / ?intent=support), Next ↓ guide links between homepage sections, explorer "Ask about X",
       glossary "Ask about this term", new /plan/ page (site-walk checklist, rough estimator, cabling check, sample report)
 
+- [x] Safety checklist run — 2026-10-29 (25 agents, all 5 masters GO; commit d0afa3c; log in ai/plans/safety-run.md):
+      /terms/ page added; /privacy/ verified against the code; two unsourced promises removed; 24/7 label and industries
+      heading softened; contrast tokens fixed (--field-line on fields, --placeholder, --signal #d0101a, --pass #167640);
+      alt/aria on all graphics; explorer showed all six panels stacked (live bug) → one at a time; stepper/explorer pause
+      on focus/hover and resume; mega-menu Shift+Tab; form error live regions + project-type required marker; /plan/
+      375px overflow fixed; em-dashes out of visible copy; vague buttons/question headings rewritten; 30 decorative
+      icons removed; scroll fade-ins ~107 → ~14; hero card overlap fixed; JSON-LD hours derived from site.ts.
+
 ## Still to do (see ai/plans/site-audit.md for exact fixes)
 - [ ] MUST 1: www.armak.tech has no TLS cert → Vercel → Settings → Domains → add www.armak.tech as redirect to armak.tech (owner action)
-- [ ] MUST 2: 24/7 wording — confirm policy with Armak, then make every mention match
-- [ ] SHOULD: apply --field-line to form fields (global.css); real /projects/ redirect + security headers in vercel.json;
-      mega-menu focus; explorer pause on focus/hover; contact heading levels; Hero quick links (add Services, phone wrapping)
+- [ ] MUST 2: 24/7 — site now says "24/7 support for contracted clients" everywhere; confirm with Armak
+- [ ] SHOULD (left): real /projects/ redirect in vercel.json; Hero quick links (add Services)
 - [ ] Finish speed pass (measure LCP/bytes, font subsets, cache headers) and verify nothing changed visually
-- [ ] Proofreading pass over everything changed in this round
 - [ ] Decide whether to delete legacy/ (redundant with the old-site branch)
 
 ## Marketing direction to build in (from the owner)
@@ -58,6 +64,19 @@
 - Vector (SVG) logo if one exists
 - Confirm service-page capabilities "Racks, patching & cable management" and "Firewalls / site-to-site VPN";
   TIA-606 labeling; cable tester brand; any voice/UC vendor partners
+
+## Owner questions from the 2026-10-29 safety run (yes/no where possible)
+1. CSLB license number? California generally requires it in advertising; `site.license` is still null.
+2. Are the technicians BICSI-certified today? Is the business licensed, bonded and insured?
+3. Healthcare, education, multifamily, public sector, industrial: real past work, or only "planned for"?
+4. Card/mobile access, conference rooms, signage, distributed audio: offered?
+5. Show 946+ projects, 1,000+ (old site), or an exact count?
+6. Do clients get the cable test reports? Is pricing always a written proposal after a site walk?
+7. All 14 partner brands really installed/supported? (Hikvision is restricted for some government work.)
+8. Keep phone as a required form field?
+9. Web3Forms: restrict the access key to armak.tech in their dashboard; how long do they keep submissions?
+10. Lawyer: review terms "as is"/liability wording; venue clause yes/no and which county.
+11. Which email provider hosts the sales inbox (it handles form data too)?
 
 ## Backlog
 - [ ] Automated verification/linting beyond `astro check`
