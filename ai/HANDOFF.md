@@ -67,6 +67,12 @@ icons everywhere, 3-icon rows, badge above headline, em-dashes, buzzword copy, i
 Many items are already done or N/A — each worker should verify, fix only what's real, and report "already OK" honestly.
 Ground rules for every agent: own files only, no commit/push, `npx astro check` clean, own browser tab, plain copy.
 
+**Model per role (the owner cares about token cost):** the 16 workers run on **Sonnet** (mechanical checks and
+fixes); the 4 group managers and 5 master proofreaders run on **Opus** (judgment: wording, legal pages, honesty of
+claims); the main session (planning, merging, publishing) is whatever the owner picked, Fable 5.1 at the time of
+writing. Never run a mechanical worker on an expensive model. Launch in batches of 5–6 so a usage limit doesn't cut
+off a whole wave; relaunch only unfinished pieces.
+
 ## Earlier ideas not yet built (from the CTA brainstorm)
 "Send us a photo of your closet", "Already have an RFP? Send it", 15-minute call booking (needs a Cal.com account),
 "Save our number" contact card, "Send this page to your IT person", existing-customer MAC/issue request form,
