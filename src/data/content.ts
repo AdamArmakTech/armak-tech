@@ -66,7 +66,7 @@ export const process = [
   {
     code: '03',
     title: 'Install',
-    body: 'Installed to ANSI/TIA standards with materials prepared ahead of time. Disruptive work happens after hours, and systems are switched over in planned phases so your business keeps running.',
+    body: 'Installed to ANSI/TIA standards with materials prepared ahead of time. Disruptive work can be scheduled after hours, and systems are switched over in planned phases so your business keeps running.',
   },
   {
     code: '04',
@@ -86,7 +86,7 @@ export const credentials = ['Licensed · Bonded · Insured', 'BICSI-certified te
 export const pillars = [
   { title: 'Built to standard', body: 'ANSI/TIA-compliant installs. Every cable tested, every port labeled, every job documented to spec.' },
   { title: 'From closet to campus', body: 'From a single rack to a multi-site rollout, you work with the same team and one point of contact.' },
-  { title: 'Cutover-ready', body: 'Materials are prepared ahead of time, noisy work happens after hours, and cutovers are phased so your business keeps running.' },
+  { title: 'Cutover-ready', body: 'Materials are prepared ahead of time, noisy work can be scheduled after hours, and cutovers are phased so your business keeps running.' },
   { title: 'After the install', body: 'Moves, adds and changes, warranty response and managed service contracts.' },
 ];
 

@@ -33,7 +33,7 @@ const projectServices = p.services.map((slug) => services.find((s) => s.slug ===
 const others = projects.filter((o) => o.slug !== p.slug).slice(0, 2);
 
 const description = p.placeholder
-  ? `Placeholder case study: ${p.title.toLowerCase()} — ${p.sector.toLowerCase()}, ${p.location}, Southern California. Armak Technologies.`
+  ? `Placeholder case study: ${p.title.toLowerCase()}. ${p.sector.toLowerCase()}, ${p.location}, Southern California. Armak Technologies.`
   : `${p.title}: ${p.sector.toLowerCase()} project in ${p.location}, Southern California, by Armak Technologies.`;
 
 /** Narrative sections. Real copy will come from the data file; until then, what each should contain. */
@@ -41,17 +41,17 @@ const sections = [
   {
     id: 'challenge',
     title: 'The challenge',
-    brief: 'The site and its constraints — building type, schedule, occupied spaces, legacy systems, compliance.',
+    brief: 'The site and its constraints: building type, schedule, occupied spaces, legacy systems, compliance.',
   },
   {
     id: 'installed',
     title: 'What we installed',
-    brief: 'Systems, quantities and platforms — drops, fiber, racks, access points, cameras, doors — and how the work was phased.',
+    brief: 'Systems, quantities and platforms (drops, fiber, racks, access points, cameras, doors), and how the work was phased.',
   },
   {
     id: 'outcome',
     title: 'The outcome',
-    brief: 'What the client got at handover — certification results, documentation, cutover timing — plus a client quote with permission.',
+    brief: 'What the client got at handover (certification results, documentation, cutover timing), plus a client quote with permission.',
   },
 ];
 ---
@@ -67,7 +67,7 @@ const sections = [
   >
     {p.placeholder && <Label slot="labels" tone="signal">Placeholder</Label>}
 
-    <dl class="meta" data-reveal style="--reveal-delay: 120ms">
+    <dl class="meta">
       <div>
         <dt class="t-mono">Sector</dt>
         <dd>{p.sector}</dd>
@@ -112,9 +112,9 @@ const sections = [
           {p.placeholder && <span class="t-muted"> Figures to be supplied.</span>}
         </h2>
       </div>
-      <div class="scope__grid" data-reveal-stagger="90">
+      <div class="scope__grid">
         {p.scope.map((s) => (
-          <div data-reveal>
+          <div>
             <Stat value={s.value} label={s.label} />
           </div>
         ))}
@@ -128,7 +128,7 @@ const sections = [
         <div class="story__meta">
           <Label code={`${code}.${i + 2}`}>{String(i + 1).padStart(2, '0')}</Label>
         </div>
-        <div class="story__body" data-reveal>
+        <div class="story__body">
           <h2 id={`${s.id}-title`} class="t-h2">{s.title}</h2>
           {p.placeholder ? (
             <PlaceholderNote title="To be supplied by Armak">{s.brief}</PlaceholderNote>
@@ -146,9 +146,9 @@ const sections = [
         <Label code={`${code}.5`}>Related services</Label>
         <h2 id="related-title" class="t-h3">Systems on this project.</h2>
       </div>
-      <ul role="list" class="related__grid" data-reveal-stagger="80">
+      <ul role="list" class="related__grid">
         {projectServices.map((s) => (
-          <li data-reveal>
+          <li>
             <ServiceTile href={`/services/${s.slug}/`} code={s.code} title={s.name} description={s.short} />
           </li>
         ))}
@@ -163,12 +163,12 @@ const sections = [
           <Label code={`${code}.6`}>More projects</Label>
           <h2 id="more-title" class="t-h3">Other case studies.</h2>
         </div>
-        <ul role="list" class="more__grid" data-reveal-stagger="90">
+        <ul role="list" class="more__grid">
           {others.map((o) => (
-            <li data-reveal><ProjectCard project={o} /></li>
+            <li><ProjectCard project={o} /></li>
           ))}
         </ul>
-        <div class="more__foot" data-reveal>
+        <div class="more__foot">
           <Button href="/projects/" variant="outline">All projects</Button>
         </div>
       </div>
@@ -177,7 +177,7 @@ const sections = [
 
   <PageCta
     code={`${code}.7`}
-    title="Planning something similar?"
+    title="Talk to us about a similar project."
     body="Tell us what you’re building. We’ll walk the site, scope the work and send you a clear written plan and price."
   />
 </Base>

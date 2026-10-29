@@ -53,7 +53,7 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
       systems Southern California businesses run on.
     </p>
     <div class="hero__choose hero-in" data-dock-start style="--reveal-delay: 120ms">
-      <p class="t-mono hero__choose-label" id="hero-paths-label">What brings you here?</p>
+      <p class="t-mono hero__choose-label" id="hero-paths-label">Pick the closest fit</p>
       <ul role="list" class="hero__paths" aria-labelledby="hero-paths-label">
         {paths.map((p) => (
           <li>
@@ -65,7 +65,7 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
           </li>
         ))}
       </ul>
-      <p class="t-small hero__phone">Or call <a href={site.phoneHref}>{site.phone}</a> · {site.hours}</p>
+      <p class="t-small hero__phone">Or call <a href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}</p>
     </div>
     <ul role="list" class="hero__creds t-mono hero-in" style="--reveal-delay: 220ms">
       {credentials.map((c) => <li>{c}</li>)}
@@ -84,7 +84,7 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
         loading="eager"
         fetchpriority="high"
       />
-      <span class="hero__tag t-mono">A-01 · Physical layer</span>
+      <span class="hero__tag t-mono" aria-hidden="true">A-01 · Physical layer</span>
     </div>
     <CableTest variant="compact" class="hero__card" />
   </div>
@@ -332,6 +332,11 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
       grid-template-columns: 7fr 5fr;
       align-items: end;
       min-height: calc(100svh - var(--header-h));
+    }
+
+    /* Keep the copy clear of the cable-test card, which hangs 4.5rem into the gutter */
+    .hero__copy {
+      padding-right: calc(4.5rem - var(--col-gap) + 1rem);
     }
 
     .hero__media {

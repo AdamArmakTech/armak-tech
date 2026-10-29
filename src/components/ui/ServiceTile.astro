@@ -9,6 +9,8 @@ interface Props {
   title: string;
   description: string;
   image?: ImageMetadata;
+  /** Not rendered: the photo sits inside the link and the visible title already names it,
+      so the image is decorative (alt="") and the link reads as just the service name */
   imageAlt?: string;
   size?: 'default' | 'feature';
   /** Optional sub-service list, rendered as a compact mono list pinned to the tile's foot */
@@ -17,7 +19,7 @@ interface Props {
   [key: string]: unknown;
 }
 
-const { href, code, title, description, image, imageAlt = '', size = 'default', includes, class: className, ...rest } = Astro.props;
+const { href, code, title, description, image, imageAlt: _imageAlt, size = 'default', includes, class: className, ...rest } = Astro.props;
 const hasIncludes = !!includes && includes.length > 0;
 ---
 
@@ -26,7 +28,7 @@ const hasIncludes = !!includes && includes.length > 0;
     <div class="tile__media">
       <Image
         src={image}
-        alt={imageAlt}
+        alt=""
         widths={[480, 800, 1200]}
         sizes={size === 'feature' ? '(min-width: 900px) 60vw, 100vw' : '(min-width: 900px) 33vw, 100vw'}
         loading="lazy"

@@ -88,8 +88,8 @@ const groups = counties.map((county) => ({
     <div class="area__body">
       <figure class="area__map" data-area-map data-state="idle" data-geo={JSON.stringify(mapData)} data-reveal>
         <div class="area__stage">
-          <div class="area__fallback" aria-hidden="true">
-            <svg class="area__schematic" viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio="xMidYMid meet" focusable="false">
+          <div class="area__fallback">
+            <svg class="area__schematic" viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio="xMidYMid meet" focusable="false" role="img" aria-label={`Schematic map of the Southern California area we serve, with ${hq.city} headquarters marked. The cities are listed beside the map.`}>
               <g class="sx-grid">
                 {gridLngs.map((v) => <line x1={px(v)} x2={px(v)} y1="0" y2={VB_H} />)}
                 {gridLats.map((v) => <line x1="0" x2={VB_W} y1={py(v)} y2={py(v)} />)}
@@ -121,7 +121,7 @@ const groups = counties.map((county) => ({
         </figcaption>
       </figure>
 
-      <div class="area__list" data-reveal style="--reveal-delay: 120ms">
+      <div class="area__list">
         <div class="area__hq">
           <p class="t-mono area__hq-label">Headquarters</p>
           <p class="t-h3 area__hq-city">{hq.city}, {hq.region}</p>
@@ -447,7 +447,7 @@ const groups = counties.map((county) => ({
 
   // MapLibre cannot read CSS custom properties — literal token values.
   const INK = '#0b0d10';
-  const SIGNAL = '#d4111a';
+  const SIGNAL = '#d0101a';
   const WHITE = '#ffffff';
   const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
   const LOAD_TIMEOUT_MS = 15000;

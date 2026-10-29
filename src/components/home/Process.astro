@@ -82,16 +82,16 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
       </div>
     </div>
 
-    <div class="process__next" data-reveal>
+    <div class="process__next">
       <p class="t-mono t-muted">Every job starts at step 01.</p>
       <Button href="#contact" icon="arrow">Request a site assessment</Button>
     </div>
 
     <div class="pillars">
       <Label code="D-03">Principles</Label>
-      <ul role="list" class="pillars__grid" data-reveal-stagger="80">
+      <ul role="list" class="pillars__grid">
         {pillars.map((p, i) => (
-          <li class="pillar" data-reveal>
+          <li class="pillar">
             <span class="t-mono pillar__index">{String(i + 1).padStart(2, '0')}</span>
             <h3 class="t-h4 pillar__title">{p.title}</h3>
             <p class="t-small t-muted pillar__body">{p.body}</p>
@@ -117,6 +117,8 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     let timer: number | undefined;
     let inView = false;
     let userTookOver = false;
+    let hovering = false;
+    let focused = false;
 
     /** Restart the active step's demo from the beginning */
     const playDemo = (panel: HTMLElement) => {
@@ -137,7 +139,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 
     const scheduleNext = () => {
       window.clearTimeout(timer);
-      if (reduceMotion || userTookOver || !inView) return;
+      if (reduceMotion || userTookOver || !inView || hovering || focused) return;
       const tab = tabs[index];
       startProgress(tab);
       timer = window.setTimeout(() => {
@@ -189,6 +191,28 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     // Interacting with a demo (cable switch, slider, replay…) also hands over control
     stage.addEventListener('pointerdown', takeOver);
     stage.addEventListener('keydown', takeOver);
+
+    // Hold still while the pointer is over it or keyboard focus is inside it, so the step
+    // never changes under someone who is reading or tabbing; carry on once they leave.
+    root.addEventListener('mouseenter', () => {
+      hovering = true;
+      stopAuto();
+    });
+    root.addEventListener('mouseleave', () => {
+      hovering = false;
+      scheduleNext();
+    });
+    root.addEventListener('focusin', () => {
+      focused = true;
+      stopAuto();
+    });
+    root.addEventListener('focusout', (e) => {
+      const to = e.relatedTarget as Node | null;
+      // Moving between controls inside, or the whole window losing focus, keeps it paused
+      if ((to && root.contains(to)) || (!to && root.contains(document.activeElement))) return;
+      focused = false;
+      scheduleNext();
+    });
 
     // Links to the cable test (hero "See how we test") open step 04 first, so the target is visible.
     // Capture phase: runs before the smooth-scroll handler measures the target.
@@ -287,7 +311,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     gap: 0.625rem;
     flex-shrink: 0;
     padding: 0.75rem 1rem;
-    border: 1px solid var(--hairline-strong);
+    border: 1px solid var(--field-line);
     border-radius: var(--radius);
     background: transparent;
     text-align: left;

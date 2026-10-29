@@ -15,3 +15,5 @@ Full research notes and alternates: `ai/plans/stock-photos.md`.
 | conference-room.jpg | Craig Lovelidge | https://unsplash.com/photos/s-KphF10sWM | Unsplash License |
 
 The AI-looking images from the original site were removed on 2026-10-13 (still in the `old-site` branch).
+
+Audit 2026-10-29: all 7 files in this folder have a line above and all 7 are used by the site (no orphans). Unsplash and Pexels licences allow commercial use without attribution; credits are kept as good practice. The file list was not changed.

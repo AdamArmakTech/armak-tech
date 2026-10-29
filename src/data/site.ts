@@ -65,7 +65,7 @@ export const services: Service[] = [
     slug: 'networking',
     code: 'A-02',
     name: 'Networking & Wireless',
-    short: 'Switches, firewalls, VLANs, UPS and enterprise Wi-Fi for stable, secure uptime.',
+    short: 'Switches, firewalls, VLANs, UPS power and enterprise Wi-Fi for a network that stays up.',
     layer: 'Network layer',
     includes: [
       'Switching, firewall & VLANs',
@@ -103,7 +103,7 @@ export const services: Service[] = [
     slug: 'audio-video',
     code: 'A-06',
     name: 'Audio & Video',
-    short: 'Displays, speakers, mounts and tuning for any space or scale.',
+    short: 'Displays, speakers and mounts, installed and tuned for each room.',
     layer: 'Experience layer',
     includes: ['Conference rooms', 'Displays & signage', 'Distributed audio'],
   },

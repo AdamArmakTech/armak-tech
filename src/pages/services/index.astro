@@ -40,12 +40,12 @@ const jsonLd = {
         Southern California team for {yearsInBusiness} years. You get one point of contact from the first
         walk-through to the final report.
       </p>
-      <div class="svc-index-hero__ctas" data-reveal data-dock-start style="--reveal-delay: 120ms">
+      <div class="svc-index-hero__ctas" data-dock-start>
         <Button href="/contact/" size="lg">Request a site assessment</Button>
         <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
       </div>
     </div>
-    <figure class="svc-index-hero__media" data-reveal style="--reveal-delay: 150ms">
+    <figure class="svc-index-hero__media">
       <Image
         src={heroPhoto}
         alt="A technician in a hi-vis vest working at a network rack"
@@ -63,7 +63,7 @@ const jsonLd = {
   <section class="svc-list container" aria-label="All services">
     <ol role="list" class="svc-list__rows">
       {services.map((s) => (
-        <li class="svc-row" data-reveal>
+        <li class="svc-row">
           <a class="svc-row__link" href={`/services/${s.slug}/`}>
             <span class="svc-row__code">{s.code}</span>
             <div class="svc-row__main">
@@ -78,7 +78,7 @@ const jsonLd = {
               </ul>
             </div>
             <span class="svc-row__go" aria-hidden="true">
-              <span class="t-mono svc-row__go-label">Explore</span>
+              <span class="t-mono svc-row__go-label">See service</span>
               <span class="svc-row__go-icon"><ArrowRight size={20} stroke-width={1.75} /></span>
             </span>
           </a>
@@ -88,9 +88,9 @@ const jsonLd = {
   </section>
 
   <section class="creds container" aria-label="Credentials">
-    <ul role="list" class="creds__list" data-reveal-stagger="80">
+    <ul role="list" class="creds__list">
       {credentials.map((c, i) => (
-        <li class="creds__item" data-reveal>
+        <li class="creds__item">
           <span class="t-mono creds__index">C-{String(i + 1).padStart(2, '0')}</span>
           <span class="creds__text">{c}</span>
         </li>
@@ -102,7 +102,7 @@ const jsonLd = {
 
   <ServiceCta
     code="A-00.2"
-    title="Not sure where to start?"
+    title="Start with a site walk."
     body="Most projects touch more than one system. Tell us about the site. We’ll walk it with you, document what’s there and scope the job before anything is priced."
   />
 </Base>
@@ -220,7 +220,7 @@ const jsonLd = {
     font-weight: 400;
     letter-spacing: -0.05em;
     line-height: 1;
-    color: var(--hairline-strong);
+    color: var(--steel);
     transition: color var(--dur) ease;
   }
 

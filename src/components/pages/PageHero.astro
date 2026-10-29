@@ -52,7 +52,7 @@ const hasAside = Astro.slots.has('aside');
       <slot />
     </div>
     {hasAside && (
-      <div class="page-hero__aside" data-reveal style="--reveal-delay: 150ms">
+      <div class="page-hero__aside">
         <slot name="aside" />
       </div>
     )}

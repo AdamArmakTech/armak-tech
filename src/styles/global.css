@@ -248,14 +248,15 @@ h4 {
   padding: 0.875rem 0 0.75rem;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid var(--hairline-strong);
+  border-bottom: 1px solid var(--field-line);
   border-radius: 0;
   font-size: 1.0625rem;
   transition: border-color var(--dur-fast) ease;
 }
 
 .field__control::placeholder {
-  color: var(--steel-light);
+  color: var(--placeholder);
+  opacity: 1;
 }
 
 .field__control:hover {
@@ -291,7 +292,7 @@ textarea.field__control {
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1rem;
-  border: 1px solid var(--hairline-strong);
+  border: 1px solid var(--field-line);
   border-radius: var(--radius);
   font-size: var(--fs-small);
   transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease;

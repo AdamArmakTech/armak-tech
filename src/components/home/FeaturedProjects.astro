@@ -19,9 +19,9 @@ const featured = publishedProjects.slice(0, 3);
       intro="Representative installs from across Southern California. Each one links to the full story: the site, the constraints and what we handed over."
     />
 
-    <ul role="list" class="projects__grid" data-reveal-stagger="90">
+    <ul role="list" class="projects__grid">
       {featured.map((p) => (
-        <li class="project" data-reveal>
+        <li class="project">
           <article class="project__card">
             <div class="project__media">
               {p.image && (
@@ -62,7 +62,7 @@ const featured = publishedProjects.slice(0, 3);
       ))}
     </ul>
 
-    <div class="projects__foot" data-reveal>
+    <div class="projects__foot">
       <p class="t-mono t-muted">Case studies · Full scope &amp; outcome</p>
       <Button href="/projects/" variant="outline">All projects</Button>
     </div>

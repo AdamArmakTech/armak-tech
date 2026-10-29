@@ -25,9 +25,9 @@ const { code, title, body, about } = Astro.props;
       <div class="page-cta__copy">
         <Label code={code} tone="inverse">Next step</Label>
         <h2 id={`${code}-cta-title`} class="t-h2 page-cta__title" data-split>{title}</h2>
-        <p class="t-lead" data-reveal>{body}</p>
+        <p class="t-lead">{body}</p>
       </div>
-      <div class="page-cta__side" data-reveal style="--reveal-delay: 120ms">
+      <div class="page-cta__side">
         <NextStep about={about} tone="inverse" />
       </div>
     </div>

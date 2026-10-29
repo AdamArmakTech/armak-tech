@@ -28,9 +28,9 @@ const {
   <div class="container">
     <SectionHead code={code} label="How we deliver" title={title} intro={intro} />
 
-    <ol role="list" class="delivery__steps" data-reveal-stagger="80">
+    <ol role="list" class="delivery__steps">
       {steps.map((step) => (
-        <li class="dstep" data-reveal>
+        <li class="dstep">
           <span class="dstep__num" aria-hidden="true">{step.code}</span>
           <h3 class="t-h4 dstep__title"><span class="visually-hidden">Step {step.code}: </span>{step.title}</h3>
           <p class="t-small t-muted dstep__body">{step.body}</p>
@@ -39,7 +39,7 @@ const {
     </ol>
 
     {cta && (
-      <div class="delivery__next" data-reveal>
+      <div class="delivery__next">
         <p class="t-mono t-muted">Every job starts at step 01.</p>
         <Button href={contactHref({ about })} icon="arrow">Request a site assessment</Button>
       </div>

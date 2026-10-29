@@ -1,18 +1,19 @@
 ---
 /** On-brand 404: styled like a failed link test, with routes back into the site. */
-import { Unplug } from '@lucide/astro';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import Button from '../components/ui/Button.astro';
 import { site } from '../data/site';
 import { showProjects } from '../data/content';
 
-const routes = [
+const routeList = [
   { href: '/', code: 'R-01', label: 'Home' },
   { href: '/services/', code: 'R-02', label: 'Services' },
   ...(showProjects ? [{ href: '/projects/', code: 'R-03', label: 'Projects' }] : []),
   { href: '/contact/', code: 'R-04', label: 'Contact' },
 ];
+// Number the routes in order, so hiding Projects doesn't leave a gap (R-01, R-02, R-03).
+const routes = routeList.map((r, i) => ({ ...r, code: `R-${String(i + 1).padStart(2, '0')}` }));
 ---
 
 <Base title="Page Not Found" description="This page has moved or never existed. Browse Armak Technologies’ cabling, network, security and AV services for Southern California, or get in touch." noindex>
@@ -23,7 +24,7 @@ const routes = [
     title="This port isn’t patched."
     lead="The page you’re looking for has moved or never existed. Pick a route below, or call us and we’ll point you in the right direction."
   >
-    <div class="page-hero__actions" data-reveal style="--reveal-delay: 120ms">
+    <div class="page-hero__actions">
       <Button href="/" size="lg">Back to home</Button>
       <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
     </div>
@@ -34,7 +35,6 @@ const routes = [
         <span class="trace__fail">Fail</span>
       </header>
       <div class="trace__result">
-        <span class="trace__badge" aria-hidden="true"><Unplug size={22} stroke-width={2} /></span>
         <div>
           <p class="trace__status">OPEN</p>
           <p class="t-mono trace__std">HTTP 404 · No link detected</p>
@@ -89,16 +89,6 @@ const routes = [
     gap: 0.875rem;
     padding-bottom: 1.25rem;
     border-bottom: 1px solid var(--hairline);
-  }
-
-  .trace__badge {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--signal);
-    color: var(--white);
   }
 
   .trace__status {

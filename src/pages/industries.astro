@@ -4,33 +4,12 @@
  * The sector → service mapping below is a general guide derived from each sector's `need`;
  * TODO(content): confirm sectors and typical systems with Armak.
  */
-import {
-  HeartPulse,
-  GraduationCap,
-  BuildingComplex,
-  Store,
-  Hotel,
-  Building,
-  Landmark,
-  Warehouse,
-  ArrowRight,
-} from '@lucide/astro';
+import { ArrowRight } from '@lucide/astro';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
 import { services, type ServiceSlug } from '../data/site';
-import { industries, type Industry } from '../data/content';
-
-const icons: Record<Industry['icon'], typeof HeartPulse> = {
-  'heart-pulse': HeartPulse,
-  'graduation-cap': GraduationCap,
-  'building-2': BuildingComplex,
-  store: Store,
-  hotel: Hotel,
-  building: Building,
-  landmark: Landmark,
-  warehouse: Warehouse,
-};
+import { industries } from '../data/content';
 
 /** Systems that typically apply per sector. Kept general — every site is scoped individually. */
 const typical: Record<string, ServiceSlug[]> = {
@@ -47,7 +26,6 @@ const typical: Record<string, ServiceSlug[]> = {
 const rows = industries.map((ind, i) => ({
   ...ind,
   code: `G-${String(i + 1).padStart(2, '0')}`,
-  Icon: icons[ind.icon],
   services: (typical[ind.slug] ?? []).map((slug) => services.find((s) => s.slug === slug)!).filter(Boolean),
 }));
 
@@ -55,15 +33,15 @@ const description =
   'Low-voltage, network and security systems for offices, healthcare, schools, retail, hospitality, multifamily and industrial sites in Southern California.';
 ---
 
-<Base title="Industries We Serve · Southern California" description={description} footerCta={false}>
+<Base title="Industries · Southern California" description={description} footerCta={false}>
   <PageHero
     code="G-00"
     label="Industries"
-    title="The buildings we work in."
+    title="Buildings we plan for."
     lead="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan each install around them, and the cabling behind every system goes in to ANSI/TIA standards."
     crumbs={[{ label: 'Industries' }]}
   >
-    <nav class="jump" aria-label="Jump to an industry" data-reveal style="--reveal-delay: 120ms">
+    <nav class="jump" aria-label="Jump to an industry">
       <ul role="list" class="jump__list">
         {rows.map((r) => (
           <li>
@@ -78,19 +56,18 @@ const description =
   </PageHero>
 
   <div class="sectors container">
-    {rows.map(({ Icon, ...r }) => (
+    {rows.map((r) => (
       <section id={r.slug} class="sector" aria-labelledby={`${r.slug}-title`}>
-        <div class="sector__head" data-reveal>
-          <span class="sector__icon"><Icon size={26} stroke-width={1.5} aria-hidden="true" /></span>
+        <div class="sector__head">
           <span class="t-mono sector__code">{r.code}</span>
         </div>
 
-        <div class="sector__main" data-reveal>
+        <div class="sector__main">
           <h2 id={`${r.slug}-title`} class="t-h2 sector__name">{r.name}</h2>
           <p class="t-lead sector__need">{r.need}</p>
         </div>
 
-        <div class="sector__systems" data-reveal style="--reveal-delay: 100ms">
+        <div class="sector__systems">
           <p class="t-mono sector__systems-head">Typical systems</p>
           <ul role="list" class="sector__list">
             {r.services.map((s) => (
@@ -133,7 +110,7 @@ const description =
     gap: 0.625rem;
     min-height: 40px;
     padding: 0.5rem 0.875rem;
-    border: 1px solid var(--hairline-strong);
+    border: 1px solid var(--field-line);
     border-radius: var(--radius);
     font-size: var(--fs-small);
     transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
@@ -175,21 +152,6 @@ const description =
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-  }
-
-  .sector__icon {
-    display: grid;
-    place-items: center;
-    width: 52px;
-    height: 52px;
-    border: 1px solid var(--hairline-strong);
-    border-radius: var(--radius);
-  }
-
-  .sector:target .sector__icon {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--paper);
   }
 
   .sector__code {

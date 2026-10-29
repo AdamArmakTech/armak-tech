@@ -3,7 +3,6 @@
  * Contact — site-assessment form (Web3Forms → sales inbox) beside direct contact details,
  * then the service-area map. Ends in the form, so the footer CTA is hidden.
  */
-import { Clock, LifeBuoy, MapPin } from '@lucide/astro';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import ContactForm from '../components/forms/ContactForm.astro';
@@ -27,11 +26,11 @@ const next = steps.slice(0, 2);
   />
 
   <section class="contact container" aria-label="Contact form and details">
-    <div class="contact__panel" data-reveal>
+    <div class="contact__panel">
       <ContactForm id="form" headingLevel={2} />
     </div>
 
-    <aside class="contact__info" aria-label="Contact details" data-reveal style="--reveal-delay: 120ms">
+    <aside class="contact__info" aria-label="Contact details">
       <div class="contact__direct">
         <p class="t-mono t-muted">Prefer to talk?</p>
         <a class="contact__phone" href={site.phoneHref}>{site.phone}</a>
@@ -40,17 +39,14 @@ const next = steps.slice(0, 2);
 
       <ul role="list" class="contact__rows">
         <li>
-          <Clock class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
           <span class="t-mono contact__key">Hours</span>
           <span>{site.hours}</span>
         </li>
         <li>
-          <LifeBuoy class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
           <span class="t-mono contact__key">Support</span>
           <span>{site.support}</span>
         </li>
         <li>
-          <MapPin class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
           <span class="t-mono contact__key">Headquarters</span>
           <span>{site.hq.city}, California<br /><span class="t-muted">Serving all of Southern California</span></span>
         </li>
@@ -134,18 +130,13 @@ const next = steps.slice(0, 2);
 
   .contact__rows li {
     display: grid;
-    grid-template-columns: 18px 7.5rem minmax(0, 1fr);
+    grid-template-columns: 7.5rem minmax(0, 1fr);
     gap: 0.25rem 0.875rem;
     align-items: start;
     padding-block: 0.875rem;
     border-bottom: 1px solid var(--hairline);
     font-size: var(--fs-small);
     overflow-wrap: anywhere;
-  }
-
-  .contact__rows :global(.contact__icon) {
-    margin-top: 0.15rem;
-    color: var(--steel);
   }
 
   .contact__key {
@@ -183,11 +174,7 @@ const next = steps.slice(0, 2);
 
   @media (max-width: 419px) {
     .contact__rows li {
-      grid-template-columns: 18px minmax(0, 1fr);
-    }
-
-    .contact__rows li > :last-child {
-      grid-column: 2;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 

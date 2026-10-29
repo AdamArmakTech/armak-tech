@@ -30,14 +30,14 @@ const cols = `--c-sm:${Math.min(n, 2)};--c-md:${Math.min(n, 3)};--c-lg:${Math.mi
       <div class="plogos__head">
         <Label code={code}>Platforms we install</Label>
         <p id="plogos-title" class="t-small t-muted">
-          Hardware from the manufacturers enterprise IT already trusts.
+          Hardware from the manufacturers we install and support.
         </p>
       </div>
-      <ul role="list" class="plogos__grid" style={cols} data-reveal-stagger="50">
+      <ul role="list" class="plogos__grid" style={cols}>
         {list.map((p) => {
           const h = heightFor(p.logo.width, p.logo.height);
           return (
-            <li class="plogos__item" data-reveal>
+            <li class="plogos__item">
               <Image
                 src={p.logo}
                 alt={p.name}

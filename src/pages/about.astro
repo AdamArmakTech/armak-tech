@@ -4,7 +4,6 @@
  * numbers, manufacturer partners, team slot (placeholder until Armak supplies it), service area.
  */
 import { Image } from 'astro:assets';
-import { UserRound } from '@lucide/astro';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
@@ -78,7 +77,7 @@ const SHOW_PLACEHOLDERS = false;
           <div class="story__photo">
             <Image
               src={storyPhoto}
-              alt="Neatly dressed white cable bundles fanning into a patch panel"
+              alt="Neatly dressed light-blue cable bundles with black Velcro ties running into a rack of patch panels"
               widths={[480, 720, 960, 1280]}
               sizes="(min-width: 1000px) 40vw, 100vw"
               loading="lazy"
@@ -86,9 +85,9 @@ const SHOW_PLACEHOLDERS = false;
           </div>
         </figure>
 
-        <ol role="list" class="story__list" data-reveal-stagger="90">
+        <ol role="list" class="story__list">
           {story.map((s, i) => (
-            <li class="story__item" data-reveal>
+            <li class="story__item">
               <span class="t-mono story__index">{String(i + 1).padStart(2, '0')} · {s.tag}</span>
               <h3 class="t-h3">{s.title}</h3>
               <p class="t-muted">{s.body}</p>
@@ -100,7 +99,7 @@ const SHOW_PLACEHOLDERS = false;
       <!-- Milestones: only the founding year and current totals are facts; the rest is a slot.
            Hidden until Armak supplies real milestones (two rows alone read as an empty template). -->
       {SHOW_PLACEHOLDERS && (
-      <div class="timeline" data-reveal>
+      <div class="timeline">
         <Label code="K-01.1">Milestones</Label>
         <ol role="list" class="timeline__rows">
           <li class="timeline__row">
@@ -131,9 +130,9 @@ const SHOW_PLACEHOLDERS = false;
   <section class="section section--flush-top principles">
     <div class="container">
       <SectionHead code="K-02" label="How we work" title="How we work on every job." />
-      <ul role="list" class="principles__grid" data-reveal-stagger="80">
+      <ul role="list" class="principles__grid">
         {pillars.map((p, i) => (
-          <li class="principle" data-reveal>
+          <li class="principle">
             <span class="t-mono principle__index">
               {String(i + 1).padStart(2, '0')}{pillarTags[i] && ` · ${pillarTags[i]}`}
             </span>
@@ -148,16 +147,16 @@ const SHOW_PLACEHOLDERS = false;
   <!-- K-03 · Credentials -->
   <section class="section section--flush-top creds">
     <div class="container">
-      <SectionHead code="K-03" label="Credentials" title="Licensed, bonded and insured." />
-      <ul role="list" class="creds__grid" data-reveal-stagger="70">
+      <SectionHead code="K-03" label="Credentials" title="Licensing, certification and support." />
+      <ul role="list" class="creds__grid">
         {credentials.map((c, i) => (
-          <li class="cred" data-reveal>
+          <li class="cred">
             <span class="t-mono cred__code">C-{String(i + 1).padStart(2, '0')}</span>
             <span class="cred__text">{c}</span>
           </li>
         ))}
         {(site.license || SHOW_PLACEHOLDERS) && (
-          <li class="cred" data-reveal>
+          <li class="cred">
             <span class="t-mono cred__code">C-{String(credentials.length + 1).padStart(2, '0')}</span>
             <span class="cred__text">Contractor license</span>
             {site.license ? (
@@ -168,7 +167,7 @@ const SHOW_PLACEHOLDERS = false;
           </li>
         )}
         {SHOW_PLACEHOLDERS && (
-          <li class="cred" data-reveal>
+          <li class="cred">
             <span class="t-mono cred__code">C-{String(credentials.length + 2).padStart(2, '0')}</span>
             <span class="cred__text">Manufacturer certifications</span>
             <Label tone="signal" class="cred__flag">Placeholder · List to supply</Label>
@@ -192,11 +191,10 @@ const SHOW_PLACEHOLDERS = false;
         title="The people behind the installs."
         intro="One crew and one point of contact from the first walk-through to the final report."
       />
-      <ul role="list" class="team__grid" data-reveal-stagger="70">
+      <ul role="list" class="team__grid">
         {[1, 2, 3, 4].map((n) => (
-          <li class="member" data-reveal>
+          <li class="member">
             <div class="member__photo" aria-hidden="true">
-              <UserRound size={40} stroke-width={1} />
               <Label tone="signal" class="member__flag">Placeholder</Label>
             </div>
             <p class="t-mono t-muted">K-04.{n}</p>
@@ -205,9 +203,9 @@ const SHOW_PLACEHOLDERS = false;
           </li>
         ))}
       </ul>
-      <div class="team__foot" data-reveal>
+      <div class="team__foot">
         <p class="t-small t-muted">Want to work with us?</p>
-        <Button href="/contact/" variant="link">Get in touch</Button>
+        <Button href="/contact/" variant="link">Request a site assessment</Button>
       </div>
     </div>
   </section>
@@ -217,7 +215,7 @@ const SHOW_PLACEHOLDERS = false;
 
   <PageCta
     code="K-05"
-    title="Let’s talk about your site."
+    title="Walk your building with us."
     body="Call or send a note about your building. We’ll walk it with you and put the scope and price in writing."
   />
 </Base>

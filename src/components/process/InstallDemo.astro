@@ -6,7 +6,6 @@
  * Teaches: a clean, labeled install is traceable and easy to change; work is planned around the
  * business. The slider works without JS animation; the script auto-sweeps it once, then hands over.
  */
-import { Package, Moon, Zap } from '@lucide/astro';
 import DemoFrame from './DemoFrame.astro';
 
 const uid = `in${Math.random().toString(36).slice(2, 8)}`;
@@ -49,9 +48,9 @@ const bundles = [0, 1, 2, 3].map((k) => ({
 const cords = Array.from({ length: 12 }, (_, i) => ({ x: portX(i) + 4, uplink: i >= 10 }));
 
 const steps = [
-  { icon: Package, title: 'Pre-staged', detail: 'Panels, labels and parts prepared before arriving on site.' },
-  { icon: Moon, title: 'After-hours install', detail: 'The noisy work happens while the office is closed.' },
-  { icon: Zap, title: 'Phased cutover', detail: 'Systems switched over in planned phases, so the business keeps running.' },
+  { title: 'Pre-staged', detail: 'Panels, labels and parts prepared before arriving on site.' },
+  { title: 'After-hours install', detail: 'The noisy work happens while the office is closed.' },
+  { title: 'Phased cutover', detail: 'Systems switched over in planned phases, so the business keeps running.' },
 ];
 ---
 
@@ -141,9 +140,8 @@ const steps = [
     </div>
 
     <ol role="list" class="in__steps">
-      {steps.map(({ icon: Icon, title, detail }) => (
+      {steps.map(({ title, detail }) => (
         <li class="in__step is-on" data-in-step>
-          <span class="in__icon" aria-hidden="true"><Icon size={16} stroke-width={1.75} /></span>
           <span class="in__step-text">
             <span class="in__step-title">{title}</span>
             <span class="in__step-detail">{detail}</span>
@@ -385,8 +383,7 @@ const steps = [
 
   .in__step {
     display: grid;
-    grid-template-columns: 30px minmax(0, 1fr);
-    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1fr);
     padding-block: 0.75rem;
     border-bottom: 1px solid var(--hairline);
     opacity: 0.3;
@@ -397,22 +394,6 @@ const steps = [
   .in__step.is-on {
     opacity: 1;
     transform: none;
-  }
-
-  .in__icon {
-    display: grid;
-    place-items: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: var(--paper-sunken);
-    color: var(--ink);
-    transition: background 0.3s ease, color 0.3s ease;
-  }
-
-  .in__step.is-on .in__icon {
-    background: var(--ink);
-    color: var(--paper);
   }
 
   .in__step-text {
@@ -462,14 +443,7 @@ const steps = [
     }
 
     .in__step {
-      grid-template-columns: 26px minmax(0, 1fr);
-      gap: 0.625rem;
       padding-block: 0.5rem;
-    }
-
-    .in__icon {
-      width: 26px;
-      height: 26px;
     }
 
     .in__step-text {

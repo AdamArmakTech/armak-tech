@@ -24,7 +24,7 @@ const description =
   <PageHero
     code="E-00"
     label="Projects"
-    title="Work, documented."
+    title="Projects we’ve delivered."
     lead="Case studies from across Southern California: the site, the constraints, what we installed and what we handed over."
     crumbs={[{ label: 'Projects' }]}
     spec={[`${site.projectsDelivered}+ projects since ${FOUNDED}`, `${serviceArea.length} cities served`, 'Every install tested & documented']}
@@ -41,9 +41,9 @@ const description =
       </div>
     )}
 
-    <ul role="list" class="plist__grid" data-reveal-stagger="90">
+    <ul role="list" class="plist__grid">
       {projects.map((p) => (
-        <li data-reveal>
+        <li>
           <ProjectCard project={p} headingLevel="h2" />
         </li>
       ))}
@@ -52,7 +52,7 @@ const description =
 
   <PageCta
     code="E-00.2"
-    title="Have a project like these?"
+    title="Send us your project."
     body="Tell us what you’re building. We’ll walk the site, scope the work and send you a clear written plan and price."
   />
 </Base>

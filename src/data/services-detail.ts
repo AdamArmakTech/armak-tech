@@ -57,7 +57,7 @@ export interface ServicePhoto {
 export const servicePhotos: Partial<Record<ServiceSlug, ServicePhoto>> = {
   'structured-cabling': {
     src: cablingBundles,
-    alt: 'Neatly dressed white cable bundles fanning into a patch panel',
+    alt: 'Neatly dressed light-blue cable bundles with black Velcro ties running into a rack of patch panels',
     tag: 'A-01 · Physical layer',
   },
   networking: {
@@ -77,7 +77,7 @@ export const servicePhotos: Partial<Record<ServiceSlug, ServicePhoto>> = {
   },
   'voip-unified-comms': {
     src: deskPhone,
-    alt: 'An IP desk phone on a desk in a bright office',
+    alt: 'A black office desk phone with a coiled handset cord on a desk',
     tag: 'A-05 · Voice layer',
   },
   'audio-video': {
@@ -116,7 +116,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'Business & corporate relocation',
-        body: 'IT moves, cabling refreshes and go-live support. The new space is cabled, tested and ready before your team moves in.',
+        body: 'IT moves, cabling refreshes and go-live support.',
       },
     ],
     standards: [
@@ -161,7 +161,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'Firewalls & secure edge',
-        body: 'Firewall configuration that controls what enters and leaves your network, with secure remote access and site-to-site connectivity for multi-location businesses.',
+        body: 'Firewall configuration that controls what enters and leaves your network.',
       },
       {
         title: 'Enterprise Wi-Fi design',
@@ -287,7 +287,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'Time & attendance',
-        body: 'Modern time clocks and admin control for any workforce: accurate punches, simpler payroll and fewer disputes over hours.',
+        body: 'Time clocks with admin controls: accurate punches, simpler payroll and fewer disputes over hours.',
       },
       {
         title: 'Schedules & audit trails',
@@ -328,7 +328,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
   'voip-unified-comms': {
     headline: 'Business phones that are simple to use and manage.',
     intro:
-      'Cloud phone systems, call flows that send callers to the right person, and onboarding that gets your team comfortable from the first call. Paging, messaging and backup tie it all together.',
+      'Cloud phone systems, call flows that send callers to the right person, and onboarding that gets your team comfortable from the first call. We also set up paging, messaging and backup.',
     capabilities: [
       {
         title: 'Cloud phone systems',
@@ -344,7 +344,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       },
       {
         title: 'Storage, backup & messaging',
-        body: 'Cloud voice, file storage, backup and messaging working together, so communications and the files behind them live in one place.',
+        body: 'Cloud voice, file storage, backup and messaging set up together, so calls and files live in one place.',
       },
       {
         title: 'PA & zone paging',
@@ -389,7 +389,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
   'audio-video': {
     headline: 'Rooms that work when the meeting starts.',
     intro:
-      'Displays, speakers, mounts and tuning for any space or scale: conference rooms, digital signage and distributed audio. Meeting rooms are set up so anyone can walk in and start a call.',
+      'Displays, speakers, mounts and tuning for conference rooms, digital signage and distributed audio. Meeting rooms are set up so anyone can walk in and start a call.',
     capabilities: [
       {
         title: 'Conference & huddle rooms',

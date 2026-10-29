@@ -63,7 +63,7 @@ import { contactHref } from '../../lib/cta';
                 Ask about {s.name.toLowerCase()}
                 <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" />
               </a>
-              <a class="explorer__link" href={`/services/${s.slug}/`}>Learn more</a>
+              <a class="explorer__link" href={`/services/${s.slug}/`}>See {s.name}</a>
             </div>
           </div>
         ))}
@@ -89,6 +89,7 @@ import { contactHref } from '../../lib/cta';
     let userTookOver = false;
     let inView = false;
     let hovering = false;
+    let focused = false;
 
     const select = (i: number, { focus = false } = {}) => {
       index = (i + tabs.length) % tabs.length;
@@ -133,7 +134,7 @@ import { contactHref } from '../../lib/cta';
     };
 
     const startAuto = () => {
-      if (reduceMotion || userTookOver || timer || !inView || hovering) return;
+      if (reduceMotion || userTookOver || timer || !inView || hovering || focused) return;
       restartProgress(tabs[index]);
       timer = window.setInterval(() => select(index + 1), AUTO_MS);
     };
@@ -161,8 +162,19 @@ import { contactHref } from '../../lib/cta';
 
     // Any press inside the explorer (e.g. tapping the drawing) hands control to the visitor
     root.addEventListener('pointerdown', takeOver, { once: true });
-    // Keyboard users who tab into it (tabs, panel or the "Explore" link) keep it where it is
-    root.addEventListener('focusin', takeOver, { once: true });
+    // Keyboard focus inside it (tabs, panel or the "Ask about" / "See" links) holds it still;
+    // it carries on once focus moves out (unless the visitor took over with a click or arrow key)
+    root.addEventListener('focusin', () => {
+      focused = true;
+      stopAuto();
+    });
+    root.addEventListener('focusout', (e) => {
+      const to = e.relatedTarget as Node | null;
+      // Moving between controls inside, or the whole window losing focus, keeps it paused
+      if ((to && root.contains(to)) || (!to && root.contains(document.activeElement))) return;
+      focused = false;
+      startAuto();
+    });
 
     // Hold still while the mouse is over it; carry on when it leaves (unless the visitor took over)
     root.addEventListener('mouseenter', () => {
@@ -226,7 +238,7 @@ import { contactHref } from '../../lib/cta';
     gap: 0.625rem;
     flex-shrink: 0;
     padding: 0.75rem 1rem;
-    border: 1px solid var(--hairline-strong);
+    border: 1px solid var(--field-line);
     border-radius: var(--radius);
     background: transparent;
     text-align: left;
@@ -296,6 +308,12 @@ import { contactHref } from '../../lib/cta';
     display: grid;
     gap: 0.875rem;
     justify-items: start;
+  }
+
+  /* display:grid above beats the browser's [hidden] rule, so inactive systems stayed visible
+     (and their links stayed in the Tab order) */
+  .explorer__detail[hidden] {
+    display: none;
   }
 
   .explorer__detail-head {

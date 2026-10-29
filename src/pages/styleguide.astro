@@ -23,7 +23,7 @@ const colors = [
   { name: 'Ink', token: '--ink', hex: '#0B0D10', use: 'Text, inverse surfaces' },
   { name: 'Steel', token: '--steel', hex: '#565E6B', use: 'Secondary text' },
   { name: 'Hairline', token: '--hairline', hex: '#D9D7D0', use: '1px rules' },
-  { name: 'Signal', token: '--signal', hex: '#D4111A', use: 'CTAs & key accents only' },
+  { name: 'Signal', token: '--signal', hex: '#d0101a', use: 'CTAs & key accents only' },
   { name: 'Armak Blue', token: '--armak-blue', hex: '#1D3F8F', use: 'Diagrams & map only' },
   { name: 'Pass', token: '--pass', hex: '#1F8A4C', use: 'Certification state' },
 ];
@@ -47,7 +47,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
     <Label code="SG-00">Design system</Label>
     <h1 class="t-display" data-split>Precision<br />Infrastructure.</h1>
     <p class="t-lead">
-      The Armak design system: a light, editorial look built from the trade itself — TIA-606 labels,
+      The Armak design system: a light, editorial look built from the trade itself: TIA-606 labels,
       T568B pair colors and certification reports. Every page of the new site is assembled from the
       pieces below.
     </p>
@@ -64,13 +64,13 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
           {yearsInBusiness} years designing, installing and certifying the cabling, networks and
           security systems Southern California’s facilities run on.
         </p>
-        <div class="hero-preview__ctas" data-reveal>
+        <div class="hero-preview__ctas">
           <Button href="/contact/" size="lg">Request a site assessment</Button>
-          <Button href="/services/" variant="outline" size="lg" icon="none">Explore services</Button>
+          <Button href="/services/" variant="outline" size="lg" icon="none">See all services</Button>
         </div>
       </div>
-      <div class="hero-preview__media" data-reveal>
-        <Image src={cableBundles} alt="Neatly dressed blue Cat 6A cable bundles terminating into patch panels" widths={[640, 960, 1400]} sizes="(min-width: 900px) 50vw, 100vw" loading="eager" />
+      <div class="hero-preview__media">
+        <Image src={cableBundles} alt="Neatly dressed light-blue cable bundles with black Velcro ties running into a rack of patch panels" widths={[640, 960, 1400]} sizes="(min-width: 900px) 50vw, 100vw" loading="eager" />
         <CableTest variant="compact" class="hero-preview__card" demoHref="/#cable-test" />
       </div>
     </div>
@@ -79,9 +79,9 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
   <!-- ─────────── Color ─────────── -->
   <section class="container sg-block">
     <SectionHead code="SG-02" label="Color" title="Paper, ink, and one signal." intro="Red is reserved for actions and live indicators. If everything is red, nothing is." split={false} />
-    <ul role="list" class="swatches" data-reveal-stagger="50">
+    <ul role="list" class="swatches">
       {colors.map((c) => (
-        <li class="swatch" data-reveal>
+        <li class="swatch">
           <span class="swatch__chip" style={`background: var(${c.token})`} />
           <span class="swatch__name">{c.name}</span>
           <span class="t-mono t-muted">{c.hex}</span>
@@ -92,7 +92,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
     <div class="sg-row">
       <div class="sg-stripe-demo">
         <Stripe height={10} />
-        <p class="t-mono t-muted">T568B stripe — pins 1 → 8. Used as a divider and footer accent.</p>
+        <p class="t-mono t-muted">T568B stripe: pins 1 → 8. Used as a divider and footer accent.</p>
       </div>
     </div>
   </section>
@@ -126,7 +126,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
       <div class="sg-panel">
         <p class="t-mono t-muted">Buttons</p>
         <div class="sg-wrap">
-          <Button>Request assessment</Button>
+          <Button>Request a site assessment</Button>
           <Button variant="ink">Ink</Button>
           <Button variant="outline" icon="none">Outline</Button>
           <Button variant="link">Text link</Button>
@@ -151,12 +151,12 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
   <!-- ─────────── Tiles ─────────── -->
   <section class="container sg-block">
     <SectionHead code="SG-05" label="Service tiles" title="Everything you do, visible at once." intro="Replaces the one-card-at-a-time decks. Each tile links to its own service page." split={false} />
-    <div class="tiles" data-reveal-stagger="90">
-      <ServiceTile data-reveal href={`/services/${services[0].slug}/`} code={services[0].code} title={services[0].name} description={services[0].short} image={cableBundles} size="feature" class="tiles__feature" />
-      <ServiceTile data-reveal href={`/services/${services[1].slug}/`} code={services[1].code} title={services[1].name} description={services[1].short} image={rackRow} />
-      <ServiceTile data-reveal href={`/services/${services[2].slug}/`} code={services[2].code} title={services[2].name} description={services[2].short} image={dataHall} />
-      <ServiceTile data-reveal href={`/services/${services[3].slug}/`} code={services[3].code} title={services[3].name} description={services[3].short} />
-      <ServiceTile data-reveal href={`/services/${services[4].slug}/`} code={services[4].code} title={services[4].name} description={services[4].short} image={patchColors} />
+    <div class="tiles">
+      <ServiceTile href={`/services/${services[0].slug}/`} code={services[0].code} title={services[0].name} description={services[0].short} image={cableBundles} size="feature" class="tiles__feature" />
+      <ServiceTile href={`/services/${services[1].slug}/`} code={services[1].code} title={services[1].name} description={services[1].short} image={rackRow} />
+      <ServiceTile href={`/services/${services[2].slug}/`} code={services[2].code} title={services[2].name} description={services[2].short} image={dataHall} />
+      <ServiceTile href={`/services/${services[3].slug}/`} code={services[3].code} title={services[3].name} description={services[3].short} />
+      <ServiceTile href={`/services/${services[4].slug}/`} code={services[4].code} title={services[4].name} description={services[4].short} image={patchColors} />
     </div>
   </section>
 
@@ -164,7 +164,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
   <section class="container sg-block">
     <SectionHead code="SG-06" label="Numbers" title="Proof, set in mono." split={false} />
     <div class="stats">
-      <Stat value={yearsInBusiness} label="Years in business" detail={`Since ${FOUNDED}. Computed at build — never out of date.`} />
+      <Stat value={yearsInBusiness} label="Years in business" detail={`Since ${FOUNDED}. Computed at build, so never out of date.`} />
       <Stat value={site.projectsDelivered} suffix="+" label="Projects delivered" />
       <Stat value="24/7" label="Support" detail="For contracted clients." />
       <Stat value={serviceArea.length} label="Cities served" />

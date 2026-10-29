@@ -16,13 +16,13 @@ const { code, serviceName, items } = Astro.props;
     <SectionHead
       code={code}
       label="Capabilities"
-      title="What’s in scope."
-      intro={`What’s included in ${serviceName.toLowerCase()}. Every job is scoped to your site after a walk-through.`}
+      title={`What we handle in ${serviceName.toLowerCase()}.`}
+      intro="Every job is scoped to your site after a walk-through."
     />
 
-    <ol role="list" class="caps__grid" data-reveal-stagger="70">
+    <ol role="list" class="caps__grid">
       {items.map((item, i) => (
-        <li class="cap" data-reveal>
+        <li class="cap">
           <span class="t-mono cap__index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
           <h3 class="t-h4 cap__title">{item.title}</h3>
           <p class="t-small t-muted cap__body">{item.body}</p>

@@ -13,17 +13,17 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
       </h2>
     </div>
 
-    <div class="numbers__grid" data-reveal-stagger="90">
-      <div data-reveal>
+    <div class="numbers__grid">
+      <div>
         <Stat value={yearsInBusiness} label="Years in business" detail={`Since ${FOUNDED}.`} />
       </div>
-      <div data-reveal>
+      <div>
         <Stat value={site.projectsDelivered} suffix="+" label="Projects delivered" />
       </div>
-      <div data-reveal>
-        <Stat value="24/7" label="Emergency response" detail="For contracted clients." />
+      <div>
+        <Stat value="24/7" label="Support" detail="For contracted clients." />
       </div>
-      <div data-reveal>
+      <div>
         <Stat value={serviceArea.length} label="Cities served" detail={`Across ${counties.length} counties.`} />
       </div>
     </div>

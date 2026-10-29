@@ -12,14 +12,14 @@ const { current, code } = Astro.props;
 const others = services.filter((s) => s.slug !== current);
 ---
 
-<nav class="others container" aria-labelledby="others-title">
+<nav class="others container" aria-label="Other services">
   <div class="others__head">
     <Label code={code}>Other services</Label>
     <p id="others-title" class="t-small t-muted">Most projects involve more than one system. One team handles all of them.</p>
   </div>
-  <ul role="list" class="others__grid" data-reveal-stagger="60">
+  <ul role="list" class="others__grid">
     {others.map((s) => (
-      <li data-reveal>
+      <li>
         <a class="other" href={`/services/${s.slug}/`}>
           <span class="other__top">
             <span class="t-mono other__code">{s.code}</span>

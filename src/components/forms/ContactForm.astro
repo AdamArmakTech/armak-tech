@@ -33,7 +33,7 @@ const f = (name: string) => `${id}-${name}`;
   <form class="cform__form" action={endpoint} method="POST" data-cform-form>
     <!-- Web3Forms config (same fields as the original site's form) -->
     <input type="hidden" name="access_key" value={accessKey} />
-    <input type="hidden" name="subject" value="New Site Assessment Inquiry — Armak Technologies" />
+    <input type="hidden" name="subject" value="New Site Assessment Inquiry: Armak Technologies" />
     <input type="hidden" name="from_name" value="Armak Website" />
     <!-- Set from the link that opened the form (a glossary term, "estimate", …); shows up in the email -->
     <input type="hidden" name="topic" value="" />
@@ -49,7 +49,7 @@ const f = (name: string) => `${id}-${name}`;
       <H class="t-h3 cform__title" id={f('s1-title')} tabindex="-1">What are you building?</H>
 
       <fieldset class="cform__chips" aria-describedby={f('type-error')}>
-        <legend class="field__label">Select all that apply</legend>
+        <legend class="field__label">Select all that apply <span class="cform__req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>
         <div class="cform__chip-list">
           {projectTypes.map((p) => (
             <label class="chip">
@@ -86,7 +86,7 @@ const f = (name: string) => `${id}-${name}`;
         <div class="field">
           <label class="field__label" for={f('name')}>Name <span class="cform__req" aria-hidden="true">*</span></label>
           <input class="field__control" id={f('name')} name="name" type="text" autocomplete="name" required aria-describedby={f('name-error')} />
-          <p class="cform__error" id={f('name-error')} data-error-for="name"></p>
+          <p class="cform__error" id={f('name-error')} data-error-for="name" aria-live="polite"></p>
         </div>
         <div class="field">
           <label class="field__label" for={f('company')}>Company</label>
@@ -95,17 +95,17 @@ const f = (name: string) => `${id}-${name}`;
         <div class="field">
           <label class="field__label" for={f('email')}>Email <span class="cform__req" aria-hidden="true">*</span></label>
           <input class="field__control" id={f('email')} name="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" required aria-describedby={f('email-error')} />
-          <p class="cform__error" id={f('email-error')} data-error-for="email"></p>
+          <p class="cform__error" id={f('email-error')} data-error-for="email" aria-live="polite"></p>
         </div>
         <div class="field">
           <label class="field__label" for={f('phone')}>Phone <span class="cform__req" aria-hidden="true">*</span></label>
           <input class="field__control" id={f('phone')} name="phone" type="tel" inputmode="tel" autocomplete="tel" required aria-describedby={f('phone-error')} />
-          <p class="cform__error" id={f('phone-error')} data-error-for="phone"></p>
+          <p class="cform__error" id={f('phone-error')} data-error-for="phone" aria-live="polite"></p>
         </div>
         <div class="field cform__full">
           <label class="field__label" for={f('message')}><span data-message-label>Project details</span> <span class="cform__req" aria-hidden="true">*</span></label>
           <textarea class="field__control" id={f('message')} name="message" rows="4" required placeholder="Site location, scale, timeline." aria-describedby={f('message-error')}></textarea>
-          <p class="cform__error" id={f('message-error')} data-error-for="message"></p>
+          <p class="cform__error" id={f('message-error')} data-error-for="message" aria-live="polite"></p>
         </div>
       </div>
 
@@ -114,7 +114,7 @@ const f = (name: string) => `${id}-${name}`;
         <Button type="submit" variant="primary" size="lg" data-submit>Request my site assessment</Button>
       </div>
       <p class="t-small t-muted cform__privacy">
-        We only use your details to reply to you. <a class="cform__link" href="/privacy/">Privacy policy</a>
+        By sending this, you agree to our <a class="cform__link" href="/terms/">terms</a>. We only use your details to reply to you. <a class="cform__link" href="/privacy/">Privacy policy</a>
       </p>
     </div>
 
@@ -130,7 +130,7 @@ const f = (name: string) => `${id}-${name}`;
       <li><span class="t-mono">03</span>You get a written plan and price for the work.</li>
     </ol>
     <p class="t-small t-muted">
-      Need us sooner? Call <a class="cform__link" href={site.phoneHref}>{site.phone}</a> · {site.hours}
+      Need us sooner? Call <a class="cform__link" href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}
     </p>
   </div>
 </div>
@@ -640,7 +640,7 @@ const f = (name: string) => `${id}-${name}`;
       if (s2Title) s2Title.textContent = 'Ask a quick question';
       if (messageLabel) messageLabel.textContent = 'Your question';
       if (message && !about) message.placeholder = 'Ask us anything about your building’s cabling, network, cameras, doors, phones or AV.';
-      if (subject) subject.value = 'Quick question — Armak Website';
+      if (subject) subject.value = 'Quick question: Armak Website';
       if (submitLabel) submitLabel.textContent = 'Send my question';
       startStep = 2;
     }
@@ -650,7 +650,7 @@ const f = (name: string) => `${id}-${name}`;
       if (s2Title) s2Title.textContent = 'Tell us what’s wrong';
       if (messageLabel) messageLabel.textContent = 'What’s happening';
       if (message) message.placeholder = 'What’s happening, where in the building, and since when.';
-      if (subject) subject.value = 'Service request — Armak Website';
+      if (subject) subject.value = 'Service request: Armak Website';
       if (submitLabel) submitLabel.textContent = 'Send request';
       if (note) {
         note.replaceChildren(

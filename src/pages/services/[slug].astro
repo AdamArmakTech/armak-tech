@@ -46,7 +46,7 @@ const provider = {
   '@type': 'ProfessionalService', // same type + @id as the site-wide business entry (src/data/seo.ts)
   '@id': `${site.url}/#business`,
   name: site.name,
-  url: site.url,
+  url: `${site.url}/`,
   telephone: site.phoneHref.replace(/^tel:/, ''),
   email: site.email,
   address: {
@@ -131,7 +131,7 @@ const jsonLd = {
   <ServiceCta
     about={service.slug}
     code={codes.cta}
-    title={`Planning ${service.name.toLowerCase()} work?`}
+    title={`Talk to us about ${service.name.toLowerCase()}.`}
     body="Tell us about the site. We’ll walk it with you, document what’s there and scope the job before anything is priced."
   />
 

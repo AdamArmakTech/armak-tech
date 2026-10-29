@@ -1,28 +1,7 @@
 ---
-import {
-  HeartPulse,
-  GraduationCap,
-  BuildingComplex,
-  Store,
-  Hotel,
-  Building,
-  Landmark,
-  Warehouse,
-  ArrowUpRight,
-} from '@lucide/astro';
+import { ArrowUpRight } from '@lucide/astro';
 import SectionHead from '../ui/SectionHead.astro';
-import { industries, type Industry } from '../../data/content';
-
-const icons: Record<Industry['icon'], typeof HeartPulse> = {
-  'heart-pulse': HeartPulse,
-  'graduation-cap': GraduationCap,
-  'building-2': BuildingComplex,
-  store: Store,
-  hotel: Hotel,
-  building: Building,
-  landmark: Landmark,
-  warehouse: Warehouse,
-};
+import { industries } from '../../data/content';
 ---
 
 <section id="industries" class="section industries">
@@ -30,18 +9,16 @@ const icons: Record<Industry['icon'], typeof HeartPulse> = {
     <SectionHead
       code="G-00"
       label="Industries"
-      title="The buildings we work in."
+      title="Buildings we plan for."
       intro="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan the install around them."
     />
 
-    <ul role="list" class="industries__grid" data-reveal-stagger="60">
+    <ul role="list" class="industries__grid">
       {industries.map((ind, i) => {
-        const Icon = icons[ind.icon];
         return (
-          <li class="industry" data-reveal>
+          <li class="industry">
             <a href={`/industries/#${ind.slug}`} class="industry__link">
               <span class="industry__top">
-                <span class="industry__icon"><Icon size={22} stroke-width={1.5} aria-hidden="true" /></span>
                 <span class="t-mono industry__code" aria-hidden="true">G-{String(i + 1).padStart(2, '0')}</span>
               </span>
               <h3 class="t-h4 industry__name">{ind.name}</h3>
@@ -94,22 +71,6 @@ const icons: Record<Industry['icon'], typeof HeartPulse> = {
     margin-bottom: 0.75rem;
   }
 
-  .industry__icon {
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    border: 1px solid var(--hairline-strong);
-    border-radius: var(--radius);
-    transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease;
-  }
-
-  .industry__link:hover .industry__icon {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--paper);
-  }
-
   .industry__code {
     color: var(--steel);
   }
@@ -146,7 +107,7 @@ const icons: Record<Industry['icon'], typeof HeartPulse> = {
     }
 
     .industry__link {
-      min-height: 280px;
+      min-height: 220px;
       padding: 1.5rem 1.5rem 2rem;
     }
   }

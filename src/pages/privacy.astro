@@ -2,13 +2,13 @@
 /**
  * Privacy policy (CalOPPA). Plain English and limited to what the site really does:
  * contact form → Web3Forms → sales inbox; Vercel hosting logs; OpenFreeMap map tiles;
- * no cookies, analytics or ads (checked in the code 2026-10-14). Armak should review the wording.
+ * no cookies, analytics or ads (checked in the code 2026-10-29). Armak should review the wording.
  */
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import { site } from '../data/site';
 
-const effective = 'October 14, 2026';
+const effective = 'October 29, 2026';
 const description = `How ${site.name} handles the information you send through armak.tech, including the contact form. No ads, no tracking, and your details are never sold.`;
 ---
 
@@ -25,8 +25,12 @@ const description = `How ${site.name} handles the information you send through a
     <section>
       <h2 class="t-h3">What we collect</h2>
       <p>
-        We only collect what you choose to send us through the contact form: your name, company, email address,
-        phone number, the kind of project you have in mind and your message.
+        Through the contact form, we collect only what you choose to send us: your name, company (optional), email
+        address, phone number, the kind of project you have in mind and your message.
+      </p>
+      <p>
+        The form also passes along what kind of request it is (a site assessment, a quick question or a service
+        request) and, if you opened it from a link on this site such as a glossary term, the topic of that link.
       </p>
       <p>
         Like nearly every website, the servers that host this site keep standard technical logs, such as your IP
@@ -37,8 +41,9 @@ const description = `How ${site.name} handles the information you send through a
     <section>
       <h2 class="t-h3">How we use it</h2>
       <p>
-        We use what you send us to reply to you, schedule a site assessment and scope your project. We don’t use it
-        for anything else, and we don’t sell it, rent it or share it with anyone for marketing.
+        We use what you send us to reply to you, schedule a site assessment, answer your question or service request,
+        and scope your project. We don’t use it for anything else, and we don’t sell it, rent it or share it with
+        anyone for marketing.
       </p>
     </section>
 
@@ -46,23 +51,27 @@ const description = `How ${site.name} handles the information you send through a
       <h2 class="t-h3">Who else handles it</h2>
       <ul>
         <li>
-          <strong>Web3Forms</strong> delivers the contact form to our inbox ({site.email}) by email.
+          <strong>Web3Forms</strong> delivers the contact form to our inbox ({site.email}) by email. Your browser sends
+          the form to them directly, so they receive what you typed and your IP address. Their own privacy policy
+          covers what they do with it.
         </li>
         <li>
           <strong>Vercel</strong> hosts this website and keeps the standard server logs described above.
         </li>
         <li>
           <strong>OpenFreeMap</strong> supplies the service-area map. When the map loads, your browser requests map
-          images from their servers, so they receive your IP address.
+          data from their servers, so they receive your IP address and standard browser details.
         </li>
       </ul>
+      <p>We don’t load anything else on this site from outside companies.</p>
     </section>
 
     <section>
       <h2 class="t-h3">Cookies and tracking</h2>
       <p>
-        This site doesn’t use advertising, analytics or tracking cookies, and it doesn’t follow you across other
-        websites. Because of that, your browser’s “Do Not Track” setting doesn’t change anything here.
+        This site doesn’t set cookies, and it has no advertising, analytics or tracking tools. It doesn’t follow you
+        across other websites, and no other company runs ads or tracking here. Because of that, we don’t change
+        anything when your browser sends a “Do Not Track” signal.
       </p>
     </section>
 

@@ -15,7 +15,7 @@ interface Props {
 const { photo, testCard = false } = Astro.props;
 ---
 
-<div class:list={['band container', { 'band--card': testCard }]} data-reveal>
+<div class:list={['band container', { 'band--card': testCard }]}>
   <figure class="band__frame">
     <Image
       src={photo.src}
@@ -24,7 +24,7 @@ const { photo, testCard = false } = Astro.props;
       sizes="(min-width: 1360px) 1280px, 100vw"
       loading="eager"
     />
-    <span class="band__tag t-mono">{photo.tag}</span>
+    <span class="band__tag t-mono" aria-hidden="true">{photo.tag}</span>
   </figure>
   {testCard && <CableTest variant="compact" demoHref="/#cable-test" class="band__card" />}
 </div>

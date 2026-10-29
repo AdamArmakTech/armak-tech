@@ -1,0 +1,127 @@
+---
+/**
+ * Terms of use. Plain English and limited to what the site really is: an information site with
+ * planning tools, a contact form and no sales or accounts. Armak should review the wording.
+ */
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/pages/PageHero.astro';
+import { site } from '../data/site';
+
+const effective = 'October 29, 2026';
+const description = `The ground rules for using armak.tech: it is information, not an offer or a quote, and any real work is covered by a separate written agreement with ${site.name}.`;
+---
+
+<Base title="Terms of Use" description={description}>
+  <PageHero
+    code="T-00"
+    label="Terms"
+    title="Terms of use."
+    lead={`The ground rules for using this website. Effective ${effective}.`}
+    crumbs={[{ label: 'Terms' }]}
+  />
+
+  <article class="terms container">
+    <section>
+      <h2 class="t-h3">What this site is</h2>
+      <p>
+        This website gives information about the services {site.name} offers. Using it doesn’t create a contract
+        between you and us. If we do work for you, it’s covered by a separate written proposal or agreement.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">Estimator, checklist, glossary and demos</h2>
+      <p>
+        The project estimator, site-walk checklist, cabling check, glossary and demos are general planning
+        aids and samples. They aren’t a quote, and they aren’t engineering, code or legal advice. Real numbers come
+        from a site assessment.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">The contact form</h2>
+      <p>
+        Sending the contact form asks us to get in touch with you. It isn’t an order, and it doesn’t commit either
+        of us to anything. How we handle what you send is in our <a href="/privacy/">privacy policy</a>.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">Purchases and refunds</h2>
+      <p>
+        Nothing is sold on this website and it takes no online payments, so there is nothing to buy or refund here.
+        Each project is quoted on its own, in a written proposal for that job.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">Content and trademarks</h2>
+      <p>
+        The text and graphics on this site belong to {site.name}. Some photos are stock images used under their
+        photographers’ licenses. Product names and logos are trademarks of their respective owners and are shown only
+        to identify the equipment we install. Their use doesn’t imply endorsement.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">Links and outside services</h2>
+      <p>
+        Parts of this site rely on outside services, such as Web3Forms and OpenFreeMap, which our
+        <a href="/privacy/">privacy policy</a> names. We aren’t responsible for outside websites or services, or for
+        what they do.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">No warranty and limited liability</h2>
+      <p>
+        We try to keep this website accurate, but some of it may be out of date. It is provided “as is,” without
+        promises about its accuracy or availability. To the extent the law allows, {site.name} isn’t liable for
+        losses from using or relying on this website. This applies to the website only, not to work we do under a
+        written agreement.
+      </p>
+    </section>
+
+    <section>
+      <h2 class="t-h3">Governing law, changes and contact</h2>
+      <p>
+        These terms are governed by the laws of the State of California. If we change them, we’ll post the new
+        version here with a new effective date. This version is effective {effective}.
+      </p>
+      <p>
+        Questions? Email <a href={site.emailHref}>{site.email}</a> or call <a href={site.phoneHref}>{site.phone}</a>.
+      </p>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .terms {
+    display: grid;
+    gap: 2.5rem;
+    max-width: 46rem;
+    padding-block: 1rem var(--space-section);
+  }
+
+  .terms section {
+    display: grid;
+    gap: 0.875rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .terms p {
+    color: var(--steel);
+    line-height: 1.65;
+  }
+
+  .terms a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .terms a:hover {
+    color: var(--signal);
+  }
+</style>

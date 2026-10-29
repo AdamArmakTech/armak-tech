@@ -18,11 +18,11 @@ const heightFor = (w: number, h: number) => {
         Brands we install and support.
       </p>
     </div>
-    <ul role="list" class="partners__grid" data-reveal-stagger="40">
+    <ul role="list" class="partners__grid">
       {partners.map((p) => {
         const h = heightFor(p.logo.width, p.logo.height);
         return (
-          <li class="partners__item" data-reveal>
+          <li class="partners__item">
             <Image
               src={p.logo}
               alt={p.name}

@@ -2,7 +2,6 @@
 /**
  * Homepage closing section: site-assessment form + direct contact details.
  */
-import { Clock, LifeBuoy, MapPin } from '@lucide/astro';
 import SectionHead from '../ui/SectionHead.astro';
 import ContactForm from '../forms/ContactForm.astro';
 import { site } from '../../data/site';
@@ -13,8 +12,8 @@ import { site } from '../../data/site';
     <SectionHead
       code="J-01"
       label="Start a project"
-      title="Let’s scope your next build."
-      intro="Tell us what you’re building. We’ll walk the site, scope the work and send you a clear written plan and price."
+      title="Tell us about the site."
+      intro="Pick the systems and leave your details. We’ll walk the site, scope the work and send you a clear written plan and price."
     />
 
     <div class="contact__body">
@@ -22,7 +21,7 @@ import { site } from '../../data/site';
         <ContactForm id="home-assessment" />
       </div>
 
-      <aside class="contact__info" aria-label="Contact details" data-reveal style="--reveal-delay: 120ms">
+      <aside class="contact__info" aria-label="Contact details">
         <div class="contact__direct">
           <p class="t-mono t-muted">Prefer to talk?</p>
           <a class="contact__phone" href={site.phoneHref}>{site.phone}</a>
@@ -31,17 +30,14 @@ import { site } from '../../data/site';
 
         <ul role="list" class="contact__rows">
           <li>
-            <Clock class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
             <span class="t-mono contact__key">Hours</span>
             <span>{site.hours}</span>
           </li>
           <li>
-            <LifeBuoy class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
             <span class="t-mono contact__key">Support</span>
             <span>{site.support}</span>
           </li>
           <li>
-            <MapPin class="contact__icon" size={18} stroke-width={1.5} aria-hidden="true" />
             <span class="t-mono contact__key">Headquarters</span>
             <span>{site.hq.city}, California<br /><span class="t-muted">Serving all of Southern California</span></span>
           </li>
@@ -108,18 +104,13 @@ import { site } from '../../data/site';
 
   .contact__rows li {
     display: grid;
-    grid-template-columns: 18px 7.5rem minmax(0, 1fr);
+    grid-template-columns: 7.5rem minmax(0, 1fr);
     gap: 0.25rem 0.875rem;
     align-items: start;
     padding-block: 0.875rem;
     border-bottom: 1px solid var(--hairline);
     font-size: var(--fs-small);
     overflow-wrap: anywhere;
-  }
-
-  .contact__rows :global(.contact__icon) {
-    margin-top: 0.15rem;
-    color: var(--steel);
   }
 
   .contact__key {
@@ -129,11 +120,7 @@ import { site } from '../../data/site';
 
   @media (max-width: 419px) {
     .contact__rows li {
-      grid-template-columns: 18px minmax(0, 1fr);
-    }
-
-    .contact__rows li > :last-child {
-      grid-column: 2;
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 

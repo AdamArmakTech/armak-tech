@@ -107,7 +107,7 @@ const upgradeQuestions = [
     <section class="plan__section" id="estimator" aria-labelledby="estimator-title">
       <div class="plan__head">
         <Label code="N-02">Rough quantities</Label>
-        <h2 id="estimator-title" class="t-h2">About how much will this take?</h2>
+        <h2 id="estimator-title" class="t-h2">Estimate quantities for your office.</h2>
         <p class="t-lead">Planning numbers from typical office layouts. Walls, ceiling height and how you use the space change them; the real count comes from the site walk.</p>
       </div>
 
@@ -161,7 +161,7 @@ const upgradeQuestions = [
     <section class="plan__section" id="upgrade" aria-labelledby="upgrade-title">
       <div class="plan__head">
         <Label code="N-03">Three questions</Label>
-        <h2 id="upgrade-title" class="t-h2">Is your cabling due for an upgrade?</h2>
+        <h2 id="upgrade-title" class="t-h2">Check the age of your cabling.</h2>
       </div>
       <form class="quiz" data-upgrade-check>
         {upgradeQuestions.map((q) => (
@@ -296,6 +296,7 @@ const upgradeQuestions = [
 
   .plan {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--space-section);
     padding-bottom: var(--space-section);
   }
@@ -393,7 +394,7 @@ const upgradeQuestions = [
 
   .est__inputs {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
     gap: 1.5rem var(--col-gap);
     max-width: 52rem;
   }
