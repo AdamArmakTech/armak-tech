@@ -8,6 +8,13 @@
 - Plan / design rationale: `ai/plans/redesign.md` ("Precision Infrastructure", light editorial, Astro).
 
 ## Done
+- **Mobile usability pass — 2026-10-29 evening (local commit e875cc0, NOT pushed).** From a Vercel Web Design
+  Guidelines review + Playwright pass over all 15 pages (clean: 0 console errors, 0 broken links, no sideways
+  scroll). Fixed: 44px call icon in the header below 1200px; menu button reads "Close menu" when open; form send
+  error is role=alert, scrolled into view and focused; tap targets on hero/footer links, "Change", terms/privacy;
+  --fs-label 12→13px; red focus ring on form fields; phone numbers never wrap (.tel); 10–13px content text raised
+  to 13–14px; buttons wrap below 400px. Proofreader: GO after a missing-space fix in the hero.
+  Taste critique (report only, 8 items) is in the session transcript; owner picks what to do next.
 - [x] Design system, homepage, 6 service pages + overview, About, Industries, Contact, 404 (Astro 7)
 - [x] Glossary: /glossary/ — 140 plain-English terms with Q&A (drawer), search, A–Z, JSON-LD; in the main menu
 - [x] "How every job runs" stepper: live demo per step (Assess, Design, Install, Certify cable test, Support)
