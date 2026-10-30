@@ -1,17 +1,13 @@
 ---
 /** Services overview — every service as a full-width row, linking to its detail page. */
 import { ArrowRight } from '@lucide/astro';
-import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import Label from '../../components/ui/Label.astro';
 import Button from '../../components/ui/Button.astro';
 import SpecStrip from '../../components/ui/SpecStrip.astro';
 import DeliverySteps from '../../components/services/DeliverySteps.astro';
 import ServiceCta from '../../components/services/ServiceCta.astro';
 import { services, site, FOUNDED, yearsInBusiness } from '../../data/site';
 import { credentials } from '../../data/content';
-// TODO(photo): replace with a real Armak install photo
-import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
 
 const description = `Structured cabling, networking, video surveillance, access control, VoIP and AV, designed, installed and supported across Southern California since ${FOUNDED}.`;
 
@@ -33,7 +29,6 @@ const jsonLd = {
 
   <section class="svc-index-hero container" aria-labelledby="services-title">
     <div class="svc-index-hero__copy">
-      <Label code="A-00">Services</Label>
       <h1 id="services-title" class="t-h1 svc-index-hero__title">Every low-voltage system, from one team.</h1>
       <p class="t-lead" data-reveal>
         Cabling, networks, cameras, doors, voice and AV, designed, installed, tested and supported by one
@@ -45,15 +40,19 @@ const jsonLd = {
         <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
       </div>
     </div>
-    <figure class="svc-index-hero__media">
-      <Image
-        src={heroPhoto}
-        alt="A technician in a hi-vis vest working at a network rack"
-        widths={[560, 840, 1120]}
-        sizes="(min-width: 1000px) 40vw, 100vw"
-        loading="eager"
-      />
-    </figure>
+    <nav class="svc-index-hero__index" aria-label="Services index">
+      <ol role="list">
+        {services.map((s) => (
+          <li>
+            <a href={`/services/${s.slug}/`}>
+              <span class="t-mono svc-index-hero__idx-code">{s.code}</span>
+              <span class="svc-index-hero__idx-name">{s.name}</span>
+              <span class="svc-index-hero__idx-go">See service <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" /></span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
     <SpecStrip
       class="svc-index-hero__spec"
       items={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`, `${services.length} disciplines`, 'Serving all of Southern California']}
@@ -89,19 +88,17 @@ const jsonLd = {
 
   <section class="creds container" aria-label="Credentials">
     <ul role="list" class="creds__list">
-      {credentials.map((c, i) => (
+      {credentials.map((c) => (
         <li class="creds__item">
-          <span class="t-mono creds__index">C-{String(i + 1).padStart(2, '0')}</span>
           <span class="creds__text">{c}</span>
         </li>
       ))}
     </ul>
   </section>
 
-  <DeliverySteps code="A-00.1" />
+  <DeliverySteps />
 
   <ServiceCta
-    code="A-00.2"
     title="Start with a site walk."
     body="Most projects touch more than one system. Tell us about the site. We’ll walk it with you, document what’s there and scope the job before anything is priced."
   />
@@ -143,33 +140,58 @@ const jsonLd = {
     }
   }
 
-  .svc-index-hero__media {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius);
-    background: var(--paper-sunken);
+  .svc-index-hero__index {
+    border-top: 1px solid var(--ink);
   }
 
-  .svc-index-hero__media img {
-    width: 100%;
-    aspect-ratio: 3 / 2;
-    object-fit: cover;
+  .svc-index-hero__index a {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: var(--sp-3);
+    padding-block: var(--sp-3);
+    min-height: 44px;
+    border-bottom: 1px solid var(--hairline);
   }
 
-  .svc-index-hero__tag {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    padding: 0.35rem 0.55rem;
-    background: var(--paper);
-    border-radius: var(--radius);
+  .svc-index-hero__idx-code {
+    color: var(--steel);
+  }
+
+  .svc-index-hero__idx-name {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .svc-index-hero__idx-go {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    font-size: var(--fs-small);
+    color: var(--steel);
+  }
+
+  .svc-index-hero__index a:hover .svc-index-hero__idx-name {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+
+  @media (max-width: 420px) {
+    .svc-index-hero__idx-go {
+      display: none;
+    }
+
+    .svc-index-hero__index a {
+      grid-template-columns: 3.5rem minmax(0, 1fr);
+    }
   }
 
   .svc-index-hero :global(.svc-index-hero__spec) {
     grid-column: 1 / -1;
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 1024px) {
     .svc-index-hero {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       column-gap: var(--col-gap);
@@ -180,13 +202,8 @@ const jsonLd = {
       grid-column: 1 / span 7;
     }
 
-    .svc-index-hero__media {
+    .svc-index-hero__index {
       grid-column: 8 / -1;
-    }
-
-    .svc-index-hero__media img {
-      aspect-ratio: 4 / 5;
-      max-height: 34rem;
     }
   }
 
@@ -231,7 +248,7 @@ const jsonLd = {
   }
 
   .svc-row__layer {
-    color: var(--signal);
+    color: var(--steel);
   }
 
   .svc-row__name {
@@ -298,8 +315,8 @@ const jsonLd = {
   }
 
   .svc-row__link:hover .svc-row__go-icon {
-    background: var(--signal);
-    border-color: var(--signal);
+    background: var(--ink);
+    border-color: var(--ink);
     color: var(--white);
   }
 
@@ -314,7 +331,7 @@ const jsonLd = {
     text-underline-offset: 0.18em;
   }
 
-  @media (min-width: 760px) {
+  @media (min-width: 640px) {
     .svc-row__link {
       grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 0.8fr);
       column-gap: var(--col-gap);
@@ -330,7 +347,7 @@ const jsonLd = {
     }
   }
 
-  @media (min-width: 1100px) {
+  @media (min-width: 1024px) {
     .svc-row__link {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       padding-block: 2.75rem;
@@ -378,17 +395,13 @@ const jsonLd = {
     border-bottom: 1px solid var(--hairline);
   }
 
-  .creds__index {
-    color: var(--signal);
-  }
-
   .creds__text {
     font-size: var(--fs-h4);
     font-weight: 500;
     letter-spacing: -0.01em;
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 1024px) {
     .creds__list {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       border-bottom: 1px solid var(--hairline);

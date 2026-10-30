@@ -25,11 +25,11 @@ const colors = [
   { name: 'Hairline', token: '--hairline', hex: '#D9D7D0', use: '1px rules' },
   { name: 'Signal', token: '--signal', hex: '#d0101a', use: 'CTAs & key accents only' },
   { name: 'Armak Blue', token: '--armak-blue', hex: '#1D3F8F', use: 'Diagrams & map only' },
-  { name: 'Pass', token: '--pass', hex: '#1F8A4C', use: 'Certification state' },
+  { name: 'Pass', token: '--pass', hex: '#167640', use: 'PASS only' },
 ];
 
 const typeScale = [
-  { cls: 't-display', name: 'Display', sample: 'Built to stay up.' },
+  { cls: 't-display', name: 'Display', sample: 'Built for the future.' },
   { cls: 't-h1', name: 'H1', sample: 'Built for the future.' },
   { cls: 't-h2', name: 'H2', sample: 'Every run tested. Every port labeled.' },
   { cls: 't-h3', name: 'H3', sample: 'Structured Cabling & Fiber' },
@@ -44,18 +44,15 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
 <Base title="Style guide" noindex>
   <!-- ─────────── Intro ─────────── -->
   <section class="container sg-intro">
-    <Label code="SG-00">Design system</Label>
-    <h1 class="t-display" data-split>Precision<br />Infrastructure.</h1>
+    <h1 class="t-display" data-split>Style guide.</h1>
     <p class="t-lead">
-      The Armak design system: a light, editorial look built from the trade itself: TIA-606 labels,
-      T568B pair colors and certification reports. Every page of the new site is assembled from the
-      pieces below.
+      The pieces every page is built from. The rules behind them are in ai/DESIGN.md.
     </p>
   </section>
 
   <!-- ─────────── Hero preview ─────────── -->
   <section class="container sg-block">
-    <SectionHead code="SG-01" label="Hero preview" title="How the homepage opens." split={false} />
+    <SectionHead label="Hero preview" title="How the homepage opens." split={false} />
     <div class="hero-preview">
       <div class="hero-preview__copy">
         <SpecStrip items={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`, 'All of SoCal']} class="hero-preview__spec" />
@@ -78,7 +75,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
 
   <!-- ─────────── Color ─────────── -->
   <section class="container sg-block">
-    <SectionHead code="SG-02" label="Color" title="Paper, ink, and one signal." intro="Red is reserved for actions and live indicators. If everything is red, nothing is." split={false} />
+    <SectionHead label="Color" title="Paper, ink, and one signal." intro="Red marks the one next action on a screen, plus FAIL. Green marks only PASS." split={false} />
     <ul role="list" class="swatches">
       {colors.map((c) => (
         <li class="swatch">
@@ -92,14 +89,14 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
     <div class="sg-row">
       <div class="sg-stripe-demo">
         <Stripe height={10} />
-        <p class="t-mono t-muted">T568B stripe: pins 1 → 8. Used as a divider and footer accent.</p>
+        <p class="t-mono t-muted">T568B stripe: pins 1 → 8. A demo only; the site uses it nowhere except the cable test wire map.</p>
       </div>
     </div>
   </section>
 
   <!-- ─────────── Type ─────────── -->
   <section class="container sg-block">
-    <SectionHead code="SG-03" label="Typography" title="Geist, set tight and confident." intro="Geist Sans for everything people read; Geist Mono for anything a technician would print on a label." split={false} />
+    <SectionHead label="Typography" title="Geist, set tight and confident." intro="Geist Sans for everything people read; Geist Mono for anything a technician would print on a label." split={false} />
     <ul role="list" class="type-list">
       {typeScale.map((t) => (
         <li class="type-row">
@@ -112,14 +109,14 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
 
   <!-- ─────────── Labels & buttons ─────────── -->
   <section class="container sg-block">
-    <SectionHead code="SG-04" label="Labels & actions" title="Labeled like a finished rack." split={false} />
+    <SectionHead label="Labels & actions" title="Labeled like a finished rack." split={false} />
     <div class="sg-grid-2">
       <div class="sg-panel">
         <p class="t-mono t-muted">Labels</p>
         <div class="sg-wrap">
-          <Label code="A-01">Services</Label>
-          <Label code="B-02">Projects</Label>
-          <Label code="C-03" tone="signal">Live</Label>
+          <Label code="A-01">Structured cabling</Label>
+          <Label code="A-02">Network and Wi-Fi</Label>
+          <Label code="01">Step number</Label>
           <Label>No code</Label>
         </div>
       </div>
@@ -136,7 +133,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
       <div class="sg-panel sg-panel--ink surface-ink">
         <p class="t-mono t-muted">On ink</p>
         <div class="sg-wrap">
-          <Label code="A-01" tone="inverse">Services</Label>
+          <Label code="A-01" tone="inverse">Structured cabling</Label>
           <Button>Primary</Button>
           <Button variant="outline-inverse" icon="none">Outline</Button>
         </div>
@@ -150,7 +147,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
 
   <!-- ─────────── Tiles ─────────── -->
   <section class="container sg-block">
-    <SectionHead code="SG-05" label="Service tiles" title="Everything you do, visible at once." intro="Replaces the one-card-at-a-time decks. Each tile links to its own service page." split={false} />
+    <SectionHead label="Service tiles" title="Everything you do, visible at once." intro="Replaces the one-card-at-a-time decks. Each tile links to its own service page." split={false} />
     <div class="tiles">
       <ServiceTile href={`/services/${services[0].slug}/`} code={services[0].code} title={services[0].name} description={services[0].short} image={cableBundles} size="feature" class="tiles__feature" />
       <ServiceTile href={`/services/${services[1].slug}/`} code={services[1].code} title={services[1].name} description={services[1].short} image={rackRow} />
@@ -162,7 +159,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
 
   <!-- ─────────── Stats ─────────── -->
   <section class="container sg-block">
-    <SectionHead code="SG-06" label="Numbers" title="Proof, set in mono." split={false} />
+    <SectionHead label="Numbers" title="Proof, set in mono." split={false} />
     <div class="stats">
       <Stat value={yearsInBusiness} label="Years in business" detail={`Since ${FOUNDED}. Computed at build, so never out of date.`} />
       <Stat value={site.projectsDelivered} suffix="+" label="Projects delivered" />
@@ -173,7 +170,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
 
   <!-- ─────────── Form ─────────── -->
   <section class="container sg-block">
-    <SectionHead code="SG-07" label="Form" title="Two steps, no friction." intro="Step 1 is a tap. Step 2 is contact details. Shorter forms get more site assessments." split={false} />
+    <SectionHead label="Form" title="Two steps, no friction." intro="Step 1 is a tap. Step 2 is contact details. Shorter forms get more site assessments." split={false} />
     <form class="sg-form">
       <fieldset class="sg-form__chips">
         <legend class="field__label">What are you building?</legend>
@@ -196,7 +193,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
 
   <!-- ─────────── Calls to action ─────────── -->
   <section class="container sg-block">
-    <SectionHead code="SG-08" label="Calls to action" title="One ask, in the right place." intro="Header, hero, at most one mid-page prompt, and a closing panel. On phones the bar stands in for the header button." split={false} />
+    <SectionHead label="Calls to action" title="One ask, in the right place." intro="Header, hero, at most one mid-page prompt, and a closing panel. On phones the bar stands in for the header button." split={false} />
     <div class="sg-grid-2">
       <div class="sg-panel">
         <p class="t-mono t-muted">Phone bar (under 640px, after the hero CTAs)</p>
@@ -383,7 +380,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
     gap: var(--col-gap);
   }
 
-  @media (min-width: 700px) {
+  @media (min-width: 640px) {
     .tiles {
       grid-template-columns: repeat(2, 1fr);
     }
@@ -393,7 +390,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
     }
   }
 
-  @media (min-width: 1100px) {
+  @media (min-width: 1024px) {
     .tiles {
       grid-template-columns: repeat(3, 1fr);
     }
@@ -435,7 +432,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
     width: 100%;
   }
 
-  @media (min-width: 700px) {
+  @media (min-width: 640px) {
     .sg-form__fields {
       grid-template-columns: 1fr 1fr;
     }

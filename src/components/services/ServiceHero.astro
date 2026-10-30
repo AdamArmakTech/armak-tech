@@ -1,6 +1,6 @@
 ---
 /**
- * Service page opener: breadcrumb, h1 (headline), intro, CTAs,
+ * Service page opener: breadcrumb, h1 (service name), headline line, intro, CTAs,
  * and a "scope sheet" card summarising what's included and the standards involved.
  */
 import Button from '../ui/Button.astro';
@@ -27,7 +27,8 @@ const { service, detail } = Astro.props;
 
   <div class="svc-hero__grid">
     <div class="svc-hero__copy">
-      <h1 id="svc-hero-title" class="t-h1 svc-hero__headline">{detail.headline}</h1>
+      <h1 id="svc-hero-title" class="t-h1 svc-hero__headline">{service.name}</h1>
+      <p class="t-h3 svc-hero__sub">{detail.headline}</p>
       <p class="t-lead" data-reveal>{detail.intro}</p>
       <div class="svc-hero__ctas" data-dock-start>
         <Button href={contactHref({ about: service.slug })} size="lg">Request a site assessment</Button>
@@ -121,6 +122,12 @@ const { service, detail } = Astro.props;
   .svc-hero__headline {
     display: block;
     max-width: 14ch;
+  }
+
+  .svc-hero__sub {
+    max-width: 24ch;
+    color: var(--ink);
+    font-family: var(--font-sans, inherit);
   }
 
   @media (prefers-reduced-motion: no-preference) {

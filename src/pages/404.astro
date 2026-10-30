@@ -6,14 +6,12 @@ import Button from '../components/ui/Button.astro';
 import { site } from '../data/site';
 import { showProjects } from '../data/content';
 
-const routeList = [
-  { href: '/', code: 'R-01', label: 'Home' },
-  { href: '/services/', code: 'R-02', label: 'Services' },
-  ...(showProjects ? [{ href: '/projects/', code: 'R-03', label: 'Projects' }] : []),
-  { href: '/contact/', code: 'R-04', label: 'Contact' },
+const routes = [
+  { href: '/', label: 'Home' },
+  { href: '/services/', label: 'Services' },
+  ...(showProjects ? [{ href: '/projects/', label: 'Projects' }] : []),
+  { href: '/contact/', label: 'Contact' },
 ];
-// Number the routes in order, so hiding Projects doesn't leave a gap (R-01, R-02, R-03).
-const routes = routeList.map((r, i) => ({ ...r, code: `R-${String(i + 1).padStart(2, '0')}` }));
 ---
 
 <Base title="Page Not Found" description="This page has moved or never existed. Browse Armak Technologies’ cabling, network, security and AV services for Southern California, or get in touch." noindex>
@@ -45,7 +43,6 @@ const routes = routeList.map((r, i) => ({ ...r, code: `R-${String(i + 1).padStar
           {routes.map((r) => (
             <li>
               <a href={r.href}>
-                <span class="t-mono trace__code">{r.code}</span>
                 <span>{r.label}</span>
                 <span class="t-mono trace__ok">Connect →</span>
               </a>
@@ -96,7 +93,7 @@ const routes = routeList.map((r, i) => ({ ...r, code: `R-${String(i + 1).padStar
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1;
-    color: var(--signal);
+    color: var(--steel);
   }
 
   .trace__std {
@@ -106,7 +103,7 @@ const routes = routeList.map((r, i) => ({ ...r, code: `R-${String(i + 1).padStar
 
   .trace__routes a {
     display: grid;
-    grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 0.25rem;
@@ -121,10 +118,6 @@ const routes = routeList.map((r, i) => ({ ...r, code: `R-${String(i + 1).padStar
 
   .trace__routes a:hover {
     background: var(--paper);
-  }
-
-  .trace__code {
-    color: var(--steel);
   }
 
   .trace__ok {

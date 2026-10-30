@@ -47,7 +47,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     </nav>
 
     <div class="site-header__actions">
-      <a class="site-header__phone t-mono" href={site.phoneHref}>
+      <a class="site-header__phone" href={site.phoneHref}>
         <Phone size={15} stroke-width={1.75} aria-hidden="true" />
         {site.phone}
       </a>
@@ -78,7 +78,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
         ))}
       </ul>
       <aside class="mega__aside">
-        <p class="t-mono t-muted">Not sure what you need?</p>
+        <p class="t-muted mega__lead">Not sure what you need?</p>
         <p class="t-h4">Book a site assessment. We’ll walk the space and scope it with you.</p>
         <Button href="/contact/" variant="ink">Request a site assessment</Button>
         <a class="mega__all" href="/services/">All services →</a>
@@ -89,7 +89,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
   <!-- Mobile menu -->
   <div class="mobile-menu" id="mobile-menu" hidden data-menu data-lenis-prevent>
     <div class="container mobile-menu__inner">
-      <p class="t-mono t-muted">Services</p>
+      <p class="t-muted mobile-menu__lead">Services</p>
       <ul role="list" class="mobile-menu__services">
         {services.map((s) => (
           <li>
@@ -296,7 +296,8 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     align-items: center;
     gap: 0.5rem;
     color: var(--ink);
-    font-size: 0.8125rem;
+    font-size: var(--fs-small);
+    font-weight: 500;
     white-space: nowrap;
   }
 
@@ -441,7 +442,13 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     color: var(--signal);
   }
 
-  @media (max-width: 1023px) {
+  .mega__lead,
+  .mobile-menu__lead {
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  @media not all and (min-width: 1024px) {
     .mega {
       display: none;
     }

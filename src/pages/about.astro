@@ -3,7 +3,6 @@
  * About — story since 1998 (original site's copy, tightened), principles, credentials,
  * numbers, manufacturer partners, team slot (placeholder until Armak supplies it), service area.
  */
-import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
@@ -14,10 +13,8 @@ import Button from '../components/ui/Button.astro';
 import Numbers from '../components/home/Numbers.astro';
 import PartnerStrip from '../components/home/PartnerStrip.astro';
 import ServiceArea from '../components/home/ServiceArea.astro';
-import { site, FOUNDED, yearsInBusiness, serviceArea } from '../data/site';
+import { site, FOUNDED, yearsInBusiness, serviceArea, counties } from '../data/site';
 import { pillars, credentials } from '../data/content';
-// TODO(photo): interim stock (see assets/photos/CREDITS.md) — replace with a real Armak photo
-import storyPhoto from '../assets/photos/cabling-bundles-white.jpg';
 
 const description = `Armak Technologies has designed and installed low-voltage, networking and security systems across Southern California since ${FOUNDED}. Glendale HQ.`;
 
@@ -55,52 +52,53 @@ const SHOW_PLACEHOLDERS = false;
 
 <Base title={`About Us · SoCal Low-Voltage Since ${FOUNDED}`} description={description} footerCta={false}>
   <PageHero
-    code="K-00"
-    label="About"
     title={`Low-voltage and network installs since ${FOUNDED}.`}
     lead={`For ${yearsInBusiness} years, organizations across Southern California have relied on Armak Technologies to design, install and support the cabling, networks and security systems they run on.`}
     crumbs={[{ label: 'About' }]}
     spec={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`]}
   />
 
-  <!-- K-01 · Story -->
+  <!-- Story -->
   <section class="section story">
     <div class="container">
-      <SectionHead
-        code="K-01"
-        label="Our story"
-        title={`${yearsInBusiness} years in business.`}
-      />
+      <SectionHead title={`${yearsInBusiness} years in business.`} />
 
       <div class="story__body">
-        <figure class="story__figure" data-reveal>
-          <div class="story__photo">
-            <Image
-              src={storyPhoto}
-              alt="Neatly dressed light-blue cable bundles with black Velcro ties running into a rack of patch panels"
-              widths={[480, 720, 960, 1280]}
-              sizes="(min-width: 1000px) 40vw, 100vw"
-              loading="lazy"
-            />
-          </div>
-        </figure>
-
         <ol role="list" class="story__list">
-          {story.map((s, i) => (
+          {story.map((s) => (
             <li class="story__item">
-              <span class="t-mono story__index">{String(i + 1).padStart(2, '0')} · {s.tag}</span>
+              <span class="story__tag">{s.tag}</span>
               <h3 class="t-h3">{s.title}</h3>
-              <p class="t-muted">{s.body}</p>
+              <p>{s.body}</p>
             </li>
           ))}
         </ol>
+
+        <dl class="story__facts" aria-label="Armak at a glance">
+          <div class="story__fact">
+            <dt>Founded</dt>
+            <dd>{FOUNDED}</dd>
+          </div>
+          <div class="story__fact">
+            <dt>Headquarters</dt>
+            <dd>{site.hq.city}, California</dd>
+          </div>
+          <div class="story__fact">
+            <dt>Cities served</dt>
+            <dd>{serviceArea.length}</dd>
+          </div>
+          <div class="story__fact">
+            <dt>Counties</dt>
+            <dd>{counties.length}</dd>
+          </div>
+        </dl>
       </div>
 
       <!-- Milestones: only the founding year and current totals are facts; the rest is a slot.
            Hidden until Armak supplies real milestones (two rows alone read as an empty template). -->
       {SHOW_PLACEHOLDERS && (
       <div class="timeline">
-        <Label code="K-01.1">Milestones</Label>
+        <h3 class="t-h4">Milestones</h3>
         <ol role="list" class="timeline__rows">
           <li class="timeline__row">
             <span class="timeline__year">{FOUNDED}</span>
@@ -126,14 +124,14 @@ const SHOW_PLACEHOLDERS = false;
     </div>
   </section>
 
-  <!-- K-02 · Principles -->
+  <!-- Principles -->
   <section class="section section--flush-top principles">
     <div class="container">
-      <SectionHead code="K-02" label="How we work" title="How we work on every job." />
+      <SectionHead title="How we work on every job." />
       <ul role="list" class="principles__grid">
         {pillars.map((p, i) => (
           <li class="principle">
-            <span class="t-mono principle__index">
+            <span class="principle__index">
               {String(i + 1).padStart(2, '0')}{pillarTags[i] && ` · ${pillarTags[i]}`}
             </span>
             <h3 class="t-h4">{p.title}</h3>
@@ -144,20 +142,18 @@ const SHOW_PLACEHOLDERS = false;
     </div>
   </section>
 
-  <!-- K-03 · Credentials -->
+  <!-- Credentials -->
   <section class="section section--flush-top creds">
     <div class="container">
-      <SectionHead code="K-03" label="Credentials" title="Licensing, certification and support." />
+      <SectionHead title="Licensing, certification and support." />
       <ul role="list" class="creds__grid">
-        {credentials.map((c, i) => (
+        {credentials.map((c) => (
           <li class="cred">
-            <span class="t-mono cred__code">C-{String(i + 1).padStart(2, '0')}</span>
             <span class="cred__text">{c}</span>
           </li>
         ))}
         {(site.license || SHOW_PLACEHOLDERS) && (
           <li class="cred">
-            <span class="t-mono cred__code">C-{String(credentials.length + 1).padStart(2, '0')}</span>
             <span class="cred__text">Contractor license</span>
             {site.license ? (
               <span class="t-mono cred__value">{site.license}</span>
@@ -168,7 +164,6 @@ const SHOW_PLACEHOLDERS = false;
         )}
         {SHOW_PLACEHOLDERS && (
           <li class="cred">
-            <span class="t-mono cred__code">C-{String(credentials.length + 2).padStart(2, '0')}</span>
             <span class="cred__text">Manufacturer certifications</span>
             <Label tone="signal" class="cred__flag">Placeholder · List to supply</Label>
           </li>
@@ -181,13 +176,11 @@ const SHOW_PLACEHOLDERS = false;
 
   <PartnerStrip />
 
-  <!-- K-04 · Team (slot until Armak supplies people, photos and permission) -->
+  <!-- Team (slot until Armak supplies people, photos and permission) -->
   {SHOW_PLACEHOLDERS && (
   <section class="section team">
     <div class="container">
       <SectionHead
-        code="K-04"
-        label="The team"
         title="The people behind the installs."
         intro="One crew and one point of contact from the first walk-through to the final report."
       />
@@ -197,7 +190,7 @@ const SHOW_PLACEHOLDERS = false;
             <div class="member__photo" aria-hidden="true">
               <Label tone="signal" class="member__flag">Placeholder</Label>
             </div>
-            <p class="t-mono t-muted">K-04.{n}</p>
+            <p class="t-small t-muted">Team member {n}</p>
             <p class="member__name">Name to be supplied</p>
             <p class="t-small t-muted">Role · photo and short bio, with permission</p>
           </li>
@@ -214,7 +207,7 @@ const SHOW_PLACEHOLDERS = false;
   <ServiceArea />
 
   <PageCta
-    code="K-05"
+    code="about"
     title="Walk your building with us."
     body="Call or send a note about your building. We’ll walk it with you and put the scope and price in writing."
   />
@@ -231,45 +224,59 @@ const SHOW_PLACEHOLDERS = false;
     gap: var(--space-block) var(--col-gap);
   }
 
-  .story__photo {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius);
-    background: var(--paper-sunken);
-  }
-
-  .story__photo img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-  }
-
-  .story__tag {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    padding: 0.35rem 0.55rem;
-    background: var(--paper);
-    border-radius: var(--radius);
-  }
-
   .story__list {
-    border-top: 1px solid var(--ink);
+    max-width: 65ch;
   }
 
   .story__item {
     display: grid;
-    gap: 0.75rem;
-    padding-block: 1.75rem;
+    gap: var(--sp-2);
+    padding-block: var(--sp-5);
     border-bottom: 1px solid var(--hairline);
   }
 
-  .story__item p {
-    max-width: 34em;
+  .story__item:first-child {
+    padding-top: 0;
   }
 
-  .story__index {
-    color: var(--signal);
+  .story__item p {
+    color: var(--text);
+  }
+
+  .story__tag {
+    font-size: var(--fs-label);
+    font-weight: 500;
+    color: var(--steel);
+  }
+
+  .story__facts {
+    align-self: start;
+    max-width: 28rem;
+  }
+
+  .story__fact {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--sp-4);
+    padding-block: var(--sp-3);
+    border-bottom: 1px solid var(--hairline);
+    font-size: var(--fs-small, 0.9375rem);
+  }
+
+  .story__fact:first-child {
+    border-top: 1px solid var(--hairline);
+  }
+
+  .story__fact dt {
+    color: var(--steel);
+  }
+
+  .story__fact dd {
+    margin: 0;
+    color: var(--ink);
+    font-weight: 500;
+    text-align: right;
   }
 
   .timeline {
@@ -311,7 +318,7 @@ const SHOW_PLACEHOLDERS = false;
   /* ── Principles ── */
   .principles__grid {
     display: grid;
-    border-top: 1px solid var(--ink);
+    border-top: 1px solid var(--hairline);
   }
 
   .principle {
@@ -327,7 +334,9 @@ const SHOW_PLACEHOLDERS = false;
   }
 
   .principle__index {
-    color: var(--signal);
+    font-size: var(--fs-label);
+    font-weight: 500;
+    color: var(--steel);
   }
 
   /* ── Credentials ── */
@@ -346,10 +355,6 @@ const SHOW_PLACEHOLDERS = false;
     border-right: 1px solid var(--hairline);
     border-bottom: 1px solid var(--hairline);
     background: var(--white);
-  }
-
-  .cred__code {
-    color: var(--steel);
   }
 
   .cred__text {
@@ -410,14 +415,14 @@ const SHOW_PLACEHOLDERS = false;
     border-top: 1px solid var(--hairline);
   }
 
-  @media (max-width: 419px) {
+  @media (max-width: 420px) {
     .member__photo :global(.member__flag) {
       top: 0.5rem;
       left: 0.5rem;
     }
   }
 
-  @media (min-width: 700px) {
+  @media (min-width: 640px) {
     .principles__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -447,26 +452,23 @@ const SHOW_PLACEHOLDERS = false;
     }
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 900px) {
     .story__body {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       align-items: start;
     }
 
-    .story__figure {
-      grid-column: 1 / span 5;
-      position: sticky;
-      top: calc(var(--header-h) + 2rem);
-    }
-
-    .story__photo img {
-      aspect-ratio: 4 / 5;
-    }
-
     .story__list {
-      grid-column: 7 / -1;
+      grid-column: 1 / span 7;
     }
 
+    .story__facts {
+      grid-column: 9 / -1;
+      max-width: none;
+    }
+  }
+
+  @media (min-width: 1024px) {
     .timeline {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       column-gap: var(--col-gap);
@@ -499,7 +501,7 @@ const SHOW_PLACEHOLDERS = false;
     }
   }
 
-  @media (min-width: 1100px) {
+  @media (min-width: 1024px) {
     .principles__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }

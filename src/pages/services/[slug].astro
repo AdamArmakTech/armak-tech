@@ -107,7 +107,7 @@ const jsonLd = {
 
   <ServiceHero service={service} detail={detail} />
 
-  {photo && <PhotoBand photo={photo} testCard={service.slug === 'structured-cabling'} />}
+  {photo && <PhotoBand photo={photo} caption="Illustrative photo, not an Armak job site." testCard={service.slug === 'structured-cabling'} />}
 
   <Capabilities serviceName={service.name} items={detail.capabilities} />
 

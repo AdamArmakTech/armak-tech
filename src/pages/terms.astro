@@ -13,7 +13,6 @@ const description = `The ground rules for using armak.tech: it is information, n
 
 <Base title="Terms of Use" description={description}>
   <PageHero
-    code="T-00"
     label="Terms"
     title="Terms of use."
     lead={`The ground rules for using this website. Effective ${effective}.`}
@@ -106,12 +105,15 @@ const description = `The ground rules for using armak.tech: it is information, n
   .terms section {
     display: grid;
     gap: 0.875rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--hairline);
+    max-width: 65ch;
+  }
+
+  .terms h2 {
+    font-family: var(--font-sans);
   }
 
   .terms p {
-    color: var(--steel);
+    color: var(--text);
     line-height: 1.65;
   }
 

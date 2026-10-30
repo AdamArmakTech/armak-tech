@@ -18,12 +18,33 @@ const next = steps.slice(0, 2);
 
 <Base title="Contact Us & Request a Site Assessment" description={description} footerCta={false} ctaDock={false}>
   <PageHero
-    code="J-00"
-    label="Contact"
     title="Start with a site assessment."
     lead="Tell us what you’re building. We’ll walk the site, scope the work and send you a clear written plan and price."
     crumbs={[{ label: 'Contact' }]}
-  />
+  >
+    <div slot="aside" class="contact__details contact__details--hero">
+      <div class="contact__direct">
+        <p class="t-muted">Prefer to talk?</p>
+        <a class="contact__phone tel" href={site.phoneHref}>{site.phone}</a>
+        <a class="contact__email" href={site.emailHref}>{site.email}</a>
+      </div>
+
+      <ul role="list" class="contact__rows">
+        <li>
+          <span class="contact__key">Hours</span>
+          <span>{site.hours}</span>
+        </li>
+        <li>
+          <span class="contact__key">Support</span>
+          <span>{site.support}</span>
+        </li>
+        <li>
+          <span class="contact__key">Headquarters</span>
+          <span>{site.hq.city}, California<br /><span class="t-muted">Serving all of Southern California</span></span>
+        </li>
+      </ul>
+    </div>
+  </PageHero>
 
   <section class="contact container" aria-label="Contact form and details">
     <div class="contact__panel">
@@ -31,29 +52,31 @@ const next = steps.slice(0, 2);
     </div>
 
     <aside class="contact__info" aria-label="Contact details">
-      <div class="contact__direct">
-        <p class="t-mono t-muted">Prefer to talk?</p>
-        <a class="contact__phone tel" href={site.phoneHref}>{site.phone}</a>
-        <a class="contact__email" href={site.emailHref}>{site.email}</a>
+      <div class="contact__details contact__details--body">
+        <div class="contact__direct">
+          <p class="t-muted">Prefer to talk?</p>
+          <a class="contact__phone tel" href={site.phoneHref}>{site.phone}</a>
+          <a class="contact__email" href={site.emailHref}>{site.email}</a>
+        </div>
+
+        <ul role="list" class="contact__rows">
+          <li>
+            <span class="contact__key">Hours</span>
+            <span>{site.hours}</span>
+          </li>
+          <li>
+            <span class="contact__key">Support</span>
+            <span>{site.support}</span>
+          </li>
+          <li>
+            <span class="contact__key">Headquarters</span>
+            <span>{site.hq.city}, California<br /><span class="t-muted">Serving all of Southern California</span></span>
+          </li>
+        </ul>
       </div>
 
-      <ul role="list" class="contact__rows">
-        <li>
-          <span class="t-mono contact__key">Hours</span>
-          <span>{site.hours}</span>
-        </li>
-        <li>
-          <span class="t-mono contact__key">Support</span>
-          <span>{site.support}</span>
-        </li>
-        <li>
-          <span class="t-mono contact__key">Headquarters</span>
-          <span>{site.hq.city}, California<br /><span class="t-muted">Serving all of Southern California</span></span>
-        </li>
-      </ul>
-
       <div class="contact__next">
-        <p class="t-mono t-muted">What happens next</p>
+        <p class="t-muted">What happens next</p>
         <ol role="list">
           {next.map((s) => (
             <li>
@@ -94,6 +117,16 @@ const next = steps.slice(0, 2);
     min-width: 0;
   }
 
+  .contact__details {
+    display: grid;
+    gap: 2rem;
+    min-width: 0;
+  }
+
+  .contact__details--hero {
+    display: none;
+  }
+
   .contact__direct {
     display: grid;
     gap: 0.5rem;
@@ -114,6 +147,9 @@ const next = steps.slice(0, 2);
 
   .contact__phone,
   .contact__email {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     background: linear-gradient(currentColor, currentColor) left bottom / 0% 1px no-repeat;
     transition: background-size var(--dur) var(--ease-out);
   }
@@ -164,7 +200,7 @@ const next = steps.slice(0, 2);
 
   .contact__step {
     padding-top: 0.2rem;
-    color: var(--signal);
+    color: var(--steel);
   }
 
   .contact__step-title {
@@ -178,7 +214,15 @@ const next = steps.slice(0, 2);
     }
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 1024px) {
+    .contact__details--hero {
+      display: grid;
+    }
+
+    .contact__details--body {
+      display: none;
+    }
+
     .contact {
       grid-template-columns: repeat(12, minmax(0, 1fr));
     }

@@ -17,7 +17,7 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
 ---
 
 <div class="term-detail">
-  <div class="term-detail__meta t-mono">
+  <div class="term-detail__meta t-small">
     <span class="term-detail__cat">{categoryLabels[entry.category]}</span>
     {entry.stands_for && <span>{entry.stands_for}</span>}
   </div>
@@ -29,17 +29,17 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
   )}
 
   {entry.analogy && (
-    <p class="term-detail__analogy"><span class="t-mono">Analogy</span>{entry.analogy}</p>
+    <p class="term-detail__analogy"><span class="term-detail__label">Analogy</span>{entry.analogy}</p>
   )}
 
   <div class="term-detail__why">
-    <p class="t-mono">Why it matters</p>
+    <p class="term-detail__label">Why it matters</p>
     <p>{entry.why_it_matters}</p>
   </div>
 
   {entry.qa.length > 0 && (
     <div class="term-detail__qa">
-      <p class="t-mono">Questions people ask</p>
+      <p class="term-detail__label">Questions people ask</p>
       <dl>
         {entry.qa.map((item) => (
           <div class="term-detail__qa-item">
@@ -53,7 +53,7 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
 
   {related.length > 0 && (
     <div class="term-detail__related">
-      <p class="t-mono">Related terms</p>
+      <p class="term-detail__label">Related terms</p>
       <ul role="list">
         {related.map((r) => (
           <li><a href={`#${r.slug}`} data-term-link={r.slug}>{r.term}</a></li>
@@ -86,7 +86,7 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
   }
 
   .term-detail__cat {
-    color: var(--signal);
+    color: var(--ink);
   }
 
   .term-detail__def {
@@ -103,11 +103,9 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
     border-left: 2px solid var(--ink);
   }
 
-  .term-detail__analogy .t-mono,
-  .term-detail__why .t-mono,
-  .term-detail__qa > .t-mono,
-  .term-detail__related .t-mono {
+  .term-detail__label {
     color: var(--steel);
+    font-size: var(--fs-small);
   }
 
   .term-detail__why {
@@ -183,7 +181,7 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
   }
 
   .term-detail__service .t-mono {
-    color: var(--logo-red);
+    color: var(--steel);
   }
 
   .term-detail__service:hover {
