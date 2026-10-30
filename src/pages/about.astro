@@ -61,6 +61,7 @@ const SHOW_PLACEHOLDERS = false;
   <!-- Story -->
   <section class="section story">
     <div class="container">
+     <div class="sheet story__sheet" data-sheet>
       <SectionHead title={`${yearsInBusiness} years in business.`} />
 
       <div class="story__body">
@@ -121,14 +122,15 @@ const SHOW_PLACEHOLDERS = false;
         </ol>
       </div>
       )}
+     </div>
     </div>
   </section>
 
   <!-- Principles -->
   <section class="section section--flush-top principles">
-    <div class="container">
+    <div class="container principles__layout">
       <SectionHead title="How we work on every job." />
-      <ul role="list" class="principles__grid">
+      <ul role="list" class="principles__grid sheet" data-sheet>
         {pillars.map((p, i) => (
           <li class="principle">
             <span class="principle__index">
@@ -144,9 +146,9 @@ const SHOW_PLACEHOLDERS = false;
 
   <!-- Credentials -->
   <section class="section section--flush-top creds">
-    <div class="container">
+    <div class="container creds__layout">
       <SectionHead title="Licensing, certification and support." />
-      <ul role="list" class="creds__grid">
+      <ul role="list" class="creds__grid sheet" data-sheet>
         {credentials.map((c) => (
           <li class="cred">
             <span class="cred__text">{c}</span>
@@ -218,6 +220,26 @@ const SHOW_PLACEHOLDERS = false;
     padding-top: 0;
   }
 
+  /*
+   * Direction A: every section is a SHEET (white, hairline edge) on the paper.
+   * Lists are ruled rows, like the industries schedule on the homepage.
+   */
+  .sheet {
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    padding: var(--sp-5) var(--gutter);
+    min-width: 0;
+  }
+
+  .story__sheet {
+    padding: clamp(1.25rem, 0.5rem + 3.4vw, 4rem);
+  }
+
+  .story__sheet :global(.section-head__title) {
+    font-size: var(--fs-h1);
+    max-width: 16ch;
+  }
+
   /* ── Story ── */
   .story__body {
     display: grid;
@@ -249,9 +271,13 @@ const SHOW_PLACEHOLDERS = false;
     color: var(--steel);
   }
 
+  /* The summary sheet: a paper slip with ruled figures */
   .story__facts {
     align-self: start;
     max-width: 28rem;
+    padding: var(--sp-3) var(--sp-5);
+    background: var(--paper);
+    border: 1px solid var(--hairline);
   }
 
   .story__fact {
@@ -259,12 +285,11 @@ const SHOW_PLACEHOLDERS = false;
     justify-content: space-between;
     align-items: baseline;
     gap: var(--sp-4);
-    padding-block: var(--sp-3);
-    border-bottom: 1px solid var(--hairline);
+    padding-block: var(--sp-4);
     font-size: var(--fs-small, 0.9375rem);
   }
 
-  .story__fact:first-child {
+  .story__fact + .story__fact {
     border-top: 1px solid var(--hairline);
   }
 
@@ -275,8 +300,11 @@ const SHOW_PLACEHOLDERS = false;
   .story__fact dd {
     margin: 0;
     color: var(--ink);
-    font-weight: 500;
+    font-weight: 600;
+    font-size: var(--fs-h4);
+    letter-spacing: -0.01em;
     text-align: right;
+    font-variant-numeric: tabular-nums;
   }
 
   .timeline {
@@ -315,22 +343,36 @@ const SHOW_PLACEHOLDERS = false;
     color: var(--hairline-strong);
   }
 
-  /* ── Principles ── */
-  .principles__grid {
+  /* ── Principles and credentials: heading left, ruled-row sheet right ── */
+  .principles__layout,
+  .creds__layout {
     display: grid;
+    gap: var(--sp-6) var(--col-gap);
+  }
+
+  .principles__grid,
+  .creds__grid {
+    display: grid;
+    margin-inline: calc(var(--gutter) * -1);
+    padding: var(--sp-2) var(--gutter);
+    border-inline: 0;
+  }
+
+  .principle + .principle,
+  .cred + .cred {
     border-top: 1px solid var(--hairline);
   }
 
   .principle {
     display: grid;
-    gap: 0.75rem;
+    gap: var(--sp-2);
     align-content: start;
-    padding: 1.5rem 0 2rem;
-    border-bottom: 1px solid var(--hairline);
+    padding-block: var(--sp-5);
   }
 
   .principle p {
-    max-width: 30em;
+    max-width: 34em;
+    font-size: var(--fs-body);
   }
 
   .principle__index {
@@ -339,29 +381,19 @@ const SHOW_PLACEHOLDERS = false;
     color: var(--steel);
   }
 
-  /* ── Credentials ── */
-  .creds__grid {
-    display: grid;
-    border-top: 1px solid var(--hairline);
-    border-left: 1px solid var(--hairline);
-  }
-
   .cred {
     display: grid;
-    gap: 0.75rem;
+    gap: var(--sp-2);
     align-content: start;
     justify-items: start;
-    padding: 1.5rem 1.25rem 1.75rem;
-    border-right: 1px solid var(--hairline);
-    border-bottom: 1px solid var(--hairline);
-    background: var(--white);
+    padding-block: var(--sp-5);
   }
 
   .cred__text {
-    font-size: var(--fs-h4);
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    line-height: 1.3;
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
   }
 
   .cred :global(.cred__flag) {
@@ -423,30 +455,6 @@ const SHOW_PLACEHOLDERS = false;
   }
 
   @media (min-width: 640px) {
-    .principles__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .principle {
-      padding: 1.5rem 1.5rem 2rem;
-    }
-
-    .principle:nth-child(odd) {
-      padding-left: 0;
-    }
-
-    .principle:nth-child(even) {
-      border-left: 1px solid var(--hairline);
-    }
-
-    .creds__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .cred:last-child {
-      grid-column: 1 / -1;
-    }
-
     .timeline__row {
       grid-template-columns: 7rem minmax(0, 1fr);
     }
@@ -466,9 +474,67 @@ const SHOW_PLACEHOLDERS = false;
       grid-column: 9 / -1;
       max-width: none;
     }
+
+    .principles__grid,
+    .creds__grid {
+      margin-inline: 0;
+      padding: var(--sp-3) var(--sp-7);
+    }
+
+    .principle {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: baseline;
+      column-gap: var(--col-gap);
+      padding-block: var(--sp-6);
+    }
+
+    .principle__index {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .principle h3 {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .principle p {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+
+    .cred {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: baseline;
+      column-gap: var(--col-gap);
+      padding-block: var(--sp-6);
+    }
   }
 
   @media (min-width: 1024px) {
+    .principles__layout,
+    .creds__layout {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
+    }
+
+    .principles__layout > :global(.section-head),
+    .creds__layout > :global(.section-head) {
+      grid-column: 1 / 5;
+      position: sticky;
+      top: calc(var(--header-h) + var(--sp-6));
+    }
+
+    .principles__layout > :global(.section-head .section-head__title),
+    .creds__layout > :global(.section-head .section-head__title) {
+      font-size: var(--fs-h1);
+    }
+
+    .principles__grid,
+    .creds__grid {
+      grid-column: 5 / -1;
+    }
+
     .timeline {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       column-gap: var(--col-gap);
@@ -483,39 +549,8 @@ const SHOW_PLACEHOLDERS = false;
       grid-column: 4 / -1;
     }
 
-    /* 3 facts on the first row, the 2 pending items share the second */
-    .creds__grid {
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-    }
-
-    .cred {
-      grid-column: span 2;
-    }
-
-    .cred:nth-last-child(-n + 2) {
-      grid-column: span 3;
-    }
-
     .team__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .principles__grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .principle,
-    .principle:nth-child(odd) {
-      padding: 1.5rem 1.5rem 0.5rem;
-      border-bottom: 0;
-      border-left: 1px solid var(--hairline);
-    }
-
-    .principle:first-child {
-      padding-left: 0;
-      border-left: 0;
     }
   }
 </style>

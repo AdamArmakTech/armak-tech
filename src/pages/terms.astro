@@ -19,7 +19,8 @@ const description = `The ground rules for using armak.tech: it is information, n
     crumbs={[{ label: 'Terms' }]}
   />
 
-  <article class="terms container">
+  <div class="container terms__wrap">
+  <article class="terms" data-sheet>
     <section>
       <h2 class="t-h3">What this site is</h2>
       <p>
@@ -92,27 +93,55 @@ const description = `The ground rules for using armak.tech: it is information, n
       </p>
     </section>
   </article>
+  </div>
 </Base>
 
 <style>
+  /*
+   * Direction A: a clean document sheet. White, hairline edge, each clause a ruled row with its
+   * heading at the left and the text at the right, held to 65 characters a line.
+   */
+  .terms__wrap {
+    padding-bottom: var(--space-section);
+  }
+
   .terms {
-    display: grid;
-    gap: 2.5rem;
-    max-width: 46rem;
-    padding-block: 1rem var(--space-section);
+    padding: var(--sp-2) clamp(1.25rem, 0.5rem + 3.4vw, 4rem);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+  }
+
+  @media (max-width: 899px) {
+    .terms {
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      border-inline: 0;
+    }
   }
 
   .terms section {
     display: grid;
-    gap: 0.875rem;
-    max-width: 65ch;
+    gap: 0.875rem var(--col-gap);
+    padding-block: var(--sp-6);
+  }
+
+  .terms section + section {
+    border-top: 1px solid var(--hairline);
   }
 
   .terms h2 {
     font-family: var(--font-sans);
+    color: var(--ink);
   }
 
-  .terms p {
+  .terms p,
+  .terms li,
+  .terms ul {
+    max-width: 65ch;
+  }
+
+  .terms p,
+  .terms li {
     color: var(--text);
     line-height: 1.65;
   }
@@ -125,5 +154,21 @@ const description = `The ground rules for using armak.tech: it is information, n
 
   .terms a:hover {
     color: var(--signal);
+  }
+
+  @media (min-width: 900px) {
+    .terms section {
+      grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+      padding-block: var(--sp-7);
+    }
+
+    .terms h2 {
+      grid-column: 1;
+      align-self: start;
+    }
+
+    .terms section > :not(h2) {
+      grid-column: 2;
+    }
   }
 </style>

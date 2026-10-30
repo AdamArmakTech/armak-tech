@@ -36,12 +36,17 @@ const { photo, testCard = false, caption } = Astro.props;
     position: relative;
   }
 
+  /* Direction A: the photo is a print mounted on a white sheet, caption underneath */
   .band__frame {
     position: relative;
+    padding: var(--sp-3);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
   }
 
   .band__frame img {
-    border-radius: var(--radius);
+    border-radius: 0;
     background: var(--paper-sunken);
     width: 100%;
     aspect-ratio: 4 / 3;
@@ -49,7 +54,7 @@ const { photo, testCard = false, caption } = Astro.props;
   }
 
   .band__caption {
-    padding-top: var(--sp-2);
+    padding: var(--sp-3) var(--sp-1) var(--sp-1);
     font-size: var(--fs-small);
     color: var(--steel);
   }
@@ -75,7 +80,7 @@ const { photo, testCard = false, caption } = Astro.props;
   @media (min-width: 1024px) {
     .band :global(.band__card) {
       position: absolute;
-      right: calc(var(--gutter) + 2.5rem);
+      right: calc(var(--gutter) + 2.5rem + var(--sp-3));
       bottom: -3rem;
       margin: 0;
     }

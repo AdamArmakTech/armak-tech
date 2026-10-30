@@ -110,16 +110,13 @@ const cables = [
   .cc {
     display: grid;
     gap: var(--sp-4);
-    max-width: 72rem;
     min-width: 0;
   }
 
+  /* A document table: it sits on the worksheet sheet, so no box of its own; ruled rows only */
   .cc__table {
     display: block;
-    background: var(--white);
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius);
-    padding: var(--sp-2) var(--sp-4);
+    border-top: 1px solid var(--ink);
     border-collapse: collapse;
   }
 
@@ -136,7 +133,7 @@ const cables = [
   }
 
   .cc__note {
-    color: var(--steel);
+    color: var(--text);
     font-size: var(--fs-small);
   }
 
@@ -207,6 +204,8 @@ const cables = [
 
   .cc__ask {
     margin: 0;
+    padding-top: var(--sp-4);
+    border-top: 1px solid var(--hairline);
     color: var(--text);
   }
 
@@ -220,7 +219,6 @@ const cables = [
     .cc__table {
       display: table;
       width: 100%;
-      padding: var(--sp-2) var(--sp-5);
     }
 
     .cc__table thead {
@@ -242,7 +240,7 @@ const cables = [
 
     .cc__table :is(th, td) {
       display: table-cell;
-      padding: var(--sp-4) var(--sp-3);
+      padding: var(--sp-5) var(--sp-4) var(--sp-5) 0;
       vertical-align: top;
       text-align: left;
     }
@@ -261,6 +259,12 @@ const cables = [
       font-weight: 500;
       padding-block: var(--sp-3);
       border-bottom: 1px solid var(--hairline);
+    }
+
+    /* Cable names read as the row headings of the schedule */
+    .cc__table tbody th {
+      font-weight: 600;
+      letter-spacing: -0.01em;
     }
 
     .cc__table td {
@@ -282,7 +286,7 @@ const cables = [
     }
 
     .cc__name {
-      font-size: 1rem;
+      font-size: var(--fs-body);
     }
   }
 </style>

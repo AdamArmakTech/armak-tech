@@ -21,8 +21,9 @@ const next = steps.slice(0, 2);
     title="Start with a site assessment."
     lead="Tell us what you’re building. We’ll walk the site, scope the work and send you a clear written plan and price."
     crumbs={[{ label: 'Contact' }]}
+    tone="ink"
   >
-    <div slot="aside" class="contact__details contact__details--hero">
+    <div slot="aside" class="surface-card contact__details contact__details--hero">
       <div class="contact__direct">
         <p class="t-muted">Prefer to talk?</p>
         <a class="contact__phone tel" href={site.phoneHref}>{site.phone}</a>
@@ -47,6 +48,7 @@ const next = steps.slice(0, 2);
   </PageHero>
 
   <section class="contact container" aria-label="Contact form and details">
+   <div class="coupon" data-sheet>
     <div class="contact__panel">
       <ContactForm id="form" headingLevel={2} />
     </div>
@@ -90,31 +92,65 @@ const next = steps.slice(0, 2);
         </ol>
       </div>
     </aside>
+   </div>
   </section>
 
   <ServiceArea />
 </Base>
 
 <style>
+  /*
+   * Direction A: the form is a coupon on the paper. White card, hairline edge; the contact details are
+   * the stub, parted from the form by a dotted perforation with a notch cut at each end.
+   */
   .contact {
+    padding-bottom: var(--space-section);
+  }
+
+  .coupon {
+    --notch: 28px;
+    --perf: 5px dotted var(--ink);
+    position: relative;
     display: grid;
-    gap: var(--col-gap);
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+    background: var(--white);
+    border: 1px solid var(--hairline);
   }
 
   .contact__panel {
-    padding: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
-    background: var(--white);
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius);
     min-width: 0;
+    padding: clamp(1.25rem, 0.5rem + 3.4vw, 4rem);
   }
 
   .contact__info {
+    position: relative;
     display: grid;
     gap: 2rem;
     align-content: start;
     min-width: 0;
+    padding: clamp(1.25rem, 0.5rem + 3.4vw, 3rem);
+    border-top: var(--perf);
+  }
+
+  /* Notches: two paper half-circles where the perforation meets the edges of the card */
+  .contact__info::before,
+  .contact__info::after {
+    content: '';
+    position: absolute;
+    width: var(--notch);
+    height: var(--notch);
+    border-radius: 50%;
+    background: var(--paper);
+    box-shadow: inset 0 0 0 1px var(--hairline);
+    top: calc(var(--notch) / -2 - 2.5px);
+  }
+
+  .contact__info::before {
+    left: calc(var(--notch) / -2 - 1px);
+  }
+
+  .contact__info::after {
+    right: calc(var(--notch) / -2 - 1px);
   }
 
   .contact__details {
@@ -123,8 +159,11 @@ const next = steps.slice(0, 2);
     min-width: 0;
   }
 
+  /* The hero copy of the details: a white sheet on the ink band */
   .contact__details--hero {
     display: none;
+    padding: var(--sp-6);
+    background: var(--white);
   }
 
   .contact__direct {
@@ -134,6 +173,7 @@ const next = steps.slice(0, 2);
   }
 
   .contact__phone {
+    color: var(--ink);
     font-size: var(--fs-h3);
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -142,7 +182,7 @@ const next = steps.slice(0, 2);
   }
 
   .contact__email {
-    color: var(--steel);
+    color: var(--text);
   }
 
   .contact__phone,
@@ -208,6 +248,14 @@ const next = steps.slice(0, 2);
     margin-bottom: 0.25rem;
   }
 
+  @media (max-width: 899px) {
+    /* On a phone the coupon runs edge to edge */
+    .coupon {
+      margin-inline: calc(var(--gutter) * -1);
+      border-inline: 0;
+    }
+  }
+
   @media (max-width: 420px) {
     .contact__rows li {
       grid-template-columns: minmax(0, 1fr);
@@ -223,8 +271,9 @@ const next = steps.slice(0, 2);
       display: none;
     }
 
-    .contact {
+    .coupon {
       grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
     }
 
     .contact__panel {
@@ -233,8 +282,26 @@ const next = steps.slice(0, 2);
 
     .contact__info {
       grid-column: 9 / -1;
+      border-top: 0;
+      border-left: var(--perf);
+      padding: var(--sp-8) var(--sp-7);
       position: sticky;
       top: calc(var(--header-h) + 1.5rem);
+    }
+
+    .contact__info::before,
+    .contact__info::after {
+      right: auto;
+      left: calc(var(--notch) / -2 - 2.5px);
+    }
+
+    .contact__info::before {
+      top: calc(var(--notch) / -2 - 1px);
+    }
+
+    .contact__info::after {
+      top: auto;
+      bottom: calc(var(--notch) / -2 - 1px);
     }
   }
 </style>

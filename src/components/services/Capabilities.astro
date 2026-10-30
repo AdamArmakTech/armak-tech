@@ -13,18 +13,17 @@ const { serviceName, items } = Astro.props;
 ---
 
 <section class="section caps" aria-label={`${serviceName} capabilities`}>
-  <div class="container">
+  <div class="container caps__layout">
     <SectionHead
       title={`What we handle in ${serviceName.toLowerCase()}.`}
       intro="Every job is scoped to your site after a walk-through."
     />
 
-    <ol role="list" class="caps__grid">
-      {items.map((item, i) => (
+    <ol role="list" class="caps__sheet">
+      {items.map((item) => (
         <li class="cap">
-          <span class="t-mono cap__index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-          <h3 class="t-h4 cap__title">{item.title}</h3>
-          <p class="t-small t-muted cap__body" set:html={linkGlossaryTerms(item.body, { exclude: [serviceName] })} />
+          <h3 class="cap__title">{item.title}</h3>
+          <p class="cap__body" set:html={linkGlossaryTerms(item.body, { exclude: [serviceName] })} />
         </li>
       ))}
     </ol>
@@ -32,27 +31,51 @@ const { serviceName, items } = Astro.props;
 </section>
 
 <style>
-  .caps__grid {
+  /*
+   * Direction A: the capabilities are a schedule sheet, one ruled row per capability.
+   * Heading at the left (held in place on desktop), the sheet at the right.
+   */
+  .caps__layout {
     display: grid;
+    gap: var(--sp-6) var(--col-gap);
+  }
+
+  .caps__layout > :global(.section-head) {
+    margin-bottom: 0;
+  }
+
+  .caps__sheet {
+    display: grid;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: var(--sp-2) var(--sp-5);
+  }
+
+  /* Hairlines only between rows (rule 5) */
+  .cap + .cap {
+    border-top: 1px solid var(--hairline);
   }
 
   .cap {
     display: grid;
-    grid-template-columns: 2.75rem minmax(0, 1fr);
-    gap: 0.5rem 0.75rem;
+    gap: var(--sp-2);
     align-content: start;
-    padding: 1.5rem 0 1.75rem;
-    border-bottom: 1px solid var(--hairline);
+    padding-block: var(--sp-5);
   }
 
-  .cap__index {
-    grid-row: span 2;
-    padding-top: 0.2rem;
-    color: var(--steel);
+  .cap__title {
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.1;
+    color: var(--ink);
   }
 
   .cap__body {
-    max-width: 34em;
+    max-width: 36em;
+    font-size: var(--fs-body);
+    color: var(--text);
   }
 
   .cap__body :global(.gl) {
@@ -66,51 +89,33 @@ const { serviceName, items } = Astro.props;
     text-decoration-color: var(--ink);
   }
 
-  @media (min-width: 640px) {
-    .caps__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (min-width: 900px) {
+    .caps__sheet {
+      padding: var(--sp-3) var(--sp-7);
     }
 
     .cap {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0.75rem;
-      padding: 1.75rem 1.75rem 2.25rem;
-    }
-
-    .cap__index {
-      grid-row: auto;
-      padding-top: 0;
-      margin-bottom: 1.25rem;
-    }
-
-    .cap:nth-child(odd) {
-      padding-left: 0;
-    }
-
-    .cap:nth-child(even) {
-      border-left: 1px solid var(--hairline);
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: baseline;
+      gap: var(--col-gap);
+      padding-block: var(--sp-6);
     }
   }
 
   @media (min-width: 1024px) {
-    .caps__grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .caps__layout {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
     }
 
-    .cap:nth-child(odd) {
-      padding-left: 1.75rem;
+    .caps__layout > :global(.section-head) {
+      grid-column: 1 / 5;
+      position: sticky;
+      top: calc(var(--header-h) + var(--sp-6));
     }
 
-    .cap:nth-child(even) {
-      border-left: 0;
-    }
-
-    .cap:not(:nth-child(3n + 1)) {
-      border-left: 1px solid var(--hairline);
-    }
-
-    .cap:nth-child(3n + 1) {
-      padding-left: 0;
+    .caps__sheet {
+      grid-column: 5 / -1;
     }
   }
 </style>

@@ -105,22 +105,26 @@ const jsonLd = {
 </Base>
 
 <style>
+  /* Direction A: every list on this page is a ruled sheet on paper; the delivery steps are the one ink band. */
+
   /* ── Hero ── */
   .svc-index-hero {
     display: grid;
-    gap: var(--space-block);
+    gap: var(--sp-8) var(--col-gap);
     padding-top: clamp(2rem, 1.2rem + 3.5vw, 5rem);
-    padding-bottom: var(--space-block);
+    padding-bottom: var(--space-section);
   }
 
   .svc-index-hero__copy {
     display: grid;
-    gap: 1.75rem;
+    gap: var(--sp-6);
     justify-items: start;
   }
 
   .svc-index-hero__title {
     max-width: 13ch;
+    font-size: clamp(2.5rem, 1.6rem + 4.4vw, 5.5rem);
+    line-height: var(--lh-tight);
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -141,7 +145,15 @@ const jsonLd = {
   }
 
   .svc-index-hero__index {
-    border-top: 1px solid var(--ink);
+    align-self: end;
+    padding: var(--sp-1) var(--sp-5);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+  }
+
+  .svc-index-hero__index li + li {
+    border-top: 1px solid var(--hairline);
   }
 
   .svc-index-hero__index a {
@@ -149,9 +161,8 @@ const jsonLd = {
     grid-template-columns: 3.5rem minmax(0, 1fr) auto;
     align-items: baseline;
     gap: var(--sp-3);
-    padding-block: var(--sp-3);
+    padding-block: var(--sp-4);
     min-height: 44px;
-    border-bottom: 1px solid var(--hairline);
   }
 
   .svc-index-hero__idx-code {
@@ -159,8 +170,11 @@ const jsonLd = {
   }
 
   .svc-index-hero__idx-name {
+    font-size: var(--fs-h4);
     font-weight: 600;
+    letter-spacing: var(--tracking-heading);
     color: var(--ink);
+    transition: color var(--dur-fast) ease;
   }
 
   .svc-index-hero__idx-go {
@@ -172,9 +186,7 @@ const jsonLd = {
   }
 
   .svc-index-hero__index a:hover .svc-index-hero__idx-name {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.18em;
+    color: var(--signal);
   }
 
   @media (max-width: 420px) {
@@ -194,7 +206,6 @@ const jsonLd = {
   @media (min-width: 1024px) {
     .svc-index-hero {
       grid-template-columns: repeat(12, minmax(0, 1fr));
-      column-gap: var(--col-gap);
       align-items: end;
     }
 
@@ -204,6 +215,7 @@ const jsonLd = {
 
     .svc-index-hero__index {
       grid-column: 8 / -1;
+      padding-inline: var(--sp-6);
     }
   }
 
@@ -213,13 +225,20 @@ const jsonLd = {
     gap: 0.75rem;
   }
 
-  /* ── Service rows ── */
-  .svc-list__rows {
-    border-top: 1px solid var(--ink);
+  /* ── Service rows: one white schedule sheet, a ruled row per service ── */
+  .svc-list {
+    padding-bottom: var(--space-section);
   }
 
-  .svc-row {
-    border-bottom: 1px solid var(--hairline);
+  .svc-list__rows {
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: var(--sp-1) var(--sp-5);
+  }
+
+  .svc-row + .svc-row {
+    border-top: 1px solid var(--hairline);
   }
 
   .svc-row__link {
@@ -227,8 +246,7 @@ const jsonLd = {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
-    padding-block: 2rem 2.25rem;
-    transition: background var(--dur) ease;
+    padding-block: var(--sp-6);
   }
 
   .svc-row__code {
@@ -253,10 +271,12 @@ const jsonLd = {
   }
 
   .svc-row__name {
-    font-size: var(--fs-h3);
+    font-size: var(--fs-h2);
     font-weight: 600;
-    letter-spacing: -0.025em;
+    letter-spacing: var(--tracking-heading);
     line-height: var(--lh-heading);
+    color: var(--ink);
+    transition: color var(--dur-fast) ease;
   }
 
   .svc-row__short {
@@ -266,7 +286,7 @@ const jsonLd = {
   .svc-row__includes ul {
     display: grid;
     font-size: var(--fs-small);
-    color: var(--steel);
+    color: var(--text);
   }
 
   .svc-row__includes li {
@@ -327,12 +347,14 @@ const jsonLd = {
   }
 
   .svc-row__link:hover .svc-row__name {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.18em;
+    color: var(--signal);
   }
 
   @media (min-width: 640px) {
+    .svc-list__rows {
+      padding-inline: var(--sp-6);
+    }
+
     .svc-row__link {
       grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 0.8fr);
       column-gap: var(--col-gap);
@@ -349,9 +371,13 @@ const jsonLd = {
   }
 
   @media (min-width: 1024px) {
+    .svc-list__rows {
+      padding-inline: var(--sp-7);
+    }
+
     .svc-row__link {
       grid-template-columns: repeat(12, minmax(0, 1fr));
-      padding-block: 2.75rem;
+      padding-block: var(--sp-7);
     }
 
     .svc-row__code {
@@ -378,45 +404,50 @@ const jsonLd = {
     }
   }
 
-  /* ── Credentials ── */
+  /* ── Credentials: a short sheet, ruled rows (cells on desktop) ── */
   .creds {
-    padding-block: var(--space-block);
+    padding-bottom: var(--space-section);
   }
 
   .creds__list {
     display: grid;
-    border-top: 1px solid var(--hairline);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: var(--sp-1) var(--sp-5);
   }
 
   .creds__item {
     display: flex;
     align-items: baseline;
     gap: 1rem;
-    padding-block: 1.25rem;
-    border-bottom: 1px solid var(--hairline);
+    padding-block: var(--sp-5);
+  }
+
+  .creds__item + .creds__item {
+    border-top: 1px solid var(--hairline);
   }
 
   .creds__text {
     font-size: var(--fs-h4);
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: -0.01em;
+    color: var(--ink);
   }
 
   @media (min-width: 1024px) {
     .creds__list {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      border-bottom: 1px solid var(--hairline);
+      padding: 0;
     }
 
     .creds__item {
-      padding: 1.5rem 1.5rem;
-      border-bottom: 0;
-      border-left: 1px solid var(--hairline);
+      padding: var(--sp-6) var(--sp-6);
     }
 
-    .creds__item:first-child {
-      padding-left: 0;
-      border-left: 0;
+    .creds__item + .creds__item {
+      border-top: 0;
+      border-left: 1px solid var(--hairline);
     }
   }
 </style>

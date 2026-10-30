@@ -387,3 +387,20 @@ textarea.field__control {
     scroll-behavior: auto !important;
   }
 }
+
+/* Sheets lift as they reach the top of the screen (rule 10 extended). Marked [data-sheet]; sheets.ts adds
+   .is-lifted when the sheet's top edge passes ~30% from the top of the viewport. Paper, not an effect. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-sheet] {
+    transition:
+      transform 300ms var(--ease-out),
+      box-shadow 300ms var(--ease-out);
+  }
+
+  [data-sheet].is-lifted {
+    transform: translateY(-2px);
+    box-shadow:
+      0 1px 0 rgba(11, 13, 16, 0.04),
+      0 10px 24px -14px rgba(11, 13, 16, 0.2);
+  }
+}

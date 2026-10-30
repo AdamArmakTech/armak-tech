@@ -11,9 +11,9 @@ import { industries } from '../../data/content';
       intro="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan the install around them."
     />
 
-    <ul role="list" class="industries__grid">
-      {industries.map((ind) => (
-        <li class="industry">
+    <ul role="list" class="industries__grid" data-schedule>
+      {industries.map((ind, i) => (
+        <li class="industry" style={`--i: ${i}`}>
           <a href={`/industries/#${ind.slug}`} class="industry__link">
             <h3 class="t-h4 industry__name">{ind.name}</h3>
             <p class="t-small industry__need">{ind.need}</p>
@@ -24,6 +24,18 @@ import { industries } from '../../data/content';
     </ul>
   </div>
 </section>
+
+<script>
+  // Rows write in one after another the first time the sheet is seen. Without this script, or
+  // under reduced motion, the sheet is never armed and shows its final state.
+  import { onFirstView, reduceMotion } from '../../scripts/demo';
+
+  const sheet = document.querySelector<HTMLElement>('[data-schedule]');
+  if (sheet && !reduceMotion) {
+    sheet.classList.add('is-armed');
+    onFirstView(sheet, () => sheet.classList.add('is-written'), 0.15);
+  }
+</script>
 
 <style>
   /*
@@ -42,9 +54,61 @@ import { industries } from '../../data/content';
     margin-inline: calc(var(--gutter) * -1);
   }
 
-  /* Hairlines only between rows (rule 5) */
-  .industry + .industry {
-    border-top: 1px solid var(--hairline);
+  /* Hairlines only between rows (rule 5). Drawn as a pseudo-element so it can scale in. */
+  .industry {
+    position: relative;
+  }
+
+  .industry + .industry::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: var(--hairline);
+    transform-origin: left center;
+  }
+
+  /* Schedule fill-in: line draws (200ms), then name and description write in (320ms), rows 60ms
+     apart. Plays once. */
+  @media (prefers-reduced-motion: no-preference) {
+    .industries__grid.is-armed .industry + .industry::before {
+      transform: scaleX(0);
+    }
+
+    .industries__grid.is-armed .industry__name,
+    .industries__grid.is-armed .industry__need {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    .industries__grid.is-written .industry + .industry::before {
+      animation: sched-line 200ms var(--ease-out) calc(var(--i) * 60ms) both;
+    }
+
+    .industries__grid.is-written .industry__name,
+    .industries__grid.is-written .industry__need {
+      animation: sched-text 320ms var(--ease-out) calc(var(--i) * 60ms + 120ms) both;
+    }
+  }
+
+  @keyframes sched-line {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes sched-text {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   .industry__link {

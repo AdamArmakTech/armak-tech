@@ -1,5 +1,5 @@
 ---
-/** Compact "how we deliver" timeline built from `process` in content.ts. */
+/** Compact "how we deliver" timeline built from `process` in content.ts. Direction A: the page's one ink band, steps on white sheets. */
 import SectionHead from '../ui/SectionHead.astro';
 import Button from '../ui/Button.astro';
 import { contactHref } from '../../lib/cta';
@@ -23,7 +23,7 @@ const {
 } = Astro.props;
 ---
 
-<section class="section section--tight delivery">
+<section class="section delivery surface-ink">
   <div class="container">
     <SectionHead title={title} intro={intro} />
 
@@ -31,8 +31,8 @@ const {
       {steps.map((step) => (
         <li class="dstep">
           <span class="dstep__num" aria-hidden="true">{step.code}</span>
-          <h3 class="t-h4 dstep__title"><span class="visually-hidden">Step {step.code}: </span>{step.title}</h3>
-          <p class="t-small t-muted dstep__body">{step.body}</p>
+          <h3 class="dstep__title"><span class="visually-hidden">Step {step.code}: </span>{step.title}</h3>
+          <p class="dstep__body">{step.body}</p>
         </li>
       ))}
     </ol>
@@ -47,56 +47,76 @@ const {
 </section>
 
 <style>
+  .delivery {
+    padding-block: var(--space-section);
+  }
+
+  .delivery :global(.section-head__title) {
+    color: var(--paper);
+    max-width: 20ch;
+  }
+
   .delivery__next {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 1rem 1.5rem;
-    margin-top: 2rem;
+    margin-top: var(--sp-7);
   }
 
   .delivery__next :global(.btn) {
     white-space: normal;
   }
 
-  .delivery {
-    background: var(--white);
-  }
-
   .delivery__steps {
     display: grid;
-    counter-reset: step;
+    gap: var(--sp-3);
   }
 
+  /* Each step is a white sheet laid on the ink */
   .dstep {
     display: grid;
-    grid-template-columns: 3rem minmax(0, 1fr);
-    gap: 0.4rem 0.75rem;
-    padding-block: 1.25rem 1.5rem;
-    border-top: 1px solid var(--hairline);
-  }
-
-  .dstep:first-child {
-    border-top: 0;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: var(--sp-2) var(--sp-3);
+    align-content: start;
+    padding: var(--sp-5);
+    background: var(--white);
+    color: var(--text);
+    border-radius: var(--radius);
   }
 
   .dstep__num {
     grid-row: span 2;
     font-family: var(--font-mono);
-    font-size: 1.75rem;
+    font-size: 2rem;
     letter-spacing: -0.06em;
     line-height: 1;
     font-variant-numeric: tabular-nums;
-    color: var(--hairline-strong);
-    transition: color var(--dur) ease;
+    color: var(--steel);
   }
 
-  .dstep:hover .dstep__num {
-    color: var(--steel);
+  .dstep__title {
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.1;
+    color: var(--ink);
   }
 
   .dstep__body {
     max-width: 32em;
+    font-size: var(--fs-small);
+    color: var(--text);
+  }
+
+  @media (min-width: 640px) {
+    .delivery__steps {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dstep:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
   }
 
   @media (min-width: 1024px) {
@@ -104,24 +124,25 @@ const {
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
-    .dstep {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0.75rem;
-      align-content: start;
-      padding: 1.5rem 1.25rem 0.5rem;
-      border-top: 0;
-      border-left: 1px solid var(--hairline);
+    .dstep:last-child:nth-child(odd) {
+      grid-column: auto;
     }
 
-    .dstep:first-child {
-      padding-left: 0;
-      border-left: 0;
+    .dstep {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--sp-3);
+      padding: var(--sp-5) var(--sp-4) var(--sp-6);
     }
 
     .dstep__num {
       grid-row: auto;
-      font-size: clamp(2rem, 1.2rem + 1.4vw, 3rem);
-      margin-bottom: 1rem;
+      font-size: clamp(2.5rem, 1.6rem + 1.4vw, 3.5rem);
+      margin-bottom: var(--sp-6);
+    }
+
+    .dstep__title {
+      font-size: var(--fs-h4);
+      font-weight: 600;
     }
   }
 </style>

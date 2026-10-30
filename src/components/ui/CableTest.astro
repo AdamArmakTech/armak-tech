@@ -898,14 +898,41 @@ const barPos = (b: Bar) =>
     transform: rotate(-4deg);
   }
 
-  .ct__result.is-shown .ct__stamp {
-    animation: ct-stamp 0.45s var(--ease-out);
+  /* Rubber stamp: lands from 1.4x, dips to 0.96 (PASS only), settles at 1. Replays each time
+     is-shown is re-added (a re-run). Reduced motion: no animation, final state at once. */
+  @media (prefers-reduced-motion: no-preference) {
+    .ct__result.is-shown .ct__stamp {
+      animation: ct-stamp-press 0.35s var(--ease-out) both;
+    }
+
+    .ct__result.is-shown[data-result='fail'] .ct__stamp {
+      animation-name: ct-stamp-press-flat;
+    }
   }
 
-  @keyframes ct-stamp {
+  @keyframes ct-stamp-press {
     from {
-      transform: rotate(-4deg) scale(1.6);
+      transform: rotate(-4deg) scale(1.4);
       opacity: 0;
+    }
+    60% {
+      transform: rotate(-4deg) scale(0.96);
+      opacity: 1;
+    }
+    to {
+      transform: rotate(-4deg) scale(1);
+      opacity: 1;
+    }
+  }
+
+  @keyframes ct-stamp-press-flat {
+    from {
+      transform: rotate(-4deg) scale(1.4);
+      opacity: 0;
+    }
+    to {
+      transform: rotate(-4deg) scale(1);
+      opacity: 1;
     }
   }
 

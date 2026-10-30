@@ -1,7 +1,6 @@
 ---
 /**
- * Closing call to action for service pages: the same full-width dark band as PageCta, running into
- * the footer. Pages using it pass footerCta={false} to Base so the footer's generic CTA doesn't repeat.
+ * Closing call to action for service pages: the same white sheet on paper as PageCta, above the footer. Pages using it pass footerCta={false} to Base so the footer's generic CTA doesn't repeat.
  */
 import NextStep from '../ui/NextStep.astro';
 
@@ -16,23 +15,42 @@ interface Props {
 const { title, body, about } = Astro.props;
 ---
 
-<section class="cta cta-band surface-ink" aria-labelledby="cta-title" data-dock-hide>
-  <div class="container cta__inner">
+<section class="cta cta-band" aria-labelledby="cta-title" data-dock-hide>
+  <div class="container">
+    <div class="cta__sheet cta__inner">
     <div class="cta__copy">
       <h2 id="cta-title" class="t-h2 cta__title" data-split>{title}</h2>
-      <p class="t-lead">{body}</p>
+      <p class="t-lead cta__lead">{body}</p>
     </div>
     <div class="cta__side">
-      <NextStep about={about} tone="inverse" />
+      <NextStep about={about} tone="light" />
+    </div>
     </div>
   </div>
 </section>
 
 <style>
-  /* Full-bleed dark band that runs straight into the footer (DESIGN.md rule 8). The footer's own
-     top margin is 0, so this band carries the section gap above its content. */
+  /* One white sheet on paper (DESIGN.md Direction A). The section carries the gap above the footer. */
   .cta {
     padding-block: var(--space-section);
+  }
+
+  .cta__sheet {
+    padding: var(--sp-6) var(--sp-5);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+  }
+
+  @media (min-width: 640px) {
+    .cta__sheet {
+      padding: var(--sp-7);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .cta__sheet {
+      padding: var(--sp-8);
+    }
   }
 
   .cta__inner {
@@ -48,7 +66,12 @@ const { title, body, about } = Astro.props;
   }
 
   .cta__title {
+    color: var(--ink);
     max-width: 16ch;
+  }
+
+  .cta__lead {
+    color: var(--text);
   }
 
   .cta__side {

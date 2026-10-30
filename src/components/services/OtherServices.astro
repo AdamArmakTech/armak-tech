@@ -13,19 +13,17 @@ const others = services.filter((s) => s.slug !== current);
 
 <nav class="others container" aria-label="Other services">
   <div class="others__head">
-    <h2 id="others-title" class="t-h4">Other services</h2>
-    <p class="t-small t-muted">Most projects involve more than one system. One team handles all of them.</p>
+    <h2 id="others-title" class="others__title">Other services</h2>
+    <p class="others__intro">Most projects involve more than one system. One team handles all of them.</p>
   </div>
-  <ul role="list" class="others__grid">
+  <ul role="list" class="others__sheet">
     {others.map((s) => (
       <li>
         <a class="other" href={`/services/${s.slug}/`}>
-          <span class="other__top">
-            <span class="t-mono other__code">{s.code}</span>
-            <ArrowUpRight class="other__arrow" size={20} stroke-width={1.5} aria-hidden="true" />
-          </span>
+          <span class="t-mono other__code">{s.code}</span>
           <span class="other__name">{s.name}</span>
-          <span class="t-small other__layer">{s.layer}</span>
+          <span class="other__layer">{s.layer}</span>
+          <ArrowUpRight class="other__arrow" size={20} stroke-width={1.5} aria-hidden="true" />
         </a>
       </li>
     ))}
@@ -33,91 +31,118 @@ const others = services.filter((s) => s.slug !== current);
 </nav>
 
 <style>
+  /* Direction A: the other services are a schedule sheet, one ruled row each */
   .others {
     display: grid;
-    gap: 2rem;
-    padding-block: var(--space-block);
+    gap: var(--sp-6);
+    padding-bottom: var(--space-block);
   }
 
   .others__head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem 2rem;
+    display: grid;
+    gap: var(--sp-3);
+    align-content: start;
   }
 
-  .others__grid {
-    display: grid;
-    gap: 1px;
-    background: var(--hairline);
+  .others__title {
+    font-size: var(--fs-h2);
+    letter-spacing: var(--tracking-heading);
+    line-height: var(--lh-heading);
+  }
+
+  .others__intro {
+    max-width: 30em;
+    font-size: var(--fs-lead);
+    color: var(--text);
+  }
+
+  .others__sheet {
+    background: var(--white);
     border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: var(--sp-1) var(--sp-5);
+  }
+
+  /* Hairlines only between rows (rule 5) */
+  .others__sheet li + li {
+    border-top: 1px solid var(--hairline);
   }
 
   .other {
+    position: relative;
     display: grid;
-    gap: 0.75rem;
-    height: 100%;
-    padding: 1.25rem;
-    background: var(--paper);
-    transition: background var(--dur-fast) ease;
-  }
-
-  .other:hover {
-    background: var(--white);
-  }
-
-  .other__top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-1);
+    min-height: 44px;
+    padding: var(--sp-5) var(--sp-7) var(--sp-5) 0;
   }
 
   .other__code {
     color: var(--steel);
   }
 
-  .other :global(.other__arrow) {
-    transition: transform var(--dur) var(--ease-out);
-  }
-
-  .other:hover :global(.other__arrow) {
-    transform: translate(3px, -3px);
-  }
-
   .other__name {
-    font-size: var(--fs-h4);
+    font-size: var(--fs-h3);
     font-weight: 600;
-    letter-spacing: -0.01em;
-    line-height: 1.25;
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.1;
+    color: var(--ink);
+    transition: color var(--dur-fast) ease;
   }
 
   .other__layer {
+    font-size: var(--fs-small);
     color: var(--steel);
   }
 
-  @media (min-width: 640px) {
-    .others__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  .other :global(.other__arrow) {
+    position: absolute;
+    right: 0;
+    top: var(--sp-5);
+    color: var(--steel);
+    transition: transform var(--dur) var(--ease-out), color var(--dur-fast) ease;
+  }
+
+  .other:hover .other__name {
+    color: var(--signal);
+  }
+
+  .other:hover :global(.other__arrow),
+  .other:focus-visible :global(.other__arrow) {
+    color: var(--signal);
+    transform: translate(3px, -3px);
+  }
+
+  @media (min-width: 900px) {
+    .others__sheet {
+      padding: var(--sp-1) var(--sp-7);
     }
 
-    .others__grid li:last-child:nth-child(odd) {
-      grid-column: 1 / -1;
+    .other {
+      grid-template-columns: 5rem minmax(0, 5fr) minmax(0, 4fr);
+      align-items: baseline;
+      gap: var(--col-gap);
+      padding-block: var(--sp-6);
+    }
+
+    .other :global(.other__arrow) {
+      top: var(--sp-6);
     }
   }
 
   @media (min-width: 1024px) {
-    .others__grid {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+    .others {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: start;
     }
 
-    .others__grid li:last-child:nth-child(odd) {
-      grid-column: auto;
+    .others__head {
+      grid-column: 1 / 5;
     }
 
-    .other {
-      min-height: 11rem;
-      align-content: space-between;
+    .others__sheet {
+      grid-column: 5 / -1;
     }
   }
 </style>

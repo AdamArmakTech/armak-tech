@@ -11,6 +11,7 @@ import ServiceArea from '../components/home/ServiceArea.astro';
 import ContactSection from '../components/home/ContactSection.astro';
 import SectionNext from '../components/home/SectionNext.astro';
 import { showProjects } from '../data/content';
+import '../scripts/sheets.ts';
 
 if (!showProjects) {
   console.warn('[armak] Projects section hidden — no real projects yet (add them in src/data/content.ts).');

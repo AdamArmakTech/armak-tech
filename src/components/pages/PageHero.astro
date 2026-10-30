@@ -1,7 +1,9 @@
 ---
 /**
- * Compact opener shared by every inner page (about, industries, projects, contact, 404):
- * breadcrumb → h1 (t-h1) → lead → optional actions (default slot).
+ * Opener shared by every inner page (about, industries, projects, contact, 404).
+ * Direction A: by default the page opens on a white SHEET laid on the paper (hairline edge, large
+ * headline); with tone="ink" it is the page's one dark band instead. Pages end light either way.
+ * breadcrumb → h1 → lead → optional actions (default slot).
  * Optional `aside` slot sits to the right on desktop; optional `spec` renders a SpecStrip foot.
  * `code`/`label`/`labelTone` props are still accepted but no longer shown (DESIGN.md rule 3);
  * callers clean up later.
@@ -25,51 +27,69 @@ interface Props {
   spec?: string[];
   labelTone?: 'default' | 'signal';
   titleId?: string;
+  /** 'paper' (default): a white sheet on the paper. 'ink': the page's one dark band, headline in paper. */
+  tone?: 'paper' | 'ink';
 }
 
-const { title, lead, crumbs, spec, titleId = 'page-title' } = Astro.props;
+const { title, lead, crumbs, spec, titleId = 'page-title', tone = 'paper' } = Astro.props;
 const trail: Crumb[] | undefined = crumbs ? [{ label: 'Home', href: '/' }, ...crumbs] : undefined;
 const hasAside = Astro.slots.has('aside');
 ---
 
-<section class="page-hero container" aria-labelledby={titleId} data-dock-start>
-  {trail && (
-    <nav class="page-hero__crumbs" aria-label="Breadcrumb">
-      <ol role="list">
-        {trail.map((c, i) =>
-          i === trail.length - 1 ? <li aria-current="page">{c.label}</li> : <li><a href={c.href}>{c.label}</a></li>,
-        )}
-      </ol>
-    </nav>
-  )}
-
-  <div class:list={['page-hero__grid', { 'page-hero__grid--aside': hasAside }]}>
-    <div class="page-hero__copy">
-      <h1 id={titleId} class="t-h1 page-hero__title">{title}</h1>
-      {lead && <p class="t-lead" data-reveal>{lead}</p>}
-      <slot />
-    </div>
-    {hasAside && (
-      <div class="page-hero__aside">
-        <slot name="aside" />
-      </div>
+<section class:list={['page-hero', `page-hero--${tone}`, { 'surface-ink': tone === 'ink' }]} aria-labelledby={titleId} data-dock-start>
+  <div class="container page-hero__wrap">
+    {trail && (
+      <nav class="page-hero__crumbs" aria-label="Breadcrumb">
+        <ol role="list">
+          {trail.map((c, i) =>
+            i === trail.length - 1 ? <li aria-current="page">{c.label}</li> : <li><a href={c.href}>{c.label}</a></li>,
+          )}
+        </ol>
+      </nav>
     )}
-  </div>
 
-  {spec && <SpecStrip class="page-hero__spec" items={spec} />}
+    <div class="page-hero__sheet">
+      <div class:list={['page-hero__grid', { 'page-hero__grid--aside': hasAside }]}>
+        <div class="page-hero__copy">
+          <h1 id={titleId} class="t-h1 page-hero__title">{title}</h1>
+          {lead && <p class="t-lead" data-reveal>{lead}</p>}
+          <slot />
+        </div>
+        {hasAside && (
+          <div class="page-hero__aside">
+            <slot name="aside" />
+          </div>
+        )}
+      </div>
+
+      {spec && <SpecStrip class="page-hero__spec" items={spec} tone={tone === 'ink' ? 'inverse' : 'default'} />}
+    </div>
+  </div>
 </section>
 
 <style>
   .page-hero {
-    display: grid;
-    gap: var(--space-block);
     padding-top: clamp(1.5rem, 1rem + 2.5vw, 3.5rem);
     padding-bottom: var(--space-block);
+  }
+
+  .page-hero--ink {
+    padding-bottom: clamp(3rem, 2rem + 4vw, 6rem);
+    margin-bottom: var(--space-block);
+  }
+
+  .page-hero__wrap {
+    display: grid;
+    gap: var(--sp-5);
   }
 
   .page-hero__crumbs {
     font-size: var(--fs-small);
     color: var(--text);
+  }
+
+  .page-hero--ink .page-hero__crumbs {
+    color: var(--steel-light);
   }
 
   .page-hero__crumbs ol {
@@ -102,6 +122,23 @@ const hasAside = Astro.slots.has('aside');
     color: var(--ink);
   }
 
+  .page-hero--ink .page-hero__crumbs a:hover,
+  .page-hero--ink .page-hero__crumbs [aria-current] {
+    color: var(--paper);
+  }
+
+  /* The sheet: white, hairline edge, flat (shadow is for the sheet that crosses a band edge) */
+  .page-hero__sheet {
+    display: grid;
+    gap: var(--space-block);
+  }
+
+  .page-hero--paper .page-hero__sheet {
+    padding: clamp(1.25rem, 0.5rem + 3.4vw, 4rem);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+  }
+
   .page-hero__grid {
     display: grid;
     gap: var(--space-block) var(--col-gap);
@@ -115,13 +152,45 @@ const hasAside = Astro.slots.has('aside');
     min-width: 0;
   }
 
+  .page-hero--ink .page-hero__copy :global(.t-lead) {
+    color: var(--paper);
+  }
+
   .page-hero__title {
-    max-width: 15ch;
+    max-width: 22ch;
+    font-size: clamp(2.25rem, 1rem + 5.4vw, 6rem);
+    line-height: 0.94;
+    letter-spacing: -0.05em;
+  }
+
+  .page-hero--ink .page-hero__title {
+    color: var(--paper);
+  }
+
+  .page-hero__grid--aside .page-hero__title {
+    font-size: clamp(2.25rem, 1rem + 4.2vw, 4.75rem);
+    max-width: 16ch;
   }
 
   @media (prefers-reduced-motion: no-preference) {
+    /* The sheet settles onto the surface once (Direction A paperwork motion) */
+    .page-hero--paper .page-hero__sheet {
+      animation: page-hero-settle 0.8s var(--ease-out) both;
+    }
+
     .page-hero__title {
       animation: page-hero-in 1.1s var(--ease-out) both;
+    }
+  }
+
+  @keyframes page-hero-settle {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 16px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
     }
   }
 

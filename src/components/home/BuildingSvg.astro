@@ -426,6 +426,13 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
     fill: currentColor;
   }
 
+  /* Blueprint trace: until the drawing has traced itself, the system layers wait (set by the script
+     below, only when motion is allowed). Removing the class lets them fade in on the normal transition. */
+  :global(.bx.bx-wait) .bx-layer {
+    opacity: 0;
+    transition: none;
+  }
+
   /* Dim everything when one layer is in focus */
   :global(.bx[data-active]) .bx-layer {
     opacity: 0.22;
@@ -564,6 +571,98 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
         }
       });
       layers.forEach((l) => mo.observe(l, { attributes: true, attributeFilter: ['class'] }));
+    });
+
+    // "The blueprint draws itself": the first time the drawing scrolls into view, the structure (walls,
+    // slabs, furniture, doors, labels, grid) traces in over ~900 ms, staggered top to bottom. Once only.
+    // Animations are created paused so the structure is hidden until the trigger; they are cancelled when
+    // done, handing the elements back to plain CSS. Then the active layer fades in as it always does.
+    document.querySelectorAll<SVGSVGElement>('.bx').forEach((svg) => {
+      const TRACE = 560; // ms per line
+      const SPREAD = 340; // ms between the top and bottom lines starting (560 + 340 = 900)
+      const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)'; // --ease-out
+      const targets = [...svg.querySelectorAll<SVGGraphicsElement>('.bx-structure line, .bx-structure rect, .bx-structure path')];
+      const fades = [...svg.querySelectorAll<SVGGraphicsElement>(':scope > rect, :scope > text, .bx-structure text')];
+      const all = [...targets, ...fades];
+      if (!all.length || typeof IntersectionObserver === 'undefined') return;
+
+      const ys = new Map<Element, number>();
+      let min = Infinity;
+      let max = -Infinity;
+      all.forEach((el) => {
+        try {
+          const y = el.getBBox().y;
+          ys.set(el, y);
+          min = Math.min(min, y);
+          max = Math.max(max, y);
+        } catch {
+          /* display:none on small screens */
+        }
+      });
+      const span = Math.max(1, max - min);
+      const delayOf = (el: Element) => (ys.has(el) ? ((ys.get(el)! - min) / span) * SPREAD : 0);
+
+      const anims: Animation[] = [];
+      targets.forEach((el) => {
+        const geo = el as unknown as SVGGeometryElement;
+        const cs = getComputedStyle(el);
+        const timing = { duration: TRACE, delay: delayOf(el), easing: EASE, fill: 'both' as FillMode };
+        if (cs.strokeDasharray && cs.strokeDasharray !== 'none') {
+          anims.push(el.animate([{ opacity: 0 }, { opacity: 1 }], timing));
+          return;
+        }
+        let len = 0;
+        try {
+          len = cs.stroke === 'none' ? 0 : geo.getTotalLength();
+        } catch {
+          len = 0;
+        }
+        if (!len) {
+          anims.push(el.animate([{ opacity: 0 }, { opacity: 1 }], timing));
+          return;
+        }
+        anims.push(
+          el.animate(
+            [
+              { strokeDasharray: `${len}`, strokeDashoffset: `${len}`, opacity: 0 },
+              { strokeDasharray: `${len}`, strokeDashoffset: `${len * 0.85}`, opacity: 1, offset: 0.12 },
+              { strokeDasharray: `${len}`, strokeDashoffset: '0', opacity: 1 },
+            ],
+            timing,
+          ),
+        );
+      });
+      fades.forEach((el) => {
+        anims.push(el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: TRACE, delay: delayOf(el), easing: EASE, fill: 'both' }));
+      });
+      anims.forEach((a) => a.pause());
+      svg.classList.add('bx-wait');
+
+      const finish = () => {
+        anims.forEach((a) => a.cancel());
+        svg.classList.remove('bx-wait');
+      };
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              io.disconnect();
+              anims.forEach((a) => a.play());
+              Promise.all(anims.map((a) => a.finished)).then(finish, finish);
+              return;
+            }
+            // Already scrolled past before the first observation: show the drawing as is.
+            if (e.boundingClientRect.bottom < 0) {
+              io.disconnect();
+              finish();
+              return;
+            }
+          }
+        },
+        { threshold: 0.2 },
+      );
+      io.observe(svg);
     });
   }
 </script>

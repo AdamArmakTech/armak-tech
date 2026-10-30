@@ -34,7 +34,8 @@ const rows = [
       </div>
     </div>
 
-    <div class="numbers__slip" style={`clip-path: ${slipClip}`} data-reveal>
+    <div class="numbers__slip" data-slip>
+     <div class="slip__paper" style={`clip-path: ${slipClip}`}>
       <ul role="list" class="slip__rows">
         {rows.map((r) => (
           <li class="slip__row">
@@ -51,9 +52,22 @@ const rows = [
           </li>
         ))}
       </ul>
+     </div>
     </div>
   </div>
 </section>
+
+<script>
+  // The slip feeds out like a receipt the first time it is seen. Without this script, or under
+  // reduced motion, the slip is never armed and stays fully visible.
+  import { onFirstView, reduceMotion } from '../../scripts/demo';
+
+  const slip = document.querySelector<HTMLElement>('[data-slip]');
+  if (slip && !reduceMotion) {
+    slip.classList.add('is-armed');
+    onFirstView(slip, () => slip.classList.add('is-printed'), 0.25);
+  }
+</script>
 
 <style>
   .numbers {
@@ -100,6 +114,9 @@ const rows = [
   /* The slip: paper on ink, torn lower edge from the clip-path set inline */
   .numbers__slip {
     align-self: start;
+  }
+
+  .slip__paper {
     background: var(--paper);
     color: var(--ink);
     padding: var(--sp-6) var(--sp-5) calc(var(--sp-7) + 12px);
@@ -151,6 +168,27 @@ const rows = [
     line-height: 1;
   }
 
+  /* Receipt feed: the wrapper is uncovered top to bottom in short printer steps (clip-path only;
+     the zigzag edge lives on .slip__paper). Plays once. */
+  @media (prefers-reduced-motion: no-preference) {
+    .numbers__slip.is-armed {
+      clip-path: inset(0 0 100% 0);
+    }
+
+    .numbers__slip.is-printed {
+      animation: slip-feed 900ms steps(22, end) forwards;
+    }
+  }
+
+  @keyframes slip-feed {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
   @media (min-width: 640px) {
     .numbers__title {
       font-size: var(--fs-h2);
@@ -169,6 +207,9 @@ const rows = [
 
     .numbers__slip {
       grid-column: 8 / -1;
+    }
+
+    .slip__paper {
       padding: var(--sp-7) var(--sp-7) calc(var(--sp-8) + 12px);
     }
   }

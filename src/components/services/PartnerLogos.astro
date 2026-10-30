@@ -25,49 +25,64 @@ const cols = `--c-sm:${Math.min(n, 2)};--c-md:${Math.min(n, 3)};--c-lg:${Math.mi
 
 {n > 0 && (
   <section class="plogos" aria-labelledby="plogos-title">
-    <div class="container plogos__inner">
-      <div class="plogos__head">
-        <h2 id="plogos-title" class="t-h4">Platforms we install</h2>
-        <p class="t-small t-muted">
-          Hardware from the manufacturers we install and support.
-        </p>
+    <div class="container">
+      <div class="plogos__sheet">
+        <div class="plogos__head">
+          <h2 id="plogos-title" class="plogos__title">Platforms we install</h2>
+          <p class="t-small t-muted">
+            Hardware from the manufacturers we install and support.
+          </p>
+        </div>
+        <ul role="list" class="plogos__grid" style={cols}>
+          {list.map((p) => {
+            const h = heightFor(p.logo.width, p.logo.height);
+            return (
+              <li class="plogos__item">
+                <Image
+                  src={p.logo}
+                  alt={p.name}
+                  height={h}
+                  width={Math.round((p.logo.width / p.logo.height) * h)}
+                  densities={[1, 2]}
+                  loading="lazy"
+                />
+              </li>
+            );
+          })}
+        </ul>
       </div>
-      <ul role="list" class="plogos__grid" style={cols}>
-        {list.map((p) => {
-          const h = heightFor(p.logo.width, p.logo.height);
-          return (
-            <li class="plogos__item">
-              <Image
-                src={p.logo}
-                alt={p.name}
-                height={h}
-                width={Math.round((p.logo.width / p.logo.height) * h)}
-                densities={[1, 2]}
-                loading="lazy"
-              />
-            </li>
-          );
-        })}
-      </ul>
     </div>
   </section>
 )}
 
 <style>
+  /* Direction A: the manufacturers sit on one white sheet; cells are ruled like a schedule */
   .plogos {
-    padding-block: var(--space-block);
+    padding-top: var(--space-section);
   }
 
-  .plogos__inner {
+  .plogos__sheet {
     display: grid;
-    gap: 2rem var(--col-gap);
+    gap: var(--sp-6) var(--col-gap);
+    padding: var(--sp-5);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
   }
 
   .plogos__head {
     display: grid;
-    gap: 1rem;
+    gap: var(--sp-3);
     justify-items: start;
     align-content: start;
+  }
+
+  .plogos__title {
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.1;
+    color: var(--ink);
   }
 
   .plogos__head p {
@@ -111,18 +126,19 @@ const cols = `--c-sm:${Math.min(n, 2)};--c-md:${Math.min(n, 3)};--c-lg:${Math.mi
   }
 
   @media (min-width: 1024px) {
-    .plogos__inner {
+    .plogos__sheet {
       grid-template-columns: repeat(12, minmax(0, 1fr));
-      align-items: start;
+      align-items: center;
+      padding: var(--sp-7);
     }
 
     .plogos__head {
-      grid-column: 1 / span 3;
+      grid-column: 1 / span 4;
     }
 
     .plogos__grid {
       --c: var(--c-lg);
-      grid-column: 4 / -1;
+      grid-column: 5 / -1;
     }
   }
 </style>

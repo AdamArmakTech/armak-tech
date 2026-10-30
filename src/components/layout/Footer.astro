@@ -12,21 +12,21 @@ const { cta = true } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
-<footer class="site-footer surface-ink" data-dock-hide>
+<footer class="site-footer" data-dock-hide>
   <div class="container">
     {cta && (
     <div class="site-footer__cta">
       <p class="t-h1 site-footer__headline">Let’s scope your<br />next build.</p>
       <div class="site-footer__cta-actions">
         <Button href="/contact/" variant="primary" size="lg">Request a site assessment</Button>
-        <Button href={site.phoneHref} variant="outline-inverse" size="lg" icon="phone" class="tel">{site.phone}</Button>
+        <Button href={site.phoneHref} variant="outline" size="lg" icon="phone" class="tel">{site.phone}</Button>
       </div>
     </div>
     )}
 
     <div class="site-footer__grid">
       <div class="site-footer__brand">
-        <Logo variant="inverse" height={44} />
+        <Logo height={44} />
         <p class="t-small t-muted">{site.description}</p>
       </div>
 
@@ -78,21 +78,24 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
+  /* Direction A: the footer is paper with ink text and hairline rows (pages end light). */
   .site-footer {
-    margin-top: var(--space-section);
+    margin-top: 0;
+    background: var(--paper);
+    color: var(--ink);
+    border-top: 1px solid var(--hairline);
   }
 
-  /* When the page ends in a CTA band, the band runs straight into the footer (DESIGN.md rule 8).
-     The band carries its own section gap in its padding. */
-  :global(main:has(.cta-band:last-child)) ~ .site-footer {
-    margin-top: 0;
+  /* Pages that end in a CTA sheet carry their own gap in the section padding; others get one here. */
+  :global(main:not(:has(.cta-band:last-child))) ~ .site-footer {
+    margin-top: var(--space-section);
   }
 
   .site-footer__cta {
     display: grid;
     gap: 2rem;
     padding-block: var(--space-block);
-    border-bottom: 1px solid var(--hairline-inverse);
+    border-bottom: 1px solid var(--hairline);
   }
 
   .site-footer__cta-actions {
@@ -144,7 +147,7 @@ const year = new Date().getFullYear();
   .site-footer__heading {
     font-size: var(--fs-small);
     font-weight: 500;
-    color: var(--steel-light);
+    color: var(--steel);
     margin-bottom: 1rem;
   }
 
@@ -161,17 +164,24 @@ const year = new Date().getFullYear();
     display: inline-block;
     padding-block: 0.7rem;
     margin-block: -0.7rem;
-    transition: color var(--dur-fast) ease;
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+    transition: text-decoration-color var(--dur-fast) ease;
   }
 
   .site-footer__col a:hover,
   .site-footer__legal a:hover {
-    color: var(--logo-red);
+    text-decoration-color: currentColor;
   }
 
   .site-footer__legal a {
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    text-decoration-color: currentColor;
+  }
+
+  .site-footer__legal a:hover {
+    text-decoration-color: transparent;
   }
 
   address {
@@ -180,7 +190,7 @@ const year = new Date().getFullYear();
 
   .site-footer__area {
     padding-block: 2rem;
-    border-top: 1px solid var(--hairline-inverse);
+    border-top: 1px solid var(--hairline);
   }
 
   .site-footer__legal {
@@ -188,9 +198,9 @@ const year = new Date().getFullYear();
     flex-wrap: wrap;
     gap: 0.5rem 2rem;
     padding-block: 1.5rem 2rem;
-    border-top: 1px solid var(--hairline-inverse);
+    border-top: 1px solid var(--hairline);
     font-size: var(--fs-small);
     font-weight: 500;
-    color: var(--steel-light);
+    color: var(--steel);
   }
 </style>

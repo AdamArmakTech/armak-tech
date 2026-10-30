@@ -1,6 +1,6 @@
 ---
 /**
- * Closing call to action for inner pages: a full-width dark band that runs into the footer. Pages using it pass footerCta={false} to Base so the
+ * Closing call to action for inner pages: a white sheet on paper (Direction A: pages end light) above the footer. Pages using it pass footerCta={false} to Base so the
  * footer's generic CTA doesn't repeat it.
  */
 import NextStep from '../ui/NextStep.astro';
@@ -17,23 +17,42 @@ const { code, title, body, about } = Astro.props;
 const id = `${code}-cta-title`; // code only keeps the heading id unique; it is no longer shown
 ---
 
-<section class="page-cta cta-band surface-ink" aria-labelledby={id} data-dock-hide>
-  <div class="container page-cta__inner">
+<section class="page-cta cta-band" aria-labelledby={id} data-dock-hide>
+  <div class="container">
+    <div class="page-cta__sheet page-cta__inner">
     <div class="page-cta__copy">
       <h2 id={id} class="t-h2 page-cta__title" data-split>{title}</h2>
-      <p class="t-lead">{body}</p>
+      <p class="t-lead page-cta__lead">{body}</p>
     </div>
     <div class="page-cta__side">
-      <NextStep about={about} tone="inverse" />
+      <NextStep about={about} tone="light" />
+    </div>
     </div>
   </div>
 </section>
 
 <style>
-  /* Full-bleed dark band that runs straight into the footer (DESIGN.md rule 8). The footer's own
-     top margin is 0, so this band carries the section gap above its content. */
+  /* One white sheet on paper (DESIGN.md Direction A). The section carries the gap above the footer. */
   .page-cta {
     padding-block: var(--space-section);
+  }
+
+  .page-cta__sheet {
+    padding: var(--sp-6) var(--sp-5);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+  }
+
+  @media (min-width: 640px) {
+    .page-cta__sheet {
+      padding: var(--sp-7);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .page-cta__sheet {
+      padding: var(--sp-8);
+    }
   }
 
   .page-cta__inner {
@@ -49,7 +68,12 @@ const id = `${code}-cta-title`; // code only keeps the heading id unique; it is 
   }
 
   .page-cta__title {
+    color: var(--ink);
     max-width: 16ch;
+  }
+
+  .page-cta__lead {
+    color: var(--text);
   }
 
   .page-cta__side {

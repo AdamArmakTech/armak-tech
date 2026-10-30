@@ -58,7 +58,8 @@ const jsonLd = {
     </label>
   </PageHero>
 
-  <section class="gl container" aria-label="Glossary terms" data-gl>
+  <div class="container gl__wrap">
+  <section class="gl" aria-label="Glossary terms" data-gl>
     <div class="gl__toolbar">
       <nav class="gl__az" aria-label="Jump to letter">
         {alphabet.map((l) =>
@@ -105,6 +106,7 @@ const jsonLd = {
       No terms match that search. Try a shorter word, or <a href="/contact/">ask us directly</a>.
     </p>
   </section>
+  </div>
 
   <dialog class="gl-drawer" aria-labelledby="gl-drawer-title" data-gl-drawer data-lenis-prevent>
     <div class="gl-drawer__head">
@@ -251,7 +253,7 @@ const jsonLd = {
     gap: 0.75rem;
     width: min(100%, 560px);
     padding: 0.25rem 1rem;
-    background: var(--white);
+    background: var(--paper);
     border: 1px solid var(--field-line);
     border-radius: var(--radius);
     transition: border-color var(--dur-fast) ease;
@@ -276,8 +278,27 @@ const jsonLd = {
   }
 
   /* ── Toolbar (sticky under the header) ── */
+  /*
+   * Direction A: the glossary is an index sheet. One white sheet on the paper, the toolbar held at
+   * its head, each letter a ruled row of terms.
+   */
+  .gl__wrap {
+    padding-bottom: var(--space-section);
+  }
+
   .gl {
-    padding-bottom: var(--space-block);
+    padding: 0 clamp(1.25rem, 0.5rem + 3.4vw, 4rem) clamp(1rem, 0.5rem + 2vw, 2.5rem);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    min-width: 0;
+  }
+
+  @media (max-width: 899px) {
+    .gl {
+      margin-inline: calc(var(--gutter) * -1);
+      padding-inline: var(--gutter);
+      border-inline: 0;
+    }
   }
 
   .gl__toolbar {
@@ -287,9 +308,9 @@ const jsonLd = {
     display: grid;
     gap: 0.875rem;
     padding-block: 1rem;
-    margin-bottom: 1rem;
-    background: var(--paper);
-    border-bottom: 1px solid var(--hairline);
+    margin-bottom: 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--ink);
   }
 
   .gl__az {
@@ -351,9 +372,13 @@ const jsonLd = {
     scroll-margin-top: calc(var(--header-h) + 9rem);
   }
 
+  .gl__group + .gl__group {
+    border-top: 1px solid var(--hairline);
+  }
+
   .gl__letter {
-    font-size: clamp(2.5rem, 2rem + 2vw, 3.75rem);
-    font-weight: 400;
+    font-size: clamp(3rem, 2rem + 4vw, 6rem);
+    font-weight: 600;
     letter-spacing: -0.04em;
     line-height: 1;
   }
@@ -390,6 +415,7 @@ const jsonLd = {
     grid-template-columns: 1fr auto;
     align-items: center;
     column-gap: 0.75rem;
+    min-height: 44px;
     padding: 0.875rem 0.25rem;
     cursor: pointer;
     list-style: none;
@@ -401,7 +427,7 @@ const jsonLd = {
   }
 
   .term__summary:hover {
-    background: var(--white);
+    background: var(--paper);
   }
 
   .term__name {
