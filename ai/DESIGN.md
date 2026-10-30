@@ -55,3 +55,20 @@ cable test and process demos' content, the glossary data, the 2026-10-29 mobile 
 Before a visual change: name the rule it serves. After: check it against the four breakpoints, show a
 screenshot. If a tool (Taste, Impeccable, guidelines review) proposes something outside these rules,
 it needs the owner's yes first.
+
+## Direction A: "The closeout package" (owner's choice, 2026-10-30) — overrides rules 8 and 10 where they differ
+The site looks like the bundle of papers Armak hands a client at the end of a job: the test report, the drawing,
+the summary sheet, a coupon. Each section is one SHEET (a white or paper panel) laid on a surface (ink, paper or
+the logo blue #1d3f8f). Blue appears as a full surface once per page at most (the drawing / blueprint field).
+- **Rule 8, replaced:** pages END LIGHT. The closing next-step band is a white sheet on paper (not ink), and the
+  footer is paper with ink text and hairline rows. The only large dark surfaces are the hero band at the top of
+  the homepage and, where a page needs one, a single mid-page ink band. Never a dark block at the bottom of a page.
+- **Rule 10, extended (owner approved 2026-10-30):** motion tells the paperwork story: the report sheet settles
+  onto the hero edge; the PASS stamp presses in; the numbers slip feeds out like a receipt; the coupon's
+  perforation pulls on hover; schedule rows fill in; the blueprint traces itself; sheets lift slightly as they
+  reach the top of the screen. Every animation plays once (hover ones on hover), is short (≤ 900 ms), uses
+  transform/opacity/clip-path/stroke-dashoffset only, and shows the final state immediately under reduced motion
+  and when scripts do not run. No other scroll effects.
+- Sheets: white (#fff) or paper, 1px hairline edge, `--shadow-raise` only on the sheet that crosses a band edge.
+  Big type is allowed for the hero headline and for measured figures (the "28"). Codes, red and photos rules
+  (2, 3, 7) are unchanged.
