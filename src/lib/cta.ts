@@ -3,7 +3,7 @@
  * instead of starting over. The form (src/components/forms/ContactForm.astro) reads these params.
  *
  *   contactHref()                                  → /contact/#form
- *   contactHref({ about: 'networking' })           → preselects Networking & Wireless
+ *   contactHref({ about: 'networking' })           → preselects Networking & Wi-Fi
  *   contactHref({ about: 'PoE', mode: 'quick' })   → short "ask a question" form about PoE
  *   contactHref({ intent: 'support' })             → "Tell us what's wrong" (existing customers)
  */

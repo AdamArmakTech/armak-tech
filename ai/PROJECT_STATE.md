@@ -23,9 +23,9 @@
   Playwright pass clean (0 console errors, 0 broken links, no sideways scroll); CTA handoff test 15/15;
   proofreader pass 2 items all addressed except owner calls below. Owner decisions taken: keep "Built for the
   future.", keep 946+, keep smooth scroll/heading reveals, product photos not stock (rights pending, see Q12–14).
-  Owner calls still open: (a) /contact/ ends on the map, no dark band (form is the action) — OK?; (b) HQ dot on
-  the map stays red (information) — OK?; (c) networking page title says "Networking & Wi-Fi" vs h1 "Networking &
-  Wireless" (pre-existing) — which name?; (d) "publish" to push `intent-redesign` → main.
+  Owner decisions 2026-10-30: /contact/ keeps no dark band (form is the action); HQ map dot stays red; the
+  networking service is named "Networking & Wi-Fi" everywhere (site.ts). Still open: "publish" to push
+  `intent-redesign` → main.
 - **Mobile usability pass — 2026-10-29 evening (local commit e875cc0, NOT pushed).** From a Vercel Web Design
   Guidelines review + Playwright pass over all 15 pages (clean: 0 console errors, 0 broken links, no sideways
   scroll). Fixed: 44px call icon in the header below 1200px; menu button reads "Close menu" when open; form send

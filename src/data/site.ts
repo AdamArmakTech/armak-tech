@@ -64,7 +64,7 @@ export const services: Service[] = [
   {
     slug: 'networking',
     code: 'A-02',
-    name: 'Networking & Wireless',
+    name: 'Networking & Wi-Fi',
     short: 'Switches, firewalls, VLANs, UPS power and enterprise Wi-Fi for a network that stays up.',
     layer: 'Network layer',
     includes: [
