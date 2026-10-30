@@ -8,6 +8,13 @@
 - Plan / design rationale: `ai/plans/redesign.md` ("Precision Infrastructure", light editorial, Astro).
 
 ## Done
+- **Four additions — 2026-10-30 (same branch, commits cf49bea, b76288b).** (1) Glossary links inside service
+  pages: `src/lib/glossaryLinks.ts` underlines up to 4 trade words per capability/FAQ answer (longest match first,
+  common words demoted, JSON-LD stays plain). (2) Restrained motion per DESIGN.md rule 10: map dots land one by one,
+  scope-sheet rows reveal, step number ticks, explorer layer strokes draw in; all once, reduced-motion safe.
+  (3) "Trace a cable" demo under the Install step (TraceDemo.astro): tap a jack, the route lights to its labeled port.
+  (4) "Which cable?" table on /plan/ (CableCompare.astro): Cat 6 / Cat 6A / OM4 / OS2 with figures tied to named
+  standards; cards below 900px. Owner's checklist for the remaining ideas: `ai/FATHER-CHECKLIST.md`.
 - **Intentional design refresh — 2026-10-29/30 (branch `intent-redesign`, 8 local commits d52a464..c9d3ab3, NOT pushed).**
   Rulebook: `ai/DESIGN.md` (ten rules; CLAUDE.md points at it). Done: tokens (spacing scale `--sp-*`, `--text`,
   smaller display/h1/h2, section rhythm 64–112px, four breakpoints 420/640/900/1024), section openers without
