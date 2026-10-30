@@ -1,0 +1,291 @@
+---
+/**
+ * Step 03 · Install — "Trace a cable".
+ * A small interactive under the before/after slider: tap one of four labeled jacks on the sample
+ * office plan (shared OfficePlan), and its cable route draws back to the IDF closet while the
+ * matching port lights on a patch-panel strip. One route is lit at a time.
+ * Teaches: matching labels on both ends make a connection easy to find. SAMPLE data.
+ * Motion: route draws over --dur-slow; under prefers-reduced-motion it appears instantly.
+ */
+import DemoFrame from './DemoFrame.astro';
+import OfficePlan from './OfficePlan.astro';
+
+// Plan viewBox 400 x 262. Jack dot positions; routes run along the ceiling to the rack in the closet.
+const jacks = [
+  { id: '2B-14', port: 'A-14', x: 195, y: 92, d: 'M195 92 V97 H36 V50 H64' },
+  { id: '2B-15', port: 'A-15', x: 110, y: 92, d: 'M110 92 V101 H42 V50 H64' },
+  { id: '2C-03', port: 'A-03', x: 300, y: 92, d: 'M300 92 V105 H48 V50 H64' },
+  { id: '2A-07', port: 'A-07', x: 230, y: 150, d: 'M230 150 V120 H39 V50 H64' },
+];
+const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
+---
+
+<DemoFrame
+  name="trace"
+  title="Trace a cable"
+  caption="Every jack and port gets a label that matches the as-built drawing. That is what makes later moves and changes fast."
+>
+  <div class="tr">
+    <div class="tr__plan">
+      <svg viewBox="0 0 400 262" role="img" data-fit-text aria-label="Sample office floor plan with four labeled wall jacks and the IDF closet at the top left. Choose a jack below to see its cable route.">
+        <OfficePlan />
+        {jacks.map((j) => (
+          <path d={j.d} pathLength="1" class="tr__route" data-tr-route={j.id} />
+        ))}
+        {jacks.map((j) => (
+          <circle cx={j.x} cy={j.y} r="4" class="tr__dot" data-tr-dot={j.id} />
+        ))}
+      </svg>
+      <div class="tr__jacks" role="group" aria-label="Jacks to trace">
+        {jacks.map((j) => (
+          <button
+            type="button"
+            class="tr__jack"
+            style={`left:${pct(j.x, 400)};top:${pct(j.y, 262)}`}
+            aria-pressed="false"
+            aria-label={`Trace jack ${j.id}`}
+            data-tr-jack={j.id}
+            data-port={j.port}
+          >
+            <span class="t-mono tr__jack-label">{j.id}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <div class="tr__side">
+      <div class="tr__panel">
+        <span class="t-mono tr__panel-name">IDF2 · A</span>
+        <div class="tr__ports" aria-hidden="true">
+          {Array.from({ length: 24 }, (_, i) => (
+            <span class="tr__port" data-tr-port={`A-${String(i + 1).padStart(2, '0')}`}></span>
+          ))}
+        </div>
+        <p class="t-mono tr__readout" data-tr-readout>Port: none lit</p>
+      </div>
+      <p class="tr__line" data-tr-line>Tap a jack to trace its cable.</p>
+    </div>
+  </div>
+</DemoFrame>
+
+<script>
+  import { bindReplay, announce, fitSvgText } from '../../scripts/demo';
+
+  document.querySelectorAll<HTMLElement>('[data-demo="trace"]').forEach((root) => {
+    const jacks = [...root.querySelectorAll<HTMLButtonElement>('[data-tr-jack]')];
+    const routes = [...root.querySelectorAll<SVGPathElement>('[data-tr-route]')];
+    const dots = [...root.querySelectorAll<SVGCircleElement>('[data-tr-dot]')];
+    const ports = [...root.querySelectorAll<HTMLElement>('[data-tr-port]')];
+    const line = root.querySelector<HTMLElement>('[data-tr-line]')!;
+    const readout = root.querySelector<HTMLElement>('[data-tr-readout]')!;
+    const HINT = 'Tap a jack to trace its cable.';
+
+    fitSvgText(root);
+
+    const clear = () => {
+      jacks.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+      routes.forEach((r) => r.classList.remove('is-lit'));
+      dots.forEach((d) => d.classList.remove('is-lit'));
+      ports.forEach((p) => p.classList.remove('is-lit'));
+      readout.textContent = 'Port: none lit';
+      line.textContent = HINT;
+    };
+
+    const light = (btn: HTMLButtonElement) => {
+      const id = btn.dataset.trJack!;
+      const port = btn.dataset.port!;
+      clear();
+      btn.setAttribute('aria-pressed', 'true');
+      routes.find((r) => r.dataset.trRoute === id)?.classList.add('is-lit');
+      dots.find((d) => d.dataset.trDot === id)?.classList.add('is-lit');
+      ports.find((p) => p.dataset.trPort === port)?.classList.add('is-lit');
+      readout.textContent = `Port: ${port}`;
+      line.textContent = `Jack ${id} lands on port ${port}. The label on both ends says so, so anyone can find it in seconds.`;
+      announce(root, line.textContent);
+    };
+
+    jacks.forEach((b) =>
+      b.addEventListener('click', () => {
+        // Pressing the lit jack again turns it off
+        if (b.getAttribute('aria-pressed') === 'true') {
+          clear();
+          announce(root, 'Trace cleared');
+        } else light(b);
+      }),
+    );
+
+    bindReplay(root, () => {
+      clear();
+      announce(root, 'Trace cleared');
+    });
+  });
+</script>
+
+<style>
+  .tr {
+    display: grid;
+    gap: 1rem;
+    min-width: 0;
+  }
+
+  .tr__plan {
+    position: relative;
+    min-width: 0;
+  }
+
+  .tr__plan svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+  }
+
+  /* Route: drawn with stroke-dashoffset (pathLength is 1). Hidden until lit. */
+  .tr__route {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0;
+  }
+
+  .tr__route.is-lit {
+    opacity: 1;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset var(--dur-slow) var(--ease-in-out);
+  }
+
+  .tr__dot {
+    fill: var(--white);
+    stroke: var(--ink);
+    stroke-width: 1.75;
+  }
+
+  .tr__dot.is-lit {
+    fill: var(--ink);
+  }
+
+  /* Real buttons laid over the plan; the 44px box is the touch target, the dot is drawn in the svg */
+  .tr__jacks {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .tr__jack {
+    position: absolute;
+    display: grid;
+    place-items: end center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    transform: translate(-50%, -50%);
+    border-radius: var(--radius);
+    background: transparent;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+
+  .tr__jack-label {
+    margin-bottom: -0.55rem;
+    padding: 0 0.2rem;
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    color: var(--ink);
+    background: var(--paper);
+    border-radius: var(--radius);
+    white-space: nowrap;
+    transform: translateY(100%);
+  }
+
+  .tr__jack[aria-pressed='true'] .tr__jack-label {
+    background: var(--ink);
+    color: var(--white);
+  }
+
+  .tr__jack:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 1px;
+  }
+
+  .tr__side {
+    display: grid;
+    gap: 0.75rem;
+    align-content: start;
+    min-width: 0;
+  }
+
+  .tr__panel {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    color: var(--steel);
+  }
+
+  .tr__panel-name,
+  .tr__readout {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .tr__panel-name {
+    color: var(--ink);
+  }
+
+  .tr__ports {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .tr__port {
+    aspect-ratio: 1 / 1;
+    background: var(--white);
+    border: 1px solid var(--ink);
+    border-radius: 1px;
+    transition: background-color var(--dur-fast) ease;
+  }
+
+  .tr__port.is-lit {
+    background: var(--pass);
+    border-color: var(--pass);
+    outline: 2px solid var(--pass);
+    outline-offset: 1px;
+  }
+
+  .tr__line {
+    min-height: 3.1em; /* room for the longest line, so nothing jumps */
+    margin: 0;
+    color: var(--text);
+    line-height: 1.55;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tr__route.is-lit,
+    .tr__port {
+      transition: none;
+    }
+  }
+
+  /* Phones: label scale fallback, as the other plan demos */
+  @container (max-width: 520px) {
+    .tr__plan svg {
+      --u: 1.25;
+    }
+  }
+
+  @container (min-width: 600px) {
+    .tr {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+</style>

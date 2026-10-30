@@ -7,6 +7,7 @@
  * business. The slider works without JS animation; the script auto-sweeps it once, then hands over.
  */
 import DemoFrame from './DemoFrame.astro';
+import TraceDemo from './TraceDemo.astro';
 
 const uid = `in${Math.random().toString(36).slice(2, 8)}`;
 
@@ -54,6 +55,7 @@ const steps = [
 ];
 ---
 
+<div class="in-pair">
 <DemoFrame
   name="install"
   title="The closet, before and after"
@@ -151,6 +153,8 @@ const steps = [
     </ol>
   </div>
 </DemoFrame>
+<TraceDemo />
+</div>
 
 <script>
   import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion, fitSvgText } from '../../scripts/demo';
@@ -234,6 +238,11 @@ const steps = [
 </script>
 
 <style>
+  .in-pair {
+    display: grid;
+    gap: 1rem;
+  }
+
   .in {
     display: grid;
     gap: 1rem;

@@ -68,7 +68,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
               data-step-panel
             >
               <div class="steps__intro">
-                <p class="steps__intro-label"><span class="t-mono">Step {s.code}</span> · {s.title}</p>
+                <p class="steps__intro-label"><span class="t-mono">Step <span class="steps__num"><span class="steps__num-v">{s.code}</span></span></span> · {s.title}</p>
                 <h3 class="visually-hidden">{s.title}</h3>
                 <p class="steps__intro-body">{s.body}</p>
               </div>
@@ -146,6 +146,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     };
 
     function select(i: number, { focus = false, play = false } = {}) {
+      const prev = index;
       index = (i + tabs.length) % tabs.length;
       tabs.forEach((t, n) => {
         const on = n === index;
@@ -153,9 +154,36 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
         t.tabIndex = on ? 0 : -1;
       });
       panels.forEach((p, n) => p.classList.toggle('is-active', n === index));
+      if (index !== prev) tickNumber(panels[index], tabs[prev].querySelector('.steps__code')?.textContent ?? '');
       if (focus) tabs[index].focus();
       if (play) playDemo(panels[index]);
     }
+
+    /** The step number in the panel label ticks over: the old number slides up and out, the new one slides in. */
+    const tickNumber = (panel: HTMLElement, oldCode: string) => {
+      if (reduceMotion) return;
+      const num = panel.querySelector<HTMLElement>('.steps__num');
+      const value = num?.querySelector<HTMLElement>('.steps__num-v');
+      if (!num || !value || !oldCode) return;
+      const css = getComputedStyle(document.documentElement);
+      const raw = css.getPropertyValue('--dur-fast').trim();
+      const ms = (raw.endsWith('ms') ? parseFloat(raw) : parseFloat(raw) * 1000) || 160;
+      const easing = css.getPropertyValue('--ease-out').trim() || 'ease-out';
+      const opts = { duration: ms, easing, fill: 'both' as FillMode };
+      num.querySelector('.steps__num-old')?.remove();
+      const ghost = document.createElement('span');
+      ghost.className = 'steps__num-old';
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.textContent = oldCode;
+      num.append(ghost);
+      value.animate(
+        [{ transform: 'translateY(100%)', opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }],
+        opts,
+      );
+      ghost
+        .animate([{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(-100%)', opacity: 0 }], opts)
+        .finished.then(() => ghost.remove(), () => ghost.remove());
+    };
 
     const takeOver = () => {
       if (userTookOver) return;
@@ -318,7 +346,10 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     background: transparent;
     text-align: left;
     overflow: hidden;
-    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
+    transition:
+      background var(--dur) var(--ease-out),
+      border-color var(--dur) var(--ease-out),
+      color var(--dur) var(--ease-out);
   }
 
   .steps__tab:hover {
@@ -333,6 +364,14 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 
   .steps__code {
     color: var(--steel); /* DESIGN.md rule 7: red is for the one action and FAIL */
+    transition: color var(--dur) var(--ease-out);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .steps__tab,
+    .steps__code {
+      transition: none;
+    }
   }
 
   .steps__tab[aria-selected='true'] .steps__code {
@@ -397,6 +436,24 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     color: var(--text);
     font-size: var(--fs-small);
     font-weight: 500;
+  }
+
+  /* Step number in the label: a clipped slot the digits slide through */
+  .steps__num {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+    line-height: 1.3;
+  }
+
+  .steps__num-v {
+    display: inline-block;
+  }
+
+  .steps__num-old {
+    position: absolute;
+    inset: 0;
   }
 
   .steps__intro-body {

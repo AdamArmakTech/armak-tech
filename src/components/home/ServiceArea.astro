@@ -97,13 +97,13 @@ const groups = counties.map((county) => ({
                 {gridLats.filter((v) => Number.isInteger(v)).map((v) => <text x="14" y={py(v) - 10}>{`${v}°N`}</text>)}
               </g>
               <polygon class="sx-hull" points={hullPoints} />
-              {serviceArea.filter((c) => !isHq(c.name)).map((c) => (
-                <g class="sx-city">
+              {serviceArea.filter((c) => !isHq(c.name)).map((c, i) => (
+                <g class="sx-city" style={`--i:${i}`}>
                   <circle cx={px(c.lng)} cy={py(c.lat)} r="7" />
                   {schematicLabels.has(c.name) && <text x={px(c.lng) + 14} y={py(c.lat) + 6}>{c.name}</text>}
                 </g>
               ))}
-              <g class="sx-hq">
+              <g class="sx-hq" style={`--i:${serviceArea.length}`}>
                 <circle class="sx-hq__ring" cx={px(hq.lng)} cy={py(hq.lat)} r="22" />
                 <circle class="sx-hq__dot" cx={px(hq.lng)} cy={py(hq.lat)} r="11" />
                 <text x={px(hq.lng) - 30} y={py(hq.lat) - 30} text-anchor="end">HQ · {hq.city}</text>
@@ -250,6 +250,35 @@ const groups = counties.map((county) => ({
   .sx-hq text {
     fill: var(--ink);
     font-weight: 600;
+  }
+
+  /* First view: the schematic dots land one by one (40ms apart), HQ last. The script sets
+     data-dots="pending" before the figure is seen, then "in". Without JS, or with reduced
+     motion, the attribute is never set and everything is simply shown. */
+  .sx-city circle,
+  .sx-hq circle {
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .area__map[data-dots] .sx-city,
+  .area__map[data-dots] .sx-hq {
+    transition: opacity var(--dur) var(--ease-out) calc(var(--i, 0) * 40ms);
+  }
+
+  .area__map[data-dots] .sx-city circle,
+  .area__map[data-dots] .sx-hq circle {
+    transition: transform var(--dur) var(--ease-out) calc(var(--i, 0) * 40ms);
+  }
+
+  .area__map[data-dots="pending"] .sx-city,
+  .area__map[data-dots="pending"] .sx-hq {
+    opacity: 0;
+  }
+
+  .area__map[data-dots="pending"] .sx-city circle,
+  .area__map[data-dots="pending"] .sx-hq circle {
+    transform: scale(0.6);
   }
 
   .area__status {
@@ -467,7 +496,11 @@ const groups = counties.map((county) => ({
     cities: { name: string; lng: number; lat: number; hq: boolean }[];
   }
 
+  import { onFirstView } from '../../scripts/demo';
+
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DOT_STAGGER_MS = 40;
+  const DOT_MS = 320; // keep in step with --dur
 
   function loadStylesheet(href: string) {
     return new Promise<void>((resolve, reject) => {
@@ -487,6 +520,38 @@ const groups = counties.map((county) => ({
     } catch {
       return false;
     }
+  }
+
+  const DOT_LAYERS = ['armak-city-dots', 'armak-hq-ring', 'armak-hq-dot'];
+
+  /** Dots start collapsed and invisible (skipped under reduced motion). */
+  function hideDots(map: MapLibreMap) {
+    for (const id of DOT_LAYERS) {
+      map.setPaintProperty(id, 'circle-radius', 0);
+      map.setPaintProperty(id, 'circle-stroke-opacity', 0);
+    }
+    map.setPaintProperty('armak-city-dots', 'circle-opacity', 0);
+    map.setPaintProperty('armak-hq-dot', 'circle-opacity', 0);
+  }
+
+  /** Land the city dots together over --dur, then HQ after the last city (MapLibre transitions are
+   *  per layer, so the per-dot 40ms stagger of the schematic becomes one group, then HQ). */
+  function showDots(map: MapLibreMap, cityCount: number) {
+    const hqDelay = Math.min(cityCount * DOT_STAGGER_MS, 600);
+    for (const id of DOT_LAYERS) {
+      const delay = id === 'armak-city-dots' ? 0 : hqDelay;
+      for (const prop of ['circle-radius', 'circle-opacity', 'circle-stroke-opacity']) {
+        map.setPaintProperty(id, `${prop}-transition` as "circle-radius", { duration: DOT_MS, delay } as never);
+      }
+    }
+    map.setPaintProperty('armak-city-dots', 'circle-radius', ['interpolate', ['linear'], ['zoom'], 6, 3.5, 10, 6]);
+    map.setPaintProperty('armak-city-dots', 'circle-opacity', 1);
+    map.setPaintProperty('armak-city-dots', 'circle-stroke-opacity', 1);
+    map.setPaintProperty('armak-hq-dot', 'circle-radius', 7);
+    map.setPaintProperty('armak-hq-dot', 'circle-opacity', 1);
+    map.setPaintProperty('armak-hq-dot', 'circle-stroke-opacity', 1);
+    map.setPaintProperty('armak-hq-ring', 'circle-radius', 15);
+    map.setPaintProperty('armak-hq-ring', 'circle-stroke-opacity', 1);
   }
 
   function addOverlay(map: MapLibreMap, data: MapData, narrow: boolean) {
@@ -669,6 +734,12 @@ const groups = counties.map((county) => ({
       map.on('load', () => {
         if (!map || root.dataset.state === 'error') return;
         addOverlay(map, data, narrow);
+        if (!reduceMotion) {
+          hideDots(map);
+          const reveal = () => map && showDots(map, data.cities.length);
+          if (root.dataset.seen) reveal();
+          else root.addEventListener('area:seen', reveal, { once: true });
+        }
         map.once('idle', () => {
           window.clearTimeout(timeout);
           if (root.dataset.state !== 'error') root.dataset.state = 'ready';
@@ -681,6 +752,15 @@ const groups = counties.map((county) => ({
   }
 
   document.querySelectorAll<HTMLElement>('[data-area-map]').forEach((root) => {
+    // Dots land once, the first time the figure is on screen (schematic via CSS, map via paint transitions)
+    if (!reduceMotion) {
+      root.dataset.dots = 'pending';
+      onFirstView(root, () => {
+        root.dataset.dots = 'in';
+        root.dataset.seen = '1';
+        root.dispatchEvent(new Event('area:seen'));
+      });
+    }
     if (!('IntersectionObserver' in window)) {
       void initMap(root);
       return;

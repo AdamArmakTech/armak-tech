@@ -64,6 +64,32 @@ const { service, detail } = Astro.props;
   </div>
 </section>
 
+<script>
+  // Scope-sheet rows reveal line by line the first time the sheet is on screen.
+  // Bundled (not inline) so the site's Content-Security-Policy allows it; rows stay visible if it never runs.
+  (function () {
+    var sheets = document.querySelectorAll('.sheet');
+    if (!sheets.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+    sheets.forEach(function (sheet) {
+      var rows = sheet.querySelectorAll('.sheet__list li');
+      rows.forEach(function (li, i) {
+        (li as HTMLElement).style.setProperty('--i', String(i));
+      });
+      sheet.setAttribute('data-rows', 'pending');
+      var io = new IntersectionObserver(
+        function (entries) {
+          if (!entries.some(function (e) { return e.isIntersecting; })) return;
+          io.disconnect();
+          sheet.setAttribute('data-rows', 'in');
+        },
+        { threshold: 0.2 },
+      );
+      io.observe(sheet);
+    });
+  })();
+</script>
+
 <style>
   .svc-hero {
     padding-top: clamp(1.25rem, 0.9rem + 1.5vw, 2.25rem);
@@ -237,6 +263,18 @@ const { service, detail } = Astro.props;
 
   .sheet__foot {
     font-size: var(--fs-label);
+  }
+
+  /* Rows rise 6px and fade in, 50ms apart. Header and footer stay static. */
+  .sheet[data-rows] .sheet__list li {
+    transition:
+      opacity var(--dur) var(--ease-out) calc(var(--i, 0) * 50ms),
+      transform var(--dur) var(--ease-out) calc(var(--i, 0) * 50ms);
+  }
+
+  .sheet[data-rows="pending"] .sheet__list li {
+    opacity: 0;
+    transform: translateY(6px);
   }
 
   @media (min-width: 1024px) {

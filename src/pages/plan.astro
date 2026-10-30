@@ -11,6 +11,7 @@ import PageHero from '../components/pages/PageHero.astro';
 import SectionHead from '../components/ui/SectionHead.astro';
 import PageCta from '../components/pages/PageCta.astro';
 import CableTest from '../components/ui/CableTest.astro';
+import CableCompare from '../components/plan/CableCompare.astro';
 import { site } from '../data/site';
 
 const description =
@@ -69,6 +70,7 @@ const upgradeQuestions = [
       <a href="#checklist">Checklist</a>
       <a href="#estimator">Estimator</a>
       <a href="#upgrade">Cabling check</a>
+      <a href="#which-cable">Which cable?</a>
       <a href="#sample-report">Sample report</a>
     </nav>
   </PageHero>
@@ -166,6 +168,12 @@ const upgradeQuestions = [
           <p class="quiz__why" data-quiz-why></p>
         </div>
       </form>
+    </section>
+
+    <!-- ── Which cable? ── -->
+    <section class="plan__section" id="which-cable" aria-label="Which cable?">
+      <SectionHead title="Which cable?" intro="Four common choices, what each one can do, and when it makes sense." />
+      <CableCompare />
     </section>
 
     <!-- ── Sample report ── -->

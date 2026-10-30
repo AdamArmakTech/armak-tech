@@ -1,0 +1,111 @@
+/**
+ * Turns plain text into HTML where the first mention of each glossary term opens that
+ * term in the glossary. Input is plain text (never HTML); output is escaped HTML.
+ *
+ * Rules:
+ *  - Matches `term`, each `aka`, `stands_for`, and the pieces of terms written as
+ *    "A / B" or "A (B)". Variants under 3 characters are skipped.
+ *  - Whole words, longest match first. A trailing "s"/"es" is allowed on words.
+ *  - All-caps acronyms (NEC, NEXT, POS, LAN, MAC...) match case-sensitively so ordinary
+ *    words like "next" or "pos" never link. Everything else is case-insensitive.
+ *  - Only the first mention of each term is linked, and at most `max` links per text
+ *    (default 4). Everyday words that are also terms (drop, port, rack...) are lowest
+ *    priority: they only get a link if the cap has room after the specific terms.
+ */
+import { glossary } from '../data/glossary';
+
+export interface LinkOptions {
+  max?: number;
+  /** Names that must not link (e.g. the page's own service name). */
+  exclude?: string[];
+}
+
+interface Variant {
+  text: string;
+  slug: string;
+  caseSensitive: boolean;
+  common: boolean;
+  re: RegExp;
+}
+
+/** Glossary terms that are also everyday words; linked only if there is room left. */
+const COMMON = new Set(['drop', 'port', 'rack', 'pathway', 'termination', 'redundancy', 'splice', 'paging', 'egress', 'uplink', 'router', 'ethernet', 'jitter', 'latency', 'firewall', 'gbps', 'channel']);
+
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+
+function pieces(raw: string): string[] {
+  const out = new Set<string>();
+  const add = (s: string) => {
+    const t = s.trim();
+    if (t.length >= 3) out.add(t);
+  };
+  add(raw);
+  for (const part of raw.split(/\s+\/\s+/)) {
+    add(part);
+    add(part.replace(/\s*\([^)]*\)/g, ''));
+    for (const m of part.matchAll(/\(([^)]*)\)/g)) if (/^[A-Z0-9]{3,}$/.test(m[1])) add(m[1]);
+  }
+  return [...out];
+}
+
+let cache: Variant[] | null = null;
+function variants(): Variant[] {
+  if (cache) return cache;
+  const seen = new Set<string>();
+  const list: Variant[] = [];
+  for (const e of glossary) {
+    const raws = [e.term, ...(e.aka ?? []), ...(e.stands_for ? [e.stands_for] : [])];
+    for (const raw of raws) {
+      for (const text of pieces(raw)) {
+        const key = text.toLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const caseSensitive = /^[A-Z0-9][A-Z0-9.\-]*$/.test(text) && /[A-Z]/.test(text);
+        const endsWord = /[A-Za-z]$/.test(text);
+        const body = escapeRe(text);
+        const re = new RegExp(`(?<![A-Za-z0-9])${body}${endsWord && !caseSensitive ? '(?:e?s)?' : ''}(?![A-Za-z0-9])`, caseSensitive ? '' : 'i');
+        list.push({ text, slug: e.slug, caseSensitive, common: COMMON.has(key), re });
+      }
+    }
+  }
+  list.sort((a, b) => b.text.length - a.text.length);
+  cache = list;
+  return list;
+}
+
+export function linkGlossaryTerms(text: string, opts: LinkOptions = {}): string {
+  const max = opts.max ?? 4;
+  const blocked = new Set((opts.exclude ?? []).map(norm).filter(Boolean));
+  type Hit = { start: number; end: number; slug: string; common: boolean };
+  const hits: Hit[] = [];
+  const usedSlugs = new Set<string>();
+
+  for (const v of variants()) {
+    if (usedSlugs.has(v.slug)) continue;
+    if (blocked.has(norm(v.text)) || blocked.has(norm(v.slug))) continue;
+    const m = v.re.exec(text);
+    if (!m) continue;
+    const start = m.index;
+    const end = start + m[0].length;
+    if (hits.some((h) => start < h.end && end > h.start)) continue; // longest match already took this span
+    hits.push({ start, end, slug: v.slug, common: v.common });
+    usedSlugs.add(v.slug);
+  }
+
+  // Keep at most `max`: specific terms first, everyday words only if room remains.
+  const byPos = (a: Hit, b: Hit) => a.start - b.start;
+  const kept = [...hits.filter((h) => !h.common).sort(byPos), ...hits.filter((h) => h.common).sort(byPos)].slice(0, max).sort((a, b) => a.start - b.start);
+
+  let out = '';
+  let pos = 0;
+  for (const h of kept) {
+    out += escapeHtml(text.slice(pos, h.start));
+    out += `<a class="gl" href="/glossary/#${h.slug}">${escapeHtml(text.slice(h.start, h.end))}</a>`;
+    pos = h.end;
+  }
+  return out + escapeHtml(text.slice(pos));
+}
+
+export default linkGlossaryTerms;

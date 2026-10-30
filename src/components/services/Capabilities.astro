@@ -1,5 +1,6 @@
 ---
 import SectionHead from '../ui/SectionHead.astro';
+import { linkGlossaryTerms } from '../../lib/glossaryLinks';
 import type { Capability } from '../../data/services-detail';
 
 interface Props {
@@ -23,7 +24,7 @@ const { serviceName, items } = Astro.props;
         <li class="cap">
           <span class="t-mono cap__index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
           <h3 class="t-h4 cap__title">{item.title}</h3>
-          <p class="t-small t-muted cap__body">{item.body}</p>
+          <p class="t-small t-muted cap__body" set:html={linkGlossaryTerms(item.body, { exclude: [serviceName] })} />
         </li>
       ))}
     </ol>
@@ -52,6 +53,17 @@ const { serviceName, items } = Astro.props;
 
   .cap__body {
     max-width: 34em;
+  }
+
+  .cap__body :global(.gl) {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--hairline-strong);
+    text-underline-offset: 3px;
+  }
+
+  .cap__body :global(.gl:hover) {
+    text-decoration-color: var(--ink);
   }
 
   @media (min-width: 640px) {

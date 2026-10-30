@@ -1,0 +1,283 @@
+---
+/**
+ * "Which cable?" worksheet: Cat 6, Cat 6A, OM4 and OS2 side by side.
+ * One table. Under 900px each row becomes a labelled card (no sideways scroll).
+ * Figures come from published standards (see the footnote); mono type is only for measured values.
+ */
+import { contactHref } from '../../lib/cta';
+
+const cables = [
+  {
+    name: 'Cat 6',
+    slug: 'cat-6',
+    speed: '1 Gb/s',
+    reach: 'Up to 55 m',
+    reachNote: 'about 37 to 55 m, depending on crosstalk conditions',
+    poe: 'Yes, up to 90 W',
+    poeNote: 'watch heat in large bundles',
+    use: 'Desks, phones, cameras and access points in offices.',
+    pick: 'Existing runs, or short drops where 1 Gb/s is enough.',
+  },
+  {
+    name: 'Cat 6A',
+    slug: 'cat-6a',
+    speed: '10 Gb/s',
+    reach: '100 m',
+    reachNote: 'full channel length',
+    poe: 'Yes, up to 90 W',
+    poeNote: 'handles bundle heat better',
+    use: 'New office drops, Wi-Fi access points, high-power PoE devices.',
+    pick: 'The sensible default for new drops.',
+  },
+  {
+    name: 'OM4 multimode fiber',
+    slug: 'multimode-fiber',
+    speed: '100 Gb/s',
+    speedNote: 'with short-reach optics',
+    reach: 'Up to 400 m',
+    reachNote: '40 Gb/s to 150 m, 100 Gb/s to 100 m',
+    poe: 'No',
+    poeNote: 'carries data only',
+    use: 'Links between closets and floors inside a building.',
+    pick: 'Building backbones and server rooms that need more than copper reaches.',
+  },
+  {
+    name: 'OS2 single-mode fiber',
+    slug: 'singlemode-fiber',
+    speed: '100 Gb/s and up',
+    speedNote: 'set by the optics you buy',
+    reach: '10 km',
+    reachNote: 'and beyond with other optics',
+    poe: 'No',
+    poeNote: 'carries data only',
+    use: 'Campus links, between buildings, long backbones.',
+    pick: 'Long distances, or when you want the cable to outlast several speed upgrades.',
+  },
+];
+---
+
+<div class="cc">
+  <table class="cc__table">
+    <caption class="visually-hidden">Cat 6, Cat 6A, OM4 multimode fiber and OS2 single-mode fiber compared</caption>
+    <thead>
+      <tr>
+        <th scope="col">Cable</th>
+        <th scope="col">Top speed at 100 m</th>
+        <th scope="col">10 Gb/s reach</th>
+        <th scope="col">Powers devices (PoE)?</th>
+        <th scope="col">Typical use</th>
+        <th scope="col">When to pick it</th>
+      </tr>
+    </thead>
+    <tbody>
+      {cables.map((c) => (
+        <tr>
+          <th scope="row" class="cc__name"><a href={`/glossary/#${c.slug}`}>{c.name}</a></th>
+          <td data-label="Top speed at 100 m">
+            <span class="cc__val">{c.speed}</span>
+            {c.speedNote && <span class="cc__note">{c.speedNote}</span>}
+          </td>
+          <td data-label="10 Gb/s reach">
+            <span class="cc__val">{c.reach}</span>
+            <span class="cc__note">{c.reachNote}</span>
+          </td>
+          <td data-label="Powers devices (PoE)?">
+            <span class="cc__poe">{c.poe}</span>
+            <span class="cc__note">{c.poeNote}</span>
+          </td>
+          <td data-label="Typical use">{c.use}</td>
+          <td data-label="When to pick it">{c.pick}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <p class="cc__foot t-small t-muted">
+    Figures from ANSI/TIA-568.2-D and 568.3-D (cabling), TIA TSB-155-A (10 Gb/s over Cat 6) and IEEE 802.3
+    (1000BASE-T, 10GBASE-T, 10GBASE-SR/LR, 40GBASE-SR4, 100GBASE-SR4, 802.3bt for PoE). Distances are
+    maximums for a clean, tested channel.
+  </p>
+
+  <p class="cc__ask">
+    Not sure? Run the cabling check above, or
+    <a href={contactHref({ about: 'structured-cabling', mode: 'quick' })}>ask us which one fits your building</a>.
+  </p>
+</div>
+
+<style>
+  .cc {
+    display: grid;
+    gap: var(--sp-4);
+    max-width: 72rem;
+    min-width: 0;
+  }
+
+  .cc__table {
+    display: block;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: var(--sp-2) var(--sp-4);
+    border-collapse: collapse;
+  }
+
+  .cc__table :is(tbody, tr, th, td) {
+    display: block;
+  }
+
+  .cc__table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .cc__table tbody tr {
+    display: grid;
+    gap: var(--sp-3);
+    padding-block: var(--sp-4);
+  }
+
+  .cc__table tbody tr + tr {
+    border-top: 1px solid var(--hairline);
+  }
+
+  .cc__name {
+    font-weight: 600;
+    font-size: 1.125rem;
+    text-align: left;
+  }
+
+  .cc__name a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .cc__table td {
+    display: grid;
+    gap: 0.125rem;
+    grid-template-columns: minmax(6.5rem, 9rem) minmax(0, 1fr);
+    column-gap: var(--sp-3);
+    color: var(--text);
+    min-width: 0;
+  }
+
+  .cc__table td::before {
+    content: attr(data-label);
+    grid-row: 1 / span 2;
+    color: var(--steel);
+    font-size: 0.8125rem;
+  }
+
+  .cc__table td > * {
+    grid-column: 2;
+  }
+
+  .cc__val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+
+  .cc__poe {
+    color: var(--ink);
+  }
+
+  .cc__note {
+    color: var(--steel);
+    font-size: var(--fs-small);
+  }
+
+  /* Plain-text cells (use, pick) have no child spans: put text in column 2 */
+  .cc__table td:not(:has(.cc__val, .cc__poe)) {
+    display: grid;
+  }
+
+  .cc__foot {
+    margin: 0;
+    max-width: 52rem;
+  }
+
+  .cc__ask {
+    margin: 0;
+    color: var(--text);
+  }
+
+  .cc__ask a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (min-width: 900px) {
+    .cc__table {
+      display: table;
+      width: 100%;
+      padding: var(--sp-2) var(--sp-5);
+    }
+
+    .cc__table thead {
+      display: table-header-group;
+      position: static;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip-path: none;
+    }
+
+    .cc__table tbody {
+      display: table-row-group;
+    }
+
+    .cc__table tr {
+      display: table-row;
+    }
+
+    .cc__table :is(th, td) {
+      display: table-cell;
+      padding: var(--sp-4) var(--sp-3);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .cc__table tbody tr + tr > * {
+      border-top: 1px solid var(--hairline);
+    }
+
+    .cc__table tbody tr + tr {
+      border-top: 0;
+    }
+
+    .cc__table thead th {
+      color: var(--steel);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding-block: var(--sp-3);
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .cc__table td {
+      display: table-cell;
+    }
+
+    .cc__table td::before {
+      content: none;
+    }
+
+    .cc__table td > .cc__val,
+    .cc__table td > .cc__poe,
+    .cc__table td > .cc__note {
+      display: block;
+    }
+
+    .cc__table td > * {
+      grid-column: auto;
+    }
+
+    .cc__name {
+      font-size: 1rem;
+    }
+  }
+</style>

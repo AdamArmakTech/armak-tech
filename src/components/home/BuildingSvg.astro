@@ -449,3 +449,56 @@ const wifiArcs = (x: number, c: number) => [
     }
   }
 </style>
+
+<script>
+  // When the explorer makes a layer active, that layer's strokes draw in (once per change).
+  // BuildingExplorer toggles .is-active; we only watch for it. Opacity dimming stays in CSS.
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const STROKES = 'line, path:not(.bx-fill), rect.bx-outline, circle.bx-dot';
+
+  if (!reduceMotion) {
+    const running = new WeakMap<Element, Animation>();
+
+    const draw = (layer: Element) => {
+      const css = getComputedStyle(document.documentElement);
+      const raw = css.getPropertyValue('--dur-slow').trim();
+      const duration = (raw.endsWith('ms') ? parseFloat(raw) : parseFloat(raw) * 1000) || 900;
+      const easing = css.getPropertyValue('--ease-out').trim() || 'ease-out';
+      layer.querySelectorAll<SVGGeometryElement>(STROKES).forEach((el) => {
+        if (typeof el.getTotalLength !== 'function') return;
+        if (getComputedStyle(el).stroke === 'none') return;
+        let len = 0;
+        try {
+          len = el.getTotalLength();
+        } catch {
+          return;
+        }
+        if (!len) return;
+        running.get(el)?.cancel();
+        const a = el.animate(
+          [
+            { strokeDasharray: `${len}`, strokeDashoffset: `${len}` },
+            { strokeDasharray: `${len}`, strokeDashoffset: '0' },
+          ],
+          { duration, easing },
+        );
+        running.set(el, a);
+      });
+    };
+
+    document.querySelectorAll<SVGElement>('.bx').forEach((svg) => {
+      const layers = [...svg.querySelectorAll<Element>('.bx-layer')];
+      const was = new WeakMap<Element, boolean>();
+      layers.forEach((l) => was.set(l, l.classList.contains('is-active')));
+      const mo = new MutationObserver((records) => {
+        for (const r of records) {
+          const l = r.target as Element;
+          const on = l.classList.contains('is-active');
+          if (on && !was.get(l)) draw(l);
+          was.set(l, on);
+        }
+      });
+      layers.forEach((l) => mo.observe(l, { attributes: true, attributeFilter: ['class'] }));
+    });
+  }
+</script>

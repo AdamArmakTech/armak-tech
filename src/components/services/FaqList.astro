@@ -2,6 +2,7 @@
 /** Native <details>/<summary> disclosure list — accessible and works without JS. */
 import { Plus } from '@lucide/astro';
 import SectionHead from '../ui/SectionHead.astro';
+import { linkGlossaryTerms } from '../../lib/glossaryLinks';
 import type { Faq } from '../../data/services-detail';
 
 interface Props {
@@ -24,7 +25,7 @@ const { title = 'Common questions.', faqs } = Astro.props;
             <span class="t-h4">{f.q}</span>
             <Plus class="faq__icon" size={22} stroke-width={1.5} aria-hidden="true" />
           </summary>
-          <p class="faq__a t-muted">{f.a}</p>
+          <p class="faq__a t-muted" set:html={linkGlossaryTerms(f.a)} />
         </details>
       ))}
     </div>
@@ -77,6 +78,17 @@ const { title = 'Common questions.', faqs } = Astro.props;
     max-width: 44em;
     padding-bottom: 1.75rem;
     padding-right: 2.5rem;
+  }
+
+  .faq__a :global(.gl) {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--hairline-strong);
+    text-underline-offset: 3px;
+  }
+
+  .faq__a :global(.gl:hover) {
+    text-decoration-color: var(--ink);
   }
 
   @media (min-width: 900px) {
