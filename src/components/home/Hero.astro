@@ -1,91 +1,55 @@
 ---
-import { Image } from 'astro:assets';
-import { ArrowRight } from '@lucide/astro';
 import CableTest from '../ui/CableTest.astro';
+import Button from '../ui/Button.astro';
 import { site, yearsInBusiness } from '../../data/site';
 import { credentials } from '../../data/content';
 import { contactHref } from '../../lib/cta';
 
-// The front door: sort visitors by what they came for instead of one button for everyone
-const paths = [
-  {
-    href: contactHref(),
-    title: 'I need a quote',
-    detail: 'You know what you need. Tell us the site and we’ll scope it.',
-    go: 'Request a site assessment',
-    primary: true,
-  },
+// Two quieter routes under the one red action (rule 7: one red-filled button per screen)
+const routes = [
   {
     href: '/plan/',
-    title: 'I’m planning a project',
+    title: 'Planning a project?',
     detail: 'Still figuring it out. Get the checklist and a rough estimate.',
-    go: 'Checklist · Estimator',
-    primary: false,
   },
   {
     href: contactHref({ intent: 'support' }),
-    title: 'Something’s broken',
+    title: 'Something’s broken?',
     detail: 'Existing customer with a problem or a change.',
-    go: 'Call or send a request',
-    primary: false,
   },
 ];
-// TODO(photo): interim stock (Unsplash, see assets/photos/CREDITS.md) — replace with a real Armak install photo
-import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
 ---
 
 <section class="hero container" aria-labelledby="hero-title">
   <div class="hero__copy">
-    <nav class="hero__links t-mono" aria-label="Quick links">
-      <ul role="list">
-        <li><a href="/industries/">Industries</a></li>
-        <li><a href="/about/">About</a></li>
-        <li><a href="/glossary/">Glossary</a></li>
-        <li><a href="/contact/">Contact</a></li>
-      </ul>
-    </nav>
     <!-- CSS-only entrance (no data-split): the LCP headline must never wait on a JS download -->
     <h1 id="hero-title" class="t-display hero__title">Built for the future.</h1>
-    <!-- hero-in = the same fade/rise as [data-reveal], but CSS-only so the hero (and its LCP photo)
-         paints on first render instead of waiting for motion.ts to download and boot -->
+    <!-- hero-in = the same fade/rise as [data-reveal], but CSS-only so the hero paints on first
+         render instead of waiting for motion.ts to download and boot -->
     <p class="t-lead hero-in">
       {yearsInBusiness} years designing, installing and certifying the cabling, networks and security
       systems Southern California businesses run on.
     </p>
-    <div class="hero__choose hero-in" data-dock-start style="--reveal-delay: 120ms">
-      <p class="t-mono hero__choose-label" id="hero-paths-label">Pick the closest fit</p>
-      <ul role="list" class="hero__paths" aria-labelledby="hero-paths-label">
-        {paths.map((p) => (
+    <div class="hero__choose hero-in" style="--reveal-delay: 120ms">
+      <div data-dock-start>
+        <Button href={contactHref()} size="lg">Request a site assessment</Button>
+      </div>
+      <ul role="list" class="hero__routes">
+        {routes.map((r) => (
           <li>
-            <a class:list={['path', { 'path--primary': p.primary }]} href={p.href}>
-              <span class="path__title">{p.title}</span>
-              <span class="path__detail">{p.detail}</span>
-              <span class="t-mono path__go">{p.go} <ArrowRight size={14} stroke-width={2} aria-hidden="true" /></span>
+            <a class="route" href={r.href}>
+              <span class="route__title">{r.title}</span>
+              <span class="route__detail">{r.detail}</span>
             </a>
           </li>
         ))}
       </ul>
       <p class="t-small hero__phone">Or call <a class="tel" href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}</p>
     </div>
-    <ul role="list" class="hero__creds t-mono hero-in" style="--reveal-delay: 220ms">
-      {credentials.map((c) => <li>{c}</li>)}
-    </ul>
+    <p class="t-small hero__creds hero-in" style="--reveal-delay: 220ms">{credentials.join(' · ')}</p>
   </div>
 
   <div class="hero__media hero-in" style="--reveal-delay: 150ms">
-    <div class="hero__frame">
-      <!-- sizes = the photo's real rendered width: 5/12 of the container on desktop (520px at the
-           1360px cap), full width minus the side gutters below 1000px -->
-      <Image
-        src={heroPhoto}
-        alt="A technician in a hi-vis vest working at a network rack with tools laid out on the floor"
-        widths={[560, 720, 840, 1120, 1280, 1600]}
-        sizes="(min-width: 1360px) 520px, (min-width: 1000px) 39vw, calc(100vw - 2rem)"
-        loading="eager"
-        fetchpriority="high"
-      />
-      <span class="hero__tag t-mono" aria-hidden="true">A-01 · Physical layer</span>
-    </div>
     <CableTest variant="compact" class="hero__card" />
   </div>
 </section>
@@ -101,53 +65,12 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
   .hero__copy {
     display: grid;
     gap: 1.75rem;
-    align-content: end;
+    align-content: center;
     justify-items: start;
   }
 
-
-  /* Quick links row (same spot and look as the old spec strip, but clickable) */
-  .hero__links {
-    width: 100%;
-    padding-block: 1rem;
-    border-block: 1px solid var(--hairline);
-  }
-
-  .hero__links ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 0;
-  }
-
-  .hero__links li {
-    display: inline-flex;
-    align-items: center;
-  }
-
-  .hero__links li:not(:last-child)::after {
-    content: "";
-    width: 4px;
-    height: 4px;
-    margin-inline: 1rem;
-    background: var(--signal);
-  }
-
-  .hero__links a {
-    display: inline-block;
-    font-size: 0.875rem;
-    /* Taller tap area (48px; rows overlap a little when the links wrap, still above the 24px minimum); the negative margin cancels the padding so spacing is unchanged */
-    padding-block: 0.8rem;
-    margin-block: -0.8rem;
-    color: var(--ink);
-    transition: color var(--dur-fast) ease;
-  }
-
-  .hero__links a:hover {
-    color: var(--signal);
-  }
-
   .hero__title {
-    max-width: 11ch;
+    max-width: 14ch;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -187,78 +110,45 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
     }
   }
 
-  /* Three-way chooser */
   .hero__choose {
     display: grid;
-    gap: 0.875rem;
+    gap: 1.5rem;
     width: 100%;
+    max-width: 36rem;
   }
 
-  .hero__choose-label {
-    color: var(--steel);
+  /* Two plain rows, hairline-separated like a schedule (rule 5) */
+  .hero__routes {
+    border-top: 1px solid var(--hairline);
   }
 
-  .hero__paths {
+  .hero__routes li {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .route {
     display: grid;
-    gap: 0.625rem;
+    gap: 0.25rem;
+    min-height: 44px;
+    padding-block: 0.875rem;
   }
 
-  .path {
-    display: grid;
-    gap: 0.35rem;
-    height: 100%;
-    padding: 0.875rem 1rem 1rem;
-    background: var(--white);
-    border: 1px solid var(--hairline);
-    border-top: 2px solid var(--ink);
-    border-radius: var(--radius);
-    transition: border-color var(--dur-fast) ease, transform var(--dur) var(--ease-out);
-  }
-
-  .path--primary {
-    border-top-color: var(--signal);
-  }
-
-  .path:hover {
-    border-color: var(--ink);
-    border-top-color: inherit;
-  }
-
-  .path--primary:hover {
-    border-top-color: var(--signal);
-  }
-
-  .path__title {
+  .route__title {
     font-weight: 600;
     letter-spacing: -0.01em;
-  }
-
-  .path__detail {
-    font-size: 0.875rem;
-    line-height: 1.45;
-    color: var(--steel);
-  }
-
-  .path__go {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    margin-top: 0.4rem;
     color: var(--ink);
     transition: color var(--dur-fast) ease;
   }
 
-  .path--primary .path__go,
-  .path:hover .path__go {
-    color: var(--signal);
+  .route:hover .route__title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
-  .path__go :global(svg) {
-    transition: transform var(--dur) var(--ease-out);
-  }
-
-  .path:hover .path__go :global(svg) {
-    transform: translateX(3px);
+  .route__detail {
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    color: var(--steel);
   }
 
   .hero__phone {
@@ -272,93 +162,41 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
     text-underline-offset: 3px;
   }
 
-  @media (min-width: 640px) {
-    .hero__paths {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
-
   .hero__creds {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
     color: var(--steel);
   }
 
-  .hero__creds li {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .hero__creds li::before {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border: 1px solid var(--ink);
-  }
-
+  /* The cable test is the hero's visual: full column width, white surface */
   .hero__media {
-    position: relative;
+    display: grid;
   }
 
-  .hero__frame {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius);
-    background: var(--paper-sunken);
-  }
-
-  .hero__frame img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-  }
-
-  .hero__tag {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    padding: 0.35rem 0.55rem;
-    background: var(--paper);
-    border-radius: var(--radius);
-  }
-
-  /* Phones/tablets: card overlaps the lower part of the photo, right-aligned */
   .hero__media :global(.hero__card) {
-    position: relative;
-    width: min(320px, 86%);
-    margin: -6rem 0.75rem 0 auto;
+    width: 100%;
+    max-width: none;
+    background: var(--white);
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 1024px) {
     .hero {
       grid-template-columns: 7fr 5fr;
-      align-items: end;
+      grid-template-rows: 1fr;
+      align-items: stretch;
       min-height: calc(100svh - var(--header-h));
     }
 
-    /* Keep the copy clear of the cable-test card, which hangs 4.5rem into the gutter */
-    .hero__copy {
-      padding-right: calc(4.5rem - var(--col-gap) + 1rem);
+    /* Two lines on desktop: the display size is capped so the sentence breaks once */
+    .hero__title {
+      max-width: 20ch;
+      font-size: clamp(2.75rem, 1rem + 4.2vw, 4.25rem);
     }
 
     .hero__media {
-      padding-bottom: 4rem;
+      grid-template-rows: 1fr;
     }
 
-    .hero__frame img {
-      aspect-ratio: 4 / 5;
-      max-height: min(78vh, 760px);
-    }
-
-    /* Desktop: card floats over the photo's lower-left edge */
     .hero__media :global(.hero__card) {
-      position: absolute;
-      left: -4.5rem;
-      bottom: 0;
-      width: min(330px, 88%);
-      margin: 0;
+      align-content: space-between;
     }
   }
 </style>

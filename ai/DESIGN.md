@@ -6,12 +6,14 @@ the site says or does Y." If a change can't be tied to a rule, don't make it.
 
 ## The ten rules
 
-1. **The homepage opens on the cable test report, not a stock photo.** The site's main promise is
-   "Every run, rack and port is tested and documented before we leave the site. You get the reports"
-   (`src/data/content.ts`, step 04). We own no photos of Armak's own work, so the report is the proof.
-2. **Stock photos appear only on the six service pages, captioned as example equipment.** The seven
-   photos in `src/assets/photos/` are interim stock (see CREDITS.md) and must never read as Armak jobs.
-   They are not on the homepage, `/services/` or `/about/`. No trade-label chips on photos.
+1. **The homepage opens on the headline and the cable test report.** The headline stays "Built for the
+   future." (owner, 2026-10-29). The report sits beside it because the site's main promise is "Every run,
+   rack and port is tested and documented before we leave the site. You get the reports" (step 04).
+2. **Photos show the equipment Armak installs, product-style on clean backgrounds** (the way Ubiquiti
+   presents gear), never staged people and never stock passed off as Armak jobs. The seven interim stock
+   photos in `src/assets/photos/` are replaced as product images with proper rights arrive (manufacturer
+   partner assets or Armak's own shots). Until then a photo slot shows the product image or nothing, not a
+   staged stock scene. No trade-label chips on photos.
 3. **Index codes only where they name a real thing.** TIA-606 labels identify cables, ports and systems.
    Keep: services A-01..A-06 (menu, tiles, scope sheet, explorer tabs), steps 01..05, the cable test's
    cable ID, the 404 "link test". Drop: every section or page code (B-, C-, D-, F-, G-, H-, J-, K-, N-,
@@ -28,8 +30,8 @@ the site says or does Y." If a change can't be tied to a rule, don't make it.
    ends with the same action, so they share one surface.
 9. **Text is sized and colored to be read.** Headings fit two lines on a 375px phone (the hero three).
    Paragraphs are near-ink (`--text`); grey (`--steel`) is for metadata only. Plain sentences, no slogans.
-10. **Things move only where the job moves:** a test runs, a step advances, a demo plays. Headings,
-    numbers and scrolling do not animate.
+10. **Motion is kept but restrained** (owner, 2026-10-29): smooth scroll, heading line reveals, counting
+    numbers, and the demos (a test runs, a step advances). Nothing else animates; no new scroll effects.
 
 ## Tokens that carry the rules (`src/styles/tokens.css`)
 - Spacing scale `--sp-1..10` = 4, 8, 12, 16, 24, 32, 48, 64, 96, 128px. Use these, not ad-hoc rems.
