@@ -38,8 +38,8 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
    most installers skip?" Site idea: a "Today / 10 years from now" toggle on the homepage building explorer.
 5. **Multi-agent work:** he wants a manager coordinating parallel agents, with a proofreading pass before anything
    publishes. Usage limits have cut agents off mid-task several times — relaunch with "which files already have
-   partial edits" and never commit/push half-done work. He also wants work to resume automatically after a limit
-   resets (a cron watchdog every 20 min worked; it needs the app open and the computer awake).
+   partial edits" and never commit/push half-done work. Work resumes automatically after a limit resets: the
+   `autoContinueAtUsageLimit` setting is on (since Oct 29). No cron watchdog; the app must stay open and the computer awake.
 6. Guided CTAs (Oct 21) were his request: the site felt like a "rabbit hole"; keep one red button per screen and a
    consistent Next-step block; CTAs should carry context into the form.
 
