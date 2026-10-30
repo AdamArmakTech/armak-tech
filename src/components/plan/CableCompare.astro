@@ -121,6 +121,8 @@ const cables = [
     border-collapse: collapse;
   }
 
+  /* Phone and tablet: each cable is a card with labelled rows */
+  @media (max-width: 899px) {
   .cc__table :is(tbody, tr, th, td) {
     display: block;
   }
@@ -193,6 +195,7 @@ const cables = [
   /* Plain-text cells (use, pick) have no child spans: put text in column 2 */
   .cc__table td:not(:has(.cc__val, .cc__poe)) {
     display: grid;
+  }
   }
 
   .cc__foot {
