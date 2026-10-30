@@ -52,8 +52,11 @@ const isActive = (href: string) => path === href || path.startsWith(href);
         {site.phone}
       </a>
       <Button href="/contact/" variant="primary" class="site-header__cta">Request a site assessment</Button>
+      <a class="site-header__call" href={site.phoneHref} aria-label={`Call Armak, ${site.phone}`}>
+        <Phone size={22} stroke-width={1.5} aria-hidden="true" />
+      </a>
       <button type="button" class="site-header__menu" aria-expanded="false" aria-controls="mobile-menu" data-menu-toggle>
-        <span class="visually-hidden">Menu</span>
+        <span class="visually-hidden" data-menu-label>Menu</span>
         <Menu class="icon-open" size={24} stroke-width={1.5} aria-hidden="true" />
         <X class="icon-close" size={24} stroke-width={1.5} aria-hidden="true" />
       </button>
@@ -125,6 +128,10 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     const setOpen = (toggle: HTMLButtonElement | null, panel: HTMLElement | null, open: boolean) => {
       if (!toggle || !panel) return;
       toggle.setAttribute('aria-expanded', String(open));
+      if (toggle === menuToggle) {
+        const label = toggle.querySelector('[data-menu-label]');
+        if (label) label.textContent = open ? 'Close menu' : 'Menu';
+      }
       panel.hidden = !open;
       header.toggleAttribute('data-open', !!(mega && !mega.hidden) || !!(menu && !menu.hidden));
     };
@@ -290,6 +297,20 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     gap: 0.5rem;
     color: var(--ink);
     font-size: 0.8125rem;
+    white-space: nowrap;
+  }
+
+  /* Call icon for phones and tablets, where the full number is hidden */
+  .site-header__call {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: var(--ink);
+  }
+
+  .site-header__call:hover {
+    color: var(--signal);
   }
 
   .site-header__phone:hover {
@@ -332,11 +353,20 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     .site-header__menu {
       display: none;
     }
+
+    /* The call icon is now the last item: pull its 44px box out so the glyph lines up with the content edge */
+    .site-header__call {
+      margin-right: -11px;
+    }
   }
 
   @media (min-width: 1200px) {
     .site-header__phone {
       display: inline-flex;
+    }
+
+    .site-header__call {
+      display: none;
     }
   }
 

@@ -22,7 +22,7 @@ const year = new Date().getFullYear();
       <p class="t-h1 site-footer__headline">Let’s scope your<br />next build.</p>
       <div class="site-footer__cta-actions">
         <Button href="/contact/" variant="primary" size="lg">Request a site assessment</Button>
-        <Button href={site.phoneHref} variant="outline-inverse" size="lg" icon="phone">{site.phone}</Button>
+        <Button href={site.phoneHref} variant="outline-inverse" size="lg" icon="phone" class="tel">{site.phone}</Button>
       </div>
     </div>
     )}
@@ -55,7 +55,7 @@ const year = new Date().getFullYear();
         <p class="t-mono site-footer__heading">Contact</p>
         <address>
           <ul role="list">
-            <li><a href={site.phoneHref}>{site.phone}</a></li>
+            <li><a class="tel" href={site.phoneHref}>{site.phone}</a></li>
             <li><a href={site.emailHref}>{site.email}</a></li>
             <li>{site.hq.city}, California</li>
             <li class="t-muted">{site.hours}</li>
@@ -149,13 +149,13 @@ const year = new Date().getFullYear();
     font-size: var(--fs-small);
   }
 
-  /* Taller tap area (≥24px, WCAG 2.5.8) without changing the spacing: the padding is
+  /* Taller tap area (about 46px; rows are 34px apart so areas overlap a little, still above the 24px minimum) without changing the spacing: the padding is
      cancelled out by an equal negative margin. */
   .site-footer__col a,
   .site-footer__legal a {
     display: inline-block;
-    padding-block: 0.25rem;
-    margin-block: -0.25rem;
+    padding-block: 0.7rem;
+    margin-block: -0.7rem;
     transition: color var(--dur-fast) ease;
   }
 

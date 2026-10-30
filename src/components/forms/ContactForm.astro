@@ -118,7 +118,7 @@ const f = (name: string) => `${id}-${name}`;
       </p>
     </div>
 
-    <p class="cform__status" role="status" aria-live="polite" data-status></p>
+    <p class="cform__status" role="alert" tabindex="-1" data-status></p>
   </form>
 
   <div class="cform__success" data-success hidden>
@@ -261,6 +261,9 @@ const f = (name: string) => `${id}-${name}`;
     color: var(--steel);
     text-decoration: underline;
     text-underline-offset: 3px;
+    /* 44px tap height without moving the layout */
+    padding-block: 0.75rem;
+    margin-block: -0.75rem;
   }
 
   .cform__about-change:hover {
@@ -339,6 +342,14 @@ const f = (name: string) => `${id}-${name}`;
     text-decoration: underline;
     text-underline-offset: 3px;
     white-space: nowrap;
+    /* 44px tap height without moving the layout */
+    display: inline-block;
+    padding-block: 0.75rem;
+    margin-block: -0.75rem;
+  }
+
+  .cform__status:focus {
+    outline: none;
   }
 
   .cform__status :global(a) {
@@ -539,6 +550,10 @@ const f = (name: string) => `${id}-${name}`;
         Object.assign(document.createElement('a'), { href: `mailto:${email}`, textContent: email }),
         '.',
       );
+      // Make the failure visible and announced: scroll to it and move focus there.
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      status!.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+      status!.focus({ preventScroll: true });
     }
 
     form.addEventListener('submit', async (e) => {

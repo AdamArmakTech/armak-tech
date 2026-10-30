@@ -43,7 +43,7 @@
   --fs-lead: clamp(1.125rem, 1.04rem + 0.38vw, 1.4rem);
   --fs-body: 1.0625rem;
   --fs-small: 0.9375rem;
-  --fs-label: 0.75rem;
+  --fs-label: 0.8125rem;
   --fs-stat: clamp(3rem, 2rem + 4vw, 6rem);
 
   --lh-tight: 0.94;

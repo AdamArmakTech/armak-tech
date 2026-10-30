@@ -65,7 +65,7 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
           </li>
         ))}
       </ul>
-      <p class="t-small hero__phone">Or call <a href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}</p>
+      <p class="t-small hero__phone">Or call <a class="tel" href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}</p>
     </div>
     <ul role="list" class="hero__creds t-mono hero-in" style="--reveal-delay: 220ms">
       {credentials.map((c) => <li>{c}</li>)}
@@ -133,7 +133,11 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
   }
 
   .hero__links a {
-    font-size: 0.8125rem;
+    display: inline-block;
+    font-size: 0.875rem;
+    /* Taller tap area (48px; rows overlap a little when the links wrap, still above the 24px minimum); the negative margin cancels the padding so spacing is unchanged */
+    padding-block: 0.8rem;
+    margin-block: -0.8rem;
     color: var(--ink);
     transition: color var(--dur-fast) ease;
   }
@@ -230,7 +234,7 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
   }
 
   .path__detail {
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     line-height: 1.45;
     color: var(--steel);
   }
