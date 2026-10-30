@@ -8,6 +8,24 @@
 - Plan / design rationale: `ai/plans/redesign.md` ("Precision Infrastructure", light editorial, Astro).
 
 ## Done
+- **Intentional design refresh — 2026-10-29/30 (branch `intent-redesign`, 8 local commits d52a464..c9d3ab3, NOT pushed).**
+  Rulebook: `ai/DESIGN.md` (ten rules; CLAUDE.md points at it). Done: tokens (spacing scale `--sp-*`, `--text`,
+  smaller display/h1/h2, section rhythm 64–112px, four breakpoints 420/640/900/1024), section openers without
+  index labels, sans breadcrumbs/labels/footer/menu, ink header button, every page ends in a dark Next-step band
+  into the footer (contact page excepted: the form is the action; privacy/terms/404 use the footer's own CTA),
+  no T568B stripe outside the cable test, red only on the one action + FAIL. Homepage: headline → one red button →
+  two plain routes → cable test card (no stock photo); order Hero → Partners → Process → Explorer (click-only, with
+  "All services" foot) → Numbers → Industries → Service area → Contact band; duplicate services grid removed.
+  Service pages: h1 = service name + headline line, scope sheet sans, stock photo captioned "Illustrative photo,
+  not an Armak job site.", dark band last. About: no stock photo, facts aside. Plan: worksheets + dark band.
+  Heights: home 11,721→8,217px desktop, 16,634→11,954px phone; every page shorter except /plan/ at 375 (+195px).
+  Checks: astro check 0 errors; 16 pages × 4 widths screenshotted before/after in `reports/redesign/`;
+  Playwright pass clean (0 console errors, 0 broken links, no sideways scroll); CTA handoff test 15/15;
+  proofreader pass 2 items all addressed except owner calls below. Owner decisions taken: keep "Built for the
+  future.", keep 946+, keep smooth scroll/heading reveals, product photos not stock (rights pending, see Q12–14).
+  Owner calls still open: (a) /contact/ ends on the map, no dark band (form is the action) — OK?; (b) HQ dot on
+  the map stays red (information) — OK?; (c) networking page title says "Networking & Wi-Fi" vs h1 "Networking &
+  Wireless" (pre-existing) — which name?; (d) "publish" to push `intent-redesign` → main.
 - **Mobile usability pass — 2026-10-29 evening (local commit e875cc0, NOT pushed).** From a Vercel Web Design
   Guidelines review + Playwright pass over all 15 pages (clean: 0 console errors, 0 broken links, no sideways
   scroll). Fixed: 44px call icon in the header below 1200px; menu button reads "Close menu" when open; form send
