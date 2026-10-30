@@ -8,6 +8,8 @@
  *   cable trays run at ceiling + 10 · riser at x 195 from the MDF rack up to L3
  */
 
+import { services, type ServiceSlug } from '../../data/site';
+
 const L3 = { ceil: 130, floor: 266 };
 const L2 = { ceil: 274, floor: 411 };
 const L1 = { ceil: 419, floor: 560 };
@@ -31,9 +33,27 @@ const wifiArcs = (x: number, c: number) => [
   `M${x - 9} ${c + 26} Q${x} ${c + 33} ${x + 9} ${c + 26}`,
   `M${x - 16} ${c + 31} Q${x} ${c + 43} ${x + 16} ${c + 31}`,
 ];
+
+/**
+ * Rooms for the hover/focus lookup. `systems` is read off this drawing: a system is listed only if
+ * some element of its layer is drawn inside the room's bounds (or its trunk/riser runs through it).
+ * Bounds: [x, y, w, h] in viewBox units, matching the walls above.
+ */
+const rooms: { id: string; name: string; box: [number, number, number, number]; systems: ServiceSlug[] }[] = [
+  { id: 'offices', name: 'OFFICES', box: [140, 130, 330, 136], systems: ['structured-cabling', 'networking', 'voip-unified-comms'] },
+  { id: 'conference', name: 'CONFERENCE', box: [470, 130, 270, 136], systems: ['structured-cabling', 'networking', 'access-control', 'voip-unified-comms', 'audio-video'] },
+  { id: 'idf-2', name: 'IDF-2', box: [140, 274, 85, 137], systems: ['structured-cabling', 'networking'] },
+  { id: 'open-office', name: 'OPEN OFFICE', box: [225, 274, 515, 137], systems: ['structured-cabling', 'networking', 'video-surveillance', 'voip-unified-comms'] },
+  { id: 'mdf', name: 'MDF', box: [140, 419, 110, 141], systems: ['structured-cabling', 'networking', 'video-surveillance'] },
+  { id: 'lobby', name: 'LOBBY', box: [250, 419, 320, 141], systems: ['structured-cabling', 'networking', 'video-surveillance', 'access-control', 'voip-unified-comms', 'audio-video'] },
+  { id: 'break-room', name: 'BREAK ROOM', box: [570, 419, 170, 141], systems: ['structured-cabling', 'access-control', 'voip-unified-comms', 'audio-video'] },
+];
+const roomLabel = (name: string) => name.charAt(0) + name.slice(1).toLowerCase();
+const names = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x.slug === sl)!.name);
+const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x.slug === sl)!.code);
 ---
 
-<svg class="bx" viewBox="0 0 880 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cutaway drawing of a three-storey commercial building showing where each of the six systems runs: cabling, networking and Wi-Fi, cameras, access control, phones, and audio-video. The system selected in the tabs is highlighted." focusable="false">
+<svg class="bx" viewBox="0 0 880 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cutaway drawing of a three-storey commercial building showing where each of the six systems runs: cabling, networking and Wi-Fi, cameras, access control, phones, and audio-video. The system selected in the tabs is highlighted, and hovering or focusing a room lights the systems that serve it." focusable="false">
   <defs>
     <pattern id="bx-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
       <line x1="0" y1="0" x2="0" y2="8" class="bx-hatch-line" />
@@ -244,6 +264,26 @@ const wifiArcs = (x: number, c: number) => [
     <rect x="268" y="455" width="56" height="34" class="bx-outline bx-screen" />
     <rect x="652" y="466" width="50" height="30" class="bx-outline bx-screen" />
   </g>
+
+  <!-- ───────────── Rooms: hover / focus targets (drawn last so they sit on top) ───────────── -->
+  <g class="bx-rooms">
+    {rooms.map((r) => (
+      <rect
+        class="bx-room"
+        x={r.box[0]}
+        y={r.box[1]}
+        width={r.box[2]}
+        height={r.box[3]}
+        tabindex="0"
+        role="group"
+        data-room={r.id}
+        data-room-name={r.name}
+        data-systems={r.systems.join(' ')}
+        data-codes={codes(r.systems).join(' ')}
+        aria-label={`${roomLabel(r.name)}: served by ${names(r.systems).join(', ')}`}
+      />
+    ))}
+  </g>
 </svg>
 
 <style>
@@ -437,6 +477,27 @@ const wifiArcs = (x: number, c: number) => [
     }
     50% {
       opacity: 0.25;
+    }
+  }
+
+  /* Rooms: invisible hit areas; a faint outline shows which room is under the pointer or focus */
+  .bx-room {
+    fill: transparent;
+    stroke: none;
+    pointer-events: all;
+    outline: none;
+  }
+
+  .bx-room:hover,
+  .bx-room:focus-visible {
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-dasharray: 5 4;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bx-layer {
+      transition: none;
     }
   }
 

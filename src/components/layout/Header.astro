@@ -47,10 +47,14 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     </nav>
 
     <div class="site-header__actions">
-      <a class="site-header__phone" href={site.phoneHref}>
-        <Phone size={15} stroke-width={1.75} aria-hidden="true" />
-        {site.phone}
-      </a>
+      <div class="site-header__contact">
+        <a class="site-header__phone" href={site.phoneHref}>
+          <Phone size={15} stroke-width={1.75} aria-hidden="true" />
+          {site.phone}
+        </a>
+        <!-- Filled by the script below from the visitor's clock; empty (and hidden) until then -->
+        <span class="site-header__status" data-hours={site.hours} data-header-status hidden></span>
+      </div>
       <Button href="/contact/" variant="ink" class="site-header__cta">Request a site assessment</Button>
       <a class="site-header__call" href={site.phoneHref} aria-label={`Call Armak, ${site.phone}`}>
         <Phone size={22} stroke-width={1.5} aria-hidden="true" />
@@ -112,6 +116,8 @@ const isActive = (href: string) => path === href || path.startsWith(href);
 </header>
 
 <script>
+  import { parseHours, openStatus } from '../../lib/hours';
+
   const header = document.querySelector<HTMLElement>('[data-header]');
 
   if (header) {
@@ -205,6 +211,21 @@ const isActive = (href: string) => path === href || path.startsWith(href);
 
     // Leaving desktop width with the mobile menu open shouldn't lock scrolling
     matchMedia('(min-width: 1024px)').addEventListener('change', closeAll);
+
+    // Open/closed line next to the phone number, refreshed every minute
+    const statusEl = header.querySelector<HTMLElement>('[data-header-status]');
+    const hours = statusEl ? parseHours(statusEl.dataset.hours ?? '') : null;
+    if (statusEl && hours) {
+      const update = () => {
+        const s = openStatus(new Date(), hours);
+        statusEl.textContent = s.label;
+        statusEl.hidden = !s.label;
+        statusEl.toggleAttribute('data-open-now', s.open);
+      };
+      update();
+      const timer = window.setInterval(update, 60_000);
+      window.addEventListener('pagehide', () => window.clearInterval(timer), { once: true });
+    }
   }
 </script>
 
@@ -291,8 +312,28 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     margin-left: auto;
   }
 
-  .site-header__phone {
+  /* Phone number with the open/closed line under it; desktop only (no room below 1024) */
+  .site-header__contact {
     display: none;
+  }
+
+  .site-header__status {
+    font-size: var(--fs-label);
+    line-height: 1.3;
+    color: var(--steel);
+    white-space: nowrap;
+  }
+
+  .site-header__status[hidden] {
+    display: none;
+  }
+
+  .site-header__status[data-open-now] {
+    color: var(--ink);
+  }
+
+  .site-header__phone {
+    display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     color: var(--ink);
@@ -361,8 +402,10 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     }
 
     /* Full number replaces the call icon; the CTA is the last item, so both edges use the container padding */
-    .site-header__phone {
-      display: inline-flex;
+    .site-header__contact {
+      display: grid;
+      justify-items: start;
+      gap: 0.125rem;
     }
 
     .site-header__call {

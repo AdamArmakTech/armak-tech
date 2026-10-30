@@ -12,6 +12,7 @@ import DeliverySteps from '../../components/services/DeliverySteps.astro';
 import PartnerLogos from '../../components/services/PartnerLogos.astro';
 import FaqList from '../../components/services/FaqList.astro';
 import OtherServices from '../../components/services/OtherServices.astro';
+import TermPopover from '../../components/glossary/TermPopover.astro';
 import ServiceCta from '../../components/services/ServiceCta.astro';
 import { services, site, serviceArea, type Service } from '../../data/site';
 import { servicesDetail, servicePhotos } from '../../data/services-detail';
@@ -118,6 +119,8 @@ const jsonLd = {
   <FaqList faqs={detail.faqs} serviceName={service.name} />
 
   <OtherServices current={service.slug} />
+
+  <TermPopover />
 
   <ServiceCta
     about={service.slug}

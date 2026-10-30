@@ -8,7 +8,13 @@ import SectionHead from '../ui/SectionHead.astro';
 import Button from '../ui/Button.astro';
 import BuildingSvg from './BuildingSvg.astro';
 import { services } from '../../data/site';
+import { industries } from '../../data/content';
 import { contactHref } from '../../lib/cta';
+
+const industryRows = industries.map((ind) => {
+  const sys = ind.systems.map((slug) => services.find((s) => s.slug === slug)!).filter(Boolean);
+  return { ...ind, sys, summary: `Typical for ${ind.name}: ${sys.map((s) => s.name).join(' · ')}` };
+});
 ---
 
 <section class="explorer section" id="systems" aria-labelledby="explorer-tabs-label">
@@ -20,6 +26,14 @@ import { contactHref } from '../../lib/cta';
 
     <div class="explorer__body" data-explorer>
       <div class="explorer__tabs-wrap">
+        <p id="explorer-chips-label" class="explorer__chips-label">I manage a:</p>
+        <div class="explorer__chips" role="group" aria-labelledby="explorer-chips-label">
+          {industryRows.map((ind) => (
+            <button type="button" class="explorer__chip" aria-pressed="false" data-industry={ind.slug} data-systems={ind.systems.join(' ')}>
+              {ind.name}
+            </button>
+          ))}
+        </div>
         <p id="explorer-tabs-label" class="t-muted explorer__hint">Select a system</p>
         <div class="explorer__tabs" role="tablist" aria-labelledby="explorer-tabs-label" aria-orientation="vertical">
           {services.map((s, i) => (
@@ -44,6 +58,18 @@ import { contactHref } from '../../lib/cta';
         <div class="explorer__drawing">
           <BuildingSvg />
         </div>
+
+        {industryRows.map((ind) => (
+          <div class="explorer__detail" data-industry-detail={ind.slug} hidden>
+            <p class="explorer__summary">{ind.summary}</p>
+            <p class="t-muted">{ind.need}</p>
+            <div class="explorer__actions">
+              <Button href={contactHref({ about: ind.slug })} variant="outline">
+                Ask about {ind.name.toLowerCase()}
+              </Button>
+            </div>
+          </div>
+        ))}
 
         {services.map((s, i) => (
           <div class="explorer__detail" data-detail={s.slug} hidden={i !== 0}>
@@ -80,9 +106,25 @@ import { contactHref } from '../../lib/cta';
     const svg = root.querySelector<SVGSVGElement>('.bx');
     const layerName = root.querySelector<SVGTextElement>('[data-bx-layer-name]');
     const details = [...root.querySelectorAll<HTMLElement>('[data-detail]')];
+    const industryDetails = [...root.querySelectorAll<HTMLElement>('[data-industry-detail]')];
+    const chips = [...root.querySelectorAll<HTMLButtonElement>('[data-industry]')];
+    const rooms = [...root.querySelectorAll<SVGElement>('[data-room]')];
     if (!tabs.length || !panel || !svg) return;
 
+    const codeOf = (slug: string) => tabs.find((t) => t.dataset.slug === slug)?.querySelector('.explorer__code')?.textContent ?? '';
+
     let index = 0;
+    // What the drawing shows when no room is hovered: the selected tab, or the chosen industry.
+    let base: { slugs: string[]; label: string } = { slugs: [], label: '' };
+
+    /** Light the given layers (one or many) and set the label in the sheet title. */
+    const paint = (slugs: string[], label: string) => {
+      svg.setAttribute('data-active', slugs.join(' '));
+      svg.querySelectorAll('[data-layer]').forEach((g) => {
+        g.classList.toggle('is-active', slugs.includes(g.getAttribute('data-layer')!));
+      });
+      if (layerName) layerName.textContent = label;
+    };
 
     const select = (i: number, { focus = false } = {}) => {
       index = (i + tabs.length) % tabs.length;
@@ -94,16 +136,39 @@ import { contactHref } from '../../lib/cta';
         t.setAttribute('aria-selected', String(on));
         t.tabIndex = on ? 0 : -1;
       });
+      chips.forEach((c) => c.setAttribute('aria-pressed', 'false'));
+      industryDetails.forEach((d) => (d.hidden = true));
       panel.setAttribute('aria-labelledby', tab.id);
       details.forEach((d) => (d.hidden = d.dataset.detail !== slug));
 
-      svg.setAttribute('data-active', slug);
-      svg.querySelectorAll('[data-layer]').forEach((g) => {
-        g.classList.toggle('is-active', g.getAttribute('data-layer') === slug);
-      });
-      if (layerName) layerName.textContent = `LAYER ${tab.querySelector('.explorer__code')?.textContent} · ${tab.dataset.layerName?.toUpperCase()}`;
+      base = {
+        slugs: [slug],
+        label: `LAYER ${tab.querySelector('.explorer__code')?.textContent} · ${tab.dataset.layerName?.toUpperCase()}`,
+      };
+      paint(base.slugs, base.label);
 
       if (focus) tab.focus();
+    };
+
+    /** Multi-system mode for an industry chip. Choosing the pressed chip again returns to the tab. */
+    const chooseIndustry = (chip: HTMLButtonElement) => {
+      if (chip.getAttribute('aria-pressed') === 'true') {
+        select(index);
+        return;
+      }
+      const slug = chip.dataset.industry!;
+      const detail = industryDetails.find((d) => d.dataset.industryDetail === slug);
+      const systems = (chip.dataset.systems ?? '').split(' ').filter(Boolean);
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      tabs.forEach((t) => t.setAttribute('aria-selected', 'false'));
+      details.forEach((d) => (d.hidden = true));
+      industryDetails.forEach((d) => (d.hidden = d !== detail));
+      panel.setAttribute('aria-labelledby', 'explorer-chips-label');
+      base = {
+        slugs: systems,
+        label: `${chip.textContent?.trim().toUpperCase()} · ${systems.map(codeOf).join(' ')}`,
+      };
+      paint(base.slugs, base.label);
     };
 
     tabs.forEach((tab, i) => {
@@ -123,6 +188,21 @@ import { contactHref } from '../../lib/cta';
       });
     });
 
+    chips.forEach((chip) => chip.addEventListener('click', () => chooseIndustry(chip)));
+
+    // Room hover / focus: light the systems drawn in that room, then restore on leave.
+    rooms.forEach((room) => {
+      const show = () => {
+        const slugs = (room.dataset.systems ?? '').split(' ').filter(Boolean);
+        paint(slugs, `${room.dataset.roomName} · ${(room.dataset.codes ?? '')}`);
+      };
+      const hide = () => paint(base.slugs, base.label);
+      room.addEventListener('mouseenter', show);
+      room.addEventListener('mouseleave', hide);
+      room.addEventListener('focus', show);
+      room.addEventListener('blur', hide);
+    });
+
     select(0);
   });
 </script>
@@ -137,6 +217,48 @@ import { contactHref } from '../../lib/cta';
      column wider than the phone screen. */
   .explorer__body > * {
     min-width: 0;
+  }
+
+  .explorer__chips-label {
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    color: var(--steel);
+    margin-bottom: 0.5rem;
+  }
+
+  .explorer__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .explorer__chip {
+    min-height: 44px;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--field-line);
+    border-radius: var(--radius);
+    background: transparent;
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
+  }
+
+  .explorer__chip:hover {
+    border-color: var(--ink);
+  }
+
+  .explorer__chip[aria-pressed='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
+  }
+
+  .explorer__summary {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    color: var(--text);
   }
 
   .explorer__hint {

@@ -12,7 +12,9 @@ import SectionHead from '../components/ui/SectionHead.astro';
 import PageCta from '../components/pages/PageCta.astro';
 import CableTest from '../components/ui/CableTest.astro';
 import CableCompare from '../components/plan/CableCompare.astro';
+import Button from '../components/ui/Button.astro';
 import { site } from '../data/site';
+import { contactHref } from '../lib/cta';
 
 const description =
   'Planning a cabling, network or security project in Southern California? Use the site-walk checklist, a rough quantity estimator and a quick cabling check before you call anyone.';
@@ -146,6 +148,9 @@ const upgradeQuestions = [
           </div>
         </dl>
       </form>
+      <div class="est__send">
+        <Button variant="ink" size="lg" href={contactHref({ about: 'structured-cabling' })} aria-disabled="true" data-est-send>Send these numbers with my request</Button>
+      </div>
       <p class="t-small t-muted">Want these numbers checked against your actual floor? <a class="plan__link" href="/contact/?about=estimate#form">Send us your plan</a> and we’ll scope it.</p>
     </section>
 
@@ -193,6 +198,8 @@ const upgradeQuestions = [
 </Base>
 
 <script>
+  import { contactHref } from '../lib/cta';
+
   // ── Print just the checklist ──
   document.querySelectorAll<HTMLButtonElement>('[data-print-checklist]').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -226,7 +233,20 @@ const upgradeQuestions = [
       out('aps', aps);
       out('cams', cams);
       out('readers', doors);
+
+      // "Send these numbers" button: link carries a plain sentence built from the current inputs/outputs
+      const send = document.querySelector<HTMLAnchorElement>('[data-est-send]');
+      if (send) {
+        const ready = sqft >= 1 && drops > 0;
+        send.setAttribute('aria-disabled', String(!ready));
+        const n = (v: number, one: string, many: string) => `${v.toLocaleString('en-US')} ${v === 1 ? one : many}`;
+        const note = `Estimator: about ${n(drops, 'drop', 'drops')}, ${n(aps, 'access point', 'access points')}, ${n(cams, 'camera', 'cameras')}, ${n(doors, 'reader', 'readers')} for a ${sqft.toLocaleString('en-US')} sq ft office on ${n(floors, 'floor', 'floors')}.`;
+        send.href = contactHref({ about: 'structured-cabling', note });
+      }
     };
+    document.querySelector<HTMLAnchorElement>('[data-est-send]')?.addEventListener('click', (e) => {
+      if ((e.currentTarget as HTMLElement).getAttribute('aria-disabled') === 'true') e.preventDefault();
+    });
     form.addEventListener('input', update);
     update();
   });
@@ -413,6 +433,12 @@ const upgradeQuestions = [
     display: grid;
     max-width: 52rem;
     margin: 0;
+  }
+
+  .est__send :global(.btn[aria-disabled='true']) {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 
   .est__row {

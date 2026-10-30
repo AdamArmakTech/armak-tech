@@ -12,7 +12,17 @@
  *    (default 4). Everyday words that are also terms (drop, port, rack...) are lowest
  *    priority: they only get a link if the cap has room after the specific terms.
  */
-import { glossary } from '../data/glossary';
+import { glossary, bySlug } from '../data/glossary';
+
+/** First sentence of a definition, at most 160 characters, cut at a sentence end (or at a word if one sentence is longer). */
+function shortDef(raw: string): string {
+  const t = raw.replace(/\s+/g, ' ').trim();
+  const m = t.match(/^.*?[.!?](?=\s|$)/);
+  const first = m ? m[0] : t;
+  if (first.length <= 160) return first;
+  const cut = first.slice(0, 159).replace(/\s+\S*$/, '').replace(/[,;:\s]+$/, '');
+  return cut + '…';
+}
 
 export interface LinkOptions {
   max?: number;
@@ -121,7 +131,9 @@ function linkWith(text: string, opts: LinkOptions, seenSlugs: Set<string>): stri
   let pos = 0;
   for (const h of kept) {
     out += escapeHtml(text.slice(pos, h.start));
-    out += `<a class="gl" href="/glossary/#${h.slug}">${escapeHtml(text.slice(h.start, h.end))}</a>`;
+    const entry = bySlug.get(h.slug);
+    const attrs = entry ? ` data-slug="${h.slug}" data-term="${escapeHtml(entry.term)}" data-def="${escapeHtml(shortDef(entry.definition))}"` : '';
+    out += `<a class="gl" href="/glossary/#${h.slug}"${attrs}>${escapeHtml(text.slice(h.start, h.end))}</a>`;
     pos = h.end;
     seenSlugs.add(h.slug);
   }

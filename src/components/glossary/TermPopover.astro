@@ -1,0 +1,177 @@
+---
+/**
+ * One popover per page for glossary links (a.gl). Hover/focus shows the term's one-sentence
+ * definition; on touch the first tap shows it and a second tap (or "Read more") opens the glossary.
+ * Data comes from the link's data-term / data-def / data-slug attributes (src/lib/glossaryLinks.ts).
+ */
+---
+
+<div class="term-pop" id="term-pop" role="tooltip" hidden>
+  <p class="term-pop__term"></p>
+  <p class="term-pop__def"></p>
+  <a class="term-pop__more" href="/glossary/">Read more &rarr;</a>
+</div>
+
+<script>
+  const pop = document.getElementById('term-pop') as HTMLElement | null;
+  if (pop) {
+    const termEl = pop.querySelector('.term-pop__term') as HTMLElement;
+    const defEl = pop.querySelector('.term-pop__def') as HTMLElement;
+    const more = pop.querySelector('.term-pop__more') as HTMLAnchorElement;
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('a.gl[data-def]'));
+    let current: HTMLAnchorElement | null = null;
+    let showTimer: number | undefined;
+    let hideTimer: number | undefined;
+    let touchPending: HTMLAnchorElement | null = null;
+
+    const place = (a: HTMLElement) => {
+      const r = a.getBoundingClientRect();
+      const w = pop.offsetWidth;
+      const h = pop.offsetHeight;
+      const vw = document.documentElement.clientWidth;
+      const gap = 8;
+      let x = r.left + r.width / 2 - w / 2;
+      x = Math.max(8, Math.min(x, vw - w - 8));
+      let y = r.top - h - gap;
+      if (y < 8) y = r.bottom + gap;
+      pop.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+    };
+
+    const show = (a: HTMLAnchorElement) => {
+      window.clearTimeout(hideTimer);
+      current = a;
+      termEl.textContent = a.dataset.term || a.textContent || '';
+      defEl.textContent = a.dataset.def || '';
+      more.href = `/glossary/#${a.dataset.slug || ''}`;
+      pop.hidden = false;
+      place(a);
+      a.setAttribute('aria-describedby', 'term-pop');
+      requestAnimationFrame(() => pop.classList.add('is-on'));
+    };
+
+    const hide = () => {
+      window.clearTimeout(showTimer);
+      touchPending = null;
+      if (current) current.removeAttribute('aria-describedby');
+      current = null;
+      pop.classList.remove('is-on');
+      hideTimer = window.setTimeout(() => {
+        if (!current) pop.hidden = true;
+      }, 180);
+    };
+
+    const delayedShow = (a: HTMLAnchorElement) => {
+      window.clearTimeout(showTimer);
+      window.clearTimeout(hideTimer);
+      showTimer = window.setTimeout(() => show(a), 120);
+    };
+
+    const scheduleHide = () => {
+      window.clearTimeout(showTimer);
+      window.clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(hide, 120);
+    };
+
+    links.forEach((a) => {
+      a.addEventListener('mouseenter', () => delayedShow(a));
+      a.addEventListener('mouseleave', scheduleHide);
+      a.addEventListener('focus', () => delayedShow(a));
+      a.addEventListener('blur', scheduleHide);
+      a.addEventListener('pointerdown', (e) => {
+        touchPending = e.pointerType === 'touch' && current !== a ? a : null;
+      });
+      a.addEventListener('click', (e) => {
+        if (touchPending === a) {
+          e.preventDefault();
+          touchPending = null;
+          window.clearTimeout(showTimer);
+          show(a);
+        }
+      });
+    });
+
+    // Keep it open while the pointer is on it, so "Read more" can be reached.
+    pop.addEventListener('mouseenter', () => {
+      window.clearTimeout(hideTimer);
+    });
+    pop.addEventListener('mouseleave', scheduleHide);
+    pop.addEventListener('focusin', () => window.clearTimeout(hideTimer));
+    pop.addEventListener('focusout', scheduleHide);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') hide();
+    });
+    document.addEventListener('pointerdown', (e) => {
+      const t = e.target as Element;
+      if (!t.closest('a.gl') && !t.closest('#term-pop')) hide();
+    });
+    window.addEventListener('scroll', () => current && place(current), { passive: true });
+    window.addEventListener('resize', hide);
+  }
+</script>
+
+<style>
+  .term-pop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 60;
+    width: max-content;
+    max-width: min(20rem, calc(100vw - 16px));
+    padding: 0.75rem 0.9rem;
+    background: #fff;
+    border: 1px solid var(--hairline);
+    box-shadow: var(--shadow-raise);
+    font-family: var(--font-sans);
+    opacity: 0;
+    transition: opacity var(--dur-fast) ease;
+    pointer-events: auto;
+  }
+
+  .term-pop.is-on {
+    opacity: 1;
+  }
+
+  .term-pop[hidden] {
+    display: none;
+  }
+
+  .term-pop p {
+    margin: 0;
+  }
+
+  .term-pop__term {
+    color: var(--ink);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .term-pop__def {
+    margin-top: 0.25rem !important;
+    color: var(--text);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .term-pop__more {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: var(--ink);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--hairline-strong);
+    text-underline-offset: 3px;
+  }
+
+  .term-pop__more:hover {
+    text-decoration-color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .term-pop {
+      transition: none;
+    }
+  }
+</style>

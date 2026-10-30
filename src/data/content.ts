@@ -98,17 +98,20 @@ export interface Industry {
   name: string;
   icon: 'heart-pulse' | 'graduation-cap' | 'building-2' | 'store' | 'hotel' | 'building' | 'landmark' | 'warehouse';
   need: string;
+  /** Systems that typically apply to this sector. Kept general: every site is scoped individually.
+   * TODO(content): confirm sectors and typical systems with Armak. */
+  systems: ServiceSlug[];
 }
 
 export const industries: Industry[] = [
-  { slug: 'commercial-office', name: 'Commercial office', icon: 'building-2', need: 'Tenant improvements, relocations and network refreshes on tight move-in dates.' },
-  { slug: 'healthcare', name: 'Healthcare', icon: 'heart-pulse', need: 'Reliable networks, secured entries and camera coverage in spaces that never close.' },
-  { slug: 'education', name: 'Education', icon: 'graduation-cap', need: 'Campus-wide Wi-Fi, classroom AV and access control, scheduled around the academic calendar.' },
-  { slug: 'retail', name: 'Retail', icon: 'store', need: 'POS, cameras and in-store networks rolled out consistently across locations.' },
-  { slug: 'hospitality', name: 'Hospitality', icon: 'hotel', need: 'Guest Wi-Fi, back-of-house networks, paging and POS that stay invisible to guests.' },
-  { slug: 'multifamily', name: 'Multifamily', icon: 'building', need: 'Building-wide cabling, intercoms and entry systems that are easy for residents to use.' },
-  { slug: 'government', name: 'Public sector', icon: 'landmark', need: 'Documented, standards-compliant installs with the paperwork to match.' },
-  { slug: 'industrial', name: 'Industrial & warehouse', icon: 'warehouse', need: 'Long fiber runs, rugged Wi-Fi and perimeter cameras across large footprints.' },
+  { slug: 'commercial-office', name: 'Commercial office', icon: 'building-2', need: 'Tenant improvements, relocations and network refreshes on tight move-in dates.', systems: ['structured-cabling', 'networking', 'access-control', 'voip-unified-comms', 'audio-video'] },
+  { slug: 'healthcare', name: 'Healthcare', icon: 'heart-pulse', need: 'Reliable networks, secured entries and camera coverage in spaces that never close.', systems: ['structured-cabling', 'networking', 'video-surveillance', 'access-control'] },
+  { slug: 'education', name: 'Education', icon: 'graduation-cap', need: 'Campus-wide Wi-Fi, classroom AV and access control, scheduled around the academic calendar.', systems: ['networking', 'audio-video', 'access-control', 'video-surveillance'] },
+  { slug: 'retail', name: 'Retail', icon: 'store', need: 'POS, cameras and in-store networks rolled out consistently across locations.', systems: ['networking', 'video-surveillance', 'structured-cabling'] },
+  { slug: 'hospitality', name: 'Hospitality', icon: 'hotel', need: 'Guest Wi-Fi, back-of-house networks, paging and POS that stay invisible to guests.', systems: ['networking', 'voip-unified-comms', 'audio-video', 'video-surveillance'] },
+  { slug: 'multifamily', name: 'Multifamily', icon: 'building', need: 'Building-wide cabling, intercoms and entry systems that are easy for residents to use.', systems: ['structured-cabling', 'access-control', 'video-surveillance'] },
+  { slug: 'government', name: 'Public sector', icon: 'landmark', need: 'Documented, standards-compliant installs with the paperwork to match.', systems: ['structured-cabling', 'networking', 'access-control', 'video-surveillance'] },
+  { slug: 'industrial', name: 'Industrial & warehouse', icon: 'warehouse', need: 'Long fiber runs, rugged Wi-Fi and perimeter cameras across large footprints.', systems: ['structured-cabling', 'networking', 'video-surveillance'] },
 ];
 
 /* ── Projects ──

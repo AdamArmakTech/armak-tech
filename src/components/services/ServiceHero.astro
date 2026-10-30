@@ -3,6 +3,7 @@
  * Service page opener: breadcrumb, h1 (service name), headline line, intro, CTAs,
  * and a "scope sheet" card summarising what's included and the standards involved.
  */
+import { Printer } from '@lucide/astro';
 import Button from '../ui/Button.astro';
 import { contactHref } from '../../lib/cta';
 import { site, type Service } from '../../data/site';
@@ -37,6 +38,10 @@ const { service, detail } = Astro.props;
     </div>
 
     <aside class="sheet" aria-label={`${service.name} scope summary`}>
+      <div class="sheet__print-title" aria-hidden="true">
+        <p class="sheet__print-name">{service.name}</p>
+        <p class="sheet__print-headline">{detail.headline}</p>
+      </div>
       <header class="sheet__head">
         <span>Scope sheet</span>
         <span class="sheet__id">{service.code}</span>
@@ -60,6 +65,15 @@ const { service, detail } = Astro.props;
         <span>{service.layer}</span>
         <span class="sheet__area">Southern California</span>
       </footer>
+
+      <div class="sheet__print-wrap">
+        <button type="button" class="sheet__print" data-print-sheet>
+          <Printer size={18} stroke-width={1.75} aria-hidden="true" />
+          Print this scope sheet
+        </button>
+      </div>
+
+      <p class="sheet__print-foot" aria-hidden="true">{site.name} · {site.phone} · {site.email} · armak.tech</p>
     </aside>
   </div>
 </section>
@@ -86,6 +100,26 @@ const { service, detail } = Astro.props;
         { threshold: 0.2 },
       );
       io.observe(sheet);
+    });
+  })();
+</script>
+
+<script>
+  // Print only the scope sheet. body.print-sheet is set around the print dialog; CSS in this component does the hiding.
+  (function () {
+    var btns = document.querySelectorAll('[data-print-sheet]');
+    if (!btns.length) return;
+    window.addEventListener('beforeprint', function () {
+      if (document.body.classList.contains('print-sheet-armed')) document.body.classList.add('print-sheet');
+    });
+    window.addEventListener('afterprint', function () {
+      document.body.classList.remove('print-sheet', 'print-sheet-armed');
+    });
+    btns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.body.classList.add('print-sheet-armed', 'print-sheet');
+        window.print();
+      });
     });
   })();
 </script>
@@ -275,6 +309,121 @@ const { service, detail } = Astro.props;
   .sheet[data-rows="pending"] .sheet__list li {
     opacity: 0;
     transform: translateY(6px);
+  }
+
+  /* ── Print button (screen) ── */
+  .sheet__print-wrap {
+    padding: 0.25rem 1.25rem 0.75rem;
+  }
+
+  .sheet__print {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-family: var(--font-sans, inherit);
+    font-size: var(--fs-small);
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .sheet__print-title,
+  .sheet__print-foot {
+    display: none;
+  }
+
+  /* ── Print: only the scope sheet ── */
+  @media print {
+    :global(body.print-sheet .site-header),
+    :global(body.print-sheet .site-footer),
+    :global(body.print-sheet .cta-dock),
+    :global(body.print-sheet main > *:not(.svc-hero)),
+    :global(body.print-sheet .svc-hero__crumbs),
+    :global(body.print-sheet .svc-hero__copy),
+    :global(body.print-sheet .sheet__print-wrap) {
+      display: none !important;
+    }
+
+    :global(body.print-sheet) {
+      background: #fff !important;
+      color: #000 !important;
+    }
+
+    :global(body.print-sheet .svc-hero) {
+      display: block;
+      padding: 0;
+      max-width: none;
+      width: 100%;
+    }
+
+    :global(body.print-sheet .sheet) {
+      display: block;
+      width: 100%;
+      max-width: none;
+      border: 0;
+      border-radius: 0;
+      background: #fff;
+      color: #000;
+      font-size: 12pt;
+    }
+
+    :global(body.print-sheet .sheet__print-title) {
+      display: block;
+      padding: 0 0 1rem;
+    }
+
+    :global(body.print-sheet .sheet__print-name) {
+      font-family: var(--font-sans, inherit);
+      font-size: 22pt;
+      font-weight: 600;
+      color: #000;
+    }
+
+    :global(body.print-sheet .sheet__print-headline) {
+      margin-top: 0.25rem;
+      font-family: var(--font-sans, inherit);
+      font-size: 14pt;
+      color: #000;
+    }
+
+    :global(body.print-sheet .sheet__head),
+    :global(body.print-sheet .sheet__foot),
+    :global(body.print-sheet .sheet__id),
+    :global(body.print-sheet .sheet__heading),
+    :global(body.print-sheet .sheet__head > span:first-child) {
+      color: #000;
+    }
+
+    :global(body.print-sheet .sheet__head) {
+      border-bottom: 1px solid #000;
+    }
+
+    :global(body.print-sheet .sheet__block) {
+      border-bottom: 1px solid #000;
+      break-inside: avoid;
+    }
+
+    :global(body.print-sheet .sheet__list li) {
+      border-top-color: #000;
+      color: #000;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    :global(body.print-sheet .sheet__print-foot) {
+      display: block;
+      margin-top: 1.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid #000;
+      font-family: var(--font-sans, inherit);
+      font-size: 10pt;
+      color: #000;
+    }
   }
 
   @media (min-width: 1024px) {

@@ -8,24 +8,12 @@ import { ArrowRight } from '@lucide/astro';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
-import { services, type ServiceSlug } from '../data/site';
+import { services } from '../data/site';
 import { industries } from '../data/content';
-
-/** Systems that typically apply per sector. Kept general — every site is scoped individually. */
-const typical: Record<string, ServiceSlug[]> = {
-  'commercial-office': ['structured-cabling', 'networking', 'access-control', 'voip-unified-comms', 'audio-video'],
-  healthcare: ['structured-cabling', 'networking', 'video-surveillance', 'access-control'],
-  education: ['networking', 'audio-video', 'access-control', 'video-surveillance'],
-  retail: ['networking', 'video-surveillance', 'structured-cabling'],
-  hospitality: ['networking', 'voip-unified-comms', 'audio-video', 'video-surveillance'],
-  multifamily: ['structured-cabling', 'access-control', 'video-surveillance'],
-  government: ['structured-cabling', 'networking', 'access-control', 'video-surveillance'],
-  industrial: ['structured-cabling', 'networking', 'video-surveillance'],
-};
 
 const rows = industries.map((ind) => ({
   ...ind,
-  services: (typical[ind.slug] ?? []).map((slug) => services.find((s) => s.slug === slug)!).filter(Boolean),
+  services: ind.systems.map((slug) => services.find((s) => s.slug === slug)!).filter(Boolean),
 }));
 
 const description =

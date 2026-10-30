@@ -44,7 +44,7 @@ const routes = [
           </li>
         ))}
       </ul>
-      <p class="t-small hero__phone">Or call <a class="tel" href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}</p>
+      <p class="t-small hero__phone">Or call <a class="tel" href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}<span data-hero-status data-hours={site.hours} hidden></span></p>
     </div>
     <ul role="list" class="t-small hero__creds hero-in" style="--reveal-delay: 220ms">
       {credentials.map((c) => <li>{c}</li>)}
@@ -55,6 +55,24 @@ const routes = [
     <CableTest variant="compact" class="hero__card" />
   </div>
 </section>
+
+<script>
+  import { parseHours, openStatus } from '../../lib/hours';
+
+  // Appends " · Open now · until 6 PM" (or the next opening) after the call line; empty until the client fills it
+  const el = document.querySelector<HTMLElement>('[data-hero-status]');
+  const hours = el ? parseHours(el.dataset.hours ?? '') : null;
+  if (el && hours) {
+    const update = () => {
+      const s = openStatus(new Date(), hours);
+      el.textContent = s.label ? ` · ${s.label}` : '';
+      el.hidden = !s.label;
+    };
+    update();
+    const timer = window.setInterval(update, 60_000);
+    window.addEventListener('pagehide', () => window.clearInterval(timer), { once: true });
+  }
+</script>
 
 <style>
   .hero {

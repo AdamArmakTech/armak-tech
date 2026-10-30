@@ -80,6 +80,11 @@ const f = (name: string) => `${id}-${name}`;
         <button type="button" class="cform__about-change" data-about-change>Change</button>
       </p>
       <p class="cform__note" data-cform-note hidden></p>
+      <!-- Shown when ?note= prefilled the message (e.g. estimator numbers from /plan/) -->
+      <p class="cform__prefill" data-cform-prefill hidden>
+        <span>We added your estimator numbers below. Edit anything.</span>
+        <button type="button" class="cform__about-change" data-prefill-clear>Clear</button>
+      </p>
       <p class="t-mono t-muted cform__req-note"><span class="cform__req" aria-hidden="true">*</span> Required</p>
 
       <div class="cform__fields">
@@ -259,7 +264,8 @@ const f = (name: string) => `${id}-${name}`;
   }
 
   .cform__about[hidden],
-  .cform__note[hidden] {
+  .cform__note[hidden],
+  .cform__prefill[hidden] {
     display: none;
   }
 
@@ -280,6 +286,17 @@ const f = (name: string) => `${id}-${name}`;
 
   .cform__about-change:hover {
     color: var(--ink);
+  }
+
+  .cform__prefill {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    margin-top: -0.5rem;
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    color: var(--steel);
   }
 
   .cform__note {
@@ -688,6 +705,20 @@ const f = (name: string) => `${id}-${name}`;
         note.hidden = false;
       }
       startStep = 2;
+    }
+
+    // ?note=<text>: prefill the message (plain text, only when empty), keep the form on step 2
+    const rawNote = (params.get('note') ?? '').trim().slice(0, 300);
+    const prefillBox = root.querySelector<HTMLElement>('[data-cform-prefill]');
+    if (rawNote && message && !message.value.trim()) {
+      message.value = rawNote; // .value is plain text; never inserted as HTML
+      if (prefillBox) prefillBox.hidden = false;
+      startStep = 2;
+      root.querySelector('[data-prefill-clear]')?.addEventListener('click', () => {
+        message.value = '';
+        if (prefillBox) prefillBox.hidden = true;
+        message.focus();
+      });
     }
 
     root.querySelector('[data-about-change]')?.addEventListener('click', () => {
