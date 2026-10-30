@@ -79,8 +79,6 @@ const groups = counties.map((county) => ({
 <section class="area section" id="service-area">
   <div class="container">
     <SectionHead
-      code="H-01"
-      label="Service area"
       title="All of Southern California, from Santa Barbara to Chula Vista."
       intro={`From our ${hq.city} headquarters we serve ${serviceArea.length} cities in ${counties.length} counties, from the Central Coast to San Diego County.`}
     />
@@ -113,17 +111,17 @@ const groups = counties.map((county) => ({
             </svg>
           </div>
           <div class="area__canvas" data-map-canvas></div>
-          <p class="area__status t-mono" data-map-status aria-hidden="true">Schematic</p>
+          <p class="area__status" data-map-status aria-hidden="true">Schematic</p>
         </div>
-        <figcaption class="area__caption t-mono">
-          <span><span class="area__hq-mark" aria-hidden="true"></span>{hq.city} HQ<span class="area__coords"> · {hqCoords}</span></span>
-          <span>{serviceArea.length} cities · {counties.length} counties</span>
+        <figcaption class="area__caption">
+          <span class="area__caption-coords t-mono"><span class="area__hq-mark" aria-hidden="true"></span>{hqCoords}</span>
+          <span>{serviceArea.length} cities · {counties.length} counties · {hq.city} HQ</span>
         </figcaption>
       </figure>
 
       <div class="area__list">
         <div class="area__hq">
-          <p class="t-mono area__hq-label">Headquarters</p>
+          <p class="area__hq-label">Headquarters</p>
           <p class="t-h3 area__hq-city">{hq.city}, {hq.region}</p>
           <p class="t-mono t-muted">{hqCoords}</p>
         </div>
@@ -134,7 +132,7 @@ const groups = counties.map((county) => ({
             <li class="area__county">
               <p class="area__county-head">
                 <span class="area__county-name">{g.county} County</span>
-                <span class="t-mono t-muted">{String(g.cities.length).padStart(2, '0')}</span>
+                <span class="t-muted">{g.cities.length}</span>
               </p>
               <ul role="list" class="area__cities">
                 {g.cities.map((c) => (
@@ -250,7 +248,7 @@ const groups = counties.map((county) => ({
   }
 
   .sx-hq text {
-    fill: var(--signal);
+    fill: var(--ink);
     font-weight: 600;
   }
 
@@ -328,12 +326,13 @@ const groups = counties.map((county) => ({
     padding: 1.25rem;
     background: var(--white);
     border: 1px solid var(--hairline);
-    border-left: 3px solid var(--signal);
+    border-left: 3px solid var(--steel);
     border-radius: var(--radius);
   }
 
   .area__hq-label {
-    color: var(--signal);
+    font-weight: 500;
+    color: var(--steel);
   }
 
   .area__counties {
@@ -396,8 +395,17 @@ const groups = counties.map((county) => ({
     border-radius: var(--radius);
   }
 
-  @media (max-width: 599px) {
-    .area__coords {
+  @media (max-width: 639px) {
+    .area__county {
+      gap: var(--sp-1);
+      padding-block: var(--sp-2);
+    }
+
+    .area__cities {
+      gap: var(--sp-1) var(--sp-4);
+    }
+
+    .area__caption-coords {
       display: none;
     }
 
@@ -410,14 +418,14 @@ const groups = counties.map((county) => ({
     }
   }
 
-  @media (min-width: 600px) and (max-width: 999px) {
+  @media (min-width: 640px) and (max-width: 899px) {
     .area__counties {
       grid-template-columns: 1fr 1fr;
       column-gap: var(--col-gap);
     }
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 900px) {
     .area__body {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       align-items: stretch;
@@ -585,7 +593,7 @@ const groups = counties.map((county) => ({
         'text-offset': [-1, -1],
         'text-allow-overlap': true,
       },
-      paint: { 'text-color': SIGNAL, 'text-halo-color': WHITE, 'text-halo-width': 2 },
+      paint: { 'text-color': INK, 'text-halo-color': WHITE, 'text-halo-width': 2 },
     });
 
     // Hide the basemap's own place names so our city labels are the only ones.
@@ -619,7 +627,7 @@ const groups = counties.map((county) => ({
       // MapLibre resolves its worker relative to its own module URL, which breaks once bundled.
       maplibregl.setWorkerUrl(workerUrl);
 
-      const narrow = root.clientWidth < 600;
+      const narrow = root.clientWidth < 640;
       map = new maplibregl.Map({
         container,
         style: STYLE_URL,

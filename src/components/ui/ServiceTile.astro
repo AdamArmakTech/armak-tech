@@ -13,7 +13,7 @@ interface Props {
       so the image is decorative (alt="") and the link reads as just the service name */
   imageAlt?: string;
   size?: 'default' | 'feature';
-  /** Optional sub-service list, rendered as a compact mono list pinned to the tile's foot */
+  /** Optional sub-service list, rendered as a compact sans list pinned to the tile's foot */
   includes?: string[];
   class?: string;
   [key: string]: unknown;
@@ -102,7 +102,7 @@ const hasIncludes = !!includes && includes.length > 0;
   }
 
   .tile__code {
-    color: var(--signal);
+    color: var(--steel);
   }
 
   .tile__arrow {
@@ -114,6 +114,7 @@ const hasIncludes = !!includes && includes.length > 0;
   }
 
   .tile__desc {
+    color: var(--text);
     font-size: var(--fs-small);
     max-width: 36em;
   }
@@ -128,13 +129,10 @@ const hasIncludes = !!includes && includes.length > 0;
     display: grid;
     margin-top: 1rem;
     border-top: 1px solid var(--hairline);
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
     line-height: 1.35;
-    text-transform: uppercase;
-    color: var(--steel);
+    color: var(--text);
   }
 
   .tile__includes li {

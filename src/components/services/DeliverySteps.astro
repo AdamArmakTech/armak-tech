@@ -6,7 +6,7 @@ import { contactHref } from '../../lib/cta';
 import { process as steps } from '../../data/content';
 
 interface Props {
-  code: string;
+  code?: string;
   title?: string;
   intro?: string;
   /** Show the "Request a site assessment" prompt under the steps */
@@ -16,7 +16,6 @@ interface Props {
 }
 
 const {
-  code,
   cta = false,
   about,
   title = 'Five steps, every job.',
@@ -26,7 +25,7 @@ const {
 
 <section class="section section--tight delivery">
   <div class="container">
-    <SectionHead code={code} label="How we deliver" title={title} intro={intro} />
+    <SectionHead title={title} intro={intro} />
 
     <ol role="list" class="delivery__steps">
       {steps.map((step) => (
@@ -40,7 +39,7 @@ const {
 
     {cta && (
       <div class="delivery__next">
-        <p class="t-mono t-muted">Every job starts at step 01.</p>
+        <p class="t-small t-muted">Every job starts at step 01.</p>
         <Button href={contactHref({ about })} icon="arrow">Request a site assessment</Button>
       </div>
     )}
@@ -62,7 +61,6 @@ const {
 
   .delivery {
     background: var(--white);
-    border-block: 1px solid var(--hairline);
   }
 
   .delivery__steps {
@@ -78,6 +76,10 @@ const {
     border-top: 1px solid var(--hairline);
   }
 
+  .dstep:first-child {
+    border-top: 0;
+  }
+
   .dstep__num {
     grid-row: span 2;
     font-family: var(--font-mono);
@@ -90,17 +92,16 @@ const {
   }
 
   .dstep:hover .dstep__num {
-    color: var(--signal);
+    color: var(--steel);
   }
 
   .dstep__body {
     max-width: 32em;
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 1024px) {
     .delivery__steps {
       grid-template-columns: repeat(5, minmax(0, 1fr));
-      border-top: 1px solid var(--ink);
     }
 
     .dstep {

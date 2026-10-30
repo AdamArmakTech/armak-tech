@@ -175,7 +175,9 @@ p:not(.surface-ink *) {
   padding-block: var(--space-section);
 }
 
-.section + .section {
+/* Neighbouring plain sections share one gap. Sections with their own surface
+   (.section--tight, e.g. the white .delivery band) keep their top padding. */
+.section + .section:not(.section--tight) {
   padding-top: 0;
 }
 
@@ -191,6 +193,16 @@ p:not(.surface-ink *) {
 .surface-ink .t-muted,
 .surface-ink .t-lead {
   color: var(--steel-light);
+}
+
+/* A white card inside an ink band reads as light: restore dark text on it. */
+.surface-ink .surface-card {
+  color: var(--text);
+}
+
+.surface-ink .surface-card .t-muted,
+.surface-ink .surface-card .t-lead {
+  color: var(--steel);
 }
 
 .visually-hidden {

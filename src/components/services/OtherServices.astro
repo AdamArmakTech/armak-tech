@@ -1,21 +1,20 @@
 ---
 import { ArrowUpRight } from '@lucide/astro';
-import Label from '../ui/Label.astro';
 import { services, type ServiceSlug } from '../../data/site';
 
 interface Props {
   current: ServiceSlug;
-  code: string;
+  code?: string;
 }
 
-const { current, code } = Astro.props;
+const { current } = Astro.props;
 const others = services.filter((s) => s.slug !== current);
 ---
 
 <nav class="others container" aria-label="Other services">
   <div class="others__head">
-    <Label code={code}>Other services</Label>
-    <p id="others-title" class="t-small t-muted">Most projects involve more than one system. One team handles all of them.</p>
+    <h2 id="others-title" class="t-h4">Other services</h2>
+    <p class="t-small t-muted">Most projects involve more than one system. One team handles all of them.</p>
   </div>
   <ul role="list" class="others__grid">
     {others.map((s) => (
@@ -26,7 +25,7 @@ const others = services.filter((s) => s.slug !== current);
             <ArrowUpRight class="other__arrow" size={20} stroke-width={1.5} aria-hidden="true" />
           </span>
           <span class="other__name">{s.name}</span>
-          <span class="t-mono other__layer">{s.layer}</span>
+          <span class="t-small other__layer">{s.layer}</span>
         </a>
       </li>
     ))}
@@ -75,7 +74,7 @@ const others = services.filter((s) => s.slug !== current);
   }
 
   .other__code {
-    color: var(--signal);
+    color: var(--steel);
   }
 
   .other :global(.other__arrow) {
@@ -107,7 +106,7 @@ const others = services.filter((s) => s.slug !== current);
     }
   }
 
-  @media (min-width: 1100px) {
+  @media (min-width: 1024px) {
     .others__grid {
       grid-template-columns: repeat(5, minmax(0, 1fr));
     }

@@ -1,71 +1,104 @@
 ---
+/**
+ * Services as a typographic schedule, like the legend on a drawing (DESIGN.md rules 2, 5).
+ * One row per service: code, name, one line, what is included, link. No photos until real
+ * product images exist.
+ */
 import SectionHead from '../ui/SectionHead.astro';
-import ServiceTile from '../ui/ServiceTile.astro';
 import Button from '../ui/Button.astro';
 import { services } from '../../data/site';
-// TODO(photo): interim stock (see assets/photos/CREDITS.md) — replace with real Armak install photos
-import cableBundles from '../../assets/photos/cabling-bundles-white.jpg';
-import rackRow from '../../assets/photos/wifi-ap-tray.jpg';
 
-const [feature, second, ...rest] = services;
 const href = (slug: string) => `/services/${slug}/`;
 ---
 
 <section id="services" class="section services">
   <div class="container">
     <SectionHead
-      code="A-00"
-      label="Services"
       title="Every low-voltage system your building runs on."
       intro="We handle cabling, networks, security cameras, door access, phones and AV, so you deal with one team and one point of contact."
     />
 
-    <div class="services__grid">
-      <ServiceTile
-       
-        href={href(feature.slug)}
-        code={feature.code}
-        title={feature.name}
-        description={feature.short}
-        image={cableBundles}
-        imageAlt="Neatly dressed light-blue cable bundles with black Velcro ties running into a rack of patch panels"
-        size="feature"
-        class="services__tile services__tile--feature"
-      />
-      <ServiceTile
-       
-        href={href(second.slug)}
-        code={second.code}
-        title={second.name}
-        description={second.short}
-        image={rackRow}
-        imageAlt="An enterprise Wi-Fi access point mounted on a ceiling cable tray"
-        class="services__tile services__tile--photo"
-      />
-      {rest.map((s) => (
-        <ServiceTile
-         
-          href={href(s.slug)}
-          code={s.code}
-          title={s.name}
-          description={s.short}
-          includes={s.includes}
-          class="services__tile services__tile--text"
-        />
+    <ul role="list" class="services__list">
+      {services.map((s) => (
+        <li class="services__row">
+          <span class="t-mono services__code">{s.code}</span>
+          <h3 class="services__name">{s.name}</h3>
+          <p class="services__desc">{s.short}</p>
+          {s.includes && s.includes.length > 0 && (
+            <p class="services__includes">{s.includes.join(' · ')}</p>
+          )}
+          <a class="services__link" href={href(s.slug)}>
+            See service <span aria-hidden="true">→</span>
+          </a>
+        </li>
       ))}
-    </div>
+    </ul>
 
     <div class="services__foot">
-      <p class="t-mono t-muted">{services.length} disciplines · One point of contact</p>
-      <Button href="/services/" variant="outline">All services</Button>
+      <p class="t-muted">{services.length} disciplines · One point of contact</p>
+      <Button href="/services/" variant="ink">All services</Button>
     </div>
   </div>
 </section>
 
 <style>
-  .services__grid {
+  .services__list {
     display: grid;
-    gap: var(--col-gap);
+    grid-template-columns: minmax(0, 1fr);
+    column-gap: var(--col-gap);
+    border-top: 1px solid var(--hairline);
+  }
+
+  .services__row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-2);
+    min-width: 0;
+    padding-block: var(--sp-5);
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .services__code {
+    color: var(--steel);
+  }
+
+  .services__name {
+    font-family: var(--font-sans);
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: var(--tracking-heading);
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+
+  .services__desc {
+    color: var(--text);
+    font-size: var(--fs-body);
+    max-width: 36em;
+  }
+
+  .services__includes {
+    color: var(--text);
+    font-size: var(--fs-small);
+    max-width: 36em;
+  }
+
+  .services__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    min-height: 44px;
+    margin-top: auto;
+    font-weight: 500;
+    font-size: var(--fs-small);
+    color: var(--ink);
+    transition: color var(--dur-fast) ease;
+  }
+
+  .services__link:hover {
+    color: var(--signal);
   }
 
   .services__foot {
@@ -73,98 +106,22 @@ const href = (slug: string) => `/services/${slug}/`;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem 2rem;
-    margin-top: var(--col-gap);
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--hairline);
+    gap: var(--sp-4) var(--sp-6);
+    margin-top: var(--space-block);
   }
 
-  /* Feature tile gets a larger title */
-  .services__grid :global(.services__tile--feature .tile__title) {
-    font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.5rem);
-    letter-spacing: var(--tracking-heading);
-    max-width: 16ch;
-  }
-
-  .services__grid :global(.services__tile--feature .tile__desc) {
-    font-size: var(--fs-body);
-  }
-
-  /* Tablet: feature full width, A-02 as a horizontal tile, text tiles 2×2 */
-  @media (min-width: 700px) {
-    .services__grid {
+  /* Two columns: each row still has its own bottom hairline, so the list reads as a table */
+  @media (min-width: 640px) {
+    .services__list {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .services__grid :global(.services__tile--feature),
-    .services__grid :global(.services__tile--photo) {
-      grid-column: 1 / -1;
+      column-gap: var(--sp-6);
     }
   }
 
-  @media (min-width: 700px) and (max-width: 1099px) {
-    .services__grid :global(.services__tile--photo) {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    }
-
-    .services__grid :global(.services__tile--photo .tile__media) {
-      position: relative;
-      aspect-ratio: auto;
-      min-height: 300px;
-    }
-
-    .services__grid :global(.services__tile--photo .tile__media img) {
-      position: absolute;
-      inset: 0;
-    }
-
-    .services__grid :global(.services__tile--photo .tile__body) {
-      padding: 1.5rem;
-    }
-  }
-
-  /* Desktop bento: 8/4 photo row, then four text tiles */
-  @media (min-width: 1100px) {
-    .services__grid {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-    }
-
-    .services__grid :global(.services__tile--feature) {
-      grid-column: span 8;
-    }
-
-    .services__grid :global(.services__tile--photo) {
-      grid-column: span 4;
-    }
-
-    .services__grid :global(.services__tile--text) {
-      grid-column: span 3;
-    }
-
-    /* Photo tiles share one height: the media flexes to fill the row */
-    .services__grid :global(.services__tile--feature .tile__media),
-    .services__grid :global(.services__tile--photo .tile__media) {
-      position: relative;
-      flex: 1;
-      aspect-ratio: auto;
-      min-height: clamp(340px, 30vw, 500px);
-    }
-
-    .services__grid :global(.services__tile--feature .tile__media img),
-    .services__grid :global(.services__tile--photo .tile__media img) {
-      position: absolute;
-      inset: 0;
-    }
-
-    .services__grid :global(.services__tile--feature .tile__body),
-    .services__grid :global(.services__tile--photo .tile__body) {
-      flex: none;
-      padding: 1.5rem 1.5rem 1.75rem;
-    }
-
-    .services__grid :global(.services__tile--text) {
-      min-height: 360px;
+  @media (min-width: 1024px) {
+    .services__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: var(--sp-7);
     }
   }
 </style>

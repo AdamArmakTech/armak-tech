@@ -7,27 +7,20 @@ import { industries } from '../../data/content';
 <section id="industries" class="section industries">
   <div class="container">
     <SectionHead
-      code="G-00"
-      label="Industries"
       title="Buildings we plan for."
       intro="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan the install around them."
     />
 
     <ul role="list" class="industries__grid">
-      {industries.map((ind, i) => {
-        return (
-          <li class="industry">
-            <a href={`/industries/#${ind.slug}`} class="industry__link">
-              <span class="industry__top">
-                <span class="t-mono industry__code" aria-hidden="true">G-{String(i + 1).padStart(2, '0')}</span>
-              </span>
-              <h3 class="t-h4 industry__name">{ind.name}</h3>
-              <p class="t-small t-muted industry__need">{ind.need}</p>
-              <ArrowUpRight class="industry__arrow" size={18} stroke-width={1.5} aria-hidden="true" />
-            </a>
-          </li>
-        );
-      })}
+      {industries.map((ind) => (
+        <li class="industry">
+          <a href={`/industries/#${ind.slug}`} class="industry__link">
+            <h3 class="t-h4 industry__name">{ind.name}</h3>
+            <p class="t-small industry__need">{ind.need}</p>
+            <ArrowUpRight class="industry__arrow" size={18} stroke-width={1.5} aria-hidden="true" />
+          </a>
+        </li>
+      ))}
     </ul>
   </div>
 </section>
@@ -64,22 +57,13 @@ import { industries } from '../../data/content';
     outline-offset: -2px;
   }
 
-  .industry__top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 0.75rem;
-  }
-
-  .industry__code {
-    color: var(--steel);
-  }
-
   .industry__need {
     max-width: 28em;
     padding-right: 1.5rem;
+    color: var(--text);
   }
 
+  /* The arrow shows this cell is a link */
   .industry__link :global(.industry__arrow) {
     position: absolute;
     right: 1.25rem;
@@ -101,13 +85,19 @@ import { industries } from '../../data/content';
     }
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 900px) {
+    .industries__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
     .industries__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .industry__link {
-      min-height: 220px;
+      min-height: 200px;
       padding: 1.5rem 1.5rem 2rem;
     }
   }

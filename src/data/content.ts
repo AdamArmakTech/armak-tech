@@ -1,3 +1,4 @@
+// Design rules: ai/DESIGN.md
 /**
  * Page content shared across the homepage and inner pages.
  *

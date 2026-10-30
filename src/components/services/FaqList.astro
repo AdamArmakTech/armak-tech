@@ -5,17 +5,17 @@ import SectionHead from '../ui/SectionHead.astro';
 import type { Faq } from '../../data/services-detail';
 
 interface Props {
-  code: string;
+  code?: string;
   title?: string;
   faqs: Faq[];
 }
 
-const { code, title = 'Common questions.', faqs } = Astro.props;
+const { title = 'Common questions.', faqs } = Astro.props;
 ---
 
 <section class="section faq">
   <div class="container">
-    <SectionHead code={code} label="FAQ" title={title} />
+    <SectionHead title={title} />
 
     <div class="faq__list">
       {faqs.map((f) => (
@@ -41,7 +41,7 @@ const { code, title = 'Common questions.', faqs } = Astro.props;
   }
 
   .faq__item:first-child {
-    border-top-color: var(--ink);
+    border-top-color: var(--hairline);
   }
 
   .faq__q {

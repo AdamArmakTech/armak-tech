@@ -2,10 +2,10 @@
 /**
  * Interactive building cutaway — the homepage's signature section.
  * Tabs (one per service) highlight that system's layer in BuildingSvg.
- * Auto-advances while in view until the visitor interacts (never under reduced motion).
+ * Click-only: nothing advances on its own (DESIGN.md rule 10).
  */
-import { ArrowRight } from '@lucide/astro';
 import SectionHead from '../ui/SectionHead.astro';
+import Button from '../ui/Button.astro';
 import BuildingSvg from './BuildingSvg.astro';
 import { services } from '../../data/site';
 import { contactHref } from '../../lib/cta';
@@ -14,15 +14,13 @@ import { contactHref } from '../../lib/cta';
 <section class="explorer section" id="systems" aria-labelledby="explorer-tabs-label">
   <div class="container">
     <SectionHead
-      code="C-01"
-      label="System explorer"
       title="How the six systems fit in a building."
       intro="Most of a building’s systems are hidden in the walls and ceilings. We design, install and test all six so they work together from the start."
     />
 
     <div class="explorer__body" data-explorer>
       <div class="explorer__tabs-wrap">
-        <p id="explorer-tabs-label" class="t-mono t-muted explorer__hint">Select a system</p>
+        <p id="explorer-tabs-label" class="t-muted explorer__hint">Select a system</p>
         <div class="explorer__tabs" role="tablist" aria-labelledby="explorer-tabs-label" aria-orientation="vertical">
           {services.map((s, i) => (
             <button
@@ -37,7 +35,6 @@ import { contactHref } from '../../lib/cta';
             >
               <span class="t-mono explorer__code">{s.code}</span>
               <span class="explorer__name">{s.name}</span>
-              <span class="explorer__progress" aria-hidden="true"></span>
             </button>
           ))}
         </div>
@@ -55,27 +52,28 @@ import { contactHref } from '../../lib/cta';
               <h3 class="t-h3">{s.name}</h3>
             </div>
             <p class="t-muted">{s.short}</p>
-            <ul role="list" class="explorer__includes t-mono">
+            <ul role="list" class="explorer__includes">
               {s.includes.map((inc) => <li>{inc}</li>)}
             </ul>
             <div class="explorer__actions">
-              <a class="explorer__ask" href={contactHref({ about: s.slug })}>
+              <Button href={contactHref({ about: s.slug })} variant="outline">
                 Ask about {s.name.toLowerCase()}
-                <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" />
-              </a>
+              </Button>
               <a class="explorer__link" href={`/services/${s.slug}/`}>See {s.name}</a>
             </div>
           </div>
         ))}
       </div>
     </div>
+
+    <div class="explorer__foot">
+      <p class="explorer__foot-text">{services.length} disciplines · One point of contact</p>
+      <Button href="/services/" variant="outline">All services</Button>
+    </div>
   </div>
 </section>
 
 <script>
-  const AUTO_MS = 5200;
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   document.querySelectorAll<HTMLElement>('[data-explorer]').forEach((root) => {
     const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
     const panel = root.querySelector<HTMLElement>('[role="tabpanel"]');
@@ -85,11 +83,6 @@ import { contactHref } from '../../lib/cta';
     if (!tabs.length || !panel || !svg) return;
 
     let index = 0;
-    let timer: number | undefined;
-    let userTookOver = false;
-    let inView = false;
-    let hovering = false;
-    let focused = false;
 
     const select = (i: number, { focus = false } = {}) => {
       index = (i + tabs.length) % tabs.length;
@@ -111,39 +104,10 @@ import { contactHref } from '../../lib/cta';
       if (layerName) layerName.textContent = `LAYER ${tab.querySelector('.explorer__code')?.textContent} · ${tab.dataset.layerName?.toUpperCase()}`;
 
       if (focus) tab.focus();
-      if (!userTookOver) restartProgress(tab);
-    };
-
-    // Progress bar on the active tab shows when auto-advance will move on
-    const restartProgress = (tab: HTMLElement) => {
-      tabs.forEach((t) => t.classList.remove('is-timing'));
-      void tab.offsetWidth;
-      tab.classList.add('is-timing');
-    };
-
-    const stopAuto = () => {
-      window.clearInterval(timer);
-      timer = undefined;
-      tabs.forEach((t) => t.classList.remove('is-timing'));
-    };
-
-    const takeOver = () => {
-      userTookOver = true;
-      root.classList.add('is-manual');
-      stopAuto();
-    };
-
-    const startAuto = () => {
-      if (reduceMotion || userTookOver || timer || !inView || hovering || focused) return;
-      restartProgress(tabs[index]);
-      timer = window.setInterval(() => select(index + 1), AUTO_MS);
     };
 
     tabs.forEach((tab, i) => {
-      tab.addEventListener('click', () => {
-        takeOver();
-        select(i);
-      });
+      tab.addEventListener('click', () => select(i));
       tab.addEventListener('keydown', (e) => {
         const keys: Record<string, number> = {
           ArrowDown: index + 1,
@@ -155,46 +119,9 @@ import { contactHref } from '../../lib/cta';
         };
         if (!(e.key in keys)) return;
         e.preventDefault();
-        takeOver();
         select(keys[e.key], { focus: true });
       });
     });
-
-    // Any press inside the explorer (e.g. tapping the drawing) hands control to the visitor
-    root.addEventListener('pointerdown', takeOver, { once: true });
-    // Keyboard focus inside it (tabs, panel or the "Ask about" / "See" links) holds it still;
-    // it carries on once focus moves out (unless the visitor took over with a click or arrow key)
-    root.addEventListener('focusin', () => {
-      focused = true;
-      stopAuto();
-    });
-    root.addEventListener('focusout', (e) => {
-      const to = e.relatedTarget as Node | null;
-      // Moving between controls inside, or the whole window losing focus, keeps it paused
-      if ((to && root.contains(to)) || (!to && root.contains(document.activeElement))) return;
-      focused = false;
-      startAuto();
-    });
-
-    // Hold still while the mouse is over it; carry on when it leaves (unless the visitor took over)
-    root.addEventListener('mouseenter', () => {
-      hovering = true;
-      stopAuto();
-    });
-    root.addEventListener('mouseleave', () => {
-      hovering = false;
-      startAuto();
-    });
-
-    // Only auto-advance while the section is on screen
-    new IntersectionObserver(
-      ([entry]) => {
-        inView = entry.isIntersecting;
-        if (inView) startAuto();
-        else stopAuto();
-      },
-      { threshold: 0.35 },
-    ).observe(root);
 
     select(0);
   });
@@ -242,7 +169,6 @@ import { contactHref } from '../../lib/cta';
     border-radius: var(--radius);
     background: transparent;
     text-align: left;
-    overflow: hidden;
     transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
@@ -257,37 +183,21 @@ import { contactHref } from '../../lib/cta';
   }
 
   .explorer__code {
-    color: var(--signal);
+    color: var(--steel);
   }
 
   .explorer__tab[aria-selected='true'] .explorer__code {
-    color: var(--logo-red);
+    color: var(--paper);
+  }
+
+  .explorer__code {
+    font-size: var(--fs-label);
   }
 
   .explorer__name {
+    font-family: var(--font-sans);
     font-weight: 500;
     font-size: var(--fs-small);
-  }
-
-  .explorer__progress {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 2px;
-    width: 100%;
-    background: var(--logo-red);
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-
-  .explorer__tab.is-timing .explorer__progress {
-    animation: explorer-progress 5.2s linear forwards;
-  }
-
-  @keyframes explorer-progress {
-    to {
-      transform: scaleX(1);
-    }
   }
 
   /* Stage */
@@ -322,20 +232,22 @@ import { contactHref } from '../../lib/cta';
   }
 
   .explorer__layer {
-    color: var(--signal);
+    color: var(--steel);
   }
 
   .explorer__includes {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
   }
 
   .explorer__includes li {
     padding: 0.35rem 0.6rem;
     border: 1px solid var(--hairline-strong);
     border-radius: var(--radius);
-    color: var(--steel);
+    color: var(--text);
   }
 
   .explorer__actions {
@@ -343,33 +255,22 @@ import { contactHref } from '../../lib/cta';
     flex-wrap: wrap;
     align-items: center;
     gap: 0.75rem 1.5rem;
+    margin-bottom: 0;
   }
 
-  /* Forward exit first (ask), sideways exit second (learn more) */
-  .explorer__ask {
-    display: inline-flex;
+  .explorer__foot {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
-    min-height: 44px;
-    padding: 0.625rem 1rem;
-    background: var(--ink);
-    color: var(--paper);
-    border-radius: var(--radius);
-    font-weight: 500;
+    justify-content: space-between;
+    gap: var(--sp-4) var(--sp-6);
+    margin-top: var(--space-block);
+  }
+
+  .explorer__foot-text {
+    font-family: var(--font-sans);
+    color: var(--text);
     font-size: var(--fs-small);
-    transition: background var(--dur-fast) ease;
-  }
-
-  .explorer__ask:hover {
-    background: var(--signal);
-  }
-
-  .explorer__ask :global(svg) {
-    transition: transform var(--dur) var(--ease-out);
-  }
-
-  .explorer__ask:hover :global(svg) {
-    transform: translateX(3px);
   }
 
   .explorer__link {
@@ -387,15 +288,15 @@ import { contactHref } from '../../lib/cta';
     color: var(--signal);
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 1024px) {
     .explorer__body {
       grid-template-columns: 4fr 8fr;
       align-items: start;
     }
 
     .explorer__tabs-wrap {
-      position: sticky;
-      top: calc(var(--header-h) + 2rem);
+      align-self: start;
+      margin-top: 0;
     }
 
     .explorer__tabs {

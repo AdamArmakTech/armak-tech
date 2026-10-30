@@ -1,5 +1,4 @@
 ---
-import Label from '../ui/Label.astro';
 import Stat from '../ui/Stat.astro';
 import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../data/site';
 ---
@@ -7,15 +6,14 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
 <section class="section numbers" aria-labelledby="numbers-title">
   <div class="container">
     <div class="numbers__head">
-      <Label code="F-01">By the numbers</Label>
       <h2 id="numbers-title" class="t-h3 numbers__title" data-reveal>
-        Armak in numbers. <span class="t-muted">Since {FOUNDED}, across Southern California.</span>
+        Armak in numbers. Since {FOUNDED}, across Southern California.
       </h2>
     </div>
 
     <div class="numbers__grid">
       <div>
-        <Stat value={yearsInBusiness} label="Years in business" detail={`Since ${FOUNDED}.`} />
+        <Stat value={yearsInBusiness} label="Years in business" />
       </div>
       <div>
         <Stat value={site.projectsDelivered} suffix="+" label="Projects delivered" />
@@ -32,14 +30,13 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
 
 <style>
   .numbers__head {
-    display: grid;
-    gap: 1.5rem;
-    justify-items: start;
     margin-bottom: var(--space-block);
   }
 
   .numbers__title {
     max-width: 26ch;
+    font-weight: 600;
+    color: var(--ink);
   }
 
   .numbers__grid {
@@ -54,21 +51,6 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
   }
 
   @media (min-width: 900px) {
-    .numbers__head {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      column-gap: var(--col-gap);
-      align-items: start;
-    }
-
-    .numbers__head > :global(.label) {
-      grid-column: 1 / span 3;
-      margin-top: 0.35rem;
-    }
-
-    .numbers__title {
-      grid-column: 4 / -1;
-    }
-
     .numbers__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }

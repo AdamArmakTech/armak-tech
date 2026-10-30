@@ -8,7 +8,7 @@ import { ArrowDown } from '@lucide/astro';
 interface Props {
   href: string;
   label: string;
-  /** Use 'cta' for the last one before the contact form (red, slightly louder) */
+  /** 'cta' marks the last one before the contact form; styled the same as the others (rule 7) */
   tone?: 'default' | 'cta';
 }
 
@@ -17,7 +17,7 @@ const { href, label, tone = 'default' } = Astro.props;
 
 <div class:list={['snext container', `snext--${tone}`]}>
   <a class="snext__link" href={href}>
-    <span class="t-mono snext__kicker">{tone === 'cta' ? 'Ready?' : 'Next'}</span>
+    <span class="snext__kicker">{tone === 'cta' ? 'Ready?' : 'Next'}</span>
     <span class="snext__label">{label}</span>
     <ArrowDown class="snext__arrow" size={18} stroke-width={1.75} aria-hidden="true" />
   </a>
@@ -27,7 +27,7 @@ const { href, label, tone = 'default' } = Astro.props;
   .snext {
     display: flex;
     justify-content: center;
-    padding-block: 0.25rem 2.5rem;
+    padding-block: var(--sp-6) 0;
   }
 
   .snext__link {
@@ -38,6 +38,7 @@ const { href, label, tone = 'default' } = Astro.props;
     padding: 0.5rem 0.25rem;
     border-bottom: 1px solid var(--hairline-strong);
     font-weight: 500;
+    color: var(--ink);
     transition: border-color var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
@@ -46,24 +47,20 @@ const { href, label, tone = 'default' } = Astro.props;
   }
 
   .snext__arrow {
-    color: var(--signal);
+    color: var(--steel);
     transition: transform var(--dur) var(--ease-out);
   }
 
   .snext__link:hover {
-    border-color: var(--ink);
+    border-color: var(--signal);
+    color: var(--signal);
+  }
+
+  .snext__link:hover .snext__arrow {
+    color: var(--signal);
   }
 
   .snext__link:hover .snext__arrow {
     transform: translateY(3px);
-  }
-
-  .snext--cta .snext__link {
-    color: var(--signal);
-    border-color: var(--signal);
-  }
-
-  .snext--cta .snext__kicker {
-    color: var(--signal);
   }
 </style>

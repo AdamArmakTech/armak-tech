@@ -3,7 +3,6 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/home/Hero.astro';
 import PartnerStrip from '../components/home/PartnerStrip.astro';
 import BuildingExplorer from '../components/home/BuildingExplorer.astro';
-import ServicesGrid from '../components/home/ServicesGrid.astro';
 import Process from '../components/home/Process.astro';
 import FeaturedProjects from '../components/home/FeaturedProjects.astro';
 import Numbers from '../components/home/Numbers.astro';
@@ -21,10 +20,9 @@ if (!showProjects) {
 <Base footerCta={false}>
   <Hero />
   <PartnerStrip />
-  <BuildingExplorer />
   <SectionNext href="#process" label="See how every job runs" />
-  <ServicesGrid />
   <Process />
+  <BuildingExplorer />
   <Numbers />
   {showProjects && <FeaturedProjects />}
   <SectionNext href="#industries" label="Buildings we plan for" />

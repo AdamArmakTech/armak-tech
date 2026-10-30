@@ -1,39 +1,27 @@
 ---
 import { Image } from 'astro:assets';
-import Label from '../ui/Label.astro';
 import { partners } from '../../data/content';
 
-/** Optical sizing: wide wordmarks get shorter so every logo carries similar visual weight. */
-const heightFor = (w: number, h: number) => {
-  const aspect = w / h;
-  return Math.round(Math.min(44, Math.max(18, 58 / Math.sqrt(aspect))));
-};
+/** Every logo is drawn at one visual height (DESIGN.md rule 5: a schedule of equal cells). */
+const LOGO_H = 32;
 ---
 
 <section class="partners" aria-labelledby="partners-title">
   <div class="container">
-    <div class="partners__head">
-      <Label code="B-01">Platforms we install</Label>
-      <p id="partners-title" class="t-small t-muted">
-        Brands we install and support.
-      </p>
-    </div>
+    <h2 id="partners-title" class="t-h3 partners__title">Brands we install and support.</h2>
     <ul role="list" class="partners__grid">
-      {partners.map((p) => {
-        const h = heightFor(p.logo.width, p.logo.height);
-        return (
-          <li class="partners__item">
-            <Image
-              src={p.logo}
-              alt={p.name}
-              height={h}
-              width={Math.round((p.logo.width / p.logo.height) * h)}
-              densities={[1, 2]}
-              loading="lazy"
-            />
-          </li>
-        );
-      })}
+      {partners.map((p) => (
+        <li class="partners__item">
+          <Image
+            src={p.logo}
+            alt={p.name}
+            height={LOGO_H}
+            width={Math.round((p.logo.width / p.logo.height) * LOGO_H)}
+            densities={[1, 2]}
+            loading="lazy"
+          />
+        </li>
+      ))}
     </ul>
   </div>
 </section>
@@ -41,24 +29,18 @@ const heightFor = (w: number, h: number) => {
 <style>
   .partners {
     padding-block: var(--space-block);
-    border-block: 1px solid var(--hairline);
     background: var(--white);
   }
 
-  .partners__head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem 2rem;
-    margin-bottom: 2.5rem;
+  .partners__title {
+    margin-bottom: var(--sp-6);
   }
 
   .partners__grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    border-top: 1px solid var(--hairline);
-    border-left: 1px solid var(--hairline);
+    /* hairlines only between rows: every cell has a top line, the first row's is clipped off */
+    clip-path: inset(1px 0 0 0);
   }
 
   .partners__item {
@@ -66,13 +48,16 @@ const heightFor = (w: number, h: number) => {
     place-items: center;
     min-height: 104px;
     padding: 1.25rem;
-    border-right: 1px solid var(--hairline);
-    border-bottom: 1px solid var(--hairline);
+    border-top: 1px solid var(--hairline);
   }
 
   .partners__item img {
     width: auto;
-    opacity: 0.78;
+    height: 32px;
+    max-width: 100%;
+    object-fit: contain;
+    filter: grayscale(1) contrast(0.9);
+    opacity: 0.7;
     transition: opacity var(--dur) ease;
   }
 
@@ -86,7 +71,7 @@ const heightFor = (w: number, h: number) => {
     }
   }
 
-  @media (min-width: 1100px) {
+  @media (min-width: 1024px) {
     .partners__grid {
       grid-template-columns: repeat(7, 1fr);
     }

@@ -28,17 +28,6 @@ const { service } = Astro.props;
 const detail = servicesDetail[service.slug];
 const photo = servicePhotos[service.slug];
 const hasPartners = partners.some((p) => detail.partnerCategories.includes(p.category));
-/* Section labels run A-01.1, A-01.2 … with no gaps, whichever sections render */
-let n = 0;
-const next = () => `${service.code}.${++n}`;
-const codes = {
-  caps: next(),
-  delivery: next(),
-  partners: hasPartners ? next() : '',
-  faq: next(),
-  others: next(),
-  cta: next(),
-};
 const pageUrl = new URL(`/services/${service.slug}/`, site.url).href;
 
 /* ── Structured data ── */
@@ -120,20 +109,19 @@ const jsonLd = {
 
   {photo && <PhotoBand photo={photo} testCard={service.slug === 'structured-cabling'} />}
 
-  <Capabilities code={codes.caps} serviceName={service.name} items={detail.capabilities} />
+  <Capabilities serviceName={service.name} items={detail.capabilities} />
 
-  <DeliverySteps code={codes.delivery} cta about={service.slug} />
+  <DeliverySteps cta about={service.slug} />
 
-  {hasPartners && <PartnerLogos code={codes.partners} categories={detail.partnerCategories} />}
+  {hasPartners && <PartnerLogos categories={detail.partnerCategories} />}
 
-  <FaqList code={codes.faq} faqs={detail.faqs} />
+  <FaqList faqs={detail.faqs} />
+
+  <OtherServices current={service.slug} />
 
   <ServiceCta
     about={service.slug}
-    code={codes.cta}
     title={`Talk to us about ${service.name.toLowerCase()}.`}
     body="Tell us about the site. We’ll walk it with you, document what’s there and scope the job before anything is priced."
   />
-
-  <OtherServices current={service.slug} code={codes.others} />
 </Base>

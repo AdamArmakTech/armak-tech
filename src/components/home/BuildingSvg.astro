@@ -268,8 +268,9 @@ const wifiArcs = (x: number, c: number) => [
 
   .bx-sheet {
     font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
+    /* SVG units: the drawing scales to ~0.65-1x, so 14 here is ~9-14px on screen */
+    font-size: 14px;
+    letter-spacing: 0.06em;
     fill: var(--steel);
   }
 
@@ -321,9 +322,14 @@ const wifiArcs = (x: number, c: number) => [
   .bx-label,
   .bx-callout {
     font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.08em;
+    font-size: 18px;
+    letter-spacing: 0.04em;
     fill: var(--steel);
+  }
+
+  /* Callout sits outside the wall, so it stays smaller than the room labels */
+  .bx-callout {
+    font-size: 14px;
   }
 
   /* ── System layers ── */
@@ -435,7 +441,7 @@ const wifiArcs = (x: number, c: number) => [
   }
 
   /* Room labels are unreadable at phone size — hide them there */
-  @media (max-width: 599px) {
+  @media (max-width: 639px) {
     .bx-label,
     .bx-sheet,
     .bx-callout {

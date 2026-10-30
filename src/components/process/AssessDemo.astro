@@ -205,7 +205,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
   /* SVG text is sized in screen pixels via --u (see fitSvgText), capped to fit the drawing */
   .as__note {
     font-family: var(--font-mono);
-    font-size: clamp(7.5px, calc(var(--u, 1) * 9px), 11.5px);
+    font-size: clamp(9px, calc(var(--u, 1) * 9px), 11.5px);
     letter-spacing: 0.06em;
     fill: var(--steel);
   }
@@ -314,7 +314,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     border-radius: 50%;
     background: var(--ink);
     color: var(--white);
-    font-size: 0.6875rem;
+    font-size: 0.8125rem;
     letter-spacing: 0;
   }
 
@@ -405,7 +405,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     .as__num {
       width: 20px;
       height: 20px;
-      font-size: 0.625rem;
+      font-size: 0.8125rem;
     }
 
     .as__text {
@@ -420,13 +420,13 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     .as__item-detail {
       grid-column: 1 / -1;
       align-self: start;
-      font-size: 0.78125rem;
+      font-size: 0.8125rem;
       line-height: 1.35;
     }
 
     .as__done {
       margin-top: 0.625rem;
-      font-size: 0.6875rem;
+      font-size: 0.8125rem;
       letter-spacing: 0.04em;
       line-height: 1.4;
     }

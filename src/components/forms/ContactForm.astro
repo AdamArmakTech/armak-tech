@@ -171,6 +171,18 @@ const f = (name: string) => `${id}-${name}`;
     color: var(--steel);
   }
 
+  /* Sentence-case sans labels (DESIGN.md rule 4): these are not tester readouts */
+  .cform__count,
+  .cform__about .t-mono,
+  .cform__req-note,
+  .cform__success-label {
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: normal;
+    text-transform: none;
+  }
+
   .cform__bars {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -224,7 +236,7 @@ const f = (name: string) => `${id}-${name}`;
   }
 
   .cform__req {
-    color: var(--signal);
+    color: var(--steel);
   }
 
   .cform__req-note,
@@ -409,7 +421,7 @@ const f = (name: string) => `${id}-${name}`;
   }
 
   .cform__next .t-mono {
-    color: var(--signal);
+    color: var(--steel);
     padding-top: 0.3rem;
   }
 
@@ -423,7 +435,7 @@ const f = (name: string) => `${id}-${name}`;
     }
   }
 
-  @media (max-width: 479px) {
+  @media (max-width: 420px) {
     .cform__actions :global(.btn) {
       flex: 1 1 100%;
     }

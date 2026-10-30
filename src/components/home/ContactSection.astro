@@ -1,45 +1,45 @@
 ---
 /**
  * Homepage closing section: site-assessment form + direct contact details.
+ * It is the page's dark end band and runs straight into the footer (DESIGN.md rule 8).
  */
 import SectionHead from '../ui/SectionHead.astro';
 import ContactForm from '../forms/ContactForm.astro';
 import { site } from '../../data/site';
 ---
 
-<section class="contact section" id="contact" data-dock-hide>
+<section class="contact cta-band surface-ink" id="contact" data-dock-hide>
   <div class="container">
     <SectionHead
-      code="J-01"
-      label="Start a project"
+      tone="inverse"
       title="Tell us about the site."
       intro="Pick the systems and leave your details. We’ll walk the site, scope the work and send you a clear written plan and price."
     />
 
     <div class="contact__body">
-      <div class="contact__panel" data-reveal>
+      <div class="contact__panel surface-card" data-reveal>
         <ContactForm id="home-assessment" />
       </div>
 
       <aside class="contact__info" aria-label="Contact details">
         <div class="contact__direct">
-          <p class="t-mono t-muted">Prefer to talk?</p>
+          <p class="contact__prefer">Prefer to talk?</p>
           <a class="contact__phone" href={site.phoneHref}>{site.phone}</a>
           <a class="contact__email" href={site.emailHref}>{site.email}</a>
         </div>
 
         <ul role="list" class="contact__rows">
           <li>
-            <span class="t-mono contact__key">Hours</span>
+            <span class="contact__key">Hours</span>
             <span>{site.hours}</span>
           </li>
           <li>
-            <span class="t-mono contact__key">Support</span>
+            <span class="contact__key">Support</span>
             <span>{site.support}</span>
           </li>
           <li>
-            <span class="t-mono contact__key">Headquarters</span>
-            <span>{site.hq.city}, California<br /><span class="t-muted">Serving all of Southern California</span></span>
+            <span class="contact__key">Headquarters</span>
+            <span>{site.hq.city}, California<br /><span class="contact__muted">Serving all of Southern California</span></span>
           </li>
         </ul>
       </aside>
@@ -48,15 +48,26 @@ import { site } from '../../data/site';
 </section>
 
 <style>
+  .contact {
+    padding-block: var(--space-section);
+    margin-bottom: 0;
+  }
+
+  .contact :global(.section-head__title) {
+    color: var(--paper);
+  }
+
   .contact__body {
     display: grid;
     gap: var(--col-gap);
     align-items: start;
   }
 
+  /* The form stays on its white card, unchanged */
   .contact__panel {
     padding: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
     background: var(--white);
+    color: var(--text);
     border: 1px solid var(--hairline);
     border-radius: var(--radius);
     min-width: 0;
@@ -74,7 +85,18 @@ import { site } from '../../data/site';
     justify-items: start;
   }
 
+  .contact__prefer,
+  .contact__muted {
+    color: var(--steel-light);
+  }
+
+  .contact__prefer {
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
   .contact__phone {
+    color: var(--paper);
     font-size: var(--fs-h3);
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -83,7 +105,14 @@ import { site } from '../../data/site';
   }
 
   .contact__email {
-    color: var(--steel);
+    color: var(--steel-light);
+  }
+
+  /* 44px tap height without moving the layout */
+  .contact__phone,
+  .contact__email {
+    padding-block: 0.625rem;
+    margin-block: -0.625rem;
   }
 
   .contact__phone,
@@ -99,7 +128,7 @@ import { site } from '../../data/site';
 
   .contact__rows {
     display: grid;
-    border-top: 1px solid var(--hairline);
+    border-top: 1px solid var(--hairline-inverse);
   }
 
   .contact__rows li {
@@ -108,14 +137,17 @@ import { site } from '../../data/site';
     gap: 0.25rem 0.875rem;
     align-items: start;
     padding-block: 0.875rem;
-    border-bottom: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline-inverse);
     font-size: var(--fs-small);
+    color: var(--paper);
     overflow-wrap: anywhere;
   }
 
   .contact__key {
     padding-top: 0.2rem;
-    color: var(--steel);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    color: var(--steel-light);
   }
 
   @media (max-width: 419px) {
@@ -124,7 +156,7 @@ import { site } from '../../data/site';
     }
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 1024px) {
     .contact__body {
       grid-template-columns: repeat(12, minmax(0, 1fr));
     }

@@ -413,9 +413,31 @@ const barPos = (b: Bar) =>
     font-size: var(--fs-small);
   }
 
+  /* Compact: a column. Header on top, wire map takes whatever height is left over,
+     result + footer stay at the bottom. No empty band at natural size, none when stretched
+     (a flex column ignores a parent's align-content: space-between). */
   .ct--compact {
+    display: flex;
+    flex-direction: column;
     max-width: 360px;
     gap: 0.75rem;
+  }
+
+  .ct--compact .ct__map {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    min-height: 0;
+  }
+
+  .ct--compact .ct__map svg {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .ct--compact .ct__result,
+  .ct--compact .ct__foot {
+    flex: 0 0 auto;
   }
 
   .ct__head {
@@ -802,6 +824,7 @@ const barPos = (b: Bar) =>
     gap: 0.35rem;
     cursor: pointer;
     list-style: none;
+    font-family: var(--font-sans);
     font-size: 0.8125rem;
     color: var(--steel);
     text-decoration: underline;
@@ -821,6 +844,7 @@ const barPos = (b: Bar) =>
   }
 
   .ct__explain p {
+    font-family: var(--font-sans);
     margin-top: 0.5rem;
     line-height: 1.55;
     color: var(--ink);
@@ -832,7 +856,7 @@ const barPos = (b: Bar) =>
     gap: 0.3rem;
     margin-top: 0.4rem;
     font-weight: 500;
-    color: var(--signal);
+    color: var(--ink);
   }
 
   /* ── Result ── */
@@ -927,6 +951,7 @@ const barPos = (b: Bar) =>
   /* Sentence on its own line; link + replay button share the line below */
   .ct__foot > .t-small {
     flex-basis: 100%;
+    font-family: var(--font-sans);
     color: var(--steel);
   }
 
@@ -934,14 +959,19 @@ const barPos = (b: Bar) =>
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
+    font-family: var(--font-sans);
     font-weight: 600;
     font-size: var(--fs-small);
-    color: var(--signal);
+    color: var(--ink);
+  }
+
+  .ct__how {
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .ct__how:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
+    color: var(--signal);
   }
 
   .ct__replay {
@@ -1143,7 +1173,7 @@ const barPos = (b: Bar) =>
   }
 
   /* Phones: no-JS fallback for the label scale (the script sets the exact value) */
-  @media (max-width: 520px) {
+  @media (max-width: 639px) {
     .ct__map svg {
       --u: 1.2;
     }
