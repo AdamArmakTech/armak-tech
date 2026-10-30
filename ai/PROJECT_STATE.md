@@ -8,6 +8,12 @@
 - Plan / design rationale: `ai/plans/redesign.md` ("Precision Infrastructure", light editorial, Astro).
 
 ## Done
+- **Seven UI details — 2026-10-30 (commit 699ae0e).** Open/closed status by the phone (hours.ts, from site.hours,
+  Los Angeles time); estimator numbers carried into the contact form (`?note=` in cta.ts + ContactForm prefill with
+  Clear); hover/tap definitions on glossary links (TermPopover.astro); "Do you cover my city?" search over the
+  service-area map (no coverage claims beyond the 24 cities); building-type chooser + room hover in the explorer
+  (industry→systems mapping moved to content.ts); printable scope sheet on service pages. All verified in a clean
+  browser tab: no console errors, 44px targets, existing ?about/?mode/?intent intact.
 - **Four additions — 2026-10-30 (same branch, commits cf49bea, b76288b).** (1) Glossary links inside service
   pages: `src/lib/glossaryLinks.ts` underlines up to 4 trade words per capability/FAQ answer (longest match first,
   common words demoted, JSON-LD stays plain). (2) Restrained motion per DESIGN.md rule 10: map dots land one by one,
