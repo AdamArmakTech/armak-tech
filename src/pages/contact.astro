@@ -21,7 +21,6 @@ const next = steps.slice(0, 2);
     title="Start with a site assessment."
     lead="Tell us what you’re building. We’ll walk the site, scope the work and send you a clear written plan and price."
     crumbs={[{ label: 'Contact' }]}
-    tone="ink"
   >
     <div slot="aside" class="surface-card contact__details contact__details--hero">
       <div class="contact__direct">
@@ -249,6 +248,12 @@ const next = steps.slice(0, 2);
   }
 
   @media (max-width: 899px) {
+    /* The notch half-circles poke 15px past the viewport when the coupon runs edge to edge: clip them
+       here (clip, not hidden, so nothing becomes a scroll container) */
+    .contact {
+      overflow-x: clip;
+    }
+
     /* On a phone the coupon runs edge to edge */
     .coupon {
       margin-inline: calc(var(--gutter) * -1);
