@@ -13,7 +13,7 @@ import { contactHref } from '../../lib/cta';
 
 const industryRows = industries.map((ind) => {
   const sys = ind.systems.map((slug) => services.find((s) => s.slug === slug)!).filter(Boolean);
-  return { ...ind, sys, summary: `Typical for ${ind.name}: ${sys.map((s) => s.name).join(' · ')}` };
+  return { ...ind, sys, summary: `${ind.name}: typically ${sys.map((s) => s.name).join(' · ')}` };
 });
 ---
 
@@ -64,7 +64,7 @@ const industryRows = industries.map((ind) => {
             <p class="explorer__summary">{ind.summary}</p>
             <p class="t-muted">{ind.need}</p>
             <div class="explorer__actions">
-              <Button href={contactHref({ about: ind.slug })} variant="outline">
+              <Button href={contactHref({ about: ind.name })} variant="outline">
                 Ask about {ind.name.toLowerCase()}
               </Button>
             </div>
@@ -166,7 +166,7 @@ const industryRows = industries.map((ind) => {
       panel.setAttribute('aria-labelledby', 'explorer-chips-label');
       base = {
         slugs: systems,
-        label: `${chip.textContent?.trim().toUpperCase()} · ${systems.map(codeOf).join(' ')}`,
+        label: `${chip.textContent?.trim().toUpperCase()} · ${systems.map(codeOf).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join(' ')}`,
       };
       paint(base.slugs, base.label);
     };

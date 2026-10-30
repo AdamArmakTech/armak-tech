@@ -902,6 +902,7 @@ const groups = counties.map((county) => ({
       v.trim().toLowerCase().replace(/\s+/g, ' ').replace(/,?\s+ca$/, '').replace(/,$/, '').trim();
 
     function highlight(name: string) {
+      if (reduceMotion) return;
       const li = document.querySelector<HTMLElement>(`.area__city[data-city="${CSS.escape(name)}"]`);
       if (!li) return;
       const c = cssVar('--paper-sunken') || '#ebe9e3';
@@ -951,7 +952,6 @@ const groups = counties.map((county) => ({
       const exact = cities.filter((c) => c.name.toLowerCase() === q);
       const prefix = cities.filter((c) => c.name.toLowerCase().startsWith(q));
       if (exact.length === 1) return show(exact[0].name);
-      if (prefix.length === 1) return show(prefix[0].name);
       const loose = prefix.length ? prefix : cities.filter((c) => c.name.toLowerCase().includes(q));
       if (loose.length) {
         const p = document.createElement('p');

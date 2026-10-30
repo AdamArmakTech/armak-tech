@@ -48,9 +48,7 @@ const rooms: { id: string; name: string; box: [number, number, number, number]; 
   { id: 'lobby', name: 'LOBBY', box: [250, 419, 320, 141], systems: ['structured-cabling', 'networking', 'video-surveillance', 'access-control', 'voip-unified-comms', 'audio-video'] },
   { id: 'break-room', name: 'BREAK ROOM', box: [570, 419, 170, 141], systems: ['structured-cabling', 'access-control', 'voip-unified-comms', 'audio-video'] },
 ];
-const roomLabel = (name: string) => name.charAt(0) + name.slice(1).toLowerCase();
-const names = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x.slug === sl)!.name);
-const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x.slug === sl)!.code);
+const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x.slug === sl)!.code).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 ---
 
 <svg class="bx" viewBox="0 0 880 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cutaway drawing of a three-storey commercial building showing where each of the six systems runs: cabling, networking and Wi-Fi, cameras, access control, phones, and audio-video. The system selected in the tabs is highlighted, and hovering or focusing a room lights the systems that serve it." focusable="false">
@@ -274,13 +272,11 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
         y={r.box[1]}
         width={r.box[2]}
         height={r.box[3]}
-        tabindex="0"
-        role="group"
+        aria-hidden="true"
         data-room={r.id}
         data-room-name={r.name}
         data-systems={r.systems.join(' ')}
         data-codes={codes(r.systems).join(' ')}
-        aria-label={`${roomLabel(r.name)}: served by ${names(r.systems).join(', ')}`}
       />
     ))}
   </g>

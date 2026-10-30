@@ -14,14 +14,40 @@
  */
 import { glossary, bySlug } from '../data/glossary';
 
-/** First sentence of a definition, at most 160 characters, cut at a sentence end (or at a word if one sentence is longer). */
+/** Words that end in a full stop without ending the sentence. */
+const ABBREVIATIONS = new Set(['u.s.', 'e.g.', 'i.e.', 'vs.', 'approx.', 'no.', 'fig.', 'st.']);
+
+/**
+ * End index of the first sentence. A sentence ends at ".", "!" or "?" followed by a space and a capital
+ * letter (or the end of the text), unless the word before the stop is a single capital letter or a known
+ * abbreviation. A stop right after a number with a unit ("up to 100 m.") never ends it.
+ */
+function firstSentenceEnd(t: string): number {
+  const re = /[.!?](?=\s+[A-Z]|\s*$)/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(t))) {
+    const end = m.index + 1;
+    const token = t.slice(0, end).split(/\s/).pop() ?? '';
+    if (/^[A-Z]\.$/.test(token)) continue; // initial, e.g. "J."
+    if (ABBREVIATIONS.has(token.toLowerCase())) continue;
+    if (/\d\s[a-z]{1,3}\.$/.test(t.slice(Math.max(0, end - 12), end))) continue; // number + unit, e.g. "100 m."
+    return end;
+  }
+  return t.length;
+}
+
+/**
+ * First sentence of a definition. Up to 220 characters it is returned whole; beyond that it is cut at the
+ * last comma or semicolon before 200 characters and "…" is added. Never cut mid-word.
+ */
 function shortDef(raw: string): string {
   const t = raw.replace(/\s+/g, ' ').trim();
-  const m = t.match(/^.*?[.!?](?=\s|$)/);
-  const first = m ? m[0] : t;
-  if (first.length <= 160) return first;
-  const cut = first.slice(0, 159).replace(/\s+\S*$/, '').replace(/[,;:\s]+$/, '');
-  return cut + '…';
+  const first = t.slice(0, firstSentenceEnd(t));
+  if (first.length <= 220) return first;
+  const head = first.slice(0, 200);
+  const i = Math.max(head.lastIndexOf(','), head.lastIndexOf(';'));
+  const cut = i > 40 ? head.slice(0, i) : head.replace(/\s+\S*$/, '');
+  return cut.replace(/[,;:\s]+$/, '') + '…';
 }
 
 export interface LinkOptions {

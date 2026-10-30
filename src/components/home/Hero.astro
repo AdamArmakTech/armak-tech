@@ -59,13 +59,14 @@ const routes = [
 <script>
   import { parseHours, openStatus } from '../../lib/hours';
 
-  // Appends " · Open now · until 6 PM" (or the next opening) after the call line; empty until the client fills it
+  // Appends " · Open now" (hours are already in the line) (or the next opening) after the call line; empty until the client fills it
   const el = document.querySelector<HTMLElement>('[data-hero-status]');
   const hours = el ? parseHours(el.dataset.hours ?? '') : null;
   if (el && hours) {
     const update = () => {
       const s = openStatus(new Date(), hours);
-      el.textContent = s.label ? ` · ${s.label}` : '';
+      const short = s.label.replace(/ · until .*$/, '');
+      el.textContent = short ? ` · ${short}` : '';
       el.hidden = !s.label;
     };
     update();

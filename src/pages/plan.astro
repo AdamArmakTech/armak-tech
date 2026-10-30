@@ -125,6 +125,8 @@ const upgradeQuestions = [
           </label>
         </div>
 
+        <p class="t-small t-muted est__plan">Want these numbers checked against your actual floor? <a class="plan__link" href="/contact/?about=estimate#form">Send us your plan</a> and we’ll scope it.</p>
+
         <dl class="est__out" aria-live="polite">
           <div class="est__row">
             <dt>Data drops <a class="est__term" href="/glossary/#drop">what’s a drop?</a></dt>
@@ -149,9 +151,8 @@ const upgradeQuestions = [
         </dl>
       </form>
       <div class="est__send">
-        <Button variant="ink" size="lg" href={contactHref({ about: 'structured-cabling' })} aria-disabled="true" data-est-send>Send these numbers with my request</Button>
+        <Button variant="ink" size="lg" href={contactHref({ about: 'structured-cabling' })} data-est-send>Send these numbers with my request</Button>
       </div>
-      <p class="t-small t-muted">Want these numbers checked against your actual floor? <a class="plan__link" href="/contact/?about=estimate#form">Send us your plan</a> and we’ll scope it.</p>
     </section>
 
     <!-- ── Cabling check ── -->
@@ -431,6 +432,15 @@ const upgradeQuestions = [
 
   .est__out {
     display: grid;
+    max-width: 52rem;
+    margin: 0;
+  }
+
+  .est__send {
+    margin-top: var(--sp-5);
+  }
+
+  .est__plan {
     max-width: 52rem;
     margin: 0;
   }

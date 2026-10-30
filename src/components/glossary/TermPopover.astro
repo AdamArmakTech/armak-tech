@@ -6,9 +6,9 @@
  */
 ---
 
-<div class="term-pop" id="term-pop" role="tooltip" hidden>
-  <p class="term-pop__term"></p>
-  <p class="term-pop__def"></p>
+<div class="term-pop" id="term-pop" tabindex="-1" aria-labelledby="term-pop-title" aria-describedby="term-pop-def" hidden>
+  <p class="term-pop__term" id="term-pop-title"></p>
+  <p class="term-pop__def" id="term-pop-def"></p>
   <a class="term-pop__more" href="/glossary/">Read more &rarr;</a>
 </div>
 
@@ -45,14 +45,12 @@
       more.href = `/glossary/#${a.dataset.slug || ''}`;
       pop.hidden = false;
       place(a);
-      a.setAttribute('aria-describedby', 'term-pop');
       requestAnimationFrame(() => pop.classList.add('is-on'));
     };
 
     const hide = () => {
       window.clearTimeout(showTimer);
       touchPending = null;
-      if (current) current.removeAttribute('aria-describedby');
       current = null;
       pop.classList.remove('is-on');
       hideTimer = window.setTimeout(() => {
@@ -86,6 +84,8 @@
           touchPending = null;
           window.clearTimeout(showTimer);
           show(a);
+          // On tap the card takes focus so keyboard / screen-reader users can reach "Read more".
+          pop.focus({ preventScroll: true });
         }
       });
     });
@@ -155,14 +155,22 @@
   }
 
   .term-pop__more {
-    display: inline-block;
-    margin-top: 0.5rem;
+    display: block;
+    box-sizing: border-box;
+    min-height: 44px;
+    /* full card width, 44px tall: padding grows the tap area, negative margin keeps the look */
+    margin: 0.5rem -0.9rem -0.75rem;
+    padding: 0.75rem 0.9rem;
     color: var(--ink);
     font-size: 0.875rem;
     font-weight: 600;
     text-decoration: underline;
     text-decoration-color: var(--hairline-strong);
     text-underline-offset: 3px;
+  }
+
+  .term-pop:focus {
+    outline: none;
   }
 
   .term-pop__more:hover {
