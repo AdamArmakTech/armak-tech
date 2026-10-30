@@ -35,3 +35,15 @@ first real project page. Nothing goes on the site until you've answered. Answers
 23. 24/7 support: ☐ everyone ☐ contracted clients only
 24. Do clients get the cable test reports?  ☐ yes ☐ no
 25. Is the site assessment always free?  ☐ yes ☐ no
+
+## E. The building-type lists (now shown on the homepage)
+26. For each building type, are these the usual systems Armak installs? Cross out what's wrong, add what's missing.
+    Commercial office: cabling & fiber, network & Wi-Fi, door access, phones, AV
+    Healthcare: cabling & fiber, network & Wi-Fi, cameras, door access
+    Education: network & Wi-Fi, AV, door access, cameras
+    Retail: network & Wi-Fi, cameras, cabling & fiber
+    Hospitality: network & Wi-Fi, phones, AV, cameras
+    Multifamily: cabling & fiber, door access, cameras
+    Public sector: cabling & fiber, network & Wi-Fi, door access, cameras
+    Industrial & warehouse: cabling & fiber, network & Wi-Fi, cameras
+    (These are exactly the lists the site shows today.)
