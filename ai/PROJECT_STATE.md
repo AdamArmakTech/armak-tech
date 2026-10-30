@@ -87,3 +87,16 @@
 
 ## Backlog
 - [ ] Automated verification/linting beyond `astro check`
+
+## Owner questions added 2026-10-29 (evening, design refresh)
+12. **Product photos (owner wants Ubiquiti-style product shots).** Only Crestron's published terms let an
+    *authorized dealer* reuse its photos; 4 Crestron images (5000px) are saved under
+    `E:\Claude Installs\Asset Libraries\Product photos - manufacturer press kits\`. Is Armak a Crestron
+    Authorized Dealer? (yes/no)
+13. Cisco and Meraki allow partner use but need a free partner login (Cisco Brand Exchange; Meraki Partner
+    Portal). Who at Armak can log in and download the Catalyst 9000 / current MS-MR-MX images?
+14. For Ubiquiti, Axis, Fortinet, Netgear, Hikvision, Honeywell, Aruba/HPE, Bosch, LTS, CommScope and
+    Panduit: ask the sales rep for a dealer image pack (the exact contacts/URLs are in that folder's README).
+    Until images with rights arrive, service pages keep the interim stock photos, captioned as illustrative.
+15. Design rules now live in `ai/DESIGN.md`. Decisions taken 2026-10-29: keep "Built for the future.",
+    keep the 946+ figure showing, keep smooth scroll and heading animations, product photos not stock.
