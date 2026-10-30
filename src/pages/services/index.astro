@@ -66,18 +66,18 @@ const jsonLd = {
           <a class="svc-row__link" href={`/services/${s.slug}/`}>
             <span class="svc-row__code">{s.code}</span>
             <div class="svc-row__main">
-              <span class="t-mono svc-row__layer">{s.layer}</span>
+              <span class="svc-row__layer">{s.layer}</span>
               <h2 class="svc-row__name">{s.name}</h2>
               <p class="svc-row__short t-muted">{s.short}</p>
             </div>
             <div class="svc-row__includes">
               <p class="visually-hidden">Includes:</p>
-              <ul role="list" class="t-mono">
+              <ul role="list">
                 {s.includes.map((item) => <li>{item}</li>)}
               </ul>
             </div>
             <span class="svc-row__go" aria-hidden="true">
-              <span class="t-mono svc-row__go-label">See service</span>
+              <span class="svc-row__go-label">See service</span>
               <span class="svc-row__go-icon"><ArrowRight size={20} stroke-width={1.75} /></span>
             </span>
           </a>
@@ -248,6 +248,7 @@ const jsonLd = {
   }
 
   .svc-row__layer {
+    font-size: var(--fs-small);
     color: var(--steel);
   }
 
@@ -264,8 +265,7 @@ const jsonLd = {
 
   .svc-row__includes ul {
     display: grid;
-    font-size: 0.8125rem;
-    letter-spacing: 0.06em;
+    font-size: var(--fs-small);
     color: var(--steel);
   }
 
@@ -296,6 +296,7 @@ const jsonLd = {
   }
 
   .svc-row__go-label {
+    font-size: var(--fs-small);
     color: var(--steel);
   }
 

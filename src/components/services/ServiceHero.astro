@@ -37,20 +37,20 @@ const { service, detail } = Astro.props;
     </div>
 
     <aside class="sheet" aria-label={`${service.name} scope summary`}>
-      <header class="sheet__head t-mono">
+      <header class="sheet__head">
         <span>Scope sheet</span>
         <span class="sheet__id">{service.code}</span>
       </header>
 
       <div class="sheet__block">
-        <p class="t-mono sheet__heading">Includes</p>
+        <p class="sheet__heading">Includes</p>
         <ul role="list" class="sheet__list sheet__list--includes">
           {service.includes.map((item) => <li>{item}</li>)}
         </ul>
       </div>
 
       <div class="sheet__block">
-        <p class="t-mono sheet__heading">Standards &amp; technology</p>
+        <p class="sheet__heading">Standards &amp; technology</p>
         <ul role="list" class="sheet__list sheet__list--specs t-mono">
           {detail.standards.map((s) => <li>{s}</li>)}
         </ul>
@@ -177,7 +177,8 @@ const { service, detail } = Astro.props;
   }
 
   .sheet__id {
-    color: var(--signal);
+    font-family: var(--font-mono);
+    color: var(--steel);
   }
 
   .sheet__block {
@@ -187,7 +188,11 @@ const { service, detail } = Astro.props;
     border-bottom: 1px solid var(--hairline);
   }
 
-  .sheet__heading {
+  .sheet__heading,
+  .sheet__head > span:first-child {
+    font-family: var(--font-sans, inherit);
+    font-size: var(--fs-small);
+    font-weight: 500;
     color: var(--steel);
   }
 

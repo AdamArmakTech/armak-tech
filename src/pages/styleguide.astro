@@ -1,12 +1,10 @@
 ---
-import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import Label from '../components/ui/Label.astro';
 import Stripe from '../components/ui/Stripe.astro';
 import Button from '../components/ui/Button.astro';
 import SectionHead from '../components/ui/SectionHead.astro';
 import SpecStrip from '../components/ui/SpecStrip.astro';
-import CableTest from '../components/ui/CableTest.astro';
 import ServiceTile from '../components/ui/ServiceTile.astro';
 import Stat from '../components/ui/Stat.astro';
 import CtaDock from '../components/layout/CtaDock.astro';
@@ -23,7 +21,7 @@ const colors = [
   { name: 'Ink', token: '--ink', hex: '#0B0D10', use: 'Text, inverse surfaces' },
   { name: 'Steel', token: '--steel', hex: '#565E6B', use: 'Secondary text' },
   { name: 'Hairline', token: '--hairline', hex: '#D9D7D0', use: '1px rules' },
-  { name: 'Signal', token: '--signal', hex: '#d0101a', use: 'CTAs & key accents only' },
+  { name: 'Signal', token: '--signal', hex: '#d0101a', use: 'Primary buttons and FAIL only' },
   { name: 'Armak Blue', token: '--armak-blue', hex: '#1D3F8F', use: 'Diagrams & map only' },
   { name: 'Pass', token: '--pass', hex: '#167640', use: 'PASS only' },
 ];
@@ -53,24 +51,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
   <!-- ─────────── Hero preview ─────────── -->
   <section class="container sg-block">
     <SectionHead label="Hero preview" title="How the homepage opens." split={false} />
-    <div class="hero-preview">
-      <div class="hero-preview__copy">
-        <SpecStrip items={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`, 'All of SoCal']} class="hero-preview__spec" />
-        <h2 class="t-display hero-preview__title" data-split>Built for the future.</h2>
-        <p class="t-lead" data-reveal>
-          {yearsInBusiness} years designing, installing and certifying the cabling, networks and
-          security systems Southern California’s facilities run on.
-        </p>
-        <div class="hero-preview__ctas">
-          <Button href="/contact/" size="lg">Request a site assessment</Button>
-          <Button href="/services/" variant="outline" size="lg" icon="none">See all services</Button>
-        </div>
-      </div>
-      <div class="hero-preview__media">
-        <Image src={cableBundles} alt="Neatly dressed light-blue cable bundles with black Velcro ties running into a rack of patch panels" widths={[640, 960, 1400]} sizes="(min-width: 900px) 50vw, 100vw" loading="eager" />
-        <CableTest variant="compact" class="hero-preview__card" demoHref="/#cable-test" />
-      </div>
-    </div>
+    <p class="t-lead">The live homepage is the reference for the hero. Open it at <a href="/">the homepage</a> instead of a mock here.</p>
   </section>
 
   <!-- ─────────── Color ─────────── -->
@@ -114,8 +95,8 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
       <div class="sg-panel">
         <p class="t-mono t-muted">Labels</p>
         <div class="sg-wrap">
-          <Label code="A-01">Structured cabling</Label>
-          <Label code="A-02">Network and Wi-Fi</Label>
+          <Label code="A-01">Structured Cabling &amp; Fiber</Label>
+          <Label code="A-02">Networking &amp; Wireless</Label>
           <Label code="01">Step number</Label>
           <Label>No code</Label>
         </div>
@@ -133,7 +114,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
       <div class="sg-panel sg-panel--ink surface-ink">
         <p class="t-mono t-muted">On ink</p>
         <div class="sg-wrap">
-          <Label code="A-01" tone="inverse">Structured cabling</Label>
+          <Label code="A-01" tone="inverse">Structured Cabling &amp; Fiber</Label>
           <Button>Primary</Button>
           <Button variant="outline-inverse" icon="none">Outline</Button>
         </div>
@@ -159,7 +140,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
 
   <!-- ─────────── Stats ─────────── -->
   <section class="container sg-block">
-    <SectionHead label="Numbers" title="Proof, set in mono." split={false} />
+    <SectionHead label="Numbers" title="Measured figures in mono, labels in sans." split={false} />
     <div class="stats">
       <Stat value={yearsInBusiness} label="Years in business" detail={`Since ${FOUNDED}. Computed at build, so never out of date.`} />
       <Stat value={site.projectsDelivered} suffix="+" label="Projects delivered" />

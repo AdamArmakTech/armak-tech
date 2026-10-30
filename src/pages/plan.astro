@@ -105,19 +105,19 @@ const upgradeQuestions = [
         <div class="est__inputs">
           <label class="field">
             <span class="field__label">Floor area (sq ft)</span>
-            <input class="field__control" type="number" inputmode="numeric" min="200" max="500000" step="100" value="5000" name="sqft" />
+            <input class="field__control" type="number" autocomplete="off" inputmode="numeric" min="200" max="500000" step="100" value="5000" name="sqft" />
           </label>
           <label class="field">
             <span class="field__label">Desks or workstations</span>
-            <input class="field__control" type="number" inputmode="numeric" min="0" max="5000" value="20" name="desks" />
+            <input class="field__control" type="number" autocomplete="off" inputmode="numeric" min="0" max="5000" value="20" name="desks" />
           </label>
           <label class="field">
             <span class="field__label">Floors</span>
-            <input class="field__control" type="number" inputmode="numeric" min="1" max="50" value="1" name="floors" />
+            <input class="field__control" type="number" autocomplete="off" inputmode="numeric" min="1" max="50" value="1" name="floors" />
           </label>
           <label class="field">
             <span class="field__label">Exterior doors</span>
-            <input class="field__control" type="number" inputmode="numeric" min="0" max="100" value="2" name="doors" />
+            <input class="field__control" type="number" autocomplete="off" inputmode="numeric" min="0" max="100" value="2" name="doors" />
           </label>
         </div>
 
@@ -266,6 +266,9 @@ const upgradeQuestions = [
   }
 
   .plan__jump a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     padding-block: 0.5rem;
     border-bottom: 1px solid var(--hairline-strong);
     color: var(--ink);
@@ -309,6 +312,16 @@ const upgradeQuestions = [
     border: 1px solid var(--hairline);
     border-radius: var(--radius);
     padding: var(--sp-4) var(--sp-5);
+    min-width: 0;
+  }
+
+  @media (max-width: 420px) {
+    .checklist,
+    .est__out,
+    .est__inputs,
+    .quiz {
+      padding-inline: var(--sp-3);
+    }
   }
 
   .checklist {
@@ -418,7 +431,7 @@ const upgradeQuestions = [
     font-variant-numeric: tabular-nums;
   }
 
-  .est__how {
+  .est__row .est__how {
     grid-column: 1 / -1;
     margin: 0;
     font-family: var(--font-sans);

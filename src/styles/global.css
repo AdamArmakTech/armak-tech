@@ -89,6 +89,14 @@ h6 {
   color: var(--paper);
 }
 
+a,
+button,
+label,
+summary {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 :focus-visible {
   outline: 2px solid var(--signal);
   outline-offset: 3px;
@@ -177,7 +185,7 @@ p:not(.surface-ink *) {
 
 /* Neighbouring plain sections share one gap. Sections with their own surface
    (.section--tight, e.g. the white .delivery band) keep their top padding. */
-.section + .section:not(.section--tight) {
+.section:not(.section--tight) + .section:not(.section--tight) {
   padding-top: 0;
 }
 

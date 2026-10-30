@@ -24,7 +24,7 @@ const { photo, testCard = false, caption } = Astro.props;
       alt={photo.alt}
       widths={[640, 960, 1280, 1920]}
       sizes="(min-width: 1360px) 1280px, 100vw"
-      loading="eager"
+      loading="lazy"
     />
     {caption && <figcaption class="band__caption">{caption}</figcaption>}
   </figure>
