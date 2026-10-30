@@ -17,7 +17,7 @@ const industryRows = industries.map((ind) => {
 });
 ---
 
-<section class="explorer section" id="systems" aria-labelledby="explorer-tabs-label">
+<section class="explorer section section--tight" id="systems" aria-labelledby="explorer-tabs-label">
   <div class="container">
     <SectionHead
       title="How the six systems fit in a building."
@@ -94,7 +94,7 @@ const industryRows = industries.map((ind) => {
 
     <div class="explorer__foot">
       <p class="explorer__foot-text">{services.length} disciplines · One point of contact</p>
-      <Button href="/services/" variant="outline">All services</Button>
+      <Button href="/services/" variant="outline-inverse">All services</Button>
     </div>
   </div>
 </section>
@@ -208,6 +208,42 @@ const industryRows = industries.map((ind) => {
 </script>
 
 <style>
+  /*
+   * Direction A: the explorer is the drawing sheet of the package, laid on one full-bleed field of
+   * Armak blue (the logo's "TECHNOLOGIES" blue, kept for diagrams and the map). The drawing is used
+   * large on a white sheet; the controls sit on the blue in paper-coloured type.
+   */
+  .explorer {
+    --on-blue-line: rgba(244, 243, 239, 0.6);
+    background: var(--armak-blue);
+    color: var(--paper);
+  }
+
+  /* The section before shares its bottom gap; this field brings its own padding */
+  .explorer.section {
+    padding-block: var(--space-section);
+  }
+
+  .explorer :global(.section-head__title),
+  .explorer :global(.section-head__intro),
+  .explorer .explorer__tabs-wrap .t-muted,
+  .explorer .explorer__chips-label,
+  .explorer .explorer__foot-text {
+    color: var(--paper);
+  }
+
+  @media (min-width: 1024px) {
+    .explorer :global(.section-head) {
+      grid-template-columns: 5fr 6fr;
+      column-gap: var(--col-gap);
+      align-items: end;
+    }
+
+    .explorer :global(.section-head__title) {
+      font-size: var(--fs-h1);
+    }
+  }
+
   .explorer__body {
     display: grid;
     gap: 1.5rem var(--col-gap);
@@ -236,9 +272,10 @@ const industryRows = industries.map((ind) => {
   .explorer__chip {
     min-height: 44px;
     padding: 0.5rem 0.875rem;
-    border: 1px solid var(--field-line);
+    border: 1px solid var(--on-blue-line);
     border-radius: var(--radius);
     background: transparent;
+    color: var(--paper);
     font-family: var(--font-sans);
     font-size: var(--fs-small);
     font-weight: 500;
@@ -246,13 +283,13 @@ const industryRows = industries.map((ind) => {
   }
 
   .explorer__chip:hover {
-    border-color: var(--ink);
+    border-color: var(--paper);
   }
 
   .explorer__chip[aria-pressed='true'] {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--paper);
+    background: var(--paper);
+    border-color: var(--paper);
+    color: var(--ink);
   }
 
   .explorer__summary {
@@ -288,29 +325,30 @@ const industryRows = industries.map((ind) => {
     flex-shrink: 0;
     min-height: 44px;
     padding: 0.75rem 1rem;
-    border: 1px solid var(--field-line);
+    border: 1px solid var(--on-blue-line);
     border-radius: var(--radius);
     background: transparent;
+    color: var(--paper);
     text-align: left;
     transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
   .explorer__tab:hover {
-    border-color: var(--ink);
+    border-color: var(--paper);
   }
 
   .explorer__tab[aria-selected='true'] {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--paper);
+    background: var(--paper);
+    border-color: var(--paper);
+    color: var(--ink);
   }
 
   .explorer__code {
-    color: var(--steel);
+    color: var(--paper);
   }
 
   .explorer__tab[aria-selected='true'] .explorer__code {
-    color: var(--paper);
+    color: var(--ink);
   }
 
   .explorer__code {
@@ -324,17 +362,30 @@ const industryRows = industries.map((ind) => {
   }
 
   /* Stage */
+  /* The stage is the white drawing sheet: drawing on top, the selected system's notes below */
   .explorer__stage {
     display: grid;
     gap: 1.5rem;
     outline-offset: 6px;
+    background: var(--white);
+    color: var(--text);
+    padding: clamp(0.75rem, 0.3rem + 2vw, 2.5rem);
+    margin-inline: calc(var(--gutter) * -1);
+  }
+
+  .explorer .explorer__stage .t-muted,
+  .explorer .explorer__stage p {
+    color: var(--text);
   }
 
   .explorer__drawing {
     background: var(--white);
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius);
-    padding: clamp(0.5rem, 0.2rem + 1.5vw, 1.5rem);
+  }
+
+  @media (min-width: 900px) {
+    .explorer__stage {
+      margin-inline: 0;
+    }
   }
 
   .explorer__detail {
@@ -368,7 +419,7 @@ const industryRows = industries.map((ind) => {
 
   .explorer__includes li {
     padding: 0.35rem 0.6rem;
-    border: 1px solid var(--hairline-strong);
+    background: var(--paper);
     border-radius: var(--radius);
     color: var(--text);
   }
@@ -413,7 +464,7 @@ const industryRows = industries.map((ind) => {
 
   @media (min-width: 1024px) {
     .explorer__body {
-      grid-template-columns: 4fr 8fr;
+      grid-template-columns: 3fr 9fr;
       align-items: start;
     }
 
@@ -428,7 +479,7 @@ const industryRows = industries.map((ind) => {
       overflow: visible;
       margin: 0;
       padding: 0;
-      border-top: 1px solid var(--hairline);
+      border-top: 1px solid var(--on-blue-line);
     }
 
     .explorer__tab {
@@ -436,12 +487,16 @@ const industryRows = industries.map((ind) => {
       grid-template-columns: 3.5rem 1fr;
       padding: 1.125rem 1rem;
       border: 0;
-      border-bottom: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--on-blue-line);
       border-radius: 0;
     }
 
     .explorer__tab:hover {
-      background: var(--white);
+      background: rgba(244, 243, 239, 0.12);
+    }
+
+    .explorer__tab[aria-selected='true']:hover {
+      background: var(--paper);
     }
 
     .explorer__name {

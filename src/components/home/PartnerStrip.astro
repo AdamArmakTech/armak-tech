@@ -27,37 +27,39 @@ const LOGO_H = 32;
 </section>
 
 <style>
+  /* Paper ground: the hero's report sheet hangs into the top right of this section,
+     so the heading sits at the left beside it and the logos run below at a readable size. */
   .partners {
-    padding-block: var(--space-block);
-    background: var(--white);
+    padding-top: calc(var(--hero-overhang, 0px) + var(--sp-7));
+    padding-bottom: var(--sp-6);
   }
 
   .partners__title {
-    margin-bottom: var(--sp-6);
+    max-width: 18ch;
+    margin-bottom: var(--sp-7);
+    font-size: var(--fs-h2);
   }
 
   .partners__grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    /* hairlines only between rows: every cell has a top line, the first row's is clipped off */
-    clip-path: inset(1px 0 0 0);
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sp-2);
   }
 
   .partners__item {
     display: grid;
     place-items: center;
-    min-height: 104px;
+    min-height: 72px;
     padding: 1.25rem;
-    border-top: 1px solid var(--hairline);
   }
 
   .partners__item img {
     width: auto;
-    height: 32px;
+    height: 28px;
     max-width: 100%;
     object-fit: contain;
-    filter: grayscale(1) contrast(0.9);
-    opacity: 0.7;
+    filter: grayscale(1);
+    opacity: 0.8;
     transition: opacity var(--dur) ease;
   }
 
@@ -72,8 +74,23 @@ const LOGO_H = 32;
   }
 
   @media (min-width: 1024px) {
+    .partners {
+      /* the sheet hangs over the right half only, so the heading rises beside it */
+      padding-top: var(--sp-8);
+    }
+
+    .partners__title {
+      max-width: 18ch;
+      font-size: var(--fs-h1);
+      margin-bottom: clamp(3rem, 1rem + 4vw, 6rem);
+    }
+
     .partners__grid {
       grid-template-columns: repeat(7, 1fr);
+    }
+
+    .partners__item {
+      min-height: 120px;
     }
   }
 </style>

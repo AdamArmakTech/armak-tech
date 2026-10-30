@@ -10,18 +10,22 @@ import { site } from '../../data/site';
 
 <section class="contact cta-band surface-ink" id="contact" data-dock-hide>
   <div class="container">
-    <SectionHead
-      tone="inverse"
-      title="Tell us about the site."
-      intro="Pick the systems and leave your details. We’ll walk the site, scope the work and send you a clear written plan and price."
-    />
+    <!-- Direction A: the form is the coupon at the back of the package: a white card on the dark
+         end band (rule 8), the stub (heading and direct contact) parted from the form by a
+         perforation with a notch cut at each end. -->
+    <div class="coupon surface-card">
+      <div class="coupon__stub">
+        <SectionHead
+          title="Tell us about the site."
+          intro="Pick the systems and leave your details. We’ll walk the site, scope the work and send you a clear written plan and price."
+        />
+      </div>
 
-    <div class="contact__body">
-      <div class="contact__panel surface-card" data-reveal>
+      <div class="coupon__form" data-reveal>
         <ContactForm id="home-assessment" />
       </div>
 
-      <aside class="contact__info" aria-label="Contact details">
+      <aside class="coupon__info contact__info" aria-label="Contact details">
         <div class="contact__direct">
           <p class="contact__prefer">Prefer to talk?</p>
           <a class="contact__phone tel" href={site.phoneHref}>{site.phone}</a>
@@ -53,30 +57,65 @@ import { site } from '../../data/site';
     margin-bottom: 0;
   }
 
-  .contact :global(.section-head__title) {
-    color: var(--paper);
-  }
-
-  .contact__body {
+  /* ── The coupon ── */
+  .coupon {
+    --notch: 28px;
+    --perf: 5px dotted var(--ink);
     display: grid;
-    gap: var(--col-gap);
-    align-items: start;
-  }
-
-  /* The form stays on its white card, unchanged */
-  .contact__panel {
-    padding: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
+    grid-template-columns: minmax(0, 1fr);
     background: var(--white);
     color: var(--text);
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius);
-    min-width: 0;
   }
 
-  .contact__info {
+  .coupon__stub,
+  .coupon__info {
+    padding: var(--sp-6) var(--sp-5);
+  }
+
+  .coupon__stub :global(.section-head) {
+    margin-bottom: 0;
+  }
+
+  .coupon__stub :global(.section-head__title) {
+    color: var(--ink);
+  }
+
+  .coupon__stub :global(.section-head__intro) {
+    color: var(--text);
+  }
+
+  .coupon__form {
+    position: relative;
+    min-width: 0;
+    padding: var(--sp-6) var(--sp-5);
+    border-top: var(--perf);
+  }
+
+  /* Notches: two ink half-circles where the perforation meets the card's edges */
+  .coupon__form::before,
+  .coupon__form::after {
+    content: '';
+    position: absolute;
+    width: var(--notch);
+    height: var(--notch);
+    border-radius: 50%;
+    background: var(--ink);
+    top: calc(var(--notch) / -2 - 2.5px);
+  }
+
+  .coupon__form::before {
+    left: calc(var(--notch) / -2);
+  }
+
+  .coupon__form::after {
+    right: calc(var(--notch) / -2);
+  }
+
+  .coupon__info {
     display: grid;
-    gap: 2rem;
+    gap: var(--sp-6);
     align-content: start;
+    border-top: var(--perf);
   }
 
   .contact__direct {
@@ -87,7 +126,7 @@ import { site } from '../../data/site';
 
   .contact__prefer,
   .contact__muted {
-    color: var(--steel-light);
+    color: var(--steel);
   }
 
   .contact__prefer {
@@ -96,7 +135,7 @@ import { site } from '../../data/site';
   }
 
   .contact__phone {
-    color: var(--paper);
+    color: var(--ink);
     font-size: var(--fs-h3);
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -105,7 +144,7 @@ import { site } from '../../data/site';
   }
 
   .contact__email {
-    color: var(--steel-light);
+    color: var(--text);
   }
 
   /* 44px tap height without moving the layout */
@@ -113,22 +152,20 @@ import { site } from '../../data/site';
   .contact__email {
     padding-block: 0.625rem;
     margin-block: -0.625rem;
-  }
-
-  .contact__phone,
-  .contact__email {
-    background: linear-gradient(currentColor, currentColor) left bottom / 0% 1px no-repeat;
-    transition: background-size var(--dur) var(--ease-out);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 4px;
+    transition: text-decoration-color var(--dur) var(--ease-out);
   }
 
   .contact__phone:hover,
   .contact__email:hover {
-    background-size: 100% 1px;
+    text-decoration-color: currentColor;
   }
 
   .contact__rows {
     display: grid;
-    border-top: 1px solid var(--hairline-inverse);
+    border-top: 1px solid var(--hairline);
   }
 
   .contact__rows li {
@@ -137,9 +174,9 @@ import { site } from '../../data/site';
     gap: 0.25rem 0.875rem;
     align-items: start;
     padding-block: 0.875rem;
-    border-bottom: 1px solid var(--hairline-inverse);
+    border-bottom: 1px solid var(--hairline);
     font-size: var(--fs-small);
-    color: var(--paper);
+    color: var(--text);
     overflow-wrap: anywhere;
   }
 
@@ -147,7 +184,7 @@ import { site } from '../../data/site';
     padding-top: 0.2rem;
     font-size: var(--fs-small);
     font-weight: 500;
-    color: var(--steel-light);
+    color: var(--steel);
   }
 
   @media (max-width: 420px) {
@@ -156,19 +193,54 @@ import { site } from '../../data/site';
     }
   }
 
+  @media (min-width: 640px) {
+    .coupon__stub,
+    .coupon__info,
+    .coupon__form {
+      padding: var(--sp-7);
+    }
+  }
+
   @media (min-width: 1024px) {
-    .contact__body {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
+    .coupon {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      grid-template-rows: auto 1fr;
     }
 
-    .contact__panel {
-      grid-column: 1 / span 8;
+    .coupon__stub {
+      grid-column: 1;
+      grid-row: 1;
+      padding-bottom: var(--sp-5);
     }
 
-    .contact__info {
-      grid-column: 9 / -1;
-      position: sticky;
-      top: calc(var(--header-h) + 1.5rem);
+    .coupon__info {
+      grid-column: 1;
+      grid-row: 2;
+      border-top: 0;
+      padding-top: var(--sp-5);
+    }
+
+    .coupon__form {
+      grid-column: 2;
+      grid-row: 1 / 3;
+      border-top: 0;
+      border-left: var(--perf);
+      padding: var(--sp-8) var(--sp-8) var(--sp-8) var(--sp-7);
+    }
+
+    .coupon__form::before,
+    .coupon__form::after {
+      left: calc(var(--notch) / -2 - 2.5px);
+      right: auto;
+    }
+
+    .coupon__form::before {
+      top: calc(var(--notch) / -2);
+    }
+
+    .coupon__form::after {
+      top: auto;
+      bottom: calc(var(--notch) / -2);
     }
   }
 </style>

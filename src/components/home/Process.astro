@@ -87,9 +87,8 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     <div class="pillars">
       <h3 class="t-h4 pillars__heading">Principles</h3>
       <ul role="list" class="pillars__grid">
-        {pillars.map((p, i) => (
+        {pillars.map((p) => (
           <li class="pillar">
-            <span class="t-mono pillar__index">{String(i + 1).padStart(2, '0')}</span>
             <h4 class="t-h4 pillar__title">{p.title}</h4>
             <p class="t-small pillar__body">{p.body}</p>
           </li>
@@ -275,6 +274,38 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 </script>
 
 <style>
+  /* Direction A: the five steps are one white sheet of the package, laid on the paper.
+     Heading and intro split across the top; the step codes are set large like sheet numbers. */
+  @media (min-width: 1024px) {
+    .process :global(.section-head) {
+      grid-template-columns: 5fr 6fr;
+      column-gap: var(--col-gap);
+      align-items: end;
+    }
+
+    .process :global(.section-head__title) {
+      font-size: var(--fs-h1);
+    }
+  }
+
+  .steps {
+    background: var(--white);
+    padding: var(--sp-5) var(--gutter) var(--sp-6);
+    margin-inline: calc(var(--gutter) * -1);
+  }
+
+  .steps :global(.demo),
+  .steps :global(.ct) {
+    box-shadow: none;
+  }
+
+  @media (min-width: 900px) {
+    .steps {
+      margin-inline: 0;
+      padding: clamp(2rem, 1rem + 2vw, 3.5rem);
+    }
+  }
+
   .process__next {
     display: flex;
     flex-wrap: wrap;
@@ -485,8 +516,9 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 
     .steps__tab {
       display: grid;
-      grid-template-columns: 3.5rem 1fr;
-      padding: 1.375rem 1rem;
+      grid-template-columns: 4.5rem 1fr;
+      align-items: center;
+      padding: 1.25rem 1rem;
       border: 0;
       border-bottom: 1px solid var(--hairline);
       border-radius: 0;
@@ -504,6 +536,15 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
       font-size: var(--fs-h4);
     }
 
+    .steps__code {
+      font-size: var(--fs-h3);
+      letter-spacing: -0.04em;
+    }
+
+    .steps__tab:hover {
+      background: var(--paper);
+    }
+
     .steps__stage {
       min-height: 640px;
     }
@@ -516,6 +557,11 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     justify-items: start;
     margin-top: var(--space-section);
     margin-bottom: 0;
+  }
+
+  .pillars__heading {
+    font-size: var(--fs-h2);
+    letter-spacing: var(--tracking-heading);
   }
 
   .pillars__grid {
@@ -560,25 +606,10 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
   }
 
   @media (min-width: 1024px) {
-    .pillars__grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .pillar,
-    .pillar:nth-child(odd) {
-      padding: 1.5rem 1.5rem 0.5rem;
-      border-bottom: 0;
-      border-left: 1px solid var(--hairline);
-    }
-
-    .pillar,
-    .pillar:nth-child(odd) {
-      padding-bottom: 0;
-    }
-
-    .pillar:first-child {
-      padding-left: 0;
-      border-left: 0;
+    .pillars {
+      grid-template-columns: 4fr 8fr;
+      column-gap: var(--col-gap);
+      align-items: start;
     }
   }
 </style>

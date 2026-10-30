@@ -5,7 +5,7 @@ import { industries } from '../../data/content';
 ---
 
 <section id="industries" class="section industries">
-  <div class="container">
+  <div class="container industries__layout">
     <SectionHead
       title="Buildings we plan for."
       intro="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan the install around them."
@@ -26,79 +26,106 @@ import { industries } from '../../data/content';
 </section>
 
 <style>
-  /* Spec-table grid: outer border on the list, each cell draws its right + bottom rule */
-  .industries__grid {
+  /*
+   * Direction A: the building types are a schedule sheet, like a room schedule on a drawing set.
+   * Heading at the left (held in place on desktop), the sheet at the right, one row per type.
+   */
+  .industries__layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    border-top: 1px solid var(--hairline);
-    border-left: 1px solid var(--hairline);
+    gap: var(--sp-6) var(--col-gap);
   }
 
-  .industry {
-    border-right: 1px solid var(--hairline);
-    border-bottom: 1px solid var(--hairline);
+  .industries__grid {
+    display: grid;
+    background: var(--white);
+    padding: var(--sp-2) var(--gutter);
+    margin-inline: calc(var(--gutter) * -1);
+  }
+
+  /* Hairlines only between rows (rule 5) */
+  .industry + .industry {
+    border-top: 1px solid var(--hairline);
   }
 
   .industry__link {
     position: relative;
     display: grid;
-    gap: 0.75rem;
-    align-content: start;
-    height: 100%;
-    padding: 1.5rem 1.25rem 1.75rem;
-    transition: background var(--dur-fast) ease;
+    gap: var(--sp-2);
+    padding: var(--sp-5) var(--sp-7) var(--sp-5) 0;
+    transition: color var(--dur-fast) ease;
   }
 
-  .industry__link:hover {
-    background: var(--white);
+  .industry__link:hover .industry__name {
+    color: var(--signal);
   }
 
   .industry__link:focus-visible {
-    outline-offset: -2px;
+    outline-offset: 2px;
+  }
+
+  .industry__name {
+    font-size: var(--fs-h3);
+    letter-spacing: var(--tracking-heading);
+    line-height: 1.1;
+    transition: color var(--dur-fast) ease;
   }
 
   .industry__need {
-    max-width: 28em;
-    padding-right: 1.5rem;
+    max-width: 34em;
     color: var(--text);
+    font-size: var(--fs-body);
   }
 
-  /* The arrow shows this cell is a link */
   .industry__link :global(.industry__arrow) {
     position: absolute;
-    right: 1.25rem;
-    bottom: 1.5rem;
-    opacity: 0;
-    transform: translate(-4px, 4px);
-    transition: opacity var(--dur) ease, transform var(--dur) var(--ease-out);
+    right: 0;
+    top: var(--sp-5);
+    color: var(--steel);
+    transition: transform var(--dur) var(--ease-out), color var(--dur-fast) ease;
   }
 
   .industry__link:hover :global(.industry__arrow),
   .industry__link:focus-visible :global(.industry__arrow) {
-    opacity: 1;
-    transform: none;
-  }
-
-  @media (min-width: 640px) {
-    .industries__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+    color: var(--signal);
+    transform: translate(3px, -3px);
   }
 
   @media (min-width: 900px) {
     .industries__grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-inline: 0;
+      padding: var(--sp-3) var(--sp-7);
+    }
+
+    .industry__link {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: baseline;
+      gap: var(--col-gap);
+      padding-block: var(--sp-6);
+    }
+
+    .industry__link :global(.industry__arrow) {
+      top: var(--sp-6);
     }
   }
 
   @media (min-width: 1024px) {
-    .industries__grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+    .industries__layout {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      align-items: start;
     }
 
-    .industry__link {
-      min-height: 200px;
-      padding: 1.5rem 1.5rem 2rem;
+    .industries__layout > :global(.section-head) {
+      grid-column: 1 / 5;
+      position: sticky;
+      top: calc(var(--header-h) + var(--sp-6));
+    }
+
+    .industries__layout > :global(.section-head .section-head__title) {
+      font-size: var(--fs-h1);
+    }
+
+    .industries__grid {
+      grid-column: 5 / -1;
     }
   }
 </style>

@@ -18,6 +18,7 @@ if (!showProjects) {
 ---
 
 <Base footerCta={false}>
+  <div class="home">
   <Hero />
   <PartnerStrip />
   <SectionNext href="#process" label="See how every job runs" />
@@ -30,4 +31,13 @@ if (!showProjects) {
   <ServiceArea />
   <SectionNext href="#contact" label="Tell us about your site" tone="cta" />
   <ContactSection />
+  </div>
 </Base>
+
+<style>
+  /* Direction A: the homepage breathes more than inner pages (80-160px between sections) */
+  .home {
+    --hero-overhang: clamp(5rem, 2rem + 9vw, 11rem);
+    --space-section: clamp(5rem, 2.6rem + 7vw, 10rem);
+  }
+</style>
