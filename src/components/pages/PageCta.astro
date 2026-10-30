@@ -1,11 +1,9 @@
 ---
 /**
- * Closing call to action for inner pages. Pages using it pass footerCta={false} to Base so the
+ * Closing call to action for inner pages: a full-width dark band that runs into the footer. Pages using it pass footerCta={false} to Base so the
  * footer's generic CTA doesn't repeat it.
  */
-import Label from '../ui/Label.astro';
 import NextStep from '../ui/NextStep.astro';
-import Stripe from '../ui/Stripe.astro';
 
 interface Props {
   code: string;
@@ -16,44 +14,38 @@ interface Props {
 }
 
 const { code, title, body, about } = Astro.props;
+const id = `${code}-cta-title`; // code only keeps the heading id unique; it is no longer shown
 ---
 
-<section class="page-cta container" aria-labelledby={`${code}-cta-title`} data-dock-hide>
-  <div class="page-cta__panel surface-ink">
-    <Stripe height={4} />
-    <div class="page-cta__body">
-      <div class="page-cta__copy">
-        <Label code={code} tone="inverse">Next step</Label>
-        <h2 id={`${code}-cta-title`} class="t-h2 page-cta__title" data-split>{title}</h2>
-        <p class="t-lead">{body}</p>
-      </div>
-      <div class="page-cta__side">
-        <NextStep about={about} tone="inverse" />
-      </div>
+<section class="page-cta cta-band surface-ink" aria-labelledby={id} data-dock-hide>
+  <div class="container page-cta__inner">
+    <div class="page-cta__copy">
+      <h2 id={id} class="t-h2 page-cta__title" data-split>{title}</h2>
+      <p class="t-lead">{body}</p>
+    </div>
+    <div class="page-cta__side">
+      <NextStep about={about} tone="inverse" />
     </div>
   </div>
 </section>
 
 <style>
+  /* Full-bleed dark band that runs straight into the footer (DESIGN.md rule 8). The footer's own
+     top margin is 0, so this band carries the section gap above its content. */
   .page-cta {
-    padding-block: var(--space-block);
+    padding-block: var(--space-section);
   }
 
-  .page-cta__panel {
-    overflow: hidden;
-    border-radius: var(--radius);
-  }
-
-  .page-cta__body {
+  .page-cta__inner {
     display: grid;
     gap: 2.5rem var(--col-gap);
-    padding: clamp(1.75rem, 1rem + 3.5vw, 4.5rem);
   }
 
   .page-cta__copy {
     display: grid;
     gap: 1.5rem;
     justify-items: start;
+    align-content: start;
   }
 
   .page-cta__title {
@@ -66,8 +58,8 @@ const { code, title, body, about } = Astro.props;
     align-content: end;
   }
 
-  @media (min-width: 1000px) {
-    .page-cta__body {
+  @media (min-width: 1024px) {
+    .page-cta__inner {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       align-items: end;
     }

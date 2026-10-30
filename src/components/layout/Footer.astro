@@ -1,7 +1,6 @@
 ---
 import Logo from '../ui/Logo.astro';
 import Button from '../ui/Button.astro';
-import Stripe from '../ui/Stripe.astro';
 import { site, services, serviceArea, FOUNDED } from '../../data/site';
 import { showProjects } from '../../data/content';
 
@@ -14,8 +13,6 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="site-footer surface-ink" data-dock-hide>
-  <Stripe height={4} />
-
   <div class="container">
     {cta && (
     <div class="site-footer__cta">
@@ -85,6 +82,12 @@ const year = new Date().getFullYear();
     margin-top: var(--space-section);
   }
 
+  /* When the page ends in a CTA band, the band runs straight into the footer (DESIGN.md rule 8).
+     The band carries its own section gap in its padding. */
+  :global(main:has(.cta-band:last-child)) ~ .site-footer {
+    margin-top: 0;
+  }
+
   .site-footer__cta {
     display: grid;
     gap: 2rem;
@@ -111,7 +114,7 @@ const year = new Date().getFullYear();
     padding-block: var(--space-block);
   }
 
-  @media (min-width: 700px) {
+  @media (min-width: 640px) {
     .site-footer__grid {
       grid-template-columns: repeat(3, 1fr);
     }
@@ -121,7 +124,7 @@ const year = new Date().getFullYear();
     }
   }
 
-  @media (min-width: 1100px) {
+  @media (min-width: 1024px) {
     .site-footer__grid {
       grid-template-columns: 1.6fr 1fr 0.8fr 1fr;
     }

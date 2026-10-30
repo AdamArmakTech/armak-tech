@@ -51,7 +51,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
         <Phone size={15} stroke-width={1.75} aria-hidden="true" />
         {site.phone}
       </a>
-      <Button href="/contact/" variant="primary" class="site-header__cta">Request a site assessment</Button>
+      <Button href="/contact/" variant="ink" class="site-header__cta">Request a site assessment</Button>
       <a class="site-header__call" href={site.phoneHref} aria-label={`Call Armak, ${site.phone}`}>
         <Phone size={22} stroke-width={1.5} aria-hidden="true" />
       </a>
@@ -354,13 +354,12 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       display: none;
     }
 
-    /* The call icon is now the last item: pull its 44px box out so the glyph lines up with the content edge */
-    .site-header__call {
-      margin-right: -11px;
+    /* Tighter gap so logo, nav, full number and CTA fit at exactly 1024px */
+    .site-header__bar {
+      gap: 1.25rem;
     }
-  }
 
-  @media (min-width: 1200px) {
+    /* Full number replaces the call icon; the CTA is the last item, so both edges use the container padding */
     .site-header__phone {
       display: inline-flex;
     }

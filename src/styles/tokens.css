@@ -17,6 +17,7 @@
   --hairline-strong: #b9b6ad;  /* decorative rules/bullets only (1.8:1). Never as the sole boundary of a control: use --field-line */
   --field-line: #85827a;     /* form field underline. 3.5:1 on paper, 3.8:1 on white (WCAG 1.4.11) */
   --hairline-inverse: #2a2e35;
+  --text: #2b3039;           /* paragraph color, near-ink. 11.9:1 on paper, 13.2:1 on white. --steel is for metadata only (DESIGN.md rule 9) */
 
   /* ── Brand ────────────────────────────────────────────── */
   --signal: #d0101a;         /* CTAs + key accents. 5.6:1 with white text, 5.0:1 text on paper, 4.6:1 on paper-sunken */
@@ -35,9 +36,9 @@
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
-  --fs-display: clamp(3.25rem, 1.6rem + 6.4vw, 8.5rem);
-  --fs-h1: clamp(2.6rem, 1.6rem + 3.9vw, 5.5rem);
-  --fs-h2: clamp(2rem, 1.35rem + 2.5vw, 3.75rem);
+  --fs-display: clamp(2.75rem, 1.9rem + 4.2vw, 6.5rem);
+  --fs-h1: clamp(2.25rem, 1.7rem + 2.6vw, 4.25rem);
+  --fs-h2: clamp(1.75rem, 1.4rem + 1.6vw, 2.75rem);
   --fs-h3: clamp(1.35rem, 1.2rem + 0.6vw, 1.75rem);
   --fs-h4: 1.125rem;
   --fs-lead: clamp(1.125rem, 1.04rem + 0.38vw, 1.4rem);
@@ -54,12 +55,18 @@
   --tracking-heading: -0.03em;
   --tracking-label: 0.08em;
 
+  /* Breakpoints (not tokens, CSS can't use vars in @media): the only allowed values are
+     max-width 420px, min-width 640px, 900px, 1024px. */
+
   /* ── Layout ───────────────────────────────────────────── */
   --container: 1360px;
   --gutter: clamp(1rem, 0.4rem + 2.6vw, 2.5rem);
   --col-gap: clamp(1rem, 0.6rem + 1.6vw, 2rem);
-  --space-section: clamp(5rem, 3rem + 8vw, 10rem);
-  --space-block: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
+  /* Spacing scale: use these, not ad-hoc rems */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px;
+  --sp-6: 32px; --sp-7: 48px; --sp-8: 64px; --sp-9: 96px; --sp-10: 128px;
+  --space-section: clamp(4rem, 2.8rem + 4vw, 7rem);   /* 64-112px; neighbouring sections share one gap */
+  --space-block: clamp(2rem, 1.6rem + 1.6vw, 3rem);   /* 32-48px */
   --header-h: 72px;
 
   --radius: 2px;             /* engineered, near-square corners */

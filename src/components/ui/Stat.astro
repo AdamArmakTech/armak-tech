@@ -18,7 +18,7 @@ const numeric = typeof value === 'number';
   <p class="stat__value">
     <span data-count={numeric ? value : undefined}>{numeric ? value.toLocaleString('en-US') : value}</span>{suffix && <span class="stat__suffix">{suffix}</span>}
   </p>
-  <p class="t-mono stat__label">{label}</p>
+  <p class="stat__label">{label}</p>
   {detail && <p class="t-small t-muted stat__detail">{detail}</p>}
 </div>
 
@@ -45,7 +45,9 @@ const numeric = typeof value === 'number';
   }
 
   .stat__label {
-    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    color: var(--text);
   }
 
   .stat__detail {

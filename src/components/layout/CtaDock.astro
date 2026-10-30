@@ -28,6 +28,8 @@ const { preview = false } = Astro.props;
 
 <script>
   const dock = document.querySelector<HTMLElement>('[data-cta-dock]');
+  // 639px (not 640) is deliberate: it is the exact complement of the header CTA's min-width: 640px,
+  // so the dock and the header button never show together or leave a gap.
   const mq = matchMedia('(max-width: 639px)');
   if (dock) {
     const starts = [...document.querySelectorAll<HTMLElement>('[data-dock-start]')];
@@ -153,7 +155,8 @@ const { preview = false } = Astro.props;
     }
   }
 
-  /* Keep focused fields and anchor targets clear of the bar on phones */
+  /* Keep focused fields and anchor targets clear of the bar on phones.
+     639px is the one allowed exception: exact complement of the min-width: 640px rule above. */
   @media (max-width: 639px) {
     :global(html) {
       scroll-padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));

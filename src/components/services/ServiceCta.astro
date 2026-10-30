@@ -1,9 +1,8 @@
 ---
 /**
- * Closing call to action for service pages. Light panel so it doesn't stack against the dark
- * footer; pages using it pass footerCta={false} to Base so the footer's generic CTA doesn't repeat.
+ * Closing call to action for service pages: the same full-width dark band as PageCta, running into
+ * the footer. Pages using it pass footerCta={false} to Base so the footer's generic CTA doesn't repeat.
  */
-import Label from '../ui/Label.astro';
 import NextStep from '../ui/NextStep.astro';
 
 interface Props {
@@ -14,46 +13,38 @@ interface Props {
   about?: string;
 }
 
-const { code, title, body, about } = Astro.props;
+const { title, body, about } = Astro.props;
 ---
 
-<section class="cta container" aria-labelledby="cta-title" data-dock-hide>
-  <div class="cta__panel">
-    <div class="cta__body">
-      <div class="cta__copy">
-        <Label code={code}>Next step</Label>
-        <h2 id="cta-title" class="t-h2 cta__title" data-split>{title}</h2>
-        <p class="t-lead">{body}</p>
-      </div>
-      <div class="cta__side">
-        <NextStep about={about} tone="light" />
-      </div>
+<section class="cta cta-band surface-ink" aria-labelledby="cta-title" data-dock-hide>
+  <div class="container cta__inner">
+    <div class="cta__copy">
+      <h2 id="cta-title" class="t-h2 cta__title" data-split>{title}</h2>
+      <p class="t-lead">{body}</p>
+    </div>
+    <div class="cta__side">
+      <NextStep about={about} tone="inverse" />
     </div>
   </div>
 </section>
 
 <style>
+  /* Full-bleed dark band that runs straight into the footer (DESIGN.md rule 8). The footer's own
+     top margin is 0, so this band carries the section gap above its content. */
   .cta {
-    padding-top: var(--space-block);
+    padding-block: var(--space-section);
   }
 
-  .cta__panel {
-    background: var(--white);
-    border: 1px solid var(--hairline);
-    border-top: 2px solid var(--ink);
-    border-radius: var(--radius);
-  }
-
-  .cta__body {
+  .cta__inner {
     display: grid;
     gap: 2.5rem var(--col-gap);
-    padding: clamp(1.25rem, 0.5rem + 3.8vw, 4.5rem);
   }
 
   .cta__copy {
     display: grid;
     gap: 1.5rem;
     justify-items: start;
+    align-content: start;
   }
 
   .cta__title {
@@ -66,8 +57,8 @@ const { code, title, body, about } = Astro.props;
     align-content: end;
   }
 
-  @media (min-width: 1000px) {
-    .cta__body {
+  @media (min-width: 1024px) {
+    .cta__inner {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       align-items: end;
     }

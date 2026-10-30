@@ -135,7 +135,7 @@ h4 {
 .t-lead {
   font-size: var(--fs-lead);
   line-height: 1.5;
-  color: var(--steel);
+  color: var(--text);
   text-wrap: pretty;
   max-width: 38em;
 }
@@ -144,8 +144,13 @@ h4 {
   font-size: var(--fs-small);
 }
 
+/* Paragraphs are near-ink (DESIGN.md rule 9). Class rules and dark surfaces override. */
+p:not(.surface-ink *) {
+  color: var(--text);
+}
+
 .t-muted {
-  color: var(--steel);
+  color: var(--text);
 }
 
 /* Mono technical label: "A-01 · SERVICES", spec rows, metadata */
@@ -157,10 +162,6 @@ h4 {
   font-weight: 500;
 }
 
-.t-accent {
-  color: var(--signal);
-}
-
 /* ── Layout primitives ─────────────────────────────────── */
 .container {
   width: 100%;
@@ -169,23 +170,17 @@ h4 {
   padding-inline: var(--gutter);
 }
 
+/* neighbouring sections share one gap (DESIGN.md rule 5) */
 .section {
   padding-block: var(--space-section);
 }
 
+.section + .section {
+  padding-top: 0;
+}
+
 .section--tight {
   padding-block: var(--space-block);
-}
-
-.grid-12 {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--col-gap);
-}
-
-.rule {
-  border: 0;
-  border-top: 1px solid var(--hairline);
 }
 
 .surface-ink {
@@ -196,10 +191,6 @@ h4 {
 .surface-ink .t-muted,
 .surface-ink .t-lead {
   color: var(--steel-light);
-}
-
-.surface-white {
-  background: var(--white);
 }
 
 .visually-hidden {
@@ -240,11 +231,10 @@ h4 {
 }
 
 .field__label {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
-  color: var(--steel);
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text);
 }
 
 .field__control {

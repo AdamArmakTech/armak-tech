@@ -1,11 +1,11 @@
 ---
 /**
  * Compact opener shared by every inner page (about, industries, projects, contact, 404):
- * breadcrumb → TIA label → h1 (t-h1) → lead → optional actions (default slot).
+ * breadcrumb → h1 (t-h1) → lead → optional actions (default slot).
  * Optional `aside` slot sits to the right on desktop; optional `spec` renders a SpecStrip foot.
- * Extra labels (e.g. a "Placeholder" flag) go in the `labels` slot next to the main label.
+ * `code`/`label`/`labelTone` props are still accepted but no longer shown (DESIGN.md rule 3);
+ * callers clean up later.
  */
-import Label from '../ui/Label.astro';
 import SpecStrip from '../ui/SpecStrip.astro';
 
 interface Crumb {
@@ -14,8 +14,10 @@ interface Crumb {
 }
 
 interface Props {
-  code: string;
-  label: string;
+  /** Accepted for compatibility, not rendered. */
+  code?: string;
+  /** Accepted for compatibility, not rendered. */
+  label?: string;
   title: string;
   lead?: string;
   /** Trail after "Home". The last crumb is the current page. Omit to hide the breadcrumb. */
@@ -25,14 +27,14 @@ interface Props {
   titleId?: string;
 }
 
-const { code, label, title, lead, crumbs, spec, labelTone = 'default', titleId = 'page-title' } = Astro.props;
+const { title, lead, crumbs, spec, titleId = 'page-title' } = Astro.props;
 const trail: Crumb[] | undefined = crumbs ? [{ label: 'Home', href: '/' }, ...crumbs] : undefined;
 const hasAside = Astro.slots.has('aside');
 ---
 
 <section class="page-hero container" aria-labelledby={titleId} data-dock-start>
   {trail && (
-    <nav class="page-hero__crumbs t-mono" aria-label="Breadcrumb">
+    <nav class="page-hero__crumbs" aria-label="Breadcrumb">
       <ol role="list">
         {trail.map((c, i) =>
           i === trail.length - 1 ? <li aria-current="page">{c.label}</li> : <li><a href={c.href}>{c.label}</a></li>,
@@ -43,10 +45,6 @@ const hasAside = Astro.slots.has('aside');
 
   <div class:list={['page-hero__grid', { 'page-hero__grid--aside': hasAside }]}>
     <div class="page-hero__copy">
-      <div class="page-hero__labels">
-        <Label code={code} tone={labelTone}>{label}</Label>
-        <slot name="labels" />
-      </div>
       <h1 id={titleId} class="t-h1 page-hero__title">{title}</h1>
       {lead && <p class="t-lead" data-reveal>{lead}</p>}
       <slot />
@@ -70,13 +68,14 @@ const hasAside = Astro.slots.has('aside');
   }
 
   .page-hero__crumbs {
-    color: var(--steel);
+    font-size: var(--fs-small);
+    color: var(--text);
   }
 
   .page-hero__crumbs ol {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.25rem 0;
+    gap: var(--sp-1) 0;
   }
 
   .page-hero__crumbs li {
@@ -87,7 +86,7 @@ const hasAside = Astro.slots.has('aside');
 
   .page-hero__crumbs li:not(:last-child)::after {
     content: "/";
-    margin-inline: 0.625rem;
+    margin-inline: var(--sp-2);
     color: var(--hairline-strong);
   }
 
@@ -107,16 +106,10 @@ const hasAside = Astro.slots.has('aside');
 
   .page-hero__copy {
     display: grid;
-    gap: 1.75rem;
+    gap: var(--sp-5);
     align-content: start;
     justify-items: start;
     min-width: 0;
-  }
-
-  .page-hero__labels {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
   }
 
   .page-hero__title {
@@ -143,7 +136,7 @@ const hasAside = Astro.slots.has('aside');
   .page-hero__copy > :global(.page-hero__actions) {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: var(--sp-3);
   }
 
   .page-hero__copy > :global(.page-hero__actions .btn) {
@@ -154,7 +147,7 @@ const hasAside = Astro.slots.has('aside');
     min-width: 0;
   }
 
-  @media (min-width: 1000px) {
+  @media (min-width: 1024px) {
     .page-hero__grid--aside {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       align-items: end;
