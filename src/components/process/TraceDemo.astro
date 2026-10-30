@@ -12,10 +12,10 @@ import OfficePlan from './OfficePlan.astro';
 
 // Plan viewBox 400 x 262. Jack dot positions; routes run along the ceiling to the rack in the closet.
 const jacks = [
-  { id: '2B-14', port: 'A-14', x: 195, y: 92, d: 'M195 92 V97 H36 V50 H64' },
-  { id: '2B-15', port: 'A-15', x: 110, y: 92, d: 'M110 92 V101 H42 V50 H64' },
-  { id: '2C-03', port: 'A-03', x: 300, y: 92, d: 'M300 92 V105 H48 V50 H64' },
-  { id: '2A-07', port: 'A-07', x: 230, y: 150, d: 'M230 150 V120 H39 V50 H64' },
+  { id: '2B-15', port: 'B-15', x: 110, y: 92, d: 'M110 92 V101 H42 V50 H64' },
+  { id: '2B-14', port: 'B-14', x: 195, y: 92, d: 'M195 92 V97 H36 V50 H64' },
+  { id: '2A-07', port: 'B-07', x: 230, y: 150, d: 'M230 150 V120 H39 V50 H64' },
+  { id: '2C-03', port: 'B-03', x: 300, y: 92, d: 'M300 92 V105 H48 V50 H64' },
 ];
 const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
 ---
@@ -23,11 +23,11 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
 <DemoFrame
   name="trace"
   title="Trace a cable"
-  caption="Every jack and port gets a label that matches the as-built drawing. That is what makes later moves and changes fast."
+  caption="Every jack and port gets a matching label, and the job is documented. That is what makes later moves and changes fast."
 >
   <div class="tr">
     <div class="tr__plan">
-      <svg viewBox="0 0 400 262" role="img" data-fit-text aria-label="Sample office floor plan with four labeled wall jacks and the IDF closet at the top left. Choose a jack below to see its cable route.">
+      <svg viewBox="0 0 400 262" role="img" data-fit-text aria-label="Sample office floor plan with four labeled wall jacks and the IDF closet at the top left. Choose a jack on the plan to see its cable route.">
         <OfficePlan />
         {jacks.map((j) => (
           <path d={j.d} pathLength="1" class="tr__route" data-tr-route={j.id} />
@@ -55,15 +55,15 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
 
     <div class="tr__side">
       <div class="tr__panel">
-        <span class="t-mono tr__panel-name">IDF2 · A</span>
+        <span class="t-mono tr__panel-name">IDF2 · B</span>
         <div class="tr__ports" aria-hidden="true">
           {Array.from({ length: 24 }, (_, i) => (
-            <span class="tr__port" data-tr-port={`A-${String(i + 1).padStart(2, '0')}`}></span>
+            <span class="tr__port" data-tr-port={`B-${String(i + 1).padStart(2, '0')}`}></span>
           ))}
         </div>
         <p class="t-mono tr__readout" data-tr-readout>Port: none lit</p>
       </div>
-      <p class="tr__line" data-tr-line>Tap a jack to trace its cable.</p>
+      <p class="tr__line" data-tr-line>Choose a jack to trace its cable.</p>
     </div>
   </div>
 </DemoFrame>
@@ -78,7 +78,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     const ports = [...root.querySelectorAll<HTMLElement>('[data-tr-port]')];
     const line = root.querySelector<HTMLElement>('[data-tr-line]')!;
     const readout = root.querySelector<HTMLElement>('[data-tr-readout]')!;
-    const HINT = 'Tap a jack to trace its cable.';
+    const HINT = 'Choose a jack to trace its cable.';
 
     fitSvgText(root);
 
@@ -100,7 +100,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
       dots.find((d) => d.dataset.trDot === id)?.classList.add('is-lit');
       ports.find((p) => p.dataset.trPort === port)?.classList.add('is-lit');
       readout.textContent = `Port: ${port}`;
-      line.textContent = `Jack ${id} lands on port ${port}. The label on both ends says so, so anyone can find it in seconds.`;
+      line.textContent = `Jack ${id} lands on port ${port}. Matching labels mean anyone can find it in seconds.`;
       announce(root, line.textContent);
     };
 
@@ -255,9 +255,9 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
   }
 
   .tr__port.is-lit {
-    background: var(--pass);
-    border-color: var(--pass);
-    outline: 2px solid var(--pass);
+    background: var(--ink);
+    border-color: var(--ink);
+    outline: 2px solid var(--ink);
     outline-offset: 1px;
   }
 

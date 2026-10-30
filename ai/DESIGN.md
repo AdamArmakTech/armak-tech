@@ -30,8 +30,12 @@ the site says or does Y." If a change can't be tied to a rule, don't make it.
    ends with the same action, so they share one surface.
 9. **Text is sized and colored to be read.** Headings fit two lines on a 375px phone (the hero three).
    Paragraphs are near-ink (`--text`); grey (`--steel`) is for metadata only. Plain sentences, no slogans.
-10. **Motion is kept but restrained** (owner, 2026-10-29): smooth scroll, heading line reveals, counting
-    numbers, and the demos (a test runs, a step advances). Nothing else animates; no new scroll effects.
+10. **Motion is kept but restrained** (owner, 2026-10-29; additions approved 2026-10-30). What animates:
+    smooth scroll, heading line reveals, counting numbers, the demos (a test runs, a step advances, a
+    cable traces), map dots landing once on first view, scope-sheet rows revealing once, the step number
+    ticking, and the explorer layer drawing in once per layer. Nothing else animates; no new scroll
+    effects. Every animation shows its final state immediately under reduced motion and when scripts do
+    not run.
 
 ## Tokens that carry the rules (`src/styles/tokens.css`)
 - Spacing scale `--sp-1..10` = 4, 8, 12, 16, 24, 32, 48, 64, 96, 128px. Use these, not ad-hoc rems.

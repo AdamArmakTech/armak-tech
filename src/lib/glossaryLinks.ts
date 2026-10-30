@@ -25,11 +25,16 @@ interface Variant {
   slug: string;
   caseSensitive: boolean;
   common: boolean;
+  primary: boolean;
+  order: number;
   re: RegExp;
 }
 
 /** Glossary terms that are also everyday words; linked only if there is room left. */
 const COMMON = new Set(['drop', 'port', 'rack', 'pathway', 'termination', 'redundancy', 'splice', 'paging', 'egress', 'uplink', 'router', 'ethernet', 'jitter', 'latency', 'firewall', 'gbps', 'channel']);
+
+/** Verbs/nouns that appear as an `aka` but are too ambiguous to link. They still match as a primary `term`. */
+const AMBIGUOUS_AKA = new Set(['run', 'link', 'switch', 'channel']);
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -53,29 +58,43 @@ function pieces(raw: string): string[] {
 let cache: Variant[] | null = null;
 function variants(): Variant[] {
   if (cache) return cache;
-  const seen = new Set<string>();
-  const list: Variant[] = [];
-  for (const e of glossary) {
-    const raws = [e.term, ...(e.aka ?? []), ...(e.stands_for ? [e.stands_for] : [])];
-    for (const raw of raws) {
+  const all: Variant[] = [];
+  let order = 0;
+  glossary.forEach((e) => {
+    const raws: { raw: string; primary: boolean }[] = [
+      { raw: e.term, primary: true },
+      ...(e.aka ?? []).map((raw) => ({ raw, primary: false })),
+      ...(e.stands_for ? [{ raw: e.stands_for, primary: false }] : []),
+    ];
+    for (const { raw, primary } of raws) {
       for (const text of pieces(raw)) {
         const key = text.toLowerCase();
-        if (seen.has(key)) continue;
-        seen.add(key);
+        if (!primary && AMBIGUOUS_AKA.has(key)) continue;
         const caseSensitive = /^[A-Z0-9][A-Z0-9.\-]*$/.test(text) && /[A-Z]/.test(text);
         const endsWord = /[A-Za-z]$/.test(text);
         const body = escapeRe(text);
-        const re = new RegExp(`(?<![A-Za-z0-9])${body}${endsWord && !caseSensitive ? '(?:e?s)?' : ''}(?![A-Za-z0-9])`, caseSensitive ? '' : 'i');
-        list.push({ text, slug: e.slug, caseSensitive, common: COMMON.has(key), re });
+        // A hyphen counts as a word character on both sides, so "Smart-card" or "push-to-exit" are never split.
+        const suffix = endsWord ? (caseSensitive ? 's?' : '(?:e?s)?') : '';
+        const re = new RegExp(`(?<![A-Za-z0-9-])${body}${suffix}(?![A-Za-z0-9-])`, caseSensitive ? '' : 'i');
+        all.push({ text, slug: e.slug, caseSensitive, common: COMMON.has(key), primary, order: order++, re });
       }
     }
+  });
+  // Longer text first; on equal length a primary term beats an aka; then glossary order.
+  all.sort((a, b) => b.text.length - a.text.length || Number(b.primary) - Number(a.primary) || a.order - b.order);
+  const seen = new Set<string>();
+  const list: Variant[] = [];
+  for (const v of all) {
+    const key = v.text.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    list.push(v);
   }
-  list.sort((a, b) => b.text.length - a.text.length);
   cache = list;
   return list;
 }
 
-export function linkGlossaryTerms(text: string, opts: LinkOptions = {}): string {
+function linkWith(text: string, opts: LinkOptions, seenSlugs: Set<string>): string {
   const max = opts.max ?? 4;
   const blocked = new Set((opts.exclude ?? []).map(norm).filter(Boolean));
   type Hit = { start: number; end: number; slug: string; common: boolean };
@@ -83,7 +102,7 @@ export function linkGlossaryTerms(text: string, opts: LinkOptions = {}): string 
   const usedSlugs = new Set<string>();
 
   for (const v of variants()) {
-    if (usedSlugs.has(v.slug)) continue;
+    if (usedSlugs.has(v.slug) || seenSlugs.has(v.slug)) continue;
     if (blocked.has(norm(v.text)) || blocked.has(norm(v.slug))) continue;
     const m = v.re.exec(text);
     if (!m) continue;
@@ -104,8 +123,20 @@ export function linkGlossaryTerms(text: string, opts: LinkOptions = {}): string 
     out += escapeHtml(text.slice(pos, h.start));
     out += `<a class="gl" href="/glossary/#${h.slug}">${escapeHtml(text.slice(h.start, h.end))}</a>`;
     pos = h.end;
+    seenSlugs.add(h.slug);
   }
   return out + escapeHtml(text.slice(pos));
+}
+
+/** One linker per page: a term is linked only on its first mention across everything rendered through it. */
+export function createPageLinker() {
+  const seen = new Set<string>();
+  return { link: (text: string, opts: LinkOptions = {}) => linkWith(text, opts, seen) };
+}
+
+/** Single-text version (no memory between calls). Kept for backwards compatibility. */
+export function linkGlossaryTerms(text: string, opts: LinkOptions = {}): string {
+  return linkWith(text, opts, new Set());
 }
 
 export default linkGlossaryTerms;

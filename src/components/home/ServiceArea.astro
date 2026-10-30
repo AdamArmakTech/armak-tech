@@ -753,13 +753,20 @@ const groups = counties.map((county) => ({
 
   document.querySelectorAll<HTMLElement>('[data-area-map]').forEach((root) => {
     // Dots land once, the first time the figure is on screen (schematic via CSS, map via paint transitions)
-    if (!reduceMotion) {
-      root.dataset.dots = 'pending';
-      onFirstView(root, () => {
+    // If IntersectionObserver is missing or setup throws, the dots are never left hidden.
+    if (!reduceMotion && 'IntersectionObserver' in window) {
+      try {
+        root.dataset.dots = 'pending';
+        onFirstView(root, () => {
+          root.dataset.dots = 'in';
+          root.dataset.seen = '1';
+          root.dispatchEvent(new Event('area:seen'));
+        });
+      } catch {
         root.dataset.dots = 'in';
         root.dataset.seen = '1';
         root.dispatchEvent(new Event('area:seen'));
-      });
+      }
     }
     if (!('IntersectionObserver' in window)) {
       void initMap(root);

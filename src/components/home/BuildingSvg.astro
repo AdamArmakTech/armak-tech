@@ -451,7 +451,8 @@ const wifiArcs = (x: number, c: number) => [
 </style>
 
 <script>
-  // When the explorer makes a layer active, that layer's strokes draw in (once per change).
+  // The first time a layer becomes active, its solid strokes draw in (once per layer, never again).
+  // Dashed/dotted lines (trunk flow lines, fiber) are skipped and keep the opacity transition.
   // BuildingExplorer toggles .is-active; we only watch for it. Opacity dimming stays in CSS.
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const STROKES = 'line, path:not(.bx-fill), rect.bx-outline, circle.bx-dot';
@@ -466,7 +467,10 @@ const wifiArcs = (x: number, c: number) => [
       const easing = css.getPropertyValue('--ease-out').trim() || 'ease-out';
       layer.querySelectorAll<SVGGeometryElement>(STROKES).forEach((el) => {
         if (typeof el.getTotalLength !== 'function') return;
-        if (getComputedStyle(el).stroke === 'none') return;
+        if (el.classList.contains('bx-flow') || el.classList.contains('bx-fiber')) return;
+        const cs = getComputedStyle(el);
+        if (cs.stroke === 'none') return;
+        if (cs.strokeDasharray && cs.strokeDasharray !== 'none') return;
         let len = 0;
         try {
           len = el.getTotalLength();
@@ -489,12 +493,16 @@ const wifiArcs = (x: number, c: number) => [
     document.querySelectorAll<SVGElement>('.bx').forEach((svg) => {
       const layers = [...svg.querySelectorAll<Element>('.bx-layer')];
       const was = new WeakMap<Element, boolean>();
+      const drawn = new Set<Element>();
       layers.forEach((l) => was.set(l, l.classList.contains('is-active')));
       const mo = new MutationObserver((records) => {
         for (const r of records) {
           const l = r.target as Element;
           const on = l.classList.contains('is-active');
-          if (on && !was.get(l)) draw(l);
+          if (on && !was.get(l) && !drawn.has(l)) {
+            drawn.add(l);
+            draw(l);
+          }
           was.set(l, on);
         }
       });

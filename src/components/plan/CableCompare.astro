@@ -10,11 +10,12 @@ const cables = [
   {
     name: 'Cat 6',
     slug: 'cat-6',
-    speed: '1 Gb/s',
+    speed: 'Up to 5 Gb/s',
+    speedNote: '1 Gb/s is the common use; 2.5 and 5 Gb/s also run the full 100 m',
     reach: 'Up to 55 m',
     reachNote: 'about 37 to 55 m, depending on crosstalk conditions',
-    poe: 'Yes, up to 90 W',
-    poeNote: 'watch heat in large bundles',
+    poe: 'Yes, up to 90 W at the switch',
+    poeNote: 'the device receives less; watch heat in large bundles',
     use: 'Desks, phones, cameras and access points in offices.',
     pick: 'Existing runs, or short drops where 1 Gb/s is enough.',
   },
@@ -24,34 +25,34 @@ const cables = [
     speed: '10 Gb/s',
     reach: '100 m',
     reachNote: 'full channel length',
-    poe: 'Yes, up to 90 W',
-    poeNote: 'handles bundle heat better',
+    poe: 'Yes, up to 90 W at the switch',
+    poeNote: 'the device receives less; handles bundle heat better',
     use: 'New office drops, Wi-Fi access points, high-power PoE devices.',
     pick: 'The sensible default for new drops.',
   },
   {
     name: 'OM4 multimode fiber',
     slug: 'multimode-fiber',
-    speed: '100 Gb/s',
-    speedNote: 'with short-reach optics',
+    speed: '100 Gb/s with the optics in the note',
+    speedNote: '40 Gb/s to 150 m (40GBASE-SR4), 100 Gb/s to 100 m (100GBASE-SR4)',
     reach: 'Up to 400 m',
-    reachNote: '40 Gb/s to 150 m, 100 Gb/s to 100 m',
+    reachNote: '10GBASE-SR',
     poe: 'No',
     poeNote: 'carries data only',
     use: 'Links between closets and floors inside a building.',
-    pick: 'Building backbones and server rooms that need more than copper reaches.',
+    pick: "Building backbones and server rooms that need more distance than copper's 100 m.",
   },
   {
     name: 'OS2 single-mode fiber',
     slug: 'singlemode-fiber',
-    speed: '100 Gb/s and up',
-    speedNote: 'set by the optics you buy',
+    speed: '100 Gb/s with the optics in the note',
+    speedNote: '100GBASE-LR4',
     reach: '10 km',
-    reachNote: 'and beyond with other optics',
+    reachNote: '10GBASE-LR; longer with other optics',
     poe: 'No',
     poeNote: 'carries data only',
     use: 'Campus links, between buildings, long backbones.',
-    pick: 'Long distances, or when you want the cable to outlast several speed upgrades.',
+    pick: 'Long distances, or when you expect faster optics later.',
   },
 ];
 ---
@@ -93,8 +94,9 @@ const cables = [
   </table>
 
   <p class="cc__foot t-small t-muted">
-    Figures from ANSI/TIA-568.2-D and 568.3-D (cabling), TIA TSB-155-A (10 Gb/s over Cat 6) and IEEE 802.3
-    (1000BASE-T, 10GBASE-T, 10GBASE-SR/LR, 40GBASE-SR4, 100GBASE-SR4, 802.3bt for PoE). Distances are
+    Figures from ANSI/TIA-568.2-D and 568.3-D (cabling), TIA TSB-155-A (10 Gb/s over Cat 6), TIA TSB-184-A
+    (PoE heat in cable bundles) and IEEE 802.3 (1000BASE-T, 802.3bz for 2.5 and 5 Gb/s, 10GBASE-T,
+    10GBASE-SR, 10GBASE-LR, 40GBASE-SR4, 100GBASE-SR4, 100GBASE-LR4, 802.3bt for PoE). Distances are
     maximums for a clean, tested channel.
   </p>
 
@@ -119,6 +121,23 @@ const cables = [
     border-radius: var(--radius);
     padding: var(--sp-2) var(--sp-4);
     border-collapse: collapse;
+  }
+
+  .cc__name a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .cc__val {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+  }
+
+  .cc__note {
+    color: var(--steel);
+    font-size: var(--fs-small);
   }
 
   /* Phone and tablet: each cable is a card with labelled rows */
@@ -151,12 +170,6 @@ const cables = [
     text-align: left;
   }
 
-  .cc__name a {
-    color: var(--ink);
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
   .cc__table td {
     display: grid;
     gap: 0.125rem;
@@ -177,19 +190,8 @@ const cables = [
     grid-column: 2;
   }
 
-  .cc__val {
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-    color: var(--ink);
-  }
-
   .cc__poe {
     color: var(--ink);
-  }
-
-  .cc__note {
-    color: var(--steel);
-    font-size: var(--fs-small);
   }
 
   /* Plain-text cells (use, pick) have no child spans: put text in column 2 */

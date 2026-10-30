@@ -115,7 +115,7 @@ const jsonLd = {
 
   {hasPartners && <PartnerLogos categories={detail.partnerCategories} />}
 
-  <FaqList faqs={detail.faqs} />
+  <FaqList faqs={detail.faqs} serviceName={service.name} />
 
   <OtherServices current={service.slug} />
 
