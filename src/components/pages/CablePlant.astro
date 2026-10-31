@@ -1,6 +1,6 @@
 ---
 /**
- * B10: one cable plant, several device generations. A year-axis chart, 2013 to this year.
+ * One cable plant, several device generations. A year-axis chart, 2013 to this year.
  * Every date and figure comes from src/data/content.ts, where each carries a source.
  * Bar positions are computed from the years, never typed in. Plain HTML, not SVG, so text stays readable.
  * Rule 9 (real labels, text you can read), rule 4 (mono only for years and numbers).
@@ -135,13 +135,22 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
 </script>
 
 <style>
+  /* A plain card: white, 1px hairline edge, site radius */
   .plant {
     margin-top: var(--space-block);
-    padding-top: var(--space-block);
-    border-top: 1px solid var(--hairline);
+    padding: var(--sp-5);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
     display: grid;
     gap: var(--sp-5);
     min-width: 0;
+  }
+
+  @media (min-width: 640px) {
+    .plant {
+      padding: var(--sp-6);
+    }
   }
 
   .plant__title {

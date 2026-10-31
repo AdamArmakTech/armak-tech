@@ -81,6 +81,7 @@ const groups = counties.map((county) => ({
 <section class="area section" id="service-area">
   <div class="container">
     <SectionHead
+      label="Service area"
       title="All of Southern California, from Santa Barbara to Chula Vista."
       intro={`From our ${hq.city} headquarters we serve ${serviceArea.length} cities in ${counties.length} counties, from the Central Coast to San Diego County.`}
     />
@@ -113,17 +114,17 @@ const groups = counties.map((county) => ({
             </svg>
           </div>
           <div class="area__canvas" data-map-canvas></div>
-          <p class="area__status" data-map-status aria-hidden="true">Schematic</p>
+          <p class="area__status t-mono" data-map-status aria-hidden="true">Schematic</p>
         </div>
-        <figcaption class="area__caption">
-          <span class="area__caption-coords t-mono"><span class="area__hq-mark" aria-hidden="true"></span>{hqCoords}</span>
-          <span>{serviceArea.length} cities · {counties.length} counties · {hq.city} HQ</span>
+        <figcaption class="area__caption t-mono">
+          <span><span class="area__hq-mark" aria-hidden="true"></span>{hq.city} HQ<span class="area__coords"> · {hqCoords}</span></span>
+          <span>{serviceArea.length} cities · {counties.length} counties</span>
         </figcaption>
       </figure>
 
       <div class="area__list">
         <div class="area__hq">
-          <p class="area__hq-label">Headquarters</p>
+          <p class="t-mono area__hq-label">Headquarters</p>
           <p class="t-h3 area__hq-city">{hq.city}, {hq.region}</p>
           <p class="t-mono t-muted">{hqCoords}</p>
         </div>
@@ -142,7 +143,7 @@ const groups = counties.map((county) => ({
             <li class="area__county">
               <p class="area__county-head">
                 <span class="area__county-name">{g.county} County</span>
-                <span class="t-muted">{g.cities.length}</span>
+                <span class="t-mono t-muted">{String(g.cities.length).padStart(2, '0')}</span>
               </p>
               <ul role="list" class="area__cities">
                 {g.cities.map((c) => (
@@ -161,19 +162,6 @@ const groups = counties.map((county) => ({
 </section>
 
 <style>
-  /* Direction A: the map is the last sheet of the package before the form. It runs edge to edge
-     on a phone and takes two thirds of the width on desktop; the title gets a wide measure. */
-  .area :global(.section-head__title) {
-    max-width: 24ch;
-  }
-
-  @media (min-width: 1024px) {
-    .area :global(.section-head__title) {
-      max-width: 30ch;
-      font-size: var(--fs-h1);
-    }
-  }
-
   .area__body {
     display: grid;
     gap: var(--col-gap);
@@ -185,24 +173,8 @@ const groups = counties.map((county) => ({
     flex-direction: column;
     overflow: hidden;
     background: var(--paper-sunken);
-  }
-
-  @media (max-width: 899px) {
-    .area__map {
-      margin-inline: calc(var(--gutter) * -1);
-    }
-
-    .area .area__caption {
-      padding-inline: var(--gutter);
-    }
-  }
-
-  /* The title is one long line of copy: a smaller step on phones keeps it to two lines (rule 9) */
-  @media (max-width: 639px) {
-    .area :global(.section-head__title) {
-      font-size: 1.375rem;
-      max-width: none;
-    }
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
   }
 
   .area__stage {
@@ -287,7 +259,7 @@ const groups = counties.map((county) => ({
   }
 
   .sx-hq text {
-    fill: var(--ink);
+    fill: var(--signal);
     font-weight: 600;
   }
 
@@ -394,13 +366,12 @@ const groups = counties.map((county) => ({
     padding: 1.25rem;
     background: var(--white);
     border: 1px solid var(--hairline);
-    border-left: 3px solid var(--steel);
+    border-left: 3px solid var(--signal);
     border-radius: var(--radius);
   }
 
   .area__hq-label {
-    font-weight: 500;
-    color: var(--steel);
+    color: var(--signal);
   }
 
   .area__counties {
@@ -504,8 +475,10 @@ const groups = counties.map((county) => ({
     cursor: pointer;
   }
 
-  .area__search-result :global(.area__suggest button:hover) {
-    background: var(--paper-sunken);
+  @media (hover: hover) and (pointer: fine) {
+    .area__search-result :global(.area__suggest button:hover) {
+      background: var(--paper-sunken);
+    }
   }
 
   .area__search-result :global(.area__suggest button:focus-visible) {
@@ -540,23 +513,13 @@ const groups = counties.map((county) => ({
     padding: 0.1rem 0.35rem;
     font-size: 0.8125rem;
     line-height: 1.3;
-    color: var(--ink);
-    background: transparent;
-    border: 1px solid var(--hairline-strong);
+    color: var(--white);
+    background: var(--signal);
     border-radius: var(--radius);
   }
 
   @media (max-width: 639px) {
-    .area__county {
-      gap: var(--sp-1);
-      padding-block: var(--sp-2);
-    }
-
-    .area__cities {
-      gap: var(--sp-1) var(--sp-4);
-    }
-
-    .area__caption-coords {
+    .area__coords {
       display: none;
     }
 
@@ -569,14 +532,14 @@ const groups = counties.map((county) => ({
     }
   }
 
-  @media (min-width: 640px) and (max-width: 899px) {
+  @media (min-width: 640px) and (max-width: 1023px) {
     .area__counties {
       grid-template-columns: 1fr 1fr;
       column-gap: var(--col-gap);
     }
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 1024px) {
     .area__body {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       align-items: stretch;
@@ -584,7 +547,7 @@ const groups = counties.map((county) => ({
 
     .area__map {
       grid-column: 1 / span 8;
-      min-height: 720px;
+      min-height: 640px;
     }
 
     .area__stage {
@@ -782,7 +745,7 @@ const groups = counties.map((county) => ({
         'text-offset': [-1, -1],
         'text-allow-overlap': true,
       },
-      paint: { 'text-color': INK, 'text-halo-color': WHITE, 'text-halo-width': 2 },
+      paint: { 'text-color': SIGNAL, 'text-halo-color': WHITE, 'text-halo-width': 2 },
     });
 
     // Hide the basemap's own place names so our city labels are the only ones.

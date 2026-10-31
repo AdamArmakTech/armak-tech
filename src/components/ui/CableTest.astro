@@ -500,8 +500,10 @@ const barPos = (b: Bar) =>
       border-color var(--dur-fast) ease;
   }
 
-  .ct__run:hover {
-    background: var(--graphite);
+  @media (hover: hover) and (pointer: fine) {
+    .ct__run:hover {
+      background: var(--graphite);
+    }
   }
 
   /* Press feedback: a small push-in, then it springs back */
@@ -922,8 +924,10 @@ const barPos = (b: Bar) =>
     display: none;
   }
 
-  .ct__explain summary:hover {
-    color: var(--ink);
+  @media (hover: hover) and (pointer: fine) {
+    .ct__explain summary:hover {
+      color: var(--ink);
+    }
   }
 
   .ct__explain[open] summary {
@@ -968,7 +972,7 @@ const barPos = (b: Bar) =>
     gap: 0.3rem;
     margin-top: 0.4rem;
     font-weight: 500;
-    color: var(--ink);
+    color: var(--signal);
   }
 
   /* ── Result ── */
@@ -1101,13 +1105,11 @@ const barPos = (b: Bar) =>
     font-family: var(--font-sans);
     font-weight: 600;
     font-size: var(--fs-small);
-    color: var(--ink);
+    color: var(--signal);
   }
 
   .ct__how {
     position: relative;
-    text-decoration: underline;
-    text-underline-offset: 3px;
   }
 
   /* 44px tall tap area, vertical only so it never reaches the replay button beside it */
@@ -1117,8 +1119,11 @@ const barPos = (b: Bar) =>
     inset: -10px 0;
   }
 
-  .ct__how:hover {
-    color: var(--signal);
+  @media (hover: hover) and (pointer: fine) {
+    .ct__how:hover {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   }
 
   .ct__replay {
@@ -1132,9 +1137,11 @@ const barPos = (b: Bar) =>
     color: var(--steel);
   }
 
-  .ct__replay:hover {
-    border-color: var(--ink);
-    color: var(--ink);
+  @media (hover: hover) and (pointer: fine) {
+    .ct__replay:hover {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
   }
 
   /* Wide container (e.g. the Process stepper stage): wire map + result on the left,

@@ -22,10 +22,10 @@ const description =
 
 <Base title="Industries · Southern California" description={description} footerCta={false}>
   <PageHero
+    label="Industries"
     title="Buildings we plan for."
     lead="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan each install around them, and the cabling behind every system goes in to ANSI/TIA standards."
     crumbs={[{ label: 'Industries' }]}
-    tone="ink"
   >
     <nav class="jump" aria-label="Jump to an industry">
       <ul role="list" class="jump__list">
@@ -42,14 +42,14 @@ const description =
 
   <div class="sectors container">
     {rows.map((r) => (
-      <section id={r.slug} class="sector" data-sheet aria-labelledby={`${r.slug}-title`}>
+      <section id={r.slug} class="sector" aria-labelledby={`${r.slug}-title`}>
         <div class="sector__main">
           <h2 id={`${r.slug}-title`} class="t-h2 sector__name">{r.name}</h2>
           <p class="t-lead sector__need">{r.need}</p>
         </div>
 
         <div class="sector__systems">
-          <p class="sector__systems-head">Typical systems</p>
+          <p class="t-mono sector__systems-head">Typical systems</p>
           <ul role="list" class="sector__list">
             {r.services.map((s) => (
               <li>
@@ -67,14 +67,14 @@ const description =
   </div>
 
   <PageCta
-    code="G-09"
+    code="industries"
     title="Tell us about your building."
     body="Don’t see your sector? Call anyway. We’ll walk the building with you, document what’s there and scope the job before anything is priced."
   />
 </Base>
 
 <style>
-  /* ── Jump nav (on the ink band: inverse outlines) ── */
+  /* ── Jump nav ── */
   .jump {
     width: 100%;
   }
@@ -91,36 +91,35 @@ const description =
     gap: 0.625rem;
     min-height: 44px;
     padding: 0.5rem 0.875rem;
-    border: 1px solid var(--steel-light);
+    border: 1px solid var(--field-line);
     border-radius: var(--radius);
-    color: var(--paper);
     font-size: var(--fs-small);
     transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
-  .jump__link:hover {
-    background: var(--paper);
-    border-color: var(--paper);
-    color: var(--ink);
+  @media (hover: hover) and (pointer: fine) {
+    .jump__link:hover {
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--paper);
+    }
   }
 
-  /*
-   * Direction A: each building type is one SHEET on the paper, with its typical systems as
-   * ruled rows like a schedule (rule 5).
-   */
+  /* ── Sector rows ── */
   .sectors {
-    display: grid;
-    gap: var(--sp-5);
-    padding-bottom: var(--space-section);
+    padding-bottom: var(--space-block);
   }
 
   .sector {
     display: grid;
-    gap: var(--sp-6) var(--col-gap);
-    padding: clamp(1.25rem, 0.5rem + 3.4vw, 4rem);
-    background: var(--white);
-    border: 1px solid var(--hairline);
-    scroll-margin-top: calc(var(--header-h) + var(--sp-5));
+    gap: 1.5rem var(--col-gap);
+    padding-block: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
+    border-top: 1px solid var(--hairline);
+    scroll-margin-top: calc(var(--header-h) + var(--sp-4));
+  }
+
+  .sector:first-child {
+    border-top-color: var(--ink);
   }
 
   .sector__main {
@@ -131,13 +130,10 @@ const description =
 
   .sector__name {
     max-width: 14ch;
-    font-size: var(--fs-h1);
-    line-height: 0.98;
-    letter-spacing: var(--tracking-display);
   }
 
   .sector__need {
-    color: var(--text);
+    color: var(--steel);
   }
 
   .sector__systems {
@@ -147,7 +143,6 @@ const description =
   }
 
   .sector__systems-head {
-    font-size: var(--fs-small);
     color: var(--steel);
   }
 
@@ -169,10 +164,6 @@ const description =
     transition: background var(--dur-fast) ease;
   }
 
-  .sector__svc:hover {
-    background: var(--paper);
-  }
-
   .sector__svc-code {
     color: var(--steel);
   }
@@ -186,12 +177,13 @@ const description =
     transition: transform var(--dur) var(--ease-out), color var(--dur-fast) ease;
   }
 
-  .sector__svc:hover :global(.sector__svc-arrow) {
-    color: var(--ink);
-  }
-
   @media (hover: hover) and (pointer: fine) {
+    .sector__svc:hover {
+      background: var(--white);
+    }
+
     .sector__svc:hover :global(.sector__svc-arrow) {
+      color: var(--ink);
       transform: translateX(3px);
     }
   }
@@ -202,19 +194,13 @@ const description =
     }
   }
 
-  @media (max-width: 899px) {
-    /* On a phone the sheets run edge to edge, like pages laid on the desk */
-    .sector {
-      margin-inline: calc(var(--gutter) * -1);
-      border-inline: 0;
+  @media (min-width: 900px) {
+    .jump__list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 
   @media (min-width: 1024px) {
-    .jump__list {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
     .sector {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       align-items: start;

@@ -48,6 +48,7 @@ const jsonLd = {
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
 
   <PageHero
+    label="Glossary"
     title="Low-voltage terms, in plain English."
     lead="Cabling, networks, cameras, doors, phones and AV come with a lot of jargon. Here’s what each word means, why it matters to your building, and the questions people usually ask. No background needed."
     crumbs={[{ label: 'Glossary' }]}
@@ -60,10 +61,9 @@ const jsonLd = {
     </label>
   </PageHero>
 
-  <div class="container gl__wrap">
-  <section class="gl" aria-label="Glossary terms" data-gl>
+  <section class="gl container" aria-label="Glossary terms" data-gl>
     <div class="gl__toolbar">
-      <nav class="gl__az" aria-label="Jump to letter">
+      <nav class="gl__az t-mono" aria-label="Jump to letter">
         {alphabet.map((l) =>
           lettersWithTerms.has(l) ? (
             <a href={`#letter-${l === '#' ? 'num' : l}`} data-gl-letter={l}>{l}</a>
@@ -80,7 +80,7 @@ const jsonLd = {
       </div>
     </div>
 
-    <p class="gl__status t-small t-muted" aria-live="polite" data-gl-status></p>
+    <p class="gl__status t-mono t-muted" aria-live="polite" data-gl-status></p>
 
     {groups.map((g) => (
       <section class="gl__group" id={`letter-${g.letter === '#' ? 'num' : g.letter}`} data-gl-group={g.letter} aria-labelledby={`gl-h-${g.letter === '#' ? 'num' : g.letter}`}>
@@ -108,11 +108,10 @@ const jsonLd = {
       No terms match that search. Try a shorter word, or <a href="/contact/">ask us directly</a>.
     </p>
   </section>
-  </div>
 
   <dialog class="gl-drawer" aria-labelledby="gl-drawer-title" data-gl-drawer data-lenis-prevent>
     <div class="gl-drawer__head">
-      <p class="t-small t-muted">Glossary</p>
+      <p class="t-mono t-muted">Glossary</p>
       <button class="gl-drawer__close" type="button" data-gl-close>
         <X size={22} stroke-width={1.5} aria-hidden="true" />
         <span class="visually-hidden">Close</span>
@@ -121,7 +120,7 @@ const jsonLd = {
     <h2 class="t-h2 gl-drawer__title" id="gl-drawer-title" data-gl-drawer-title></h2>
     <div class="gl-drawer__body" data-gl-drawer-body></div>
     <div class="gl-drawer__cta">
-      <p class="t-small t-muted">Not sure what your building needs?</p>
+      <p class="t-mono t-muted">Not sure what your building needs?</p>
       <Button href="/contact/?mode=quick#form" icon="arrow" data-gl-drawer-cta>Ask about this term</Button>
     </div>
   </dialog>
@@ -322,7 +321,7 @@ const jsonLd = {
     gap: 0.75rem;
     width: min(100%, 560px);
     padding: 0.25rem 1rem;
-    background: var(--paper);
+    background: var(--white);
     border: 1px solid var(--field-line);
     border-radius: var(--radius);
     transition: border-color var(--dur-fast) ease;
@@ -353,27 +352,8 @@ const jsonLd = {
   }
 
   /* ── Toolbar (pinned under the header on phones and from 1024px up) ── */
-  /*
-   * Direction A: the glossary is an index sheet. One white sheet on the paper, the toolbar held at
-   * its head, each letter a ruled row of terms.
-   */
-  .gl__wrap {
-    padding-bottom: var(--space-section);
-  }
-
   .gl {
-    padding: 0 clamp(1.25rem, 0.5rem + 3.4vw, 4rem) clamp(1rem, 0.5rem + 2vw, 2.5rem);
-    background: var(--white);
-    border: 1px solid var(--hairline);
-    min-width: 0;
-  }
-
-  @media (max-width: 899px) {
-    .gl {
-      margin-inline: calc(var(--gutter) * -1);
-      padding-inline: var(--gutter);
-      border-inline: 0;
-    }
+    padding-bottom: var(--space-block);
   }
 
   .gl__toolbar {
@@ -383,9 +363,9 @@ const jsonLd = {
     display: grid;
     gap: 0.875rem;
     padding-block: 1rem;
-    margin-bottom: 0;
-    background: var(--white);
-    border-bottom: 1px solid var(--ink);
+    margin-bottom: 1rem;
+    background: var(--paper);
+    border-bottom: 1px solid var(--hairline);
   }
 
   /*
@@ -491,8 +471,9 @@ const jsonLd = {
   }
 
   .gl__letter {
-    font-size: clamp(3rem, 2rem + 4vw, 6rem);
-    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: clamp(2.5rem, 2rem + 2vw, 3.75rem);
+    font-weight: 400;
     letter-spacing: -0.04em;
     line-height: 1;
   }
@@ -578,7 +559,7 @@ const jsonLd = {
   }
 
   .term__summary:hover {
-    background: var(--paper);
+    background: var(--white);
   }
 
   .term__name {
@@ -600,7 +581,7 @@ const jsonLd = {
   }
 
   .term__summary:hover .term__chev {
-    color: var(--ink);
+    color: var(--signal);
   }
 
   @media (hover: hover) and (pointer: fine) {

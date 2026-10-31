@@ -1,6 +1,6 @@
 ---
 /**
- * Spec line in sentence-case sans (DESIGN.md rule 4); 4px steel squares separate the items.
+ * Mono "spec sheet" line: EST. 1998 · GLENDALE HQ · BICSI-CERTIFIED · …
  */
 interface Props {
   items: string[];
@@ -11,7 +11,7 @@ interface Props {
 const { items, tone = 'default', class: className } = Astro.props;
 ---
 
-<ul role="list" class:list={['spec-strip', `spec-strip--${tone}`, className]}>
+<ul role="list" class:list={['spec-strip', `spec-strip--${tone}`, 't-mono', className]}>
   {items.map((item) => <li>{item}</li>)}
 </ul>
 
@@ -22,9 +22,7 @@ const { items, tone = 'default', class: className } = Astro.props;
     gap: 0.5rem 0;
     padding-block: 1rem;
     border-block: 1px solid var(--hairline);
-    font-family: var(--font-sans);
-    font-size: var(--fs-small);
-    color: var(--text);
+    color: var(--steel);
   }
 
   .spec-strip li {
@@ -37,11 +35,11 @@ const { items, tone = 'default', class: className } = Astro.props;
     width: 4px;
     height: 4px;
     margin-inline: 1rem;
-    background: var(--steel);
+    background: var(--signal);
   }
 
   .spec-strip--inverse {
     border-color: var(--hairline-inverse);
-    color: var(--paper);
+    color: var(--steel-light);
   }
 </style>

@@ -48,14 +48,14 @@ const isActive = (href: string) => path === href || path.startsWith(href);
 
     <div class="site-header__actions">
       <div class="site-header__contact">
-        <a class="site-header__phone" href={site.phoneHref}>
+        <a class="site-header__phone t-mono" href={site.phoneHref}>
           <Phone size={15} stroke-width={1.75} aria-hidden="true" />
           {site.phone}
         </a>
         <!-- Filled by the script below from the visitor's clock; empty (and hidden) until then -->
         <span class="site-header__status" data-hours={site.hours} data-header-status hidden></span>
       </div>
-      <Button href="/contact/" variant="ink" class="site-header__cta">Request a site assessment</Button>
+      <Button href="/contact/" variant="primary" class="site-header__cta">Request a site assessment</Button>
       <a class="site-header__call" href={site.phoneHref} aria-label={`Call Armak, ${site.phone}`}>
         <Phone size={22} stroke-width={1.5} aria-hidden="true" />
       </a>
@@ -82,7 +82,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
         ))}
       </ul>
       <aside class="mega__aside">
-        <p class="t-muted mega__lead">Not sure what you need?</p>
+        <p class="t-mono t-muted">Not sure what you need?</p>
         <p class="t-h4">Book a site assessment. We’ll walk the space and scope it with you.</p>
         <Button href="/contact/" variant="ink">Request a site assessment</Button>
         <a class="mega__all" href="/services/">All services →</a>
@@ -93,7 +93,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
   <!-- Mobile menu -->
   <div class="mobile-menu" id="mobile-menu" hidden data-menu data-lenis-prevent>
     <div class="container mobile-menu__inner">
-      <p class="t-muted mobile-menu__lead">Services</p>
+      <p class="t-mono t-muted">Services</p>
       <ul role="list" class="mobile-menu__services">
         {services.map((s) => (
           <li>
@@ -230,6 +230,23 @@ const isActive = (href: string) => path === href || path.startsWith(href);
 
     // Leaving desktop width with the mobile menu open shouldn't lock scrolling
     matchMedia('(min-width: 1024px)').addEventListener('change', closeAll);
+
+    // One red button per screen: while another red button on the page is on screen, the sticky header
+    // button turns ink. Without scripts it stays red.
+    const pageCtas = [...document.querySelectorAll<HTMLElement>('.btn--primary')].filter(
+      (el) => !header.contains(el) && !el.closest('[data-cta-dock]'),
+    );
+    if (pageCtas.length && 'IntersectionObserver' in window) {
+      const onScreen = new Set<Element>();
+      const quietIO = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) onScreen.add(e.target);
+          else onScreen.delete(e.target);
+        }
+        header.toggleAttribute('data-quiet-cta', onScreen.size > 0);
+      });
+      pageCtas.forEach((el) => quietIO.observe(el));
+    }
 
     // Open/closed line next to the phone number, refreshed every minute
     const statusEl = header.querySelector<HTMLElement>('[data-header-status]');
@@ -368,8 +385,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     align-items: center;
     gap: 0.5rem;
     color: var(--ink);
-    font-size: var(--fs-small);
-    font-weight: 500;
+    font-size: 0.8125rem;
     white-space: nowrap;
   }
 
@@ -416,6 +432,14 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     .site-header__actions :global(.site-header__cta) {
       display: inline-flex;
     }
+  }
+
+  /* Another red button is on screen: this one switches to the ink style (instant, no animation) */
+  .site-header[data-quiet-cta] :global(.site-header__cta),
+  .site-header[data-quiet-cta] :global(.site-header__cta:hover) {
+    --btn-bg: var(--ink);
+    --btn-fg: var(--paper);
+    transition: none;
   }
 
   @media (min-width: 1024px) {
@@ -507,7 +531,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
   }
 
   .mega__code {
-    color: var(--steel);
+    color: var(--signal);
   }
 
   .mega__name {
@@ -538,12 +562,6 @@ const isActive = (href: string) => path === href || path.startsWith(href);
 
   .mega__all:hover {
     color: var(--signal);
-  }
-
-  .mega__lead,
-  .mobile-menu__lead {
-    font-size: var(--fs-small);
-    font-weight: 500;
   }
 
   @media not all and (min-width: 1024px) {
@@ -583,7 +601,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
   }
 
   .mobile-menu__services .t-mono {
-    color: var(--steel);
+    color: var(--signal);
     min-width: 3.25rem;
   }
 

@@ -62,7 +62,8 @@ const rows = shownSignature(keys);
   .rfl__sheet {
     background: var(--white);
     border: 1px solid var(--hairline);
-    padding: var(--sp-5) var(--gutter);
+    border-radius: var(--radius);
+    padding: var(--sp-5) var(--sp-4);
   }
 
   .rfl__table {
@@ -78,17 +79,18 @@ const rows = shownSignature(keys);
 
   .rfl__title {
     color: var(--ink);
-    font-size: var(--fs-h3);
-    letter-spacing: var(--tracking-heading);
   }
 
   .rfl__table th {
     text-align: left;
-    font-weight: 500;
-    font-size: var(--fs-small);
-    color: var(--text);
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: var(--fs-label);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--steel);
     padding: 0 var(--sp-4) var(--sp-2) 0;
-    border-bottom: 1px solid var(--ink);
+    border-bottom: 1px solid var(--hairline-strong);
   }
 
   .rfl__table td {
@@ -191,7 +193,7 @@ const rows = shownSignature(keys);
 
   @media (min-width: 900px) {
     .rfl__sheet {
-      padding: clamp(2rem, 1rem + 2vw, 3.5rem);
+      padding: var(--sp-6) var(--sp-6);
     }
 
     .rfl__table td:first-child,

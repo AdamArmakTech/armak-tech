@@ -18,18 +18,18 @@ const linker = createPageLinker();
 ---
 
 <section class="section faq">
-  <div class="container faq__layout">
-    <SectionHead title={title} />
+  <div class="container">
+    <SectionHead label="FAQ" title={title} />
 
     <div class="faq__list">
       {faqs.map((f) => (
         <details class="faq__item">
           <summary class="faq__q">
-            <span class="faq__qtext">{f.q}</span>
+            <span class="t-h4">{f.q}</span>
             <Plus class="faq__icon" size={22} stroke-width={1.5} aria-hidden="true" />
           </summary>
           <div class="faq__panel">
-            <p class="faq__a" set:html={linker.link(f.a, { exclude: serviceName ? [serviceName] : [] })} />
+            <p class="faq__a t-muted" set:html={linker.link(f.a, { exclude: serviceName ? [serviceName] : [] })} />
           </div>
         </details>
       ))}
@@ -38,25 +38,16 @@ const linker = createPageLinker();
 </section>
 
 <style>
-  /* Direction A: the questions are a ruled sheet; heading at the left on desktop */
-  .faq__layout {
-    display: grid;
-    gap: var(--sp-6) var(--col-gap);
-  }
-
-  .faq__layout > :global(.section-head) {
-    margin-bottom: 0;
-  }
-
   .faq__list {
-    background: var(--white);
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius);
-    padding: 0 var(--sp-5);
+    border-bottom: 1px solid var(--hairline);
   }
 
-  .faq__item + .faq__item {
+  .faq__item {
     border-top: 1px solid var(--hairline);
+  }
+
+  .faq__item:first-child {
+    border-top-color: var(--ink);
   }
 
   .faq__q {
@@ -65,7 +56,7 @@ const linker = createPageLinker();
     align-items: flex-start;
     gap: 1.5rem;
     min-height: 44px;
-    padding-block: var(--sp-5);
+    padding-block: 1.375rem;
     cursor: pointer;
     list-style: none;
     transition: color var(--dur-fast) ease;
@@ -79,16 +70,9 @@ const linker = createPageLinker();
     color: var(--signal);
   }
 
-  .faq__qtext {
-    font-size: clamp(1.125rem, 1.04rem + 0.4vw, 1.375rem);
-    font-weight: 600;
-    letter-spacing: var(--tracking-heading);
-    line-height: 1.2;
-  }
-
   .faq__q :global(.faq__icon) {
     flex: none;
-    margin-top: 0.15rem;
+    margin-top: 0.05rem;
     transition: transform var(--dur) var(--ease-out);
   }
 
@@ -115,13 +99,6 @@ const linker = createPageLinker();
     }
   }
 
-  .faq__a {
-    max-width: 44em;
-    padding-bottom: var(--sp-5);
-    padding-right: var(--sp-7);
-    color: var(--text);
-  }
-
   .faq__a :global(.gl) {
     color: var(--ink);
     text-decoration: underline;
@@ -133,26 +110,26 @@ const linker = createPageLinker();
     text-decoration-color: var(--ink);
   }
 
-  @media (min-width: 900px) {
-    .faq__list {
-      padding: 0 var(--sp-7);
-    }
+  .faq__a {
+    max-width: 44em;
+    padding-bottom: 1.75rem;
+    padding-right: 2.5rem;
   }
 
-  @media (min-width: 1024px) {
-    .faq__layout {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      align-items: start;
-    }
-
-    .faq__layout > :global(.section-head) {
-      grid-column: 1 / 5;
-      position: sticky;
-      top: calc(var(--header-h) + var(--sp-6));
-    }
-
+  @media (min-width: 900px) {
     .faq__list {
-      grid-column: 5 / -1;
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      border-bottom: 0;
+    }
+
+    .faq__item {
+      grid-column: 4 / -1;
+    }
+
+    .faq__item:last-child {
+      border-bottom: 1px solid var(--hairline);
     }
   }
 </style>

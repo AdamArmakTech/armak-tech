@@ -2,14 +2,14 @@
 /**
  * /plan/ — practical tools for people who are still figuring a project out:
  * a "before we visit" checklist (printable), a rough quantity estimator, a 3-question cabling
- * check and a sample certification report. Ends in the dark closing band.
+ * check and a sample certification report. Ends in the standard Next-step block.
  * Numbers here are planning rules of thumb, never a quote.
  */
 import { Printer } from '@lucide/astro';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
-import SectionHead from '../components/ui/SectionHead.astro';
-import PageCta from '../components/pages/PageCta.astro';
+import Label from '../components/ui/Label.astro';
+import NextStep from '../components/ui/NextStep.astro';
 import CableTest from '../components/ui/CableTest.astro';
 import CableCompare from '../components/plan/CableCompare.astro';
 import Button from '../components/ui/Button.astro';
@@ -64,11 +64,12 @@ const upgradeQuestions = [
 
 <Base title="Plan a Project: Checklist, Estimator & Cabling Check" description={description} footerCta={false}>
   <PageHero
+    label="Plan a project"
     title="Start with the practical bits."
     lead="Three tools for the planning stage: what to have ready before anyone visits, a rough idea of quantities, and a quick check on whether your cabling is due for an upgrade."
     crumbs={[{ label: 'Plan a project' }]}
   >
-    <nav class="plan__jump" aria-label="On this page">
+    <nav class="plan__jump t-mono" aria-label="On this page">
       <a href="#checklist">Checklist</a>
       <a href="#estimator">Estimator</a>
       <a href="#upgrade">Cabling check</a>
@@ -79,13 +80,16 @@ const upgradeQuestions = [
 
   <div class="plan container">
     <!-- ── Checklist ── -->
-    <section class="plan__section plan__checklist" id="checklist" data-sheet aria-label="The site-walk checklist">
-      <SectionHead title="The site-walk checklist." intro="Have these ready and the first visit does the work of two." />
-      <div class="plan__body">
+    <section class="plan__section plan__checklist" id="checklist" aria-labelledby="checklist-title">
+      <div class="plan__head">
+        <Label>Before we visit</Label>
+        <h2 id="checklist-title" class="t-h2">The site-walk checklist.</h2>
+        <p class="t-lead">Have these ready and the first visit does the work of two.</p>
+      </div>
       <ol role="list" class="checklist">
         {checklist.map((item, i) => (
           <li class="checklist__item">
-            <span class="checklist__num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="t-mono checklist__num">{String(i + 1).padStart(2, '0')}</span>
             <span class="checklist__text">
               <span class="checklist__title">{item.title}</span>
               <span class="checklist__detail">{item.detail}</span>
@@ -100,14 +104,16 @@ const upgradeQuestions = [
         </button>
         <p class="t-small t-muted plan__printnote">Printed from armak.tech/plan · {site.phone}</p>
       </div>
-      </div>
     </section>
 
     <!-- ── Estimator ── -->
-    <section class="plan__section" data-sheet id="estimator" aria-label="Estimate quantities for your office">
-      <SectionHead title="Estimate quantities for your office." intro="Planning numbers from typical office layouts. Walls, ceiling height and how you use the space change them; the real count comes from the site walk." />
+    <section class="plan__section" id="estimator" aria-labelledby="estimator-title">
+      <div class="plan__head">
+        <Label>Rough quantities</Label>
+        <h2 id="estimator-title" class="t-h2">Estimate quantities for your office.</h2>
+        <p class="t-lead">Planning numbers from typical office layouts. Walls, ceiling height and how you use the space change them; the real count comes from the site walk.</p>
+      </div>
 
-      <div class="plan__body">
       <form class="est" data-estimator>
         <div class="est__inputs">
           <label class="field">
@@ -155,13 +161,14 @@ const upgradeQuestions = [
         <p class="t-small t-muted est__plan">Want these numbers checked against your actual floor? <a class="plan__link" href="/contact/?about=estimate#form">Send us your plan</a> and we’ll scope it.</p>
         <Button variant="ink" size="lg" href={contactHref({ about: 'structured-cabling' })} data-est-send>Send these numbers with my request</Button>
       </div>
-      </div>
     </section>
 
     <!-- ── Cabling check ── -->
-    <section class="plan__section" data-sheet id="upgrade" aria-label="Check the age of your cabling">
-      <SectionHead title="Check the age of your cabling." />
-      <div class="plan__body">
+    <section class="plan__section" id="upgrade" aria-labelledby="upgrade-title">
+      <div class="plan__head">
+        <Label>Three questions</Label>
+        <h2 id="upgrade-title" class="t-h2">Check the age of your cabling.</h2>
+      </div>
       <form class="quiz" data-upgrade-check>
         {upgradeQuestions.map((q) => (
           <fieldset class="quiz__q">
@@ -174,37 +181,43 @@ const upgradeQuestions = [
           </fieldset>
         ))}
         <div class="quiz__result" data-quiz-result hidden aria-live="polite">
-          <p class="quiz__verdict" data-quiz-verdict></p>
+          <p class="t-mono quiz__verdict" data-quiz-verdict></p>
           <p class="quiz__why" data-quiz-why></p>
         </div>
       </form>
-      </div>
     </section>
 
     <!-- ── Which cable? ── -->
-    <section class="plan__section plan__section--wide" id="which-cable" aria-label="Which cable?" data-sheet>
-      <SectionHead title="Which cable?" intro="Four common choices, what each one can do, and when it makes sense." />
-      <div class="plan__body">
-        <CableCompare />
+    <section class="plan__section plan__section--wide" id="which-cable" aria-labelledby="which-cable-title">
+      <div class="plan__head">
+        <Label>Compare cables</Label>
+        <h2 id="which-cable-title" class="t-h2">Which cable?</h2>
+        <p class="t-lead">Four common choices, what each one can do, and when it makes sense.</p>
       </div>
+      <CableCompare />
     </section>
-  </div>
 
-  <!-- ── Sample report: the one blue field on the page ── -->
-  <section class="plan-report" id="sample-report" aria-label="A sample certification report">
-    <div class="container plan-report__layout">
-      <SectionHead title="A sample certification report." intro="Every cable we install is tested like this. This is the kind of report that comes with the job, one per cable." />
+    <!-- ── Sample report ── -->
+    <section class="plan__section" id="sample-report" aria-labelledby="report-title">
+      <div class="plan__head">
+        <Label>What you get at handover</Label>
+        <h2 id="report-title" class="t-h2">A sample certification report.</h2>
+        <p class="t-lead">Every cable we install is tested like this. This is the kind of report that comes with the job, one per cable.</p>
+      </div>
       <div class="plan__report">
         <CableTest variant="full" />
       </div>
-    </div>
-  </section>
+    </section>
 
-  <PageCta
-    code="N-05"
-    title="When you’re ready, we’ll walk the site."
-    body="Call or send a note about your building. We’ll walk it with you and put the scope and price in writing."
-  />
+    <section class="plan__section plan__next" aria-labelledby="plan-next-title" data-dock-hide>
+      <div class="plan__head">
+        <Label>Next step</Label>
+        <h2 id="plan-next-title" class="t-h2">When you’re ready, we’ll walk the site.</h2>
+        <p class="t-lead">Call or send a note about your building. We’ll walk it with you and put the scope and price in writing.</p>
+      </div>
+      <NextStep />
+    </section>
+  </div>
 </Base>
 
 <script>
@@ -328,84 +341,36 @@ const upgradeQuestions = [
     color: var(--ink);
   }
 
-  .plan__jump a:hover {
-    border-color: var(--ink);
+  @media (hover: hover) and (pointer: fine) {
+    .plan__jump a:hover {
+      border-color: var(--signal);
+    }
   }
 
-  /*
-   * Direction A: each tool is a worksheet, a white SHEET on the paper. Heading at the left (held in
-   * place on desktop), the worksheet rows at the right, hairlines only between rows (rule 5).
-   */
   .plan {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--sp-5);
+    gap: var(--space-section);
     padding-bottom: var(--space-section);
   }
 
   .plan__section {
+    min-width: 0;
     display: grid;
-    gap: var(--sp-6) var(--col-gap);
-    align-content: start;
-    padding: clamp(1.25rem, 0.5rem + 3.4vw, 4rem);
-    background: var(--white);
-    border: 1px solid var(--hairline);
+    gap: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--hairline);
     scroll-margin-top: calc(var(--header-h) + 1.5rem);
-    min-width: 0;
   }
 
-  .plan__section :global(.section-head) {
-    margin-bottom: 0;
-  }
-
-  .plan__body {
+  .plan__head {
     display: grid;
-    gap: var(--sp-6);
-    align-content: start;
-    min-width: 0;
+    gap: 1.25rem;
+    justify-items: start;
   }
 
-  @media (max-width: 899px) {
-    /* On a phone the sheets run edge to edge, like pages laid on the desk */
-    .plan__section {
-      margin-inline: calc(var(--gutter) * -1);
-      border-inline: 0;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .plan__section {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      align-items: start;
-    }
-
-    .plan__section > :global(.section-head) {
-      grid-column: 1 / 5;
-      position: sticky;
-      top: calc(var(--header-h) + var(--sp-6));
-    }
-
-    .plan__section > :global(.section-head .section-head__title) {
-      font-size: var(--fs-h1);
-    }
-
-    .plan__body {
-      grid-column: 5 / -1;
-    }
-
-    /* The comparison table needs the whole sheet */
-    .plan__section--wide {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .plan__section--wide > :global(.section-head) {
-      grid-column: 1;
-      position: static;
-    }
-
-    .plan__section--wide .plan__body {
-      grid-column: 1;
-    }
+  .plan__head h2 {
+    max-width: 18ch;
   }
 
   .plan__link {
@@ -414,16 +379,11 @@ const upgradeQuestions = [
     text-underline-offset: 3px;
   }
 
-  /* Worksheet rows: ruled, no boxes */
-  .checklist,
-  .est__out,
-  .quiz {
-    min-width: 0;
-  }
-
+  /* Checklist */
   .checklist {
     display: grid;
     border-top: 1px solid var(--ink);
+    max-width: 52rem;
   }
 
   .checklist__item {
@@ -431,15 +391,11 @@ const upgradeQuestions = [
     grid-template-columns: 3rem minmax(0, 1fr);
     gap: 1rem;
     padding-block: 1rem;
-  }
-
-  .checklist__item + .checklist__item {
-    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
   }
 
   .checklist__num {
-    color: var(--steel);
-    font-variant-numeric: tabular-nums;
+    color: var(--signal);
     padding-top: 0.2rem;
   }
 
@@ -487,40 +443,21 @@ const upgradeQuestions = [
   /* Estimator */
   .est {
     display: grid;
-    gap: var(--sp-6);
+    gap: 2rem;
   }
 
-  /* The inputs are a form slip: paper on the white sheet. Two by two, so no field is left alone on a row; one column on small phones. */
   .est__inputs {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--sp-5) var(--col-gap);
-    padding: var(--sp-5);
-    background: var(--paper);
-    border: 1px solid var(--hairline);
-    min-width: 0;
-  }
-
-  @media (max-width: 420px) {
-    .est__inputs {
-      grid-template-columns: minmax(0, 1fr);
-    }
+    grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+    gap: 1.5rem var(--col-gap);
+    max-width: 52rem;
   }
 
   .est__out {
+    margin: 0;
     display: grid;
-    margin: 0;
     border-top: 1px solid var(--ink);
-  }
-
-  .est__plan {
-    margin: 0;
-  }
-
-  .est__send :global(.btn[aria-disabled='true']) {
-    opacity: 0.5;
-    cursor: not-allowed;
-    pointer-events: none;
+    max-width: 52rem;
   }
 
   .est__row {
@@ -528,34 +465,46 @@ const upgradeQuestions = [
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.25rem 1.5rem;
     padding-block: 1rem;
-  }
-
-  .est__row + .est__row {
-    border-top: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
   }
 
   .est__row dt {
     font-weight: 600;
   }
 
-  /* Measured figures read big, like the total on a bill of quantities */
   .est__row dd {
     margin: 0;
     font-family: var(--font-mono);
-    font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+    font-size: 1.75rem;
     letter-spacing: -0.04em;
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
 
   .est__row .est__how {
+    line-height: 1.5;
     grid-column: 1 / -1;
     margin: 0;
     font-family: var(--font-sans);
     font-size: var(--fs-small);
     letter-spacing: 0;
-    line-height: 1.5;
     color: var(--text);
+  }
+
+  .est__plan {
+    margin: 0;
+  }
+
+  .est__send {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+
+  .est__send :global(.btn[aria-disabled='true']) {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 
   .est__term {
@@ -571,44 +520,34 @@ const upgradeQuestions = [
     text-underline-offset: 3px;
   }
 
-  .est__term:hover {
-    color: var(--ink);
+  @media (hover: hover) and (pointer: fine) {
+    .est__term:hover {
+      color: var(--signal);
+    }
   }
 
   /* Cabling check */
   .quiz {
     display: grid;
-    gap: 0;
-    border-top: 1px solid var(--ink);
+    gap: 1.75rem;
+    max-width: 52rem;
   }
 
   .quiz__q {
-    padding: var(--sp-5) 0;
+    display: grid;
+    gap: 0.875rem;
+    padding: 0;
     border: 0;
     min-width: 0;
   }
 
-  .quiz__q + .quiz__q,
-  .quiz__result {
-    border-top: 1px solid var(--hairline);
-  }
-
-  /*
-   * The legend floats so it is an ordinary block inside the row. A normal legend sits ON the fieldset's
-   * top edge: the row rule ran through the question text, the first question stuck to the ink rule, and
-   * the row padding fell between a question and its own answers. Floated, all three rows read alike:
-   * space above the question, a tight gap to its answers, then the next rule.
-   */
   .quiz__legend {
-    float: left;
-    width: 100%;
     padding: 0;
-    margin: 0 0 0.875rem;
+    margin-bottom: 0.875rem;
     font-weight: 600;
   }
 
   .quiz__options {
-    clear: left;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -617,7 +556,11 @@ const upgradeQuestions = [
   .quiz__result {
     display: grid;
     gap: 0.5rem;
-    padding: var(--sp-5) 0 var(--sp-2);
+    padding: 1.25rem 1.375rem;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--signal);
+    border-radius: var(--radius);
   }
 
   .quiz__result[hidden] {
@@ -649,65 +592,25 @@ const upgradeQuestions = [
   }
 
   .quiz__verdict {
-    color: var(--ink);
-    font-size: var(--fs-h3);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
+    color: var(--signal);
   }
 
   .quiz__why {
     line-height: 1.55;
   }
 
-  /*
-   * The sample report is the one blue field on the page, the drawing sheet the report lies on.
-   */
-  .plan-report {
-    padding-block: var(--space-section);
-    background: var(--armak-blue);
-    color: var(--paper);
-  }
-
-  .plan-report__layout {
-    display: grid;
-    gap: var(--sp-6) var(--col-gap);
-    scroll-margin-top: calc(var(--header-h) + 1.5rem);
-  }
-
-  .plan-report :global(.section-head) {
-    margin-bottom: 0;
-  }
-
-  .plan-report :global(.section-head__title),
-  .plan-report :global(.section-head__intro) {
-    color: var(--paper);
-  }
-
+  /* Sample report */
   .plan__report {
-    min-width: 0;
+    max-width: 52rem;
     container-type: inline-size;
   }
 
-  @media (min-width: 1024px) {
-    .plan-report__layout {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      align-items: start;
-    }
+  .plan__section--wide {
+    min-width: 0;
+  }
 
-    .plan-report__layout > :global(.section-head) {
-      grid-column: 1 / 5;
-      position: sticky;
-      top: calc(var(--header-h) + var(--sp-6));
-    }
-
-    .plan-report__layout > :global(.section-head .section-head__title) {
-      font-size: var(--fs-h1);
-    }
-
-    .plan__report {
-      grid-column: 5 / -1;
-    }
+  .plan__next :global(.next) {
+    max-width: 36rem;
   }
 
   /* Print: only the checklist */
@@ -716,8 +619,6 @@ const upgradeQuestions = [
     :global(html.print-checklist .site-footer),
     :global(html.print-checklist .cta-dock),
     :global(html.print-checklist .page-hero),
-    :global(html.print-checklist .page-cta),
-    :global(html.print-checklist .plan-report),
     :global(html.print-checklist .plan__section:not(.plan__checklist)),
     :global(html.print-checklist .plan__print) {
       display: none !important;

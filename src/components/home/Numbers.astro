@@ -1,229 +1,76 @@
 ---
-/**
- * Direction A: "a total and its slip". The years in business stand at poster size on the ink
- * band; the other figures are listed on a paper slip with a torn (zigzag) lower edge, like the
- * summary page of a test report. Figures come from src/data/site.ts only.
- *
- * Only the years figure counts up. The slip figures are plain text on purpose: the slip prints
- * its final numbers, and a counter inside the clipped slip would only start after the print
- * ended, so the figures would snap back to near zero and count up again.
- */
+import Label from '../ui/Label.astro';
+import Stat from '../ui/Stat.astro';
 import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../data/site';
-
-// Zigzag lower edge for the slip, as a clip-path polygon (teeth 12px deep)
-const TEETH = 18;
-const zig = ['0 0', '100% 0'];
-for (let i = TEETH * 2; i >= 0; i--) {
-  const x = ((i / (TEETH * 2)) * 100).toFixed(3);
-  zig.push(i % 2 === 0 ? `${x}% 100%` : `${x}% calc(100% - 12px)`);
-}
-const slipClip = `polygon(${zig.join(', ')})`;
-
-const rows = [
-  { label: 'Projects delivered', value: site.projectsDelivered, suffix: '+' },
-  { label: 'Support', value: '24/7', detail: 'For contracted clients.' },
-  { label: 'Cities served', value: serviceArea.length, detail: `Across ${counties.length} counties.` },
-];
 ---
 
-<section class="section section--tight numbers surface-ink" aria-labelledby="numbers-title">
-  <div class="container numbers__grid">
-    <div class="numbers__total">
-      <h2 id="numbers-title" class="numbers__title" data-reveal>
-        Armak in numbers. Since {FOUNDED}, across Southern California.
+<section class="section numbers" aria-labelledby="numbers-title">
+  <div class="container">
+    <div class="numbers__head">
+      <Label>By the numbers</Label>
+      <h2 id="numbers-title" class="t-h3 numbers__title" data-reveal>
+        Armak in numbers. <span class="t-muted">Since {FOUNDED}, across Southern California.</span>
       </h2>
-      <div class="numbers__big-wrap">
-        <p class="numbers__big"><span data-count={yearsInBusiness}>{yearsInBusiness}</span></p>
-        <p class="numbers__caption">Years in business</p>
-      </div>
     </div>
 
-    <div class="numbers__slip" data-slip>
-      <div class="slip__feed">
-        <div class="slip__paper" style={`clip-path: ${slipClip}`}>
-          <ul role="list" class="slip__rows">
-            {rows.map((r) => (
-              <li class="slip__row">
-                <span class="slip__label">
-                  {r.label}
-                  {r.detail && <span class="slip__detail">{r.detail}</span>}
-                </span>
-                <span class="slip__leader" aria-hidden="true"></span>
-                <span class="slip__value">
-                  {typeof r.value === 'number' ? r.value.toLocaleString('en-US') : r.value}{r.suffix}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+    <div class="numbers__grid">
+      <div>
+        <Stat value={yearsInBusiness} label="Years in business" />
+      </div>
+      <div>
+        <Stat value={site.projectsDelivered} suffix="+" label="Projects delivered" />
+      </div>
+      <div>
+        <Stat value="24/7" label="Support" detail="For contracted clients." />
+      </div>
+      <div>
+        <Stat value={serviceArea.length} label="Cities served" detail={`Across ${counties.length} counties.`} />
       </div>
     </div>
   </div>
 </section>
 
-<script>
-  // The slip feeds out like a receipt the first time it is seen. Without this script, or under
-  // reduced motion, the slip is never armed and stays fully visible.
-  //
-  // Watch [data-slip] itself, which is never clipped. The armed clip-path sits on its inner
-  // .slip__feed. A browser reports an element clipped to nothing as 0% visible, so watching the
-  // clipped element would never fire and the slip would stay hidden.
-  import { onFirstView, reduceMotion } from '../../scripts/demo';
-
-  const slip = document.querySelector<HTMLElement>('[data-slip]');
-  if (slip && !reduceMotion) {
-    slip.classList.add('is-armed');
-    onFirstView(slip, () => slip.classList.add('is-printed'), 0.25);
-  }
-</script>
-
 <style>
-  .numbers {
-    padding-block: var(--space-section);
-  }
-
-  .numbers__grid {
+  .numbers__head {
     display: grid;
-    gap: var(--sp-8) var(--col-gap);
-  }
-
-  .numbers__total {
-    display: grid;
-    gap: var(--sp-7);
-    align-content: space-between;
+    gap: 1.5rem;
+    justify-items: start;
+    margin-bottom: var(--space-block);
   }
 
   .numbers__title {
     max-width: 26ch;
-    color: var(--paper);
-    font-size: var(--fs-h3);
-    line-height: var(--lh-heading);
-    letter-spacing: var(--tracking-heading);
-    font-weight: 600;
   }
 
-  .numbers__big {
-    color: var(--paper);
-    font-size: clamp(10rem, 3rem + 30vw, 22rem);
-    font-weight: 600;
-    line-height: 0.8;
-    letter-spacing: -0.07em;
-    font-variant-numeric: tabular-nums;
-    margin-left: -0.04em;
-  }
-
-  .numbers__caption {
-    margin-top: var(--sp-5);
-    color: var(--paper);
-    font-size: var(--fs-h4);
-    font-weight: 500;
-  }
-
-  /* The slip: paper on ink, torn lower edge from the clip-path set inline */
-  .numbers__slip {
-    align-self: start;
-  }
-
-  .slip__paper {
-    background: var(--paper);
-    color: var(--ink);
-    padding: var(--sp-6) var(--sp-5) calc(var(--sp-7) + 12px);
-  }
-
-  .slip__rows {
+  .numbers__grid {
     display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 3rem var(--col-gap);
   }
 
-  /* Rows are separated by hairlines, as on a schedule (rule 5) */
-  .slip__row {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: baseline;
-    gap: var(--sp-3);
-    padding-block: var(--sp-5);
-    border-bottom: 1px solid var(--hairline);
+  /* Keep the big mono numerals inside narrow phone columns */
+  .numbers__grid :global(.stat__value) {
+    font-size: clamp(2.5rem, 1.6rem + 4.2vw, 6rem);
   }
 
-  .slip__row:first-child {
-    padding-top: 0;
-  }
-
-  .slip__label {
-    display: grid;
-    gap: var(--sp-1);
-    font-size: var(--fs-body);
-    font-weight: 600;
-  }
-
-  .slip__detail {
-    font-weight: 400;
-    color: var(--text);
-    font-size: var(--fs-body);
-  }
-
-  /* Dotted leader from label to figure. It is baseline-aligned, not end-aligned, so it sits on the
-     label's first line and the figure's baseline even when the label has a detail line or wraps.
-     The small lift raises the dots clear of the baseline. */
-  .slip__leader {
-    align-self: baseline;
-    transform: translateY(-0.3em);
-    border-bottom: 3px dotted var(--hairline-strong);
-    min-width: var(--sp-5);
-  }
-
-  .slip__value {
-    font-size: var(--fs-h2);
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-  }
-
-  /* Receipt feed: .slip__feed is uncovered top to bottom in short printer steps (clip-path only;
-     the zigzag edge lives on .slip__paper). Plays once. Keep the clip on .slip__feed and never on
-     .numbers__slip: the script watches .numbers__slip, and a browser reports an element clipped to
-     nothing as 0% visible, so the slip would never print. */
-  @media (prefers-reduced-motion: no-preference) {
-    .numbers__slip.is-armed .slip__feed {
-      clip-path: inset(0 0 100% 0);
-    }
-
-    .numbers__slip.is-printed .slip__feed {
-      animation: slip-feed 900ms steps(22, end) forwards;
-    }
-  }
-
-  @keyframes slip-feed {
-    from {
-      clip-path: inset(0 0 100% 0);
-    }
-    to {
-      clip-path: inset(0 0 0 0);
-    }
-  }
-
-  @media (min-width: 640px) {
-    .numbers__title {
-      font-size: var(--fs-h2);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .numbers__grid {
+  @media (min-width: 900px) {
+    .numbers__head {
       grid-template-columns: repeat(12, minmax(0, 1fr));
-      align-items: stretch;
+      column-gap: var(--col-gap);
+      align-items: start;
     }
 
-    .numbers__total {
-      grid-column: 1 / 7;
+    .numbers__head > :global(.label) {
+      grid-column: 1 / span 3;
+      margin-top: 0.35rem;
     }
 
-    .numbers__slip {
-      grid-column: 8 / -1;
+    .numbers__title {
+      grid-column: 4 / -1;
     }
 
-    .slip__paper {
-      padding: var(--sp-7) var(--sp-7) calc(var(--sp-8) + 12px);
+    .numbers__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 </style>

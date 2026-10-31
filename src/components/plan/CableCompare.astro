@@ -1,6 +1,6 @@
 ---
 /**
- * "Which cable?" worksheet: Cat 6, Cat 6A, OM4 and OS2 side by side.
+ * "Which cable?" table: Cat 6, Cat 6A, OM4 and OS2 side by side.
  * One table. Under 900px each row becomes a labelled card (no sideways scroll).
  * Figures come from published standards (see the footnote); mono type is only for measured values.
  */
@@ -113,10 +113,9 @@ const cables = [
     min-width: 0;
   }
 
-  /* A document table: it sits on the worksheet sheet, so no box of its own; ruled rows only */
+  /* Desktop: a white card with a hairline border; phone: each cable is its own white card */
   .cc__table {
     display: block;
-    border-top: 1px solid var(--ink);
     border-collapse: collapse;
   }
 
@@ -160,14 +159,18 @@ const cables = [
     clip-path: inset(50%);
   }
 
+  .cc__table tbody {
+    display: grid;
+    gap: var(--sp-3);
+  }
+
   .cc__table tbody tr {
     display: grid;
     gap: var(--sp-3);
-    padding-block: var(--sp-4);
-  }
-
-  .cc__table tbody tr + tr {
-    border-top: 1px solid var(--hairline);
+    padding: var(--sp-4);
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
   }
 
   .cc__name {
@@ -188,8 +191,11 @@ const cables = [
   .cc__table td::before {
     content: attr(data-label);
     grid-row: 1 / span 2;
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
     color: var(--steel);
-    font-size: 0.8125rem;
   }
 
   .cc__table td > * {
@@ -228,6 +234,9 @@ const cables = [
     .cc__table {
       display: table;
       width: 100%;
+      background: var(--white);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius);
     }
 
     .cc__table thead {
@@ -249,7 +258,7 @@ const cables = [
 
     .cc__table :is(th, td) {
       display: table-cell;
-      padding: var(--sp-5) var(--sp-4) var(--sp-5) 0;
+      padding: var(--sp-5) var(--sp-4);
       vertical-align: top;
       text-align: left;
     }
@@ -264,13 +273,16 @@ const cables = [
 
     .cc__table thead th {
       color: var(--steel);
-      font-size: 0.8125rem;
+      font-family: var(--font-mono);
+      font-size: var(--fs-label);
+      letter-spacing: var(--tracking-label);
+      text-transform: uppercase;
       font-weight: 500;
       padding-block: var(--sp-3);
       border-bottom: 1px solid var(--hairline);
     }
 
-    /* Cable names read as the row headings of the schedule */
+    /* Cable names read as the row headings */
     .cc__table tbody th {
       font-weight: 600;
       letter-spacing: -0.01em;

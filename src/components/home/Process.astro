@@ -7,6 +7,7 @@
  */
 import SectionHead from '../ui/SectionHead.astro';
 import Button from '../ui/Button.astro';
+import Label from '../ui/Label.astro';
 import CableTest from '../ui/CableTest.astro';
 import AssessDemo from '../process/AssessDemo.astro';
 import DesignDemo from '../process/DesignDemo.astro';
@@ -30,6 +31,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 <section id="process" class="section process">
   <div class="container">
     <SectionHead
+      label="The Armak standard"
       title="How every job runs."
       intro="The same five steps on every job, from a single-rack retrofit to a multi-site rollout. Nothing is signed off until it has been tested and documented."
     />
@@ -38,7 +40,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 
     <div class="steps" data-steps>
       <div class="steps__tabs-wrap">
-        <p id="steps-tabs-label" class="t-small t-muted steps__hint">The five steps</p>
+        <p id="steps-tabs-label" class="t-mono t-muted steps__hint">The five steps</p>
         <div class="steps__tabs" role="tablist" aria-labelledby="steps-tabs-label" aria-orientation="vertical" data-tabs>
           {steps.map((s, i) => (
             <button
@@ -72,7 +74,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
               data-step-panel
             >
               <div class="steps__intro">
-                <p class="steps__intro-label"><span class="t-mono">Step <span class="steps__num"><span class="steps__num-v">{s.code}</span></span></span> · {s.title}</p>
+                <p class="t-mono steps__intro-label"><span>Step <span class="steps__num"><span class="steps__num-v">{s.code}</span></span></span> · {s.title}</p>
                 <h3 class="visually-hidden">{s.title}</h3>
                 <p class="steps__intro-body">{s.body}</p>
                 {s.code === '01' && (
@@ -97,15 +99,16 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     </div>
 
     <div class="process__next" data-dock-hide>
-      <p class="process__start">Every job starts at step 01.</p>
+      <p class="t-mono t-muted process__start">Every job starts at step 01.</p>
       <Button href="#contact" icon="arrow">Request a site assessment</Button>
     </div>
 
     <div class="pillars">
-      <h3 class="t-h4 pillars__heading">Principles</h3>
+      <Label>Principles</Label>
       <ul role="list" class="pillars__grid">
-        {pillars.map((p) => (
+        {pillars.map((p, i) => (
           <li class="pillar">
+            <span class="t-mono pillar__index">{String(i + 1).padStart(2, '0')}</span>
             <h4 class="t-h4 pillar__title">{p.title}</h4>
             <p class="t-small pillar__body">{p.body}</p>
           </li>
@@ -328,54 +331,12 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 </script>
 
 <style>
-  /* Direction A: the five steps are one white sheet of the package, laid on the paper.
-     Heading and intro split across the top; the step codes are set large like sheet numbers. */
-  @media (min-width: 1024px) {
-    .process :global(.section-head) {
-      grid-template-columns: 5fr 6fr;
-      column-gap: var(--col-gap);
-      align-items: end;
-    }
-
-    .process :global(.section-head__title) {
-      font-size: var(--fs-h1);
-    }
-  }
-
-  /* Hairline edge (DESIGN.md Direction A: sheets have a 1px hairline edge). White on paper is only
-     about 1.1:1, so without it the sheet has no visible boundary. Phones: full-bleed band, so top and
-     bottom only. 900px and up: inset sheet, all four sides. */
-  .steps {
-    background: var(--white);
-    padding: var(--sp-5) var(--gutter) var(--sp-6);
-    margin-inline: calc(var(--gutter) * -1);
-    border-block: 1px solid var(--hairline);
-  }
-
-  .steps :global(.demo),
-  .steps :global(.ct) {
-    box-shadow: none;
-  }
-
-  @media (min-width: 900px) {
-    .steps {
-      margin-inline: 0;
-      padding: clamp(2rem, 1rem + 2vw, 3.5rem);
-      border: 1px solid var(--hairline);
-    }
-  }
-
   .process__next {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 1rem 1.5rem;
     margin-top: 2rem;
-  }
-
-  .process__start {
-    color: var(--text);
-    font-size: var(--fs-small);
   }
 
   .process__next :global(.btn) {
@@ -515,7 +476,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     bottom: 0;
     height: 3px;
     width: 100%;
-    background: var(--ink);
+    background: var(--paper);
     transform: scaleX(0);
     transform-origin: left;
   }
@@ -559,9 +520,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
   }
 
   .steps__intro-label {
-    color: var(--text);
-    font-size: var(--fs-small);
-    font-weight: 500;
+    color: var(--steel);
   }
 
   /* Step number in the label: a clipped slot the digits slide through */
@@ -632,8 +591,8 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     }
 
     .steps__tabs-wrap {
-      align-self: start;
-      margin-top: 0;
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
     }
 
     .steps__tabs {
@@ -647,16 +606,11 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 
     .steps__tab {
       display: grid;
-      grid-template-columns: 4.5rem 1fr;
-      align-items: center;
-      padding: 1.25rem 1rem;
+      grid-template-columns: 3.5rem 1fr;
+      padding: 1.375rem 1rem;
       border: 0;
       border-bottom: 1px solid var(--hairline);
       border-radius: 0;
-    }
-
-    .steps__tab:hover {
-      background: var(--white);
     }
 
     .steps__tab[aria-selected='true']:hover {
@@ -665,15 +619,6 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 
     .steps__name {
       font-size: var(--fs-h4);
-    }
-
-    .steps__code {
-      font-size: var(--fs-h3);
-      letter-spacing: -0.04em;
-    }
-
-    .steps__tab:hover {
-      background: var(--paper);
     }
 
     .steps__stage {
@@ -687,12 +632,6 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     gap: 1.75rem;
     justify-items: start;
     margin-top: var(--space-section);
-    margin-bottom: 0;
-  }
-
-  .pillars__heading {
-    font-size: var(--fs-h2);
-    letter-spacing: var(--tracking-heading);
   }
 
   .pillars__grid {
@@ -737,10 +676,20 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
   }
 
   @media (min-width: 1024px) {
-    .pillars {
-      grid-template-columns: 4fr 8fr;
-      column-gap: var(--col-gap);
-      align-items: start;
+    .pillars__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .pillar,
+    .pillar:nth-child(odd) {
+      padding: 1.5rem 1.5rem 0.5rem;
+      border-bottom: 0;
+      border-left: 1px solid var(--hairline);
+    }
+
+    .pillar:first-child {
+      padding-left: 0;
+      border-left: 0;
     }
   }
 </style>

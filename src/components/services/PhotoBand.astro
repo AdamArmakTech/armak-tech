@@ -34,39 +34,36 @@ const { photo, testCard = false, caption } = Astro.props;
 <style>
   .band {
     position: relative;
-    /* width of the cable-test card; the caption keeps this much room clear on its right from 640 to 1023px */
+    /* width of the cable-test card; the caption keeps this much room clear on its right */
     --band-card-w: 330px;
   }
 
-  /* Direction A: the photo is a print mounted on a white sheet, caption underneath */
   .band__frame {
     position: relative;
-    padding: var(--sp-3);
-    background: var(--white);
-    border: 1px solid var(--hairline);
-    border-radius: var(--radius);
   }
 
   .band__frame img {
-    border-radius: 0;
-    background: var(--paper-sunken);
     width: 100%;
     aspect-ratio: 4 / 3;
     object-fit: cover;
+    border-radius: var(--radius);
+    background: var(--paper-sunken);
   }
 
+  /* Caption sits under the photo, plain text (stock photos must not pass as Armak jobs, DESIGN.md rule 2) */
   .band__caption {
-    padding: var(--sp-3) var(--sp-1) var(--sp-1);
-    font-size: var(--fs-small);
+    padding-top: var(--sp-2);
+    font-family: var(--font-sans);
+    font-size: var(--fs-label);
     color: var(--steel);
   }
 
-  /* Card is skipped on phones (it would dwarf the photo) and overlaps the photo from 640px */
+  /* Card is skipped on phones (it would dwarf the photo) and overlaps the photo from 700px */
   .band :global(.band__card) {
     display: none;
   }
 
-  @media (min-width: 640px) {
+  @media (min-width: 700px) {
     .band__frame img {
       aspect-ratio: 21 / 9;
     }
@@ -74,26 +71,25 @@ const { photo, testCard = false, caption } = Astro.props;
     .band :global(.band__card) {
       display: grid;
       position: relative;
-      width: min(var(--band-card-w), 88%);
+      width: min(330px, 88%);
       margin: -6rem 1.5rem 0 auto;
     }
   }
 
-  /* 640-1023: the card sits in flow, pulled up over the bottom edge of the photo, which is where the caption
-     lives. Keep the caption clear of it: card width + 2rem of padding on the right makes the sentence wrap
-     before the card, not run under it (balanced, so no single word is left alone on line two). The sentence
-     says the photo is not an Armak job site, so it has to stay readable. Only when the card is there. */
-  @media (min-width: 640px) and (max-width: 1023px) {
+  /* From 640 the card overlaps the bottom edge of the figure, where the caption lives. Card width plus its
+     offset from the right edge (2.5rem at 1024+, 1.5rem below) and a 1rem gap stay clear, so the sentence
+     wraps before the card and is never covered. Only when the card is there. */
+  @media (min-width: 640px) {
     .band--card .band__caption {
-      padding-right: calc(var(--band-card-w) + 2rem);
+      padding-right: calc(var(--band-card-w) + 3.5rem);
       text-wrap: balance;
     }
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 1000px) {
     .band :global(.band__card) {
       position: absolute;
-      right: calc(var(--gutter) + 2.5rem + var(--sp-3));
+      right: calc(var(--gutter) + 2.5rem);
       bottom: -3rem;
       margin: 0;
     }

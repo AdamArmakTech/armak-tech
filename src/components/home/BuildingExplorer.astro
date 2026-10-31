@@ -6,8 +6,8 @@
  * Keyboard: the chips, the tabs and the buttons in the sheet are the tab stops. The sheet itself is not
  * one (it holds focusable controls), and the drawing's rooms are pointer-only, so they get no focus listeners.
  */
+import { ArrowRight } from '@lucide/astro';
 import SectionHead from '../ui/SectionHead.astro';
-import Button from '../ui/Button.astro';
 import BuildingSvg from './BuildingSvg.astro';
 import { services } from '../../data/site';
 import { industries, lifespans, cablingSourced, shownSignature } from '../../data/content';
@@ -34,9 +34,10 @@ const roomButtons = [
 ];
 ---
 
-<section class="explorer section section--tight" id="systems" aria-labelledby="explorer-tabs-label">
+<section class="explorer section" id="systems" aria-labelledby="explorer-tabs-label">
   <div class="container">
     <SectionHead
+      label="System explorer"
       title="How the six systems fit in a building."
       intro="Most of a building’s systems are hidden in the walls and ceilings. We design, install and test all six so they work together from the start."
     />
@@ -51,7 +52,7 @@ const roomButtons = [
             </button>
           ))}
         </div>
-        <p id="explorer-tabs-label" class="t-muted explorer__hint">Select a system</p>
+        <p id="explorer-tabs-label" class="t-mono t-muted explorer__hint">Select a system</p>
         <div class="explorer__tabs" role="tablist" aria-labelledby="explorer-tabs-label" aria-orientation="vertical">
           {services.map((s, i) => (
             <button
@@ -71,7 +72,7 @@ const roomButtons = [
         </div>
       </div>
 
-      <div class="explorer__stage" data-sheet id="explorer-panel" role="tabpanel" aria-labelledby={`explorer-tab-${services[0].slug}`}>
+      <div class="explorer__stage" id="explorer-panel" role="tabpanel" aria-labelledby={`explorer-tab-${services[0].slug}`}>
         <div class="explorer__drawing">
           <div class="bx-frame">
           <div class="bx-bar" hidden>
@@ -124,9 +125,10 @@ const roomButtons = [
             <p class="explorer__summary">{ind.summary}</p>
             <p class="t-muted">{ind.need}</p>
             <div class="explorer__actions">
-              <Button href={contactHref({ about: ind.name })} variant="outline">
+              <a class="explorer__ask" href={contactHref({ about: ind.name })}>
                 Ask about {ind.name.toLowerCase()}
-              </Button>
+                <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" />
+              </a>
             </div>
           </div>
         ))}
@@ -138,23 +140,19 @@ const roomButtons = [
               <h3 class="t-h3">{s.name}</h3>
             </div>
             <p class="t-muted">{s.short}</p>
-            <ul role="list" class="explorer__includes">
+            <ul role="list" class="explorer__includes t-mono">
               {s.includes.map((inc) => <li>{inc}</li>)}
             </ul>
             <div class="explorer__actions">
-              <Button href={contactHref({ about: s.slug })} variant="outline">
+              <a class="explorer__ask" href={contactHref({ about: s.slug })}>
                 Ask about {s.name.toLowerCase()}
-              </Button>
+                <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" />
+              </a>
               <a class="explorer__link" href={`/services/${s.slug}/`}>See {s.name}</a>
             </div>
           </div>
         ))}
       </div>
-    </div>
-
-    <div class="explorer__foot">
-      <p class="explorer__foot-text">{services.length} disciplines · One point of contact</p>
-      <Button href="/services/" variant="outline-inverse">All services</Button>
     </div>
   </div>
 </section>
@@ -481,56 +479,6 @@ const roomButtons = [
 </script>
 
 <style>
-  /*
-   * Direction A: the explorer is the drawing sheet of the package, laid on one full-bleed field of
-   * Armak blue (the logo's "TECHNOLOGIES" blue, kept for diagrams and the map). The drawing is used
-   * large on a white sheet; the controls sit on the blue in paper-coloured type.
-   */
-  .explorer {
-    --on-blue-line: rgba(244, 243, 239, 0.6);
-    background: var(--armak-blue);
-    color: var(--paper);
-  }
-
-  /* The section before shares its bottom gap; this field brings its own padding */
-  .explorer.section {
-    padding-block: var(--space-section);
-  }
-
-  .explorer :global(.section-head__title),
-  .explorer :global(.section-head__intro),
-  .explorer .explorer__tabs-wrap .t-muted,
-  .explorer .explorer__chips-label,
-  .explorer .explorer__foot-text {
-    color: var(--paper);
-  }
-
-  /*
-   * Focus ring on the blue field. The site ring is red (--signal), only 1.75:1 against this blue (a ring
-   * needs 3:1). Paper is 8.8:1, so every control on the blue (chips, tabs, All services) draws a paper ring.
-   * The drawing sheet is white, where a paper ring would vanish, so its controls keep the red ring (5.6:1).
-   * The sheet rule must stay below the blue one: same strength, the later rule wins.
-   */
-  .explorer :global(:focus-visible) {
-    outline-color: var(--paper);
-  }
-
-  .explorer__stage :global(:focus-visible) {
-    outline-color: var(--signal);
-  }
-
-  @media (min-width: 1024px) {
-    .explorer :global(.section-head) {
-      grid-template-columns: 5fr 6fr;
-      column-gap: var(--col-gap);
-      align-items: end;
-    }
-
-    .explorer :global(.section-head__title) {
-      font-size: var(--fs-h1);
-    }
-  }
-
   .explorer__body {
     display: grid;
     gap: 1.5rem var(--col-gap);
@@ -543,10 +491,9 @@ const roomButtons = [
   }
 
   .explorer__chips-label {
-    font-family: var(--font-sans);
+    margin-bottom: 0.5rem;
     font-size: var(--fs-small);
     color: var(--steel);
-    margin-bottom: 0.5rem;
   }
 
   .explorer__chips {
@@ -559,28 +506,29 @@ const roomButtons = [
   .explorer__chip {
     min-height: 44px;
     padding: 0.5rem 0.875rem;
-    border: 1px solid var(--on-blue-line);
+    border: 1px solid var(--field-line);
     border-radius: var(--radius);
     background: transparent;
-    color: var(--paper);
+    color: var(--ink);
     font-family: var(--font-sans);
     font-size: var(--fs-small);
     font-weight: 500;
     transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
-  .explorer__chip:hover {
-    border-color: var(--paper);
+  @media (hover: hover) and (pointer: fine) {
+    .explorer__chip:hover {
+      border-color: var(--ink);
+    }
   }
 
   .explorer__chip[aria-pressed='true'] {
-    background: var(--paper);
-    border-color: var(--paper);
-    color: var(--ink);
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--paper);
   }
 
   .explorer__summary {
-    font-family: var(--font-sans);
     font-weight: 500;
     color: var(--text);
   }
@@ -591,6 +539,7 @@ const roomButtons = [
 
   /* Tabs: horizontal scroller on phones, vertical list on desktop */
   .explorer__tabs {
+    position: relative;
     display: flex;
     gap: 0.5rem;
     overflow-x: auto;
@@ -616,66 +565,50 @@ const roomButtons = [
     flex-shrink: 0;
     min-height: 44px;
     padding: 0.75rem 1rem;
-    border: 1px solid var(--on-blue-line);
+    border: 1px solid var(--field-line);
     border-radius: var(--radius);
     background: transparent;
-    color: var(--paper);
     text-align: left;
     transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
-  .explorer__tab:hover {
-    border-color: var(--paper);
+  @media (hover: hover) and (pointer: fine) {
+    .explorer__tab:hover {
+      border-color: var(--ink);
+    }
   }
 
   .explorer__tab[aria-selected='true'] {
-    background: var(--paper);
-    border-color: var(--paper);
-    color: var(--ink);
-  }
-
-  .explorer__code {
+    background: var(--ink);
+    border-color: var(--ink);
     color: var(--paper);
   }
 
-  .explorer__tab[aria-selected='true'] .explorer__code {
-    color: var(--ink);
+  .explorer__code {
+    color: var(--signal);
   }
 
-  .explorer__code {
-    font-size: var(--fs-label);
+  .explorer__tab[aria-selected='true'] .explorer__code {
+    color: var(--logo-red);
   }
 
   .explorer__name {
-    font-family: var(--font-sans);
     font-weight: 500;
     font-size: var(--fs-small);
   }
 
   /* Stage */
-  /* The stage is the white drawing sheet: drawing on top, the selected system's notes below */
   .explorer__stage {
     display: grid;
     gap: 1.5rem;
-    background: var(--white);
-    color: var(--text);
-    padding: clamp(0.75rem, 0.3rem + 2vw, 2.5rem);
-    margin-inline: calc(var(--gutter) * -1);
-  }
-
-  .explorer .explorer__stage .t-muted,
-  .explorer .explorer__stage p {
-    color: var(--text);
+    outline-offset: 6px;
   }
 
   .explorer__drawing {
     background: var(--white);
-  }
-
-  @media (min-width: 900px) {
-    .explorer__stage {
-      margin-inline: 0;
-    }
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+    padding: clamp(0.5rem, 0.2rem + 1.5vw, 1.5rem);
   }
 
   .explorer__detail {
@@ -696,22 +629,20 @@ const roomButtons = [
   }
 
   .explorer__layer {
-    color: var(--steel);
+    color: var(--signal);
   }
 
   .explorer__includes {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    font-family: var(--font-sans);
-    font-size: var(--fs-small);
   }
 
   .explorer__includes li {
     padding: 0.35rem 0.6rem;
-    background: var(--paper);
+    border: 1px solid var(--hairline-strong);
     border-radius: var(--radius);
-    color: var(--text);
+    color: var(--steel);
   }
 
   .explorer__actions {
@@ -719,22 +650,35 @@ const roomButtons = [
     flex-wrap: wrap;
     align-items: center;
     gap: 0.75rem 1.5rem;
-    margin-bottom: 0;
   }
 
-  .explorer__foot {
-    display: flex;
-    flex-wrap: wrap;
+  /* Forward exit first (ask), sideways exit second (learn more) */
+  .explorer__ask {
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--sp-4) var(--sp-6);
-    margin-top: var(--space-block);
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.625rem 1rem;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: var(--radius);
+    font-weight: 500;
+    font-size: var(--fs-small);
+    transition: background var(--dur-fast) ease;
   }
 
-  .explorer__foot-text {
-    font-family: var(--font-sans);
-    color: var(--text);
-    font-size: var(--fs-small);
+  .explorer__ask :global(svg) {
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .explorer__ask:hover {
+      background: var(--signal);
+    }
+
+    .explorer__ask:hover :global(svg) {
+      transform: translateX(3px);
+    }
   }
 
   .explorer__link {
@@ -756,19 +700,21 @@ const roomButtons = [
     inset: -9px 0;
   }
 
-  .explorer__link:hover {
-    color: var(--signal);
+  @media (hover: hover) and (pointer: fine) {
+    .explorer__link:hover {
+      color: var(--signal);
+    }
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 1000px) {
     .explorer__body {
-      grid-template-columns: 3fr 9fr;
+      grid-template-columns: 4fr 8fr;
       align-items: start;
     }
 
     .explorer__tabs-wrap {
-      align-self: start;
-      margin-top: 0;
+      position: sticky;
+      top: calc(var(--header-h) + 2rem);
     }
 
     .explorer__tabs {
@@ -777,7 +723,7 @@ const roomButtons = [
       overflow: visible;
       margin: 0;
       padding: 0;
-      border-top: 1px solid var(--on-blue-line);
+      border-top: 1px solid var(--hairline);
     }
 
     .explorer__tab {
@@ -785,16 +731,8 @@ const roomButtons = [
       grid-template-columns: 3.5rem 1fr;
       padding: 1.125rem 1rem;
       border: 0;
-      border-bottom: 1px solid var(--on-blue-line);
+      border-bottom: 1px solid var(--hairline);
       border-radius: 0;
-    }
-
-    .explorer__tab:hover {
-      background: rgba(244, 243, 239, 0.12);
-    }
-
-    .explorer__tab[aria-selected='true']:hover {
-      background: var(--paper);
     }
 
     .explorer__name {
@@ -806,18 +744,20 @@ const roomButtons = [
     }
   }
 
-  /* ── Switch above the drawing: Today / years from now ──
-     Rendered hidden; the script shows it. Ink for the selected side, never red (rule 7). */
-  /* The drawing's own frame; the switch sits on its top edge, inside it (not a separate row above) */
-  .bx-frame {
-    border: 1px solid var(--hairline-strong);
+  @media (min-width: 1000px) and (hover: hover) and (pointer: fine) {
+    .explorer__tab[aria-selected='false']:hover {
+      background: var(--white);
+    }
   }
 
+  /* ── Switch on the drawing's top edge: Today / years from now ──
+     Rendered hidden; the script shows it. Ink for the selected side, never red (rule 7). */
   .bx-bar {
     display: flex;
     justify-content: flex-end;
-    padding: 4px;
-    border-bottom: 1px solid var(--hairline-strong);
+    padding-bottom: var(--sp-2);
+    margin-bottom: var(--sp-2);
+    border-bottom: 1px solid var(--hairline);
   }
 
   .bx-bar[hidden] {
@@ -831,7 +771,7 @@ const roomButtons = [
     width: 100%;
     margin: 0;
     padding: 0;
-    border: 0;
+    border: 1px solid var(--field-line);
     border-radius: var(--radius);
   }
 
@@ -867,13 +807,13 @@ const roomButtons = [
     font-family: var(--font-sans);
     font-size: var(--fs-small);
     font-weight: 500;
-    color: var(--text);
+    color: var(--ink);
     transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
   .bx-when input:checked + span {
     background: var(--ink);
-    color: var(--white);
+    color: var(--paper);
   }
 
   .bx-when input:focus-visible + span {
@@ -895,12 +835,12 @@ const roomButtons = [
 
   .bx-later-caption {
     font-weight: 500;
+    color: var(--text);
   }
 
   .bx-later-note,
   .bx-later-head,
   .bx-later-list {
-    font-family: var(--font-sans);
     font-size: var(--fs-small);
     color: var(--text);
   }
@@ -922,6 +862,10 @@ const roomButtons = [
     list-style: none;
   }
 
+  .bx-later-list .t-mono {
+    text-transform: none;
+  }
+
   /* ── Room buttons: pin a route ── */
   .bx-rooms-ui {
     display: grid;
@@ -934,9 +878,9 @@ const roomButtons = [
   }
 
   .bx-rooms-label {
-    font-family: var(--font-sans);
     font-size: var(--fs-small);
     font-weight: 500;
+    color: var(--text);
   }
 
   .bx-rooms-group {
@@ -948,9 +892,9 @@ const roomButtons = [
   .bx-room-btn {
     min-height: 44px;
     padding: 0.5rem 0.875rem;
-    border: 1px solid var(--hairline-strong);
+    border: 1px solid var(--field-line);
     border-radius: var(--radius);
-    background: var(--white);
+    background: transparent;
     color: var(--ink);
     font-family: var(--font-sans);
     font-size: var(--fs-small);
@@ -967,12 +911,12 @@ const roomButtons = [
   .bx-room-btn[aria-pressed='true'] {
     background: var(--ink);
     border-color: var(--ink);
-    color: var(--white);
+    color: var(--paper);
   }
 
   .bx-live {
-    font-family: var(--font-sans);
     font-size: var(--fs-small);
+    color: var(--text);
   }
 
   /* Stays in the layout (display:none can stop a live region being announced); just pulled up so it takes no room */
@@ -980,16 +924,8 @@ const roomButtons = [
     margin-top: -0.5rem;
   }
 
-  .bx-later-list .t-mono {
-    text-transform: none;
-  }
-
-  /* ── A10: one highlight slides behind the selected tab (transform only) ──
+  /* ── One highlight slides behind the selected tab (transform only) ──
      The script adds it and the .has-hl class. Until then the tab keeps its own selected style. */
-  .explorer__tabs {
-    position: relative;
-  }
-
   .explorer__tabs :global(.explorer__hl) {
     position: absolute;
     top: 0;
@@ -997,10 +933,17 @@ const roomButtons = [
     width: 100px;
     height: 100px;
     transform-origin: 0 0;
-    background: var(--paper);
+    background: var(--ink);
+    border-radius: var(--radius);
     opacity: 0;
     pointer-events: none;
     transition: transform var(--dur) var(--ease-out), opacity var(--dur-fast) ease;
+  }
+
+  @media (min-width: 1000px) {
+    .explorer__tabs :global(.explorer__hl) {
+      border-radius: 0;
+    }
   }
 
   .explorer__tabs.has-hl .explorer__tab[aria-selected='true'],

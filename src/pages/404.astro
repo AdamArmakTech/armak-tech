@@ -16,7 +16,6 @@ const routes = [
 
 <Base title="Page Not Found" description="This page has moved or never existed. Browse Armak Technologies’ cabling, network, security and AV services for Southern California, or get in touch." noindex>
   <PageHero
-    code="E-404"
     label="Not found"
     labelTone="signal"
     title="This port isn’t patched."
@@ -56,14 +55,15 @@ const routes = [
 </Base>
 
 <style>
-  /* The failed link test is a paper slip laid on the white hero sheet: flat, hairline edge */
   .trace {
     display: grid;
     gap: 1.25rem;
     max-width: 420px;
-    padding: var(--sp-5);
-    background: var(--paper);
+    padding: 1.25rem;
+    background: var(--white);
     border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-raise);
   }
 
   .trace__head {

@@ -1,9 +1,12 @@
 ---
 /**
- * Closing call to action for inner pages: a white sheet on paper (Direction A: pages end light) above the footer. Pages using it pass footerCta={false} to Base so the
- * footer's generic CTA doesn't repeat it.
+ * Closing call to action for inner pages: the dark band with the guided next step. Pages using it pass
+ * footerCta={false} to Base so the footer's generic CTA doesn't repeat it.
+ * `code` only keeps the heading id unique; it is not shown.
  */
+import Label from '../ui/Label.astro';
 import NextStep from '../ui/NextStep.astro';
+import Stripe from '../ui/Stripe.astro';
 
 interface Props {
   code: string;
@@ -14,77 +17,49 @@ interface Props {
 }
 
 const { code, title, body, about } = Astro.props;
-const id = `${code}-cta-title`; // code only keeps the heading id unique; it is no longer shown
+const id = `${code}-cta-title`;
 ---
 
-<section class="page-cta cta-band" aria-labelledby={id} data-dock-hide>
-  <div class="container">
-    <div class="page-cta__sheet page-cta__inner">
-    <div class="page-cta__copy">
-      <h2 id={id} class="t-h2 page-cta__title" data-split>{title}</h2>
-      <p class="t-lead page-cta__lead">{body}</p>
-    </div>
-    <div class="page-cta__side">
-      <NextStep about={about} tone="light" />
-    </div>
+<section class="page-cta container" aria-labelledby={id} data-dock-hide>
+  <div class="page-cta__panel surface-ink">
+    <Stripe height={4} />
+    <div class="page-cta__body">
+      <div class="page-cta__copy">
+        <Label tone="inverse">Next step</Label>
+        <h2 id={id} class="t-h2 page-cta__title" data-split>{title}</h2>
+        <p class="t-lead">{body}</p>
+      </div>
+      <div class="page-cta__side">
+        <NextStep about={about} tone="inverse" />
+      </div>
     </div>
   </div>
 </section>
 
 <style>
-  /* One white sheet on paper (DESIGN.md Direction A). The section carries the gap above the footer.
-     The block above already owns the gap to the sheet (its own bottom padding), so the sheet adds
-     none: neighbouring sections share one gap (tokens.css). */
   .page-cta {
-    padding-top: 0;
-    padding-bottom: var(--space-section);
+    padding-block: var(--space-block);
   }
 
-  /* These two blocks have no bottom gap of their own, so the sheet keeps the full gap after them:
-     the blue sample-report field on /plan/ (its padding sits inside the band) and the project grid.
-     "~" and not "+": Astro can emit a script tag between two sections, which would break "+". */
-  :global(.plan-report) ~ .page-cta,
-  :global(.plist) ~ .page-cta {
-    padding-top: var(--space-section);
+  .page-cta__panel {
+    overflow: hidden;
+    border-radius: var(--radius);
   }
 
-  .page-cta__sheet {
-    padding: var(--sp-6) var(--sp-5);
-    background: var(--white);
-    border: 1px solid var(--hairline);
-  }
-
-  @media (min-width: 640px) {
-    .page-cta__sheet {
-      padding: var(--sp-7);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .page-cta__sheet {
-      padding: var(--sp-8);
-    }
-  }
-
-  .page-cta__inner {
+  .page-cta__body {
     display: grid;
     gap: 2.5rem var(--col-gap);
+    padding: clamp(1.75rem, 1rem + 3.5vw, 4.5rem);
   }
 
   .page-cta__copy {
     display: grid;
     gap: 1.5rem;
     justify-items: start;
-    align-content: start;
   }
 
   .page-cta__title {
-    color: var(--ink);
     max-width: 16ch;
-  }
-
-  .page-cta__lead {
-    color: var(--text);
   }
 
   .page-cta__side {
@@ -94,14 +69,12 @@ const id = `${code}-cta-title`; // code only keeps the heading id unique; it is 
   }
 
   @media (min-width: 1024px) {
-    .page-cta__inner {
+    .page-cta__body {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       align-items: end;
     }
 
-    /* Copy takes 6 columns and the side takes 5, with one empty column between (the same split as
-       ServiceCta). The red button needs about 297px; the old 4-column side was 259px at 1024 and
-       wrapped its label onto two lines up to about 1150px. */
+    /* Copy 6 columns, side 5: the red button needs about 297px and must not wrap its label */
     .page-cta__copy {
       grid-column: 1 / span 6;
     }

@@ -3,6 +3,7 @@
  * About — story since 1998 (original site's copy, tightened), principles, credentials,
  * numbers, manufacturer partners, team slot (placeholder until Armak supplies it), service area.
  */
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
@@ -16,6 +17,8 @@ import PartnerStrip from '../components/home/PartnerStrip.astro';
 import ServiceArea from '../components/home/ServiceArea.astro';
 import { site, FOUNDED, yearsInBusiness, serviceArea, counties } from '../data/site';
 import { pillars, credentials } from '../data/content';
+// TODO(photo): interim stock (see assets/photos/CREDITS.md), replace with a real Armak photo
+import storyPhoto from '../assets/photos/cabling-bundles-white.jpg';
 
 const description = `Armak Technologies has designed and installed low-voltage, networking and security systems across Southern California since ${FOUNDED}. Glendale HQ.`;
 
@@ -40,8 +43,7 @@ const story = [
 
 /**
  * Tags from the original site's value cards, paired with `pillars` in order.
- * Each one is shown as a plain label above its title, with no 01 to 04 numbers (DESIGN.md rule 3: index
- * codes only for real things).
+ * Shown as a plain label above each title, with no 01 to 04 numbers (index codes only for real things).
  */
 const pillarTags = ['Precision', 'Scale', 'Speed', 'Service'];
 
@@ -57,6 +59,7 @@ const SHOW_PLACEHOLDERS = false;
 
 <Base title={`About Us · SoCal Low-Voltage Since ${FOUNDED}`} description={description} footerCta={false}>
   <PageHero
+    label="About"
     title={`Low-voltage and network installs since ${FOUNDED}.`}
     lead={`For ${yearsInBusiness} years, organizations across Southern California have relied on Armak Technologies to design, install and support the cabling, networks and security systems they run on.`}
     crumbs={[{ label: 'About' }]}
@@ -66,38 +69,52 @@ const SHOW_PLACEHOLDERS = false;
   <!-- Story -->
   <section class="section story">
     <div class="container">
-     <div class="sheet story__sheet" data-sheet>
-      <SectionHead title={`${yearsInBusiness} years in business.`} />
+      <SectionHead label="Our story" title={`${yearsInBusiness} years in business.`} />
 
       <div class="story__body">
-        <ol role="list" class="story__list">
-          {story.map((s) => (
-            <li class="story__item">
-              <span class="story__tag">{s.tag}</span>
-              <h3 class="t-h3">{s.title}</h3>
-              <p>{s.body}</p>
-            </li>
-          ))}
-        </ol>
+        <figure class="story__figure" data-reveal>
+          <div class="story__photo">
+            <Image
+              src={storyPhoto}
+              alt="Neatly dressed light-blue cable bundles with black Velcro ties running into a rack of patch panels"
+              widths={[480, 720, 960, 1280]}
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              loading="lazy"
+            />
+          </div>
+          <figcaption class="story__caption">Illustrative photo, not an Armak job site.</figcaption>
+        </figure>
 
-        <dl class="story__facts" aria-label="Armak at a glance">
-          <div class="story__fact">
-            <dt>Founded</dt>
-            <dd>{FOUNDED}</dd>
-          </div>
-          <div class="story__fact">
-            <dt>Headquarters</dt>
-            <dd>{site.hq.city}, California</dd>
-          </div>
-          <div class="story__fact">
-            <dt>Cities served</dt>
-            <dd>{serviceArea.length}</dd>
-          </div>
-          <div class="story__fact">
-            <dt>Counties</dt>
-            <dd>{counties.length}</dd>
-          </div>
-        </dl>
+        <div class="story__side">
+          <ol role="list" class="story__list">
+            {story.map((s) => (
+              <li class="story__item">
+                <span class="t-mono story__index">{s.tag}</span>
+                <h3 class="t-h3">{s.title}</h3>
+                <p class="t-muted">{s.body}</p>
+              </li>
+            ))}
+          </ol>
+
+          <dl class="story__facts" aria-label="Armak at a glance">
+            <div class="story__fact">
+              <dt>Founded</dt>
+              <dd>{FOUNDED}</dd>
+            </div>
+            <div class="story__fact">
+              <dt>Headquarters</dt>
+              <dd>{site.hq.city}, California</dd>
+            </div>
+            <div class="story__fact">
+              <dt>Cities served</dt>
+              <dd>{serviceArea.length}</dd>
+            </div>
+            <div class="story__fact">
+              <dt>Counties</dt>
+              <dd>{counties.length}</dd>
+            </div>
+          </dl>
+        </div>
       </div>
 
       <CablePlant />
@@ -106,7 +123,7 @@ const SHOW_PLACEHOLDERS = false;
            Hidden until Armak supplies real milestones (two rows alone read as an empty template). -->
       {SHOW_PLACEHOLDERS && (
       <div class="timeline">
-        <h3 class="t-h4">Milestones</h3>
+        <Label>Milestones</Label>
         <ol role="list" class="timeline__rows">
           <li class="timeline__row">
             <span class="timeline__year">{FOUNDED}</span>
@@ -129,18 +146,17 @@ const SHOW_PLACEHOLDERS = false;
         </ol>
       </div>
       )}
-     </div>
     </div>
   </section>
 
   <!-- Principles -->
   <section class="section section--flush-top principles">
-    <div class="container principles__layout">
-      <SectionHead title="How we work on every job." />
-      <ul role="list" class="principles__grid sheet" data-sheet>
+    <div class="container">
+      <SectionHead label="How we work" title="How we work on every job." />
+      <ul role="list" class="principles__grid">
         {pillars.map((p, i) => (
           <li class="principle">
-            {pillarTags[i] && <span class="principle__tag">{pillarTags[i]}</span>}
+            {pillarTags[i] && <span class="t-mono principle__index">{pillarTags[i]}</span>}
             <h3 class="t-h4">{p.title}</h3>
             <p class="t-small t-muted">{p.body}</p>
           </li>
@@ -151,9 +167,9 @@ const SHOW_PLACEHOLDERS = false;
 
   <!-- Credentials -->
   <section class="section section--flush-top creds">
-    <div class="container creds__layout">
-      <SectionHead title="Licensing, certification and support." />
-      <ul role="list" class="creds__grid sheet" data-sheet>
+    <div class="container">
+      <SectionHead label="Credentials" title="Licensing, certification and support." />
+      <ul role="list" class="creds__grid">
         {credentials.map((c) => (
           <li class="cred">
             <span class="cred__text">{c}</span>
@@ -188,6 +204,7 @@ const SHOW_PLACEHOLDERS = false;
   <section class="section team">
     <div class="container">
       <SectionHead
+        label="The team"
         title="The people behind the installs."
         intro="One crew and one point of contact from the first walk-through to the final report."
       />
@@ -225,64 +242,64 @@ const SHOW_PLACEHOLDERS = false;
     padding-top: 0;
   }
 
-  /*
-   * Direction A: every section is a SHEET (white, hairline edge) on the paper.
-   * Lists are ruled rows, like the industries schedule on the homepage.
-   */
-  .sheet {
-    background: var(--white);
-    border: 1px solid var(--hairline);
-    padding: var(--sp-5) var(--gutter);
-    min-width: 0;
-  }
-
-  .story__sheet {
-    padding: clamp(1.25rem, 0.5rem + 3.4vw, 4rem);
-  }
-
-  .story__sheet :global(.section-head__title) {
-    font-size: var(--fs-h1);
-    max-width: 16ch;
-  }
-
   /* ── Story ── */
   .story__body {
     display: grid;
     gap: var(--space-block) var(--col-gap);
   }
 
+  .story__photo {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--paper-sunken);
+  }
+
+  .story__photo img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  .story__caption {
+    padding-top: var(--sp-2);
+    font-size: var(--fs-label);
+    color: var(--steel);
+  }
+
+  .story__side {
+    display: grid;
+    gap: var(--space-block);
+    align-content: start;
+    min-width: 0;
+  }
+
   .story__list {
-    max-width: 65ch;
+    border-top: 1px solid var(--ink);
   }
 
   .story__item {
     display: grid;
-    gap: var(--sp-2);
-    padding-block: var(--sp-5);
+    gap: 0.75rem;
+    padding-block: 1.75rem;
     border-bottom: 1px solid var(--hairline);
   }
 
-  .story__item:first-child {
-    padding-top: 0;
-  }
-
   .story__item p {
-    color: var(--text);
+    max-width: 34em;
   }
 
-  .story__tag {
-    font-size: var(--fs-label);
-    font-weight: 500;
-    color: var(--steel);
+  .story__index {
+    color: var(--signal);
   }
 
-  /* The summary sheet: a paper slip with ruled figures */
+  /* At a glance: a plain hairline card, like the credentials below */
   .story__facts {
-    align-self: start;
     max-width: 28rem;
-    padding: var(--sp-3) var(--sp-5);
-    background: var(--paper);
+    padding: var(--sp-2) var(--sp-5);
+    background: var(--white);
     border: 1px solid var(--hairline);
+    border-radius: var(--radius);
   }
 
   .story__fact {
@@ -290,8 +307,8 @@ const SHOW_PLACEHOLDERS = false;
     justify-content: space-between;
     align-items: baseline;
     gap: var(--sp-4);
-    padding-block: var(--sp-4);
-    font-size: var(--fs-small, 0.9375rem);
+    padding-block: var(--sp-3);
+    font-size: var(--fs-small);
   }
 
   .story__fact + .story__fact {
@@ -306,8 +323,6 @@ const SHOW_PLACEHOLDERS = false;
     margin: 0;
     color: var(--ink);
     font-weight: 600;
-    font-size: var(--fs-h4);
-    letter-spacing: -0.01em;
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
@@ -348,59 +363,51 @@ const SHOW_PLACEHOLDERS = false;
     color: var(--hairline-strong);
   }
 
-  /* ── Principles and credentials: heading left, ruled-row sheet right ── */
-  .principles__layout,
-  .creds__layout {
+  /* ── Principles ── */
+  .principles__grid {
     display: grid;
-    gap: var(--sp-6) var(--col-gap);
-  }
-
-  /* These two sheets stay inset like the hero, story and closing sheets, with the full 1px hairline edge on
-     all four sides at every width (Direction A: a sheet keeps its edge). No negative margin, no side reset. */
-  .principles__grid,
-  .creds__grid {
-    display: grid;
-    padding: var(--sp-2) var(--gutter);
-  }
-
-  .principle + .principle,
-  .cred + .cred {
-    border-top: 1px solid var(--hairline);
+    border-top: 1px solid var(--ink);
   }
 
   .principle {
     display: grid;
-    gap: var(--sp-2);
+    gap: 0.75rem;
     align-content: start;
-    padding-block: var(--sp-5);
+    padding: 1.5rem 0 2rem;
+    border-bottom: 1px solid var(--hairline);
   }
 
   .principle p {
-    max-width: 34em;
-    font-size: var(--fs-body);
+    max-width: 30em;
   }
 
-  .principle__tag {
-    font-size: var(--fs-label);
-    font-weight: 500;
-    color: var(--steel);
+  .principle__index {
+    color: var(--signal);
+  }
+
+  /* ── Credentials ── */
+  .creds__grid {
+    display: grid;
+    border-top: 1px solid var(--hairline);
+    border-left: 1px solid var(--hairline);
   }
 
   .cred {
     display: grid;
-    gap: var(--sp-2);
+    gap: 0.75rem;
     align-content: start;
     justify-items: start;
-    padding-block: var(--sp-5);
+    padding: 1.5rem 1.25rem 1.75rem;
+    border-right: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline);
+    background: var(--white);
   }
 
   .cred__text {
-    font-size: var(--fs-h3);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.15;
-    /* Balanced like the site headings: when it wraps on a phone it breaks into two even lines. */
-    text-wrap: balance;
+    font-size: var(--fs-h4);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.3;
   }
 
   .cred :global(.cred__flag) {
@@ -462,90 +469,54 @@ const SHOW_PLACEHOLDERS = false;
   }
 
   @media (min-width: 640px) {
+    .principles__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .principle {
+      padding: 1.5rem 1.5rem 2rem;
+    }
+
+    .principle:nth-child(odd) {
+      padding-left: 0;
+    }
+
+    .principle:nth-child(even) {
+      border-left: 1px solid var(--hairline);
+    }
+
+    .creds__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* An odd one out in the last row spans the full width */
+    .cred:last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+
     .timeline__row {
       grid-template-columns: 7rem minmax(0, 1fr);
     }
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 1024px) {
     .story__body {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       align-items: start;
     }
 
-    .story__list {
-      grid-column: 1 / span 7;
-    }
-
-    .story__facts {
-      grid-column: 9 / -1;
-      max-width: none;
-    }
-
-    .principles__grid,
-    .creds__grid {
-      padding: var(--sp-3) var(--sp-7);
-    }
-
-    .principle {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      align-items: baseline;
-      column-gap: var(--col-gap);
-      padding-block: var(--sp-6);
-    }
-
-    .principle__tag {
-      grid-column: 1;
-      grid-row: 1;
-    }
-
-    .principle h3 {
-      grid-column: 1;
-      grid-row: 2;
-    }
-
-    .principle p {
-      grid-column: 2;
-      grid-row: 1 / span 2;
-    }
-
-    .cred {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-      align-items: baseline;
-      column-gap: var(--col-gap);
-      padding-block: var(--sp-6);
-    }
-
-    /* A row with one child (the three credentials today) spans the whole sheet. Without this the text is
-       squeezed into the 7fr cell while the 5fr cell beside it stays empty. A row that gains a license
-       number or a flag has two children and keeps the two-column split. */
-    .cred__text:only-child {
-      grid-column: 1 / -1;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .principles__layout,
-    .creds__layout {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      align-items: start;
-    }
-
-    .principles__layout > :global(.section-head),
-    .creds__layout > :global(.section-head) {
-      grid-column: 1 / 5;
+    .story__figure {
+      grid-column: 1 / span 5;
       position: sticky;
-      top: calc(var(--header-h) + var(--sp-6));
+      top: calc(var(--header-h) + 2rem);
     }
 
-    .principles__layout > :global(.section-head .section-head__title),
-    .creds__layout > :global(.section-head .section-head__title) {
-      font-size: var(--fs-h1);
+    .story__photo img {
+      aspect-ratio: 4 / 5;
     }
 
-    .principles__grid,
-    .creds__grid {
-      grid-column: 5 / -1;
+    .story__side {
+      grid-column: 7 / -1;
     }
 
     .timeline {
@@ -562,8 +533,33 @@ const SHOW_PLACEHOLDERS = false;
       grid-column: 4 / -1;
     }
 
+    /* The three credentials sit side by side on one row */
+    .creds__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .cred:last-child:nth-child(odd) {
+      grid-column: auto;
+    }
+
     .team__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .principles__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .principle,
+    .principle:nth-child(odd) {
+      padding: 1.5rem 1.5rem 0.5rem;
+      border-bottom: 0;
+      border-left: 1px solid var(--hairline);
+    }
+
+    .principle:first-child {
+      padding-left: 0;
+      border-left: 0;
     }
   }
 </style>

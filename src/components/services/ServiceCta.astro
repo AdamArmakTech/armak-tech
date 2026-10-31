@@ -1,7 +1,9 @@
 ---
 /**
- * Closing call to action for service pages: the same white sheet on paper as PageCta, above the footer. Pages using it pass footerCta={false} to Base so the footer's generic CTA doesn't repeat.
+ * Closing call to action for service pages. Light panel so it doesn't stack against the dark
+ * footer; pages using it pass footerCta={false} to Base so the footer's generic CTA doesn't repeat.
  */
+import Label from '../ui/Label.astro';
 import NextStep from '../ui/NextStep.astro';
 
 interface Props {
@@ -15,58 +17,46 @@ interface Props {
 const { title, body, about } = Astro.props;
 ---
 
-<section class="cta cta-band" aria-labelledby="cta-title" data-dock-hide>
-  <div class="container">
-    <div class="cta__sheet cta__inner">
-    <div class="cta__copy">
-      <h2 id="cta-title" class="t-h2 cta__title" data-split>{title}</h2>
-      <p class="t-lead cta__lead">{body}</p>
-    </div>
-    <div class="cta__side">
-      <NextStep about={about} tone="light" />
-    </div>
+<section class="cta container" aria-labelledby="cta-title" data-dock-hide>
+  <div class="cta__panel">
+    <div class="cta__body">
+      <div class="cta__copy">
+        <Label>Next step</Label>
+        <h2 id="cta-title" class="t-h2 cta__title" data-split>{title}</h2>
+        <p class="t-lead">{body}</p>
+      </div>
+      <div class="cta__side">
+        <NextStep about={about} tone="light" />
+      </div>
     </div>
   </div>
 </section>
 
 <style>
-  /* One white sheet on paper (DESIGN.md Direction A). The section carries the gap above the footer. */
   .cta {
-    padding-block: var(--space-section);
+    padding-top: var(--space-block);
   }
 
-  .cta__sheet {
-    padding: var(--sp-6) var(--sp-5);
+  .cta__panel {
     background: var(--white);
     border: 1px solid var(--hairline);
+    border-top: 2px solid var(--ink);
+    border-radius: var(--radius);
   }
 
-  @media (min-width: 640px) {
-    .cta__sheet {
-      padding: var(--sp-7);
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .cta__sheet {
-      padding: var(--sp-8);
-    }
-  }
-
-  .cta__inner {
+  .cta__body {
     display: grid;
     gap: 2.5rem var(--col-gap);
+    padding: clamp(1.25rem, 0.5rem + 3.8vw, 4.5rem);
   }
 
   .cta__copy {
     display: grid;
     gap: 1.5rem;
     justify-items: start;
-    align-content: start;
   }
 
   .cta__title {
-    color: var(--ink);
     max-width: 16ch;
   }
 
@@ -78,10 +68,6 @@ const { title, body, about } = Astro.props;
     }
   }
 
-  .cta__lead {
-    color: var(--text);
-  }
-
   .cta__side {
     display: grid;
     gap: 1.5rem;
@@ -89,13 +75,11 @@ const { title, body, about } = Astro.props;
   }
 
   @media (min-width: 1024px) {
-    .cta__inner {
+    .cta__body {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       align-items: end;
     }
 
-    /* Copy takes 6 columns and the side takes 5, with one empty column between. The red
-       button needs about 297px; the old 4-column side was 259px at 1024 and wrapped its label. */
     .cta__copy {
       grid-column: 1 / span 6;
     }

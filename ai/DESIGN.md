@@ -88,3 +88,11 @@ empty space and an off layout in the hero, the photo gone, the three choice boxe
 new features": the look and layout of the live site (GitHub main, 9d6993e) come back; everything built since stays
 (diagram features, animations, two-tier quote choice, UX-law fixes, honest copy, owner-confirmed facts).
 Direction A is saved as git tag `direction-a-final` (11afcf0) in case it is wanted again.
+Done 2026-10-31 (manager run). The live look also undoes parts of the 10-29 refresh, so these rules are PAUSED
+until the owner says otherwise: rule 4 (mono labels, mono form labels and breadcrumbs are back), rule 5 (sections
+have top rules again), rule 6 (the wire-colour stripe is back on the footer and the closing band), rule 8 as
+written (inner pages end in the live site's dark Next-step band), rule 9's near-ink paragraphs (leads and muted text
+are --steel again, 5.9:1) and the smaller type/spacing tokens (live sizes are back). Still in force: rule 2 (stock
+photos are captioned "Illustrative photo"), rule 3 (no decorative section codes; real codes only), rule 7 (one red
+filled button per screen: the sticky header button turns ink via `data-quiet-cta` while another red button is on
+screen), rule 10 (all approved motion kept). Do not "fix" the live look back toward the refresh without the owner.

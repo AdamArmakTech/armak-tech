@@ -1,6 +1,7 @@
 ---
 import Logo from '../ui/Logo.astro';
 import Button from '../ui/Button.astro';
+import Stripe from '../ui/Stripe.astro';
 import { site, services, serviceArea, FOUNDED } from '../../data/site';
 import { showProjects } from '../../data/content';
 
@@ -12,33 +13,35 @@ const { cta = true } = Astro.props;
 const year = new Date().getFullYear();
 ---
 
-<footer class="site-footer" data-dock-hide>
+<footer class="site-footer surface-ink" data-dock-hide>
+  <Stripe height={4} />
+
   <div class="container">
     {cta && (
     <div class="site-footer__cta">
       <p class="t-h1 site-footer__headline">Let’s scope your<br />next build.</p>
       <div class="site-footer__cta-actions">
         <Button href="/contact/" variant="primary" size="lg">Request a site assessment</Button>
-        <Button href={site.phoneHref} variant="outline" size="lg" icon="phone" class="tel">{site.phone}</Button>
+        <Button href={site.phoneHref} variant="outline-inverse" size="lg" icon="phone" class="tel">{site.phone}</Button>
       </div>
     </div>
     )}
 
     <div class="site-footer__grid">
       <div class="site-footer__brand">
-        <Logo height={44} />
+        <Logo variant="inverse" height={44} />
         <p class="t-small t-muted">{site.description}</p>
       </div>
 
       <nav aria-label="Services" class="site-footer__col">
-        <p class="site-footer__heading">Services</p>
+        <p class="t-mono site-footer__heading">Services</p>
         <ul role="list">
           {services.map((s) => <li><a href={`/services/${s.slug}/`}>{s.name}</a></li>)}
         </ul>
       </nav>
 
       <nav aria-label="Company" class="site-footer__col">
-        <p class="site-footer__heading">Company</p>
+        <p class="t-mono site-footer__heading">Company</p>
         <ul role="list">
           <li><a href="/industries/">Industries</a></li>
           {showProjects && <li><a href="/projects/">Projects</a></li>}
@@ -49,7 +52,7 @@ const year = new Date().getFullYear();
       </nav>
 
       <div class="site-footer__col">
-        <p class="site-footer__heading">Contact</p>
+        <p class="t-mono site-footer__heading">Contact</p>
         <address>
           <ul role="list">
             <li><a class="tel" href={site.phoneHref}>{site.phone}</a></li>
@@ -63,11 +66,11 @@ const year = new Date().getFullYear();
     </div>
 
     <div class="site-footer__area">
-      <p class="site-footer__heading">Serving Southern California</p>
+      <p class="t-mono site-footer__heading">Serving Southern California</p>
       <p class="t-small t-muted">{serviceArea.map((c) => c.name).join(' · ')}</p>
     </div>
 
-    <div class="site-footer__legal">
+    <div class="site-footer__legal t-mono">
       <span>© {year} {site.name}</span>
       <span>Est. {FOUNDED}</span>
       {site.license && <span>{site.license}</span>}
@@ -78,16 +81,7 @@ const year = new Date().getFullYear();
 </footer>
 
 <style>
-  /* Direction A: the footer is paper with ink text and hairline rows (pages end light). */
   .site-footer {
-    margin-top: 0;
-    background: var(--paper);
-    color: var(--ink);
-    border-top: 1px solid var(--hairline);
-  }
-
-  /* Pages that end in a CTA sheet carry their own gap in the section padding; others get one here. */
-  :global(main:not(:has(.cta-band:last-child))) ~ .site-footer {
     margin-top: var(--space-section);
   }
 
@@ -95,7 +89,7 @@ const year = new Date().getFullYear();
     display: grid;
     gap: 2rem;
     padding-block: var(--space-block);
-    border-bottom: 1px solid var(--hairline);
+    border-bottom: 1px solid var(--hairline-inverse);
   }
 
   .site-footer__cta-actions {
@@ -145,9 +139,7 @@ const year = new Date().getFullYear();
   }
 
   .site-footer__heading {
-    font-size: var(--fs-small);
-    font-weight: 500;
-    color: var(--steel);
+    color: var(--steel-light);
     margin-bottom: 1rem;
   }
 
@@ -167,24 +159,19 @@ const year = new Date().getFullYear();
     /* Short words (About, Terms) were under 44px wide: pad the sides, cancelled by negative margin */
     padding-inline: 0.5rem;
     margin-inline: -0.5rem;
-    color: var(--ink);
-    text-decoration: underline;
-    text-decoration-color: transparent;
-    text-underline-offset: 3px;
-    transition: text-decoration-color var(--dur-fast) ease;
+    transition: color var(--dur-fast) ease;
   }
 
-  .site-footer__col a:hover,
-  .site-footer__legal a:hover {
-    text-decoration-color: currentColor;
+  @media (hover: hover) and (pointer: fine) {
+    .site-footer__col a:hover,
+    .site-footer__legal a:hover {
+      color: var(--logo-red);
+    }
   }
 
   .site-footer__legal a {
-    text-decoration-color: currentColor;
-  }
-
-  .site-footer__legal a:hover {
-    text-decoration-color: transparent;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   address {
@@ -193,7 +180,7 @@ const year = new Date().getFullYear();
 
   .site-footer__area {
     padding-block: 2rem;
-    border-top: 1px solid var(--hairline);
+    border-top: 1px solid var(--hairline-inverse);
   }
 
   .site-footer__legal {
@@ -201,9 +188,7 @@ const year = new Date().getFullYear();
     flex-wrap: wrap;
     gap: 0.5rem 2rem;
     padding-block: 1.5rem 2rem;
-    border-top: 1px solid var(--hairline);
-    font-size: var(--fs-small);
-    font-weight: 500;
-    color: var(--steel);
+    border-top: 1px solid var(--hairline-inverse);
+    color: var(--steel-light);
   }
 </style>

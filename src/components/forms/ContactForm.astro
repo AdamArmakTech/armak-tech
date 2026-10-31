@@ -50,7 +50,7 @@ const f = (name: string) => `${id}-${name}`;
 
       <!-- First question: which way to start (owner decision 2026-10-31). Native radios: required, keyboard, no-JS post. -->
       <fieldset class="cform__tiers" data-tiers aria-describedby={f('tier-error')}>
-        <legend class="cform__legend">How would you like to start? <span class="cform__req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>
+        <legend class="cform__legend field__label">How would you like to start? <span class="cform__req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>
         <div class="cform__tier-list">
           {assessmentTiers.map((t) => (
             <label class="tier">
@@ -200,18 +200,6 @@ const f = (name: string) => `${id}-${name}`;
     color: var(--steel);
   }
 
-  /* Sentence-case sans labels (DESIGN.md rule 4): these are not tester readouts */
-  .cform__count,
-  .cform__about .t-mono,
-  .cform__req-note,
-  .cform__success-label {
-    font-family: var(--font-sans);
-    font-size: var(--fs-small);
-    font-weight: 500;
-    letter-spacing: normal;
-    text-transform: none;
-  }
-
   .cform__bars {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -271,7 +259,7 @@ const f = (name: string) => `${id}-${name}`;
   }
 
   .cform__req {
-    color: var(--steel);
+    color: var(--signal);
   }
 
   /* Two-tier choice: full-width selectable rows, ink when selected (no red, no green) */
@@ -290,10 +278,6 @@ const f = (name: string) => `${id}-${name}`;
   .cform__legend {
     padding: 0;
     margin-bottom: 0.875rem;
-    font-family: var(--font-sans);
-    font-size: var(--fs-small);
-    font-weight: 500;
-    color: var(--text);
   }
 
   .cform__tier-list {
@@ -316,8 +300,10 @@ const f = (name: string) => `${id}-${name}`;
     transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
   }
 
-  .tier:hover {
-    border-color: var(--ink);
+  @media (hover: hover) and (pointer: fine) {
+    .tier:hover {
+      border-color: var(--ink);
+    }
   }
 
   .tier:has(input:checked) {
@@ -386,7 +372,7 @@ const f = (name: string) => `${id}-${name}`;
     padding: 0.75rem 1rem;
     background: var(--paper);
     border: 1px solid var(--hairline);
-    border-left: 3px solid var(--steel);
+    border-left: 3px solid var(--signal);
     border-radius: var(--radius);
   }
 
@@ -414,8 +400,10 @@ const f = (name: string) => `${id}-${name}`;
     margin-inline-end: -0.75rem;
   }
 
-  .cform__about-change:hover {
-    color: var(--ink);
+  @media (hover: hover) and (pointer: fine) {
+    .cform__about-change:hover {
+      color: var(--ink);
+    }
   }
 
   .cform__prefill {

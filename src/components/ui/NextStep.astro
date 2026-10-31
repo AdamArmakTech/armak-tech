@@ -5,9 +5,7 @@
  * so people learn it once and recognize it everywhere.
  *
  *   about  — a service slug or topic; carried into the contact form so it opens on the right thing
- *   tone   — 'light' on paper/white surfaces (the closing white sheet), 'inverse' on an ink band
- *
- * Route titles and details are sentence-case sans (DESIGN.md rule 4); rows are hairline-separated (rule 5).
+ *   tone   — 'light' on paper/white panels, 'inverse' on the dark PageCta panel
  */
 import { ArrowRight } from '@lucide/astro';
 import Button from './Button.astro';
@@ -102,8 +100,6 @@ const routes = [
 
   .next__title {
     font-weight: 500;
-    color: var(--ink);
-    transition: color var(--dur-fast) ease;
   }
 
   .next__detail {
@@ -127,10 +123,6 @@ const routes = [
   }
 
   /* Dark panel */
-  .next--inverse .next__title {
-    color: var(--paper);
-  }
-
   .next--inverse {
     --line: var(--hairline-inverse);
     --muted: var(--steel-light);
