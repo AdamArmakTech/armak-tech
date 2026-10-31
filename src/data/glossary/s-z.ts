@@ -99,8 +99,8 @@ export const entries: GlossaryEntry[] = [
     analogy: 'Like a contractor looking at your kitchen before quoting a remodel, rather than pricing it from a description.',
     qa: [
       {
-        q: 'Why can’t a quote be done from floor plans alone?',
-        a: 'Plans often don’t show hard ceilings, firewalls, asbestos concerns, crowded pathways or old cable that must be removed. These affect labor and materials, so seeing the space usually produces a more accurate and realistic quote.',
+        q: 'Why is a quote from floor plans only a rough number?',
+        a: 'Plans often don’t show hard ceilings, firewalls, asbestos concerns, crowded pathways or old cable that must be removed. These affect labor and materials. A quote from plans and photos gives you a useful ballpark; walking the space is what turns it into an accurate estimate.',
       },
       {
         q: 'What should I have ready for a survey?',

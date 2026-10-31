@@ -358,6 +358,6 @@ export const installPhases = [
 /* ── Two-tier assessment copy (used in D, the plan/contact assessment choice) ──
  * Owner-approved 2026-10-31, verbatim. */
 export const assessmentTiers = [
-  { id: 'quote', value: 'Free rough quote', title: 'Free rough quote', body: 'Tell us about the job and send plans or photos if you have them. We’ll give you a ballpark number. No site visit.' },
+  { id: 'quote', value: 'Free rough quote', title: 'Free rough quote', body: 'Tell us about the job, and email any plans or photos to contact@armak.tech. We’ll give you a ballpark number. No site visit.' },
   { id: 'onsite', value: 'On-site assessment (paid)', title: 'On-site assessment (paid)', body: 'A technician walks your site, checks the closets, pathways and power, and gives you an accurate estimate. The fee is credited toward your project if you hire us.' },
 ] as const;

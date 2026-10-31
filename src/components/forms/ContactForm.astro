@@ -34,7 +34,7 @@ const f = (name: string) => `${id}-${name}`;
   <form class="cform__form" action={endpoint} method="POST" data-cform-form>
     <!-- Web3Forms config (same fields as the original site's form) -->
     <input type="hidden" name="access_key" value={accessKey} />
-    <input type="hidden" name="subject" value="New Site Assessment Inquiry: Armak Technologies" />
+    <input type="hidden" name="subject" value="New Site Assessment Inquiry: Armak Technologies" data-subject />
     <input type="hidden" name="from_name" value="Armak Website" />
     <!-- Set from the link that opened the form (a glossary term, "estimate", …); shows up in the email -->
     <input type="hidden" name="topic" value="" />
@@ -639,6 +639,15 @@ const f = (name: string) => `${id}-${name}`;
     const status = root.querySelector<HTMLElement>('[data-status]');
     const success = root.querySelector<HTMLElement>('[data-success]');
     if (!form || steps.length !== 2 || !next || !back || !submit || !status || !success) return;
+    // Email subject follows the chosen option so free quotes are easy to tell apart in the inbox.
+    // Set on change, and again on submit so a choice preselected from a link (?start=quote) counts too.
+    const subjectInput = root.querySelector<HTMLInputElement>('[data-subject]');
+    const syncSubject = () => {
+      const picked = root.querySelector<HTMLInputElement>('input[name="request_type"]:checked:not(:disabled)');
+      if (subjectInput && picked) subjectInput.value = picked.dataset.tier === 'quote' ? 'Free Quote Request: Armak Technologies' : 'New Site Assessment Inquiry: Armak Technologies';
+    };
+    root.querySelectorAll<HTMLInputElement>('input[name="request_type"]').forEach((r) => r.addEventListener('change', syncSubject));
+    form.addEventListener('submit', syncSubject);
 
     const phone = root.dataset.phone ?? '';
     const phoneHref = `tel:+1${phone.replace(/\D/g, '')}`;
