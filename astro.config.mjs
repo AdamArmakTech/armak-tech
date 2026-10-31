@@ -39,7 +39,7 @@ export default defineConfig({
       // Internal review pages never go in the sitemap.
       // TODO: the Projects area is hidden until real projects exist (see showProjects in
       // src/data/content.ts) — remove the '/projects/' exclusion when real projects are added.
-      filter: (page) => !page.includes('/styleguide') && !page.includes('/dev/') && !page.includes('/projects/'),
+      filter: (page) => !page.includes('/styleguide') && !page.includes('/projects/'),
     }),
   ],
 });

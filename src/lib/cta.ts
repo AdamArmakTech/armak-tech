@@ -33,4 +33,3 @@ export function contactHref({ about, mode, intent, note }: ContactLink = {}): st
 }
 
 export const checklistHref = '/plan/#checklist';
-export const estimatorHref = '/plan/#estimator';

@@ -4,7 +4,6 @@
  * breadcrumb → label (text only) → h1 (t-h1) → lead → optional actions (default slot).
  * Optional `aside` slot sits to the right on desktop; optional `spec` renders a SpecStrip foot.
  * Extra labels (e.g. a "Placeholder" flag) go in the `labels` slot next to the main label.
- * `code` and `tone` are accepted so older callers still compile; neither is shown (decorative codes are gone).
  */
 import Label from '../ui/Label.astro';
 import SpecStrip from '../ui/SpecStrip.astro';
@@ -15,8 +14,6 @@ interface Crumb {
 }
 
 interface Props {
-  /** Accepted for compatibility, not rendered. */
-  code?: string;
   label?: string;
   title: string;
   lead?: string;
@@ -25,8 +22,6 @@ interface Props {
   spec?: string[];
   labelTone?: 'default' | 'signal';
   titleId?: string;
-  /** Accepted for compatibility, not used. */
-  tone?: 'paper' | 'ink';
 }
 
 const { label, title, lead, crumbs, spec, labelTone = 'default', titleId = 'page-title' } = Astro.props;

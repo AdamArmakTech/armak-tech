@@ -23,7 +23,7 @@ export const defaultOgImage = {
 
 /** Same @id the service pages use for their `provider`, so search engines merge the two */
 export const businessId = `${site.url}/#business`;
-export const websiteId = `${site.url}/#website`;
+const websiteId = `${site.url}/#website`;
 
 const telephone = site.phoneHref.replace(/^tel:/, '');
 

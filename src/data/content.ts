@@ -3,8 +3,8 @@
  * Page content shared across the homepage and inner pages.
  *
  * ⚠ PLACEHOLDER POLICY: anything Armak hasn't supplied yet is marked `placeholder: true`
- * and renders with a visible "Placeholder" tag. `placeholderCount()` is logged at build so
- * nothing invented ships unnoticed. Replace with real content before launch.
+ * and renders with a visible "Placeholder" tag. Placeholders are never published
+ * (see `publishedProjects` below). Replace with real content before launch.
  */
 import type { ImageMetadata } from 'astro';
 import { site, type ServiceSlug } from './site';
@@ -176,20 +176,6 @@ export const projects: Project[] = [
   },
 ];
 
-/* ── Testimonials ── empty until real, permissioned quotes are supplied (section hides itself). */
-export interface Testimonial {
-  quote: string;
-  name: string;
-  role: string;
-  company: string;
-}
-
-export const testimonials: Testimonial[] = [];
-
-export function placeholderCount() {
-  return projects.filter((p) => p.placeholder).length;
-}
-
 /**
  * Only real projects are ever shown. While every project is a placeholder, the whole Projects
  * area (homepage section, nav/footer links, /projects/ pages) is hidden. Add a real project with
@@ -205,7 +191,7 @@ export const showProjects = publishedProjects.length > 0;
  *   'no' | null shown nowhere (not in the drawing, the sheet or the chart)
  * The owner confirmed all ten as defaults in chat on 2026-10-30.
  * Numbers on the site come only from ai/research/cable-plant-lifespan-sources.md. */
-export type Answer = null | 'yes' | 'sometimes' | 'no';
+type Answer = null | 'yes' | 'sometimes' | 'no';
 
 export interface SignatureItem {
   confirmed: Answer;

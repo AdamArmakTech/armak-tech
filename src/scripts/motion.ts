@@ -2,7 +2,6 @@
  * ARMAK — site-wide motion.
  *
  *  [data-reveal]          fade/rise in once when scrolled into view
- *  [data-reveal-stagger]  on a parent: children with [data-reveal] get staggered delays
  *  [data-split]           heading reveals line-by-line (GSAP SplitText, loaded on demand)
  *  [data-count]           number counts up once when scrolled into view
  *
@@ -27,13 +26,6 @@ function showEverything() {
 }
 
 function initReveals() {
-  document.querySelectorAll<HTMLElement>('[data-reveal-stagger]').forEach((group) => {
-    const step = Number(group.dataset.revealStagger) || 80;
-    group.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el, i) => {
-      el.style.setProperty('--reveal-delay', `${i * step}ms`);
-    });
-  });
-
   const io = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {

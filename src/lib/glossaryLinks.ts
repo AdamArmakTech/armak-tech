@@ -172,9 +172,7 @@ export function createPageLinker() {
   return { link: (text: string, opts: LinkOptions = {}) => linkWith(text, opts, seen) };
 }
 
-/** Single-text version (no memory between calls). Kept for backwards compatibility. */
+/** Single-text version (no memory between calls). */
 export function linkGlossaryTerms(text: string, opts: LinkOptions = {}): string {
   return linkWith(text, opts, new Set());
 }
-
-export default linkGlossaryTerms;

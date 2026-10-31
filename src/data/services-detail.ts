@@ -19,7 +19,7 @@ import deskPhone from '../assets/photos/desk-phone.jpg';
 import conferenceRoom from '../assets/photos/conference-room.jpg';
 
 /** A spec line: a plain string (real standard or code, mono) or a plain phrase (sans) */
-export type Standard = string | { text: string; plain: true };
+type Standard = string | { text: string; plain: true };
 
 export interface Capability {
   title: string;

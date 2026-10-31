@@ -37,7 +37,7 @@ if (dangling.length) console.warn(`[glossary] dropped ${dangling.length} related
 export const bySlug = new Map(glossary.map((e) => [e.slug, e]));
 
 /** "#" for terms starting with a digit, otherwise the uppercase first letter */
-export const letterOf = (term: string) => {
+const letterOf = (term: string) => {
   const c = term.trim()[0]?.toUpperCase() ?? '#';
   return /[A-Z]/.test(c) ? c : '#';
 };

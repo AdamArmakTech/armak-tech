@@ -165,10 +165,6 @@ h4 {
   font-weight: 500;
 }
 
-.t-accent {
-  color: var(--signal);
-}
-
 /* ── Layout primitives ─────────────────────────────────── */
 .container {
   width: 100%;
@@ -185,17 +181,6 @@ h4 {
   padding-block: var(--space-block);
 }
 
-.grid-12 {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--col-gap);
-}
-
-.rule {
-  border: 0;
-  border-top: 1px solid var(--hairline);
-}
-
 .surface-ink {
   background: var(--ink);
   color: var(--paper);
@@ -204,10 +189,6 @@ h4 {
 .surface-ink .t-muted,
 .surface-ink .t-lead {
   color: var(--steel-light);
-}
-
-.surface-white {
-  background: var(--white);
 }
 
 .visually-hidden {
