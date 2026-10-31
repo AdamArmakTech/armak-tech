@@ -30,3 +30,6 @@ index.html.legacy
 .env
 # Astro generated types
 .astro
+
+# taste-skill dealt sheets (local working files)
+.taste-skill/
