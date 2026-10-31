@@ -19,8 +19,10 @@ const usedCategories = (Object.keys(categoryLabels) as GlossaryCategory[]).filte
 );
 const lettersWithTerms = new Set(groups.map((g) => g.letter));
 
+// Search ignores case, spaces, hyphens and dots, and treats "fibre" as "fiber" (so "wifi" finds Wi-Fi, "cat6" finds Cat 6).
+const squash = (t: string) => t.toLowerCase().replace(/fibre/g, 'fiber').replace(/[\s.\-]+/g, '');
 const haystack = (e: (typeof glossary)[number]) =>
-  [e.term, e.stands_for, ...(e.aka ?? []), e.definition].filter(Boolean).join(' ').toLowerCase();
+  squash([e.term, e.stands_for, ...(e.aka ?? []), e.definition].filter(Boolean).join(' '));
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -182,6 +184,8 @@ const jsonLd = {
     const closeDrawer = () => drawer.close();
 
     drawer.addEventListener('close', () => {
+      drawer.style.transition = '';
+      drawer.style.transform = '';
       window.armakLenis?.start();
       history.replaceState(null, '', location.pathname + location.search);
     });
@@ -191,6 +195,57 @@ const jsonLd = {
       if (e.target === drawer) closeDrawer();
     });
     document.querySelector('[data-gl-close]')?.addEventListener('click', closeDrawer);
+
+    // Phones: drag the header down to dismiss the sheet. Only the header starts a drag, so the content still scrolls.
+    const dragHead = drawer.querySelector<HTMLElement>('.gl-drawer__head');
+    const phone = window.matchMedia('(max-width: 639px)');
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (dragHead) {
+      let startY = 0;
+      let lastY = 0;
+      let lastT = 0;
+      let velocity = 0;
+      let dragging = false;
+      let pid = -1;
+      const settle = (ms: number, y: string) => {
+        drawer.style.transition = calm.matches ? 'none' : `transform ${ms}ms var(--ease-out)`;
+        drawer.style.transform = y;
+      };
+      dragHead.addEventListener('pointerdown', (e) => {
+        if (!phone.matches || !drawer.open || (e.target as Element).closest('button')) return;
+        dragging = true;
+        pid = e.pointerId;
+        startY = lastY = e.clientY;
+        lastT = e.timeStamp;
+        velocity = 0;
+        drawer.style.transition = 'none';
+        dragHead.setPointerCapture(pid);
+      });
+      dragHead.addEventListener('pointermove', (e) => {
+        if (!dragging || e.pointerId !== pid) return;
+        const dt = e.timeStamp - lastT;
+        if (dt > 0) velocity = (e.clientY - lastY) / dt;
+        lastY = e.clientY;
+        lastT = e.timeStamp;
+        drawer.style.transform = `translateY(${Math.max(0, e.clientY - startY)}px)`;
+      });
+      const release = (e: PointerEvent) => {
+        if (!dragging || e.pointerId !== pid) return;
+        dragging = false;
+        const dy = Math.max(0, e.clientY - startY);
+        if (dy > drawer.offsetHeight * 0.3 || velocity > 0.6) {
+          if (calm.matches) closeDrawer();
+          else {
+            settle(160, 'translateY(100%)');
+            window.setTimeout(closeDrawer, 160);
+          }
+        } else if (dy > 0) {
+          settle(240, 'translateY(0)');
+        }
+      };
+      dragHead.addEventListener('pointerup', release);
+      dragHead.addEventListener('pointercancel', release);
+    }
 
     // Term summaries open the drawer instead of expanding inline
     root.addEventListener('click', (e) => {
@@ -229,7 +284,7 @@ const jsonLd = {
     let category = 'all';
 
     const applyFilter = () => {
-      const q = (search?.value ?? '').trim().toLowerCase();
+      const q = (search?.value ?? '').toLowerCase().replace(/fibre/g, 'fiber').replace(/[\s.\-]+/g, '');
       let shown = 0;
 
       for (const li of items) {
@@ -545,8 +600,13 @@ const jsonLd = {
   }
 
   .term__summary:hover .term__chev {
-    color: var(--signal);
-    transform: translateX(3px);
+    color: var(--ink);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .term__summary:hover .term__chev {
+      transform: translateX(3px);
+    }
   }
 
   .term[open] .term__chev {
@@ -596,6 +656,7 @@ const jsonLd = {
   }
 
   .gl-drawer__head {
+    touch-action: none;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -614,6 +675,13 @@ const jsonLd = {
 
   .gl-drawer__close:hover {
     background: var(--white);
+  }
+
+  /* Related-term links in the sheet: 44px tap area, no visual change (padding grows the box, margin cancels it) */
+  .gl-drawer__body :global(a:not(.btn)) {
+    display: inline-block;
+    padding-block: 10px;
+    margin-block: -10px;
   }
 
   .gl-drawer__title {

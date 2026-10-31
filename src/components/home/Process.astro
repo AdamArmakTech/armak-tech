@@ -12,7 +12,9 @@ import AssessDemo from '../process/AssessDemo.astro';
 import DesignDemo from '../process/DesignDemo.astro';
 import InstallDemo from '../process/InstallDemo.astro';
 import SupportDemo from '../process/SupportDemo.astro';
-import { process as steps, pillars } from '../../data/content';
+import JobTimeline from '../process/JobTimeline.astro';
+import RoomForLater from '../process/RoomForLater.astro';
+import { process as steps, pillars, assessmentTiers } from '../../data/content';
 
 const demos: Record<string, any> = {
   '01': AssessDemo,
@@ -32,10 +34,12 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
       intro="The same five steps on every job, from a single-rack retrofit to a multi-site rollout. Nothing is signed off until it has been tested and documented."
     />
 
+    <JobTimeline />
+
     <div class="steps" data-steps>
       <div class="steps__tabs-wrap">
         <p id="steps-tabs-label" class="t-small t-muted steps__hint">The five steps</p>
-        <div class="steps__tabs" role="tablist" aria-labelledby="steps-tabs-label" aria-orientation="vertical">
+        <div class="steps__tabs" role="tablist" aria-labelledby="steps-tabs-label" aria-orientation="vertical" data-tabs>
           {steps.map((s, i) => (
             <button
               type="button"
@@ -71,6 +75,19 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
                 <p class="steps__intro-label"><span class="t-mono">Step <span class="steps__num"><span class="steps__num-v">{s.code}</span></span></span> · {s.title}</p>
                 <h3 class="visually-hidden">{s.title}</h3>
                 <p class="steps__intro-body">{s.body}</p>
+                {s.code === '01' && (
+                  <div class="steps__ways">
+                    <p class="steps__ways-lead">Two ways to start:</p>
+                    <ul role="list" class="steps__ways-list">
+                      {assessmentTiers.map((t) => (
+                        <li class="steps__way">
+                          <strong class="steps__way-title">{t.title}</strong>
+                          <span class="steps__way-body">{t.body}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
               {s.code === '04' ? <CableTest variant="full" id="cable-test" /> : Demo && <Demo />}
             </div>
@@ -95,6 +112,8 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
         ))}
       </ul>
     </div>
+
+    <RoomForLater />
   </div>
 </section>
 
@@ -146,6 +165,8 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 
     function select(i: number, { focus = false, play = false } = {}) {
       const prev = index;
+      // Forward (down the list, or wrapping 05 to 01) or back
+      const dir = i >= tabs.length ? 1 : i < 0 ? -1 : Math.sign(i - prev) || 1;
       index = (i + tabs.length) % tabs.length;
       tabs.forEach((t, n) => {
         const on = n === index;
@@ -153,20 +174,22 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
         t.tabIndex = on ? 0 : -1;
       });
       panels.forEach((p, n) => p.classList.toggle('is-active', n === index));
-      if (index !== prev) tickNumber(panels[index], tabs[prev].querySelector('.steps__code')?.textContent ?? '');
+      if (index !== prev) tickNumber(panels[index], tabs[prev].querySelector('.steps__code')?.textContent ?? '', dir);
+      moveSlider();
       if (focus) tabs[index].focus();
       if (play) playDemo(panels[index]);
     }
 
-    /** The step number in the panel label ticks over: the old number slides up and out, the new one slides in. */
-    const tickNumber = (panel: HTMLElement, oldCode: string) => {
+    /** The step number in the panel label ticks over. Forward: the old number slides up and out, the new one
+     *  slides in from below. Back: the same, the other way. Transform and opacity only. */
+    const tickNumber = (panel: HTMLElement, oldCode: string, dir: number) => {
       if (reduceMotion) return;
       const num = panel.querySelector<HTMLElement>('.steps__num');
       const value = num?.querySelector<HTMLElement>('.steps__num-v');
       if (!num || !value || !oldCode) return;
       const css = getComputedStyle(document.documentElement);
-      const raw = css.getPropertyValue('--dur-fast').trim();
-      const ms = (raw.endsWith('ms') ? parseFloat(raw) : parseFloat(raw) * 1000) || 160;
+      const raw = css.getPropertyValue('--dur').trim();
+      const ms = (raw.endsWith('ms') ? parseFloat(raw) : parseFloat(raw) * 1000) || 320;
       const easing = css.getPropertyValue('--ease-out').trim() || 'ease-out';
       const opts = { duration: ms, easing, fill: 'both' as FillMode };
       num.querySelector('.steps__num-old')?.remove();
@@ -176,13 +199,36 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
       ghost.textContent = oldCode;
       num.append(ghost);
       value.animate(
-        [{ transform: 'translateY(100%)', opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }],
+        [{ transform: `translateY(${dir * 100}%)`, opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }],
         opts,
       );
       ghost
-        .animate([{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(-100%)', opacity: 0 }], opts)
+        .animate([{ transform: 'translateY(0)', opacity: 1 }, { transform: `translateY(${dir * -100}%)`, opacity: 0 }], opts)
         .finished.then(() => ghost.remove(), () => ghost.remove());
     };
+
+    /** One highlight behind the active tab. It is a 1px square moved and stretched with transform only,
+     *  so it never triggers layout. Created here, so without JS the tabs are untouched. */
+    const tabsEl = root.querySelector<HTMLElement>('[data-tabs]');
+    let slider: HTMLElement | null = null;
+    function moveSlider() {
+      if (!tabsEl) return;
+      const tab = tabs[index];
+      if (!tab || !tab.offsetWidth) return;
+      if (!slider) {
+        slider = document.createElement('span');
+        slider.className = 'steps__slider';
+        slider.setAttribute('aria-hidden', 'true');
+        tabsEl.prepend(slider);
+        root.classList.add('has-slider');
+      }
+      slider.style.transform = `translate(${tab.offsetLeft}px, ${tab.offsetTop}px) scale(${tab.offsetWidth}, ${tab.offsetHeight})`;
+      // Turn the transition on only after the first placement, so it does not slide in from the corner
+      if (!slider.classList.contains('is-ready')) requestAnimationFrame(() => slider?.classList.add('is-ready'));
+    }
+    moveSlider();
+    new ResizeObserver(moveSlider).observe(tabsEl ?? root);
+    document.fonts?.ready.then(moveSlider);
 
     const takeOver = () => {
       if (userTookOver) return;
@@ -255,6 +301,14 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
       true,
     );
     if (location.hash === '#cable-test') openCertify();
+
+    // The design demo's labeled jacks open the trace demo (step 03). TraceDemo scrolls to it and lights the jack.
+    const trace = panels.findIndex((p) => p.querySelector('[data-demo="trace"]'));
+    document.addEventListener('armak:trace', () => {
+      if (trace < 0) return;
+      takeOver();
+      select(trace, { play: true });
+    });
 
     // Auto-advance only while the section is on screen
     new IntersectionObserver(
@@ -397,6 +451,37 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     border-color: var(--ink);
   }
 
+  /* Sliding highlight: one element behind the tabs. The selected tab itself goes clear and shows it. */
+  .steps__tabs {
+    position: relative;
+  }
+
+  .steps :global(.steps__slider) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 1px;
+    background: var(--ink);
+    transform-origin: 0 0;
+    pointer-events: none;
+  }
+
+  .steps :global(.steps__slider).is-ready {
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  .steps.has-slider .steps__tab[aria-selected='true'],
+  .steps.has-slider .steps__tab[aria-selected='true']:hover {
+    background: transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .steps :global(.steps__slider).is-ready {
+      transition: none;
+    }
+  }
+
   .steps__tab[aria-selected='true'] {
     background: var(--ink);
     border-color: var(--ink);
@@ -492,9 +577,45 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     display: inline-block;
   }
 
-  .steps__num-old {
+  .steps__num :global(.steps__num-old) {
     position: absolute;
     inset: 0;
+  }
+
+  /* Two ways to start (Assess step): two rows, a hairline between them (rule 5) */
+  .steps__ways {
+    display: grid;
+    gap: var(--sp-2);
+    max-width: 40em;
+  }
+
+  .steps__ways-lead {
+    color: var(--text);
+    font-size: var(--fs-small);
+  }
+
+  .steps__ways-list {
+    display: grid;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .steps__way {
+    display: grid;
+    gap: var(--sp-1);
+    padding: var(--sp-3) 0;
+    color: var(--text);
+    font-size: var(--fs-small);
+    line-height: 1.5;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .steps__way:last-child {
+    border-bottom: 0;
+  }
+
+  .steps__way-title {
+    font-weight: 600;
+    color: var(--ink);
   }
 
   .steps__intro-body {

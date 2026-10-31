@@ -131,6 +131,9 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     const menuToggle = header.querySelector<HTMLButtonElement>('[data-menu-toggle]');
     const menu = header.querySelector<HTMLElement>('[data-menu]');
 
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const timers = new WeakMap<HTMLElement, number>();
+
     const setOpen = (toggle: HTMLButtonElement | null, panel: HTMLElement | null, open: boolean) => {
       if (!toggle || !panel) return;
       toggle.setAttribute('aria-expanded', String(open));
@@ -138,8 +141,24 @@ const isActive = (href: string) => path === href || path.startsWith(href);
         const label = toggle.querySelector('[data-menu-label]');
         if (label) label.textContent = open ? 'Close menu' : 'Menu';
       }
-      panel.hidden = !open;
-      header.toggleAttribute('data-open', !!(mega && !mega.hidden) || !!(menu && !menu.hidden));
+      // Drop in/out: `hidden` comes off first so the transition can run, and goes back on once the
+      // close transition ends. While closing, the panel is inert so it can't take focus.
+      window.clearTimeout(timers.get(panel));
+      if (open) {
+        panel.hidden = false;
+        panel.inert = false;
+        void panel.offsetHeight; // commit the start state before the open transition
+        panel.setAttribute('data-shown', '');
+      } else if (!panel.hidden) {
+        panel.removeAttribute('data-shown');
+        panel.inert = true;
+        if (reduceMotion.matches) panel.hidden = true;
+        else timers.set(panel, window.setTimeout(() => { panel.hidden = true; }, 170));
+      }
+      header.toggleAttribute(
+        'data-open',
+        megaToggle?.getAttribute('aria-expanded') === 'true' || menuToggle?.getAttribute('aria-expanded') === 'true',
+      );
     };
 
     megaToggle?.addEventListener('click', () => {
@@ -266,6 +285,18 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     align-items: center;
     gap: 2rem;
     height: var(--header-h);
+  }
+
+  /* Logo link: 36 px image, 44 px tall tap area (invisible, vertical only so it never reaches the buttons beside it) */
+  .site-header :global(.site-header__logo) {
+    position: relative;
+  }
+
+  .site-header :global(.site-header__logo)::after {
+    content: "";
+    position: absolute;
+    inset-block: -4px;
+    inset-inline: 0;
   }
 
   /* ── Primary nav (desktop) ── */
@@ -421,6 +452,30 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     background: var(--paper);
     border-bottom: 1px solid var(--hairline);
     box-shadow: var(--shadow-raise);
+  }
+
+  /* Drop from the header: start state is up 8px and clear; close is faster than open */
+  .mega,
+  .mobile-menu {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0);
+    transition:
+      opacity 160ms var(--ease-out),
+      transform 160ms var(--ease-out);
+  }
+
+  .mega[data-shown],
+  .mobile-menu[data-shown] {
+    opacity: 1;
+    transform: none;
+    transition-duration: 240ms;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mega,
+    .mobile-menu {
+      transition: none;
+    }
   }
 
   .mega__inner {

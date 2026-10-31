@@ -28,7 +28,9 @@ const linker = createPageLinker();
             <span class="faq__qtext">{f.q}</span>
             <Plus class="faq__icon" size={22} stroke-width={1.5} aria-hidden="true" />
           </summary>
-          <p class="faq__a" set:html={linker.link(f.a, { exclude: serviceName ? [serviceName] : [] })} />
+          <div class="faq__panel">
+            <p class="faq__a" set:html={linker.link(f.a, { exclude: serviceName ? [serviceName] : [] })} />
+          </div>
         </details>
       ))}
     </div>
@@ -92,6 +94,25 @@ const linker = createPageLinker();
 
   .faq__item[open] :global(.faq__icon) {
     transform: rotate(45deg);
+  }
+
+  /* Unfold: the details content slot is kept rendered so its grid row can animate 0fr to 1fr.
+     Browsers without ::details-content still open it natively, just without the motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .faq__item::details-content {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 240ms var(--ease-out), content-visibility 240ms allow-discrete;
+    }
+
+    .faq__item[open]::details-content {
+      grid-template-rows: 1fr;
+    }
+
+    .faq__panel {
+      min-height: 0;
+      overflow: hidden;
+    }
   }
 
   .faq__a {

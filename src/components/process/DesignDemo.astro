@@ -1,10 +1,11 @@
 ---
 /**
  * Step 02 · Design — "Site plan".
- * The same office as the Assess demo; the plan builds up layer by layer — data drops, Wi-Fi
+ * The same office as the Assess demo; the plan is drawn as you watch — walls, data drops, Wi-Fi
  * coverage, cameras, then every cable route back to the closet — while a parts list counts up.
+ * Four jacks then show their codes; tapping one opens the same jack in the Trace demo (step 03).
  * Teaches: the price comes from a real drawing, not a guess. After it plays, the legend chips
- * highlight one layer at a time. Server-renders the finished plan (no-JS / reduced motion).
+ * highlight one layer at a time. Server-renders the finished plan with the codes (no-JS / reduced motion).
  */
 import DemoFrame from './DemoFrame.astro';
 import OfficePlan from './OfficePlan.astro';
@@ -29,6 +30,14 @@ const cams = [
   { x: 286, y: 116, cone: '286,116 180,150 240,190' }, // hallway over the open office
 ];
 
+// Four drops are the same jacks the Trace demo (step 03) lets you pick
+const linked = [
+  { id: '2B-15', x: 100, y: 72 },
+  { id: '2B-14', x: 176, y: 72 },
+  { id: '2C-03', x: 300, y: 84 },
+  { id: '2A-07', x: 206, y: 166 },
+];
+
 // Every device gets a branch down/up to the ceiling trunk; the trunk runs back to the rack
 const devices = [...drops.map(([x, y]) => ({ x, y })), ...aps, ...cams];
 const branches = devices.map((d) => `M${d.x} ${d.y} V${TRUNK_Y}`);
@@ -48,40 +57,53 @@ const layers = [
   caption="The walk becomes a drawing: every jack, access point and camera placed, Wi-Fi coverage overlapping so there are no dead zones, and every cable routed home to the closet. The quote comes from this plan."
 >
   <div class="ds" data-focus="">
-    <svg class="ds__plan" viewBox="0 0 400 262" role="img" data-fit-text aria-label="Office floor plan with planned data drops, Wi-Fi coverage, camera views and cable routes back to the telecom closet">
-      <!-- Wi-Fi coverage (under everything) -->
-      <g class="ds__layer is-on" data-ds-layer="wifi">
-        {aps.map((a) => <circle class="ds__cover" cx={a.x} cy={a.y} r={a.r} />)}
-      </g>
-      <!-- camera views -->
-      <g class="ds__layer is-on" data-ds-layer="cams">
-        {cams.map((c) => <polygon class="ds__cone" points={c.cone} />)}
-      </g>
+    <div class="ds__stage">
+      <svg class="ds__plan" viewBox="0 0 400 262" role="img" data-fit-text aria-label="Office floor plan with planned data drops, Wi-Fi coverage, camera views and cable routes back to the telecom closet">
+        <!-- Wi-Fi coverage (under everything) -->
+        <g class="ds__layer is-on" data-ds-layer="wifi">
+          {aps.map((a) => <circle class="ds__cover" cx={a.x} cy={a.y} r={a.r} />)}
+        </g>
+        <!-- camera views -->
+        <g class="ds__layer is-on" data-ds-layer="cams">
+          {cams.map((c) => <polygon class="ds__cone" points={c.cone} />)}
+        </g>
 
-      <OfficePlan />
+        <OfficePlan />
 
-      <!-- cable routes: branches + trunk back to the rack -->
-      <g class="ds__layer is-on" data-ds-layer="routes">
-        {branches.map((d) => <path class="ds__route" d={d} pathLength="1" />)}
-        <path class="ds__route ds__route--trunk" d={trunk} pathLength="1" />
-      </g>
+        <!-- cable routes: branches + trunk back to the rack -->
+        <g class="ds__layer is-on" data-ds-layer="routes">
+          {branches.map((d) => <path class="ds__route" d={d} pathLength="1" />)}
+          <path class="ds__route ds__route--trunk" d={trunk} pathLength="1" />
+        </g>
 
-      <!-- devices on top -->
-      <g class="ds__layer is-on" data-ds-layer="drops">
-        {drops.map(([x, y]) => <rect class="ds__drop" x={x - 4} y={y - 4} width="8" height="8" rx="1" />)}
-      </g>
-      <g class="ds__layer is-on" data-ds-layer="wifi-dev">
-        {aps.map((a) => (
-          <g class="ds__ap" transform={`translate(${a.x} ${a.y})`}>
-            <circle r="5.5" />
-            <path d="M-7 -6 Q0 -12 7 -6 M-4 -3 Q0 -7 4 -3" />
-          </g>
+        <!-- devices on top -->
+        <g class="ds__layer is-on" data-ds-layer="drops">
+          {drops.map(([x, y], i) => <rect class="ds__drop" style={`--i:${i}`} x={x - 4} y={y - 4} width="8" height="8" rx="1" />)}
+        </g>
+        <g class="ds__layer is-on" data-ds-layer="wifi-dev">
+          {aps.map((a) => (
+            <g class="ds__ap" transform={`translate(${a.x} ${a.y})`}>
+              <circle r="5.5" />
+              <path d="M-7 -6 Q0 -12 7 -6 M-4 -3 Q0 -7 4 -3" />
+            </g>
+          ))}
+        </g>
+        <g class="ds__layer is-on" data-ds-layer="cams-dev">
+          {cams.map((c) => <circle class="ds__cam" cx={c.x} cy={c.y} r="4.5" />)}
+        </g>
+      </svg>
+
+      <!-- Four linked jacks: 44 px links laid over the exact drop points -->
+      <ul role="list" class="ds__jacks">
+        {linked.map((j, i) => (
+          <li style={`left:${(j.x / 400) * 100}%;top:${(j.y / 262) * 100}%;--i:${i}`}>
+            <a class="ds__jack" href="#trace" data-jack={j.id} aria-label={`Jack ${j.id}: trace its cable in step 03`}>
+              <span class="ds__code t-mono" aria-hidden="true">{j.id}</span>
+            </a>
+          </li>
         ))}
-      </g>
-      <g class="ds__layer is-on" data-ds-layer="cams-dev">
-        {cams.map((c) => <circle class="ds__cam" cx={c.x} cy={c.y} r="4.5" />)}
-      </g>
-    </svg>
+      </ul>
+    </div>
 
     <div class="ds__side">
       <p class="t-mono ds__side-title">Bill of materials · this floor</p>
@@ -103,7 +125,10 @@ const layers = [
           </span>
         </li>
       </ul>
-      <p class="ds__hint t-small" data-ds-hint>Tap a layer to highlight it.</p>
+      <p class="ds__hint t-small is-on" data-ds-hint>
+        <span>Tap a layer to highlight it.</span>
+        <span>Tap a labeled jack to trace its cable in step 03.</span>
+      </p>
       <p class="ds__done is-on t-mono" data-ds-done>✓ Plan ready&nbsp;· priced from the drawing</p>
     </div>
   </div>
@@ -120,7 +145,12 @@ const layers = [
     const counts = [...root.querySelectorAll<HTMLElement>('[data-ds-count]')];
     const done = root.querySelector<HTMLElement>('[data-ds-done]')!;
     const hint = root.querySelector<HTMLElement>('[data-ds-hint]')!;
+    const jacks = [...root.querySelectorAll<HTMLAnchorElement>('.ds__jack')];
+    const walls = [...root.querySelectorAll<SVGPathElement>('.plan__wall')];
+    const fades = [...root.querySelectorAll<SVGElement>('.plan__label, .plan__furn')];
     const groups = ['drops', 'wifi', 'wifi-dev', 'cams', 'cams-dev', 'routes'];
+    const ease = getComputedStyle(root).getPropertyValue('--ease-out').trim() || 'cubic-bezier(0.16, 1, 0.3, 1)';
+    let anims: Animation[] = [];
 
     fitSvgText(root);
 
@@ -142,8 +172,12 @@ const layers = [
       chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.dsChip === id)));
     };
 
+    // Hidden starting state (armed here, so no-JS and reduced motion keep the finished plan)
     const reset = () => {
-      box.classList.add('ds--instant');
+      anims.forEach((a) => a.cancel());
+      anims = [];
+      box.classList.add('ds--instant', 'ds--armed');
+      box.classList.remove('ds--linked');
       setFocus('');
       groups.forEach((g) => layer(g).classList.remove('is-on'));
       chips.forEach((c) => c.classList.remove('is-on'));
@@ -151,15 +185,47 @@ const layers = [
       counts.forEach((c) => (c.textContent = '0'));
       done.classList.remove('is-on');
       hint.classList.remove('is-on');
+      walls.forEach((w) => {
+        const len = w.getTotalLength();
+        w.style.strokeDasharray = String(len);
+        w.style.strokeDashoffset = String(len);
+      });
+      fades.forEach((f) => (f.style.opacity = '0'));
       void box.offsetWidth;
       box.classList.remove('ds--instant');
+    };
+
+    const drawWalls = () => {
+      walls.forEach((w, i) => {
+        const len = w.getTotalLength();
+        const a = w.animate([{ strokeDashoffset: len }, { strokeDashoffset: 0 }], {
+          duration: 600,
+          delay: i * 60,
+          easing: ease,
+          fill: 'both',
+        });
+        a.onfinish = () => {
+          w.style.strokeDasharray = '';
+          w.style.strokeDashoffset = '';
+          a.cancel();
+        };
+        anims.push(a);
+      });
+      fades.forEach((f) => {
+        const a = f.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, delay: 300, easing: 'ease', fill: 'both' });
+        a.onfinish = () => {
+          f.style.opacity = '';
+          a.cancel();
+        };
+        anims.push(a);
+      });
     };
 
     const show = async (ids: string[], chip: string, ms: number, message: string, alive: () => boolean) => {
       ids.forEach((g) => layer(g).classList.add('is-on'));
       const c = chipFor(chip);
       c.classList.add('is-on');
-      countUp(c.querySelector<HTMLElement>('[data-ds-count]')!, ms * 0.8);
+      countUp(c.querySelector<HTMLElement>('[data-ds-count]')!, ms * 0.9);
       announce(root, message);
       await sleep(ms);
       return alive();
@@ -168,15 +234,20 @@ const layers = [
     const run = createRun(async (alive) => {
       if (reduceMotion) return;
       reset();
-      await sleep(250);
+      await sleep(150);
       if (!alive()) return;
-      if (!(await show(['drops'], 'drops', 900, 'Data drops placed', alive))) return;
-      if (!(await show(['wifi', 'wifi-dev'], 'wifi', 1300, 'Wi-Fi coverage placed', alive))) return;
-      if (!(await show(['cams', 'cams-dev'], 'cams', 900, 'Cameras placed', alive))) return;
+      drawWalls(); // walls 600 ms (+60 ms stagger), labels fade from 300 ms
+      announce(root, 'Walls drawn');
+      await sleep(780);
+      if (!alive()) return;
+      if (!(await show(['drops'], 'drops', 520, 'Data drops placed', alive))) return; // 12 × 30 ms + 160 ms
+      if (!(await show(['wifi', 'wifi-dev'], 'wifi', 600, 'Wi-Fi coverage placed', alive))) return;
+      if (!(await show(['cams', 'cams-dev'], 'cams', 320, 'Cameras placed', alive))) return;
       staticChip.classList.add('is-on');
-      if (!(await show(['routes'], 'routes', 1500, 'Cable routes drawn back to the closet', alive))) return;
+      if (!(await show(['routes'], 'routes', 900, 'Cable routes drawn back to the closet', alive))) return;
       done.classList.add('is-on');
       hint.classList.add('is-on');
+      box.classList.add('ds--linked'); // jack codes, 160 ms each, 40 ms apart
       announce(root, 'Plan ready');
     });
 
@@ -185,6 +256,14 @@ const layers = [
       c.addEventListener('click', () => {
         const id = c.dataset.dsChip!;
         setFocus(box.dataset.focus === id ? '' : id);
+      }),
+    );
+
+    // Linked jacks open the same jack in the Trace demo (step 03)
+    jacks.forEach((a) =>
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.dispatchEvent(new CustomEvent('armak:trace', { detail: { jack: a.dataset.jack } }));
       }),
     );
 
@@ -202,11 +281,16 @@ const layers = [
     gap: 1rem;
     --c-drops: var(--ink);
     --c-wifi: var(--armak-blue);
-    --c-cams: var(--signal);
-    --c-routes: var(--t568-orange);
+    --c-cams: var(--ink);
+    --c-routes: var(--steel);
+  }
+
+  .ds__stage {
+    position: relative;
   }
 
   .ds__plan {
+    display: block;
     width: 100%;
     height: auto;
     background: var(--paper);
@@ -214,14 +298,23 @@ const layers = [
     border-radius: var(--radius);
   }
 
-  /* Layers fade/grow in */
+  /* Layers fade in */
   .ds__layer {
     opacity: 0;
-    transition: opacity 0.35s ease;
+    transition: opacity var(--dur) ease;
   }
 
   .ds__layer.is-on {
     opacity: 1;
+  }
+
+  .ds__layer[data-ds-layer='wifi'] {
+    transition-duration: 600ms;
+    transition-timing-function: var(--ease-out);
+  }
+
+  .ds__layer[data-ds-layer='drops'] {
+    transition-duration: var(--dur-fast);
   }
 
   .ds__cover {
@@ -231,8 +324,11 @@ const layers = [
     stroke-dasharray: 3 3;
     transform-box: fill-box;
     transform-origin: center;
-    transform: scale(0.15);
-    transition: transform 1.1s var(--ease-out);
+    transition: transform 600ms var(--ease-out);
+  }
+
+  .ds--armed .ds__cover {
+    transform: scale(0.9);
   }
 
   .ds__layer.is-on .ds__cover {
@@ -240,7 +336,7 @@ const layers = [
   }
 
   .ds__cone {
-    fill: color-mix(in srgb, var(--c-cams) 12%, transparent);
+    fill: color-mix(in srgb, var(--c-cams) 10%, transparent);
     stroke: none;
   }
 
@@ -250,7 +346,7 @@ const layers = [
     stroke-width: 1.25;
     stroke-dasharray: 1 1;
     stroke-dashoffset: 1;
-    transition: stroke-dashoffset 1.2s var(--ease-in-out);
+    transition: stroke-dashoffset var(--dur-slow) var(--ease-in-out);
   }
 
   .ds__route--trunk {
@@ -286,17 +382,18 @@ const layers = [
     stroke-width: 1.5;
   }
 
+  /* Drops snap into place: a 3-unit slide plus fade, 160 ms, 30 ms apart */
   @media (prefers-reduced-motion: no-preference) {
-    .ds__layer.is-on .ds__drop {
-      animation: ds-pop 0.35s var(--ease-out) backwards;
-      transform-box: fill-box;
-      transform-origin: center;
+    .ds--armed .ds__layer.is-on .ds__drop {
+      animation: ds-snap var(--dur-fast) var(--ease-out) backwards;
+      animation-delay: calc(var(--i) * 30ms);
     }
   }
 
-  @keyframes ds-pop {
+  @keyframes ds-snap {
     from {
-      transform: scale(0);
+      opacity: 0;
+      transform: translate(3px, 3px);
     }
   }
 
@@ -312,6 +409,67 @@ const layers = [
   .ds[data-focus='cams'] [data-ds-layer='cams-dev'],
   .ds[data-focus='routes'] [data-ds-layer='routes'] {
     opacity: 1;
+  }
+
+  /* Linked jacks: 44 px links over the exact drop points, code chip under each */
+  .ds__jacks {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    pointer-events: none;
+  }
+
+  .ds__jacks > li {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+
+  .ds__jack {
+    position: relative;
+    display: block;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    pointer-events: auto;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .ds__code {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + 9px);
+    transform: translateX(-50%);
+    padding: 0.0625rem 0.3125rem;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  .ds__jack:hover .ds__code {
+    border-color: var(--ink);
+  }
+
+  /* Armed by the script: codes hidden until the plan is ready */
+  .ds--armed .ds__jacks > li {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .ds--armed.ds--linked .ds__jacks > li {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity var(--dur-fast) ease calc(var(--i) * 40ms),
+      visibility 0s linear calc(var(--i) * 40ms);
   }
 
   /* Legend / bill of materials */
@@ -341,7 +499,7 @@ const layers = [
     border-bottom: 1px solid var(--hairline);
     text-align: left;
     opacity: 0.3;
-    transition: opacity 0.3s ease, background var(--dur-fast) ease;
+    transition: opacity var(--dur) ease, background var(--dur-fast) ease;
   }
 
   .ds__chip.is-on {
@@ -386,9 +544,11 @@ const layers = [
   }
 
   .ds__hint {
+    display: grid;
+    gap: 0.125rem;
     color: var(--steel);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity var(--dur) ease;
   }
 
   .ds__hint.is-on {
@@ -403,7 +563,7 @@ const layers = [
     color: var(--pass);
     opacity: 0;
     transform: translateY(4px);
-    transition: opacity 0.3s ease, transform 0.35s var(--ease-out);
+    transition: opacity var(--dur) ease, transform var(--dur) var(--ease-out);
   }
 
   .ds__done.is-on {
@@ -412,9 +572,20 @@ const layers = [
   }
 
   .ds--instant,
-  .ds--instant * {
+  .ds--instant *,
+  .ds--instant *::before,
+  .ds--instant *::after {
     transition: none !important;
     animation: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ds *,
+    .ds *::before,
+    .ds *::after {
+      transition: none !important;
+      animation: none !important;
+    }
   }
 
   @container (min-width: 600px) {

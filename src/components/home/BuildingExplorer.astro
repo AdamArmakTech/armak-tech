@@ -10,13 +10,28 @@ import SectionHead from '../ui/SectionHead.astro';
 import Button from '../ui/Button.astro';
 import BuildingSvg from './BuildingSvg.astro';
 import { services } from '../../data/site';
-import { industries } from '../../data/content';
+import { industries, lifespans, cablingSourced, shownSignature } from '../../data/content';
 import { contactHref } from '../../lib/cta';
 
 const industryRows = industries.map((ind) => {
   const sys = ind.systems.map((slug) => services.find((s) => s.slug === slug)!).filter(Boolean);
   return { ...ind, sys, summary: `${ind.name}: typically ${sys.map((s) => s.name).join(' · ')}` };
 });
+
+// B7: the switch's second option, the sheet title for that view, and the list of items drawn on the building.
+const tenYears = cablingSourced && (lifespans.cabling.years ?? 0) >= 10;
+const laterLabel = tenYears ? '10 years from now' : 'Years from now';
+const laterTitle = `${laterLabel.toUpperCase()} · CABLING STAYS`;
+const laterItems = shownSignature(['cat6aDefault', 'twoDropsPerAp', 'spareFiberStrands', 'emptyConduit', 'zoneCabling', 'ceilingGridJacks']);
+// "Cat 6A" is a standard name, so it is set in mono (rule 4).
+const parts = (text: string) => text.split(/(Cat 6A)/);
+// B1: the rooms that have a route (ids match the rooms in BuildingSvg).
+const roomButtons = [
+  { id: 'offices', label: 'Offices' },
+  { id: 'conference', label: 'Conference' },
+  { id: 'open-office', label: 'Open office' },
+  { id: 'lobby', label: 'Lobby' },
+];
 ---
 
 <section class="explorer section section--tight" id="systems" aria-labelledby="explorer-tabs-label">
@@ -58,7 +73,50 @@ const industryRows = industries.map((ind) => {
 
       <div class="explorer__stage" data-sheet id="explorer-panel" role="tabpanel" aria-labelledby={`explorer-tab-${services[0].slug}`}>
         <div class="explorer__drawing">
+          <div class="bx-frame">
+          <div class="bx-bar" hidden>
+            <fieldset class="bx-when" data-bx-when data-later-title={laterTitle} data-later-label={laterLabel}>
+              <legend class="visually-hidden">Show the building</legend>
+              <label><input type="radio" name="bx-when" value="today" checked data-bx-when-input /><span>Today</span></label>
+              <label><input type="radio" name="bx-when" value="later" data-bx-when-input /><span>{laterLabel}</span></label>
+            </fieldset>
+          </div>
           <BuildingSvg />
+          </div>
+          <p class="visually-hidden" role="status" data-bx-when-live></p>
+
+          <div class="bx-later-info" data-bx-later-info hidden>
+            <p class="bx-later-caption">Desks move and devices get replaced. The cabling in the walls and ceilings stays.</p>
+            {tenYears && lifespans.cabling.footnote && lifespans.cabling.sourceUrl && (
+              <p class="bx-later-note">
+                {lifespans.cabling.footnote} Source: <a href={lifespans.cabling.sourceUrl}>BICSI 005-2016 (PDF)</a>
+              </p>
+            )}
+            {laterItems.length > 0 && (
+              <>
+                <p class="bx-later-head" id="bx-later-head">Put in on day one for later:</p>
+                <ul role="list" class="bx-later-list" aria-labelledby="bx-later-head">
+                  {laterItems.map((it) => (
+                    <li>
+                      <strong>{parts(it.label).map((p) => (p === 'Cat 6A' ? <span class="t-mono">{p}</span> : p))}.</strong>{' '}
+                      {it.detail}
+                      {it.confirmed === 'sometimes' ? ' On some jobs.' : ''}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+
+          <div class="bx-rooms-ui" data-bx-room-buttons hidden>
+            <p class="bx-rooms-label" id="bx-rooms-label">Show a room’s cables:</p>
+            <div class="bx-rooms-group" role="group" aria-labelledby="bx-rooms-label">
+              {roomButtons.map((r) => (
+                <button type="button" class="bx-room-btn" aria-pressed="false" data-room-btn={r.id}>{r.label}</button>
+              ))}
+            </div>
+            <p class="bx-live" aria-live="polite" data-bx-live></p>
+          </div>
         </div>
 
         {industryRows.map((ind) => (
@@ -102,8 +160,15 @@ const industryRows = industries.map((ind) => {
 </section>
 
 <script>
+  import { reduceMotion } from '../../scripts/demo';
+
+  const css = getComputedStyle(document.documentElement);
+  const EASE_OUT = css.getPropertyValue('--ease-out').trim() || 'cubic-bezier(0.16, 1, 0.3, 1)';
+  const canHover = matchMedia('(hover: hover) and (pointer: fine)');
+
   document.querySelectorAll<HTMLElement>('[data-explorer]').forEach((root) => {
     const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    const tabList = root.querySelector<HTMLElement>('.explorer__tabs');
     const panel = root.querySelector<HTMLElement>('[role="tabpanel"]');
     const svg = root.querySelector<SVGSVGElement>('.bx');
     const layerName = root.querySelector<SVGTextElement>('[data-bx-layer-name]');
@@ -111,13 +176,28 @@ const industryRows = industries.map((ind) => {
     const industryDetails = [...root.querySelectorAll<HTMLElement>('[data-industry-detail]')];
     const chips = [...root.querySelectorAll<HTMLButtonElement>('[data-industry]')];
     const rooms = [...root.querySelectorAll<SVGElement>('[data-room]')];
+    const routes = new Map<string, SVGGElement>(
+      [...root.querySelectorAll<SVGGElement>('[data-route]')].map((g) => [g.dataset.route!, g]),
+    );
+    const roomBox = root.querySelector<HTMLElement>('[data-bx-room-buttons]');
+    const roomBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-room-btn]')];
+    const live = root.querySelector<HTMLElement>('[data-bx-live]');
+    const whenBox = root.querySelector<HTMLFieldSetElement>('[data-bx-when]');
+    const whenInputs = [...root.querySelectorAll<HTMLInputElement>('[data-bx-when-input]')];
+    const whenInfo = root.querySelector<HTMLElement>('[data-bx-later-info]');
+    const whenLive = root.querySelector<HTMLElement>('[data-bx-when-live]');
     if (!tabs.length || !panel || !svg) return;
 
     const codeOf = (slug: string) => tabs.find((t) => t.dataset.slug === slug)?.querySelector('.explorer__code')?.textContent ?? '';
 
     let index = 0;
-    // What the drawing shows when no room is hovered: the selected tab, or the chosen industry.
+    // What the drawing shows when nothing else is asked for: the selected tab, or the chosen industry.
     let base: { slugs: string[]; label: string } = { slugs: [], label: '' };
+    let when: 'today' | 'later' = 'today';
+    // The room route on screen (hovered or pinned by a button), and the animations drawing it.
+    let route: { id: string; pinned: boolean } | null = null;
+    let routeAnims: Animation[] = [];
+    let fade: Animation | null = null;
 
     /** Light the given layers (one or many) and set the label in the sheet title. */
     const paint = (slugs: string[], label: string) => {
@@ -128,7 +208,120 @@ const industryRows = industries.map((ind) => {
       if (layerName) layerName.textContent = label;
     };
 
+    /* ───────── B1: a room's cables run back to its closet ───────── */
+
+    const setLive = (id: string | null) => {
+      if (!live) return;
+      live.textContent = '';
+      const g = id ? routes.get(id) : null;
+      if (!g) return;
+      const d = Number(g.dataset.drops);
+      const a = Number(g.dataset.aps);
+      live.append(
+        `${g.dataset.label}: ${d} cable drop${d === 1 ? '' : 's'} · ${a} access point${a === 1 ? '' : 's'} · runs to `,
+      );
+      const code = document.createElement('span');
+      code.className = 't-mono';
+      code.textContent = g.dataset.closet ?? '';
+      live.append(code, '.');
+    };
+
+    const dropFade = () => {
+      if (fade) {
+        fade.cancel();
+        fade = null;
+      }
+    };
+
+    /** Stop drawing and hide every route at once (used before another one starts). */
+    const wipeRoutes = () => {
+      routeAnims.forEach((a) => a.cancel());
+      routeAnims = [];
+      dropFade();
+      routes.forEach((g) => g.classList.remove('is-on'));
+    };
+
+    const showRoute = (id: string, pinned: boolean) => {
+      const g = routes.get(id);
+      if (!g) return;
+      wipeRoutes();
+      route = { id, pinned };
+      rooms.forEach((r) => r.classList.toggle('is-shown', r.dataset.room === id));
+      svg.setAttribute('data-route', id);
+      const closet = g.dataset.closet ?? '';
+      // No active layer: the existing dimming drops every layer to 0.22.
+      paint([], `${(rooms.find((r) => r.dataset.room === id)?.dataset.roomName ?? '').toUpperCase()} · TO ${closet}`);
+      g.classList.add('is-on');
+      setLive(id);
+      if (reduceMotion) return;
+      g.querySelectorAll<SVGElement>('.bx-r-drops').forEach((p) =>
+        routeAnims.push(p.animate([{ strokeDashoffset: '1' }, { strokeDashoffset: '0' }], { duration: 240, easing: EASE_OUT, fill: 'both' })),
+      );
+      g.querySelectorAll<SVGElement>('.bx-r-home').forEach((p) =>
+        routeAnims.push(p.animate([{ strokeDashoffset: '1' }, { strokeDashoffset: '0' }], { duration: 480, delay: 240, easing: EASE_OUT, fill: 'both' })),
+      );
+      const note = g.querySelector<SVGElement>('.bx-route-note');
+      if (note) routeAnims.push(note.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, delay: 720, easing: 'ease', fill: 'both' }));
+    };
+
+    /** Take the route away (fading, unless asked not to or motion is reduced) and, by default, show the base view again. */
+    const clearRoute = ({ paintBase = true, instant = false } = {}) => {
+      roomBtns.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+      if (!route) return;
+      const g = routes.get(route.id);
+      route = null;
+      rooms.forEach((r) => r.classList.remove('is-shown'));
+      svg.removeAttribute('data-route');
+      setLive(null);
+      routeAnims.forEach((a) => a.cancel());
+      routeAnims = [];
+      if (paintBase) paint(base.slugs, base.label);
+      if (!g) return;
+      if (instant || reduceMotion) {
+        wipeRoutes();
+        return;
+      }
+      dropFade();
+      const a = g.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease', fill: 'forwards' });
+      fade = a;
+      const done = () => {
+        if (fade !== a) return;
+        g.classList.remove('is-on');
+        a.cancel();
+        fade = null;
+      };
+      a.onfinish = done;
+      setTimeout(done, 200); // in case no frame is drawn (a hidden tab)
+    };
+
+    /* ───────── B7: today / years from now ───────── */
+
+    const setWhen = (next: 'today' | 'later', { paintBase = true } = {}) => {
+      if (next === when) return;
+      when = next;
+      whenInputs.forEach((i) => (i.checked = i.value === next));
+      if (next === 'later') {
+        clearRoute({ paintBase: false });
+        svg.setAttribute('data-when', 'later');
+        if (layerName) layerName.textContent = whenBox?.dataset.laterTitle ?? 'YEARS FROM NOW · CABLING STAYS';
+      } else {
+        svg.removeAttribute('data-when');
+        if (paintBase) paint(base.slugs, base.label);
+      }
+      if (whenInfo) whenInfo.hidden = next !== 'later';
+      if (whenLive) {
+        whenLive.textContent = next === 'later' ? `${whenBox?.dataset.laterLabel ?? 'Years from now'}: the cabling stays.` : 'Today.';
+      }
+    };
+
+    /** Anything that asks for a different view first puts the building back to today and clears a room route. */
+    const resetOverlays = () => {
+      setWhen('today', { paintBase: false });
+      clearRoute({ paintBase: false });
+    };
+
     const select = (i: number, { focus = false } = {}) => {
+      resetOverlays();
       index = (i + tabs.length) % tabs.length;
       const tab = tabs[index];
       const slug = tab.dataset.slug!;
@@ -148,6 +341,7 @@ const industryRows = industries.map((ind) => {
         label: `LAYER ${tab.querySelector('.explorer__code')?.textContent} · ${tab.dataset.layerName?.toUpperCase()}`,
       };
       paint(base.slugs, base.label);
+      placeHighlight();
 
       if (focus) tab.focus();
     };
@@ -158,6 +352,7 @@ const industryRows = industries.map((ind) => {
         select(index);
         return;
       }
+      resetOverlays();
       const slug = chip.dataset.industry!;
       const detail = industryDetails.find((d) => d.dataset.industryDetail === slug);
       const systems = (chip.dataset.systems ?? '').split(' ').filter(Boolean);
@@ -171,7 +366,46 @@ const industryRows = industries.map((ind) => {
         label: `${chip.textContent?.trim().toUpperCase()} · ${systems.map(codeOf).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join(' ')}`,
       };
       paint(base.slugs, base.label);
+      placeHighlight();
     };
+
+    /* ───────── A10: one highlight slides behind the selected tab ─────────
+       Created here, so without JavaScript the tab keeps its own static selected style. Moves with
+       transform only (translate to the tab, scale to its size). Instant under reduced motion (CSS). */
+    let hl: HTMLElement | null = null;
+    let hlPlaced = false;
+    function placeHighlight(instant = false) {
+      if (!hl) return;
+      const sel = tabs.find((t) => t.getAttribute('aria-selected') === 'true');
+      if (!sel) {
+        hl.style.opacity = '0';
+        return;
+      }
+      const snap = instant || !hlPlaced;
+      if (snap) hl.style.transition = 'none';
+      hl.style.opacity = '1';
+      hl.style.transform = `translate(${sel.offsetLeft}px, ${sel.offsetTop}px) scale(${sel.offsetWidth / 100}, ${sel.offsetHeight / 100})`;
+      if (snap) {
+        void hl.offsetWidth; // apply the jump before the transition comes back
+        hl.style.transition = '';
+        hlPlaced = true;
+      }
+    }
+
+    if (tabList) {
+      hl = document.createElement('span');
+      hl.className = 'explorer__hl';
+      hl.setAttribute('aria-hidden', 'true');
+      tabList.prepend(hl);
+      tabList.classList.add('has-hl');
+      if (typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(() => placeHighlight(true));
+        ro.observe(tabList);
+        tabs.forEach((t) => ro.observe(t));
+      }
+    }
+
+    /* ───────── wiring ───────── */
 
     tabs.forEach((tab, i) => {
       tab.addEventListener('click', () => select(i));
@@ -192,20 +426,57 @@ const industryRows = industries.map((ind) => {
 
     chips.forEach((chip) => chip.addEventListener('click', () => chooseIndustry(chip)));
 
-    // Room hover: light the systems drawn in that room, then restore on leave.
-    // Pointer only on purpose. The rooms are aria-hidden shapes with no name, and Chromium turns an SVG
+    // Room buttons (pin a route). Rendered hidden; shown only now that the script is running.
+    if (roomBox) roomBox.hidden = false;
+    roomBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (btn.getAttribute('aria-pressed') === 'true') {
+          clearRoute();
+          return;
+        }
+        setWhen('today', { paintBase: false });
+        roomBtns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+        showRoute(btn.dataset.roomBtn!, true);
+      });
+    });
+    roomBox?.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && route?.pinned) {
+        e.preventDefault();
+        clearRoute();
+      }
+    });
+
+    // Switch: today / years from now. Rendered hidden; shown now.
+    if (whenBox) {
+      whenBox.hidden = false;
+      if (whenBox.parentElement) whenBox.parentElement.hidden = false;
+    }
+    whenInputs.forEach((input) => input.addEventListener('change', () => input.checked && setWhen(input.value as 'today' | 'later')));
+
+    // Room hover. A routed room draws its cable route; the others light the systems drawn in them (as before).
+    // Pointer only on purpose: the rooms are aria-hidden shapes with no name, and Chromium turns an SVG
     // element into a keyboard tab stop as soon as it has a focus or blur listener, so there are none.
+    // Real pointers only, so a tap on a phone never leaves a route stuck. A pinned route ignores hover.
     rooms.forEach((room) => {
-      const show = () => {
-        const slugs = (room.dataset.systems ?? '').split(' ').filter(Boolean);
-        paint(slugs, `${room.dataset.roomName} · ${(room.dataset.codes ?? '')}`);
-      };
-      const hide = () => paint(base.slugs, base.label);
-      room.addEventListener('mouseenter', show);
-      room.addEventListener('mouseleave', hide);
+      const routed = room.dataset.routed === 'true';
+      room.addEventListener('mouseenter', () => {
+        if (!canHover.matches || when === 'later' || route?.pinned) return;
+        if (routed) {
+          showRoute(room.dataset.room!, false);
+        } else {
+          const slugs = (room.dataset.systems ?? '').split(' ').filter(Boolean);
+          paint(slugs, `${room.dataset.roomName} · ${room.dataset.codes ?? ''}`);
+        }
+      });
+      room.addEventListener('mouseleave', () => {
+        if (!canHover.matches || when === 'later' || route?.pinned) return;
+        if (route) clearRoute();
+        else paint(base.slugs, base.label);
+      });
     });
 
     select(0);
+    placeHighlight(true);
   });
 </script>
 
@@ -467,6 +738,7 @@ const industryRows = industries.map((ind) => {
   }
 
   .explorer__link {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -475,6 +747,13 @@ const industryRows = industries.map((ind) => {
     padding-bottom: 2px;
     background: linear-gradient(currentColor, currentColor) left bottom / 100% 1px no-repeat;
     transition: color var(--dur-fast) ease;
+  }
+
+  /* Invisible 44 px tap area */
+  .explorer__link::after {
+    content: '';
+    position: absolute;
+    inset: -9px 0;
   }
 
   .explorer__link:hover {
@@ -524,6 +803,214 @@ const industryRows = industries.map((ind) => {
 
     .explorer__stage {
       grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── Switch above the drawing: Today / years from now ──
+     Rendered hidden; the script shows it. Ink for the selected side, never red (rule 7). */
+  /* The drawing's own frame; the switch sits on its top edge, inside it (not a separate row above) */
+  .bx-frame {
+    border: 1px solid var(--hairline-strong);
+  }
+
+  .bx-bar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 4px;
+    border-bottom: 1px solid var(--hairline-strong);
+  }
+
+  .bx-bar[hidden] {
+    display: none;
+  }
+
+  .bx-when {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+  }
+
+  .bx-when[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .bx-when {
+      width: auto;
+    }
+  }
+
+  .bx-when label {
+    position: relative;
+  }
+
+  .bx-when input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .bx-when label > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    color: var(--text);
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
+  }
+
+  .bx-when input:checked + span {
+    background: var(--ink);
+    color: var(--white);
+  }
+
+  .bx-when input:focus-visible + span {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+
+  /* ── Under the drawing: what changes, what stays ── */
+  .bx-later-info {
+    display: grid;
+    gap: 0.625rem;
+    margin-top: 1rem;
+    max-width: 62ch;
+  }
+
+  .bx-later-info[hidden] {
+    display: none;
+  }
+
+  .bx-later-caption {
+    font-weight: 500;
+  }
+
+  .bx-later-note,
+  .bx-later-head,
+  .bx-later-list {
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    color: var(--text);
+  }
+
+  .bx-later-note a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .bx-later-head {
+    font-weight: 600;
+    margin-top: 0.25rem;
+  }
+
+  .bx-later-list {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* ── Room buttons: pin a route ── */
+  .bx-rooms-ui {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .bx-rooms-ui[hidden] {
+    display: none;
+  }
+
+  .bx-rooms-label {
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: 500;
+  }
+
+  .bx-rooms-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .bx-room-btn {
+    min-height: 44px;
+    padding: 0.5rem 0.875rem;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    background: var(--white);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .bx-room-btn:hover {
+      border-color: var(--ink);
+    }
+  }
+
+  .bx-room-btn[aria-pressed='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--white);
+  }
+
+  .bx-live {
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+  }
+
+  /* Stays in the layout (display:none can stop a live region being announced); just pulled up so it takes no room */
+  .bx-live:empty {
+    margin-top: -0.5rem;
+  }
+
+  .bx-later-list .t-mono {
+    text-transform: none;
+  }
+
+  /* ── A10: one highlight slides behind the selected tab (transform only) ──
+     The script adds it and the .has-hl class. Until then the tab keeps its own selected style. */
+  .explorer__tabs {
+    position: relative;
+  }
+
+  .explorer__tabs :global(.explorer__hl) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    transform-origin: 0 0;
+    background: var(--paper);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform var(--dur) var(--ease-out), opacity var(--dur-fast) ease;
+  }
+
+  .explorer__tabs.has-hl .explorer__tab[aria-selected='true'],
+  .explorer__tabs.has-hl .explorer__tab[aria-selected='true']:hover {
+    background: transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .explorer__tabs :global(.explorer__hl) {
+      transition: none;
     }
   }
 </style>

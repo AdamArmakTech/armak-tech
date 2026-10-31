@@ -9,6 +9,7 @@
  */
 
 import { services, type ServiceSlug } from '../../data/site';
+import { shownSignature } from '../../data/content';
 
 const L3 = { ceil: 130, floor: 266 };
 const L2 = { ceil: 274, floor: 411 };
@@ -34,24 +35,73 @@ const wifiArcs = (x: number, c: number) => [
   `M${x - 16} ${c + 31} Q${x} ${c + 43} ${x + 16} ${c + 31}`,
 ];
 
+// Cable drops: [x, y of the device end, y of the tray it rises to]. Drawn in the cabling layer, and
+// counted for the room routes below, so the callout numbers always match what is on the drawing.
+type Drop = { x: number; y: number; tray: number };
+const drops: Drop[] = [
+  ...desks.map(([x, f]) => ({ x: x + 50, y: f - 34, tray: tray(f === L3.floor ? L3.ceil : L2.ceil) })),
+  { x: 300, y: 455, tray: tray(L1.ceil) },
+  { x: 512, y: 526, tray: tray(L1.ceil) },
+  { x: 615, y: 154, tray: tray(L3.ceil) },
+];
+const deskDots = [...desks.map(([x, f]) => [x + 50, f - 34]), [512, 526]];
+
+type Box = [number, number, number, number];
 /**
  * Rooms for the mouse-hover lookup. `systems` is read off this drawing: a system is listed only if
  * some element of its layer is drawn inside the room's bounds (or its trunk/riser runs through it).
  * Bounds: [x, y, w, h] in viewBox units, matching the walls above.
+ * `routed` rooms draw their cables back to `closet` (B1); the closets themselves and the break room do not.
  */
-const rooms: { id: string; name: string; box: [number, number, number, number]; systems: ServiceSlug[] }[] = [
-  { id: 'offices', name: 'OFFICES', box: [140, 130, 330, 136], systems: ['structured-cabling', 'networking', 'voip-unified-comms'] },
-  { id: 'conference', name: 'CONFERENCE', box: [470, 130, 270, 136], systems: ['structured-cabling', 'networking', 'access-control', 'voip-unified-comms', 'audio-video'] },
-  { id: 'idf-2', name: 'IDF-2', box: [140, 274, 85, 137], systems: ['structured-cabling', 'networking'] },
-  { id: 'open-office', name: 'OPEN OFFICE', box: [225, 274, 515, 137], systems: ['structured-cabling', 'networking', 'video-surveillance', 'voip-unified-comms'] },
-  { id: 'mdf', name: 'MDF', box: [140, 419, 110, 141], systems: ['structured-cabling', 'networking', 'video-surveillance'] },
-  { id: 'lobby', name: 'LOBBY', box: [250, 419, 320, 141], systems: ['structured-cabling', 'networking', 'video-surveillance', 'access-control', 'voip-unified-comms', 'audio-video'] },
-  { id: 'break-room', name: 'BREAK ROOM', box: [570, 419, 170, 141], systems: ['structured-cabling', 'access-control', 'voip-unified-comms', 'audio-video'] },
+const rooms: { id: string; name: string; box: Box; systems: ServiceSlug[]; routed: boolean; closet: 'IDF-2' | 'MDF' }[] = [
+  { id: 'offices', name: 'OFFICES', box: [140, 130, 330, 136], systems: ['structured-cabling', 'networking', 'voip-unified-comms'], routed: true, closet: 'IDF-2' },
+  { id: 'conference', name: 'CONFERENCE', box: [470, 130, 270, 136], systems: ['structured-cabling', 'networking', 'access-control', 'voip-unified-comms', 'audio-video'], routed: true, closet: 'IDF-2' },
+  { id: 'idf-2', name: 'IDF-2', box: [140, 274, 85, 137], systems: ['structured-cabling', 'networking'], routed: false, closet: 'IDF-2' },
+  { id: 'open-office', name: 'OPEN OFFICE', box: [225, 274, 515, 137], systems: ['structured-cabling', 'networking', 'video-surveillance', 'voip-unified-comms'], routed: true, closet: 'IDF-2' },
+  { id: 'mdf', name: 'MDF', box: [140, 419, 110, 141], systems: ['structured-cabling', 'networking', 'video-surveillance'], routed: false, closet: 'MDF' },
+  { id: 'lobby', name: 'LOBBY', box: [250, 419, 320, 141], systems: ['structured-cabling', 'networking', 'video-surveillance', 'access-control', 'voip-unified-comms', 'audio-video'], routed: true, closet: 'MDF' },
+  { id: 'break-room', name: 'BREAK ROOM', box: [570, 419, 170, 141], systems: ['structured-cabling', 'access-control', 'voip-unified-comms', 'audio-video'], routed: false, closet: 'MDF' },
 ];
 const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x.slug === sl)!.code).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+const inBox = (x: number, y: number, b: Box) => x >= b[0] && x <= b[0] + b[2] && y >= b[1] && y <= b[1] + b[3];
+
+// Where each routed room's note sits: a leader line, then two lines of text. `anchor` is the text's side.
+const notes: Record<string, { leader: string; x: number; y: number; anchor?: 'end' }> = {
+  offices: { leader: 'M236 140 V186', x: 242, y: 188 },
+  conference: { leader: 'M598 98 V140', x: 590, y: 92, anchor: 'end' },
+  'open-office': { leader: 'M231 284 V330', x: 238, y: 334 },
+  lobby: { leader: 'M262 586 V560', x: 268, y: 600 },
+};
+const sentence = (s: string) => s.charAt(0) + s.slice(1).toLowerCase();
+
+const routes = rooms
+  .filter((r) => r.routed)
+  .map((r) => {
+    const ds = drops.filter((d) => inBox(d.x, d.tray, r.box));
+    const apCount = aps.filter(([x, c]) => inBox(x, c, r.box)).length;
+    const far = ds.reduce((a, d) => (d.x > a.x ? d : a), ds[0]);
+    const toY = r.closet === 'MDF' ? 465 : 326; // the MDF rack top, or the IDF-2 cabinet top
+    const plural = (n: number, w: string) => `${n} ${w}${n === 1 ? '' : 's'}`;
+    return {
+      ...r,
+      label: sentence(r.name),
+      dropCount: ds.length,
+      apCount,
+      dropsPath: ds.map((d) => `M${d.x} ${d.y} V${d.tray}`).join(' '),
+      homePath: `M${far.x} ${far.tray} H195 V${toY}`,
+      line1: `${plural(ds.length, 'cable drop')} · ${plural(apCount, 'access point')}`,
+      note: notes[r.id],
+    };
+  });
+
+// B7: the signature marks. Only items the owner confirmed are drawn.
+const laterKeys = ['cat6aDefault', 'twoDropsPerAp', 'spareFiberStrands', 'emptyConduit', 'zoneCabling', 'ceilingGridJacks'] as const;
+const shownKeys: string[] = shownSignature([...laterKeys]).map((s) => s.key);
+const mk = (k: (typeof laterKeys)[number]) => shownKeys.indexOf(k);
 ---
 
-<svg class="bx" viewBox="0 0 880 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cutaway drawing of a three-storey commercial building showing where each of the six systems runs: cabling, networking and Wi-Fi, cameras, access control, phones, and audio-video. The system selected in the tabs is highlighted, and hovering a room with a mouse lights the systems that serve it." focusable="false">
+<svg class="bx" viewBox="0 0 880 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cutaway drawing of a three-storey commercial building showing where each of the six systems runs: cabling, networking and Wi-Fi, cameras, access control, phones, and audio-video. The system selected in the tabs is highlighted. Choosing a room shows how its cables run back to the wiring closet that serves it, and the Today and Years from now switch shows what changes in a building over time and what stays." focusable="false">
   <defs>
     <pattern id="bx-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
       <line x1="0" y1="0" x2="0" y2="8" class="bx-hatch-line" />
@@ -110,7 +160,7 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
 
     <!-- furniture -->
     {desks.map(([x, f]) => (
-      <g class="bx-furn">
+      <g class="bx-furn bx-desk" data-desk>
         <rect x={x} y={f - 34} width="64" height="4" />
         <line x1={x + 4} y1={f - 30} x2={x + 4} y2={f} />
         <line x1={x + 60} y1={f - 30} x2={x + 60} y2={f} />
@@ -143,18 +193,12 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
 
   <!-- ───────────── A-01 Structured cabling ───────────── -->
   <g class="bx-layer" data-layer="structured-cabling">
-    <path class="bx-trunk bx-flow" d={`M195 465 V${tray(L3.ceil)}`} />
-    <path class="bx-trunk bx-flow" d={`M195 ${tray(L3.ceil)} H726`} />
-    <path class="bx-trunk bx-flow" d={`M195 ${tray(L2.ceil)} H726`} />
-    <path class="bx-trunk bx-flow" d={`M195 ${tray(L1.ceil)} H726`} />
-    {desks.map(([x, f]) => {
-      const c = f === L3.floor ? L3.ceil : L2.ceil;
-      return <path class="bx-drop" d={`M${x + 50} ${tray(c)} V${f - 34}`} />;
-    })}
-    <path class="bx-drop" d={`M300 ${tray(L1.ceil)} V455`} />
-    <path class="bx-drop" d={`M512 ${tray(L1.ceil)} V526`} />
-    <path class="bx-drop" d={`M615 ${tray(L3.ceil)} V154`} />
-    {[...desks.map(([x, f]) => [x + 50, f - 34]), [512, 526]].map(([x, y]) => (
+    <path class="bx-trunk" d={`M195 465 V${tray(L3.ceil)}`} />
+    <path class="bx-trunk" d={`M195 ${tray(L3.ceil)} H726`} />
+    <path class="bx-trunk" d={`M195 ${tray(L2.ceil)} H726`} />
+    <path class="bx-trunk" d={`M195 ${tray(L1.ceil)} H726`} />
+    {drops.map((d) => <path class="bx-drop" d={`M${d.x} ${d.tray} V${d.y}`} />)}
+    {deskDots.map(([x, y]) => (
       <circle class="bx-dot" cx={x} cy={y} r="2.5" />
     ))}
     <!-- ISP fiber entrance -->
@@ -227,7 +271,7 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
   <g class="bx-layer" data-layer="voip-unified-comms">
     <!-- desk phones: base + handset -->
     {desks.map(([x, f]) => (
-      <g>
+      <g class="bx-desk">
         <rect class="bx-fill" x={x + 48} y={f - 44} width="16" height="10" rx="2" />
         <rect class="bx-fill" x={x + 46} y={f - 49} width="20" height="4" rx="2" />
       </g>
@@ -263,6 +307,73 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
     <rect x="652" y="466" width="50" height="30" class="bx-outline bx-screen" />
   </g>
 
+  <!-- ───────────── B1 room routes: one per routed room, outside every layer so the layer draw-in never touches them.
+       Hidden until the explorer script shows one. Numbers come from the drops and aps arrays above. ───────────── -->
+  <g class="bx-routes">
+    {routes.map((r) => (
+      <g class="bx-route" data-route={r.id} data-label={r.label} data-closet={r.closet} data-drops={r.dropCount} data-aps={r.apCount} aria-hidden="true">
+        <path class="bx-route-halo bx-r-drops" pathLength="1" d={r.dropsPath} />
+        <path class="bx-route-halo bx-r-home" pathLength="1" d={r.homePath} />
+        <path class="bx-route-line bx-r-drops" pathLength="1" d={r.dropsPath} />
+        <path class="bx-route-line bx-r-home" pathLength="1" d={r.homePath} />
+        <g class="bx-route-note">
+          <path class="bx-lead" d={r.note.leader} />
+          <text class="bx-note" x={r.note.x} y={r.note.y} text-anchor={r.note.anchor ?? 'start'}>
+            <tspan x={r.note.x}>{r.line1}</tspan>
+            <tspan x={r.note.x} dy="16">to <tspan class="bx-mono">{r.closet}</tspan></tspan>
+          </text>
+        </g>
+      </g>
+    ))}
+  </g>
+
+  <!-- ───────────── B7 marks: what Armak builds in for later. Shown only in the "years from now" view, only for confirmed items ───────────── -->
+  <g class="bx-laters" aria-hidden="true">
+    {mk('cat6aDefault') >= 0 && (
+      <g class="bx-later" style={`--i:${mk('cat6aDefault')}`}>
+        <rect class="bx-mk-plate" x="352" y="146" width="58" height="19" />
+        <text class="bx-mk-text bx-mono" x="358" y="160">Cat 6A</text>
+      </g>
+    )}
+    {mk('twoDropsPerAp') >= 0 && (
+      <g class="bx-later" style={`--i:${mk('twoDropsPerAp')}`}>
+        <path class="bx-mk" d="M419 284 V298" />
+        <circle class="bx-mk-dot" cx="419" cy="298" r="2.5" />
+        <path class="bx-lead" d="M419 300 V328 H425" />
+        <text class="bx-mk-text" x="428" y="332">2 cables per access point</text>
+      </g>
+    )}
+    {mk('spareFiberStrands') >= 0 && (
+      <g class="bx-later" style={`--i:${mk('spareFiberStrands')}`}>
+        <path class="bx-lead" d="M112 368 H195" />
+        <circle class="bx-mk-dot" cx="195" cy="368" r="2.5" />
+        <text class="bx-mk-text" x="40" y="372">Spare fiber</text>
+      </g>
+    )}
+    {mk('emptyConduit') >= 0 && (
+      <g class="bx-later" style={`--i:${mk('emptyConduit')}`}>
+        <path class="bx-mk bx-mk-dash" d="M205 465 V139" />
+        <circle class="bx-mk" cx="205" cy="135" r="3.5" />
+        <path class="bx-lead" d="M128 440 H205" />
+        <text class="bx-mk-text" x="40" y="444">Empty conduit</text>
+      </g>
+    )}
+    {mk('zoneCabling') >= 0 && (
+      <g class="bx-later" style={`--i:${mk('zoneCabling')}`}>
+        <rect class="bx-mk-plate" x="472" y="277" width="16" height="14" />
+        <path class="bx-lead" d="M480 291 V312" />
+        <text class="bx-mk-text" x="486" y="316">Zone point</text>
+      </g>
+    )}
+    {mk('ceilingGridJacks') >= 0 && (
+      <g class="bx-later" style={`--i:${mk('ceilingGridJacks')}`}>
+        {[355, 455, 655].map((x) => <rect class="bx-mk-plate" x={x - 4} y="292" width="8" height="8" />)}
+        <path class="bx-lead" d="M655 300 V318" />
+        <text class="bx-mk-text" x="648" y="332">Ceiling jacks</text>
+      </g>
+    )}
+  </g>
+
   <!-- ───────────── Rooms: mouse-hover targets only, aria-hidden and not tab stops (drawn last so they sit on top) ───────────── -->
   <g class="bx-rooms">
     {rooms.map((r) => (
@@ -275,6 +386,7 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
         aria-hidden="true"
         data-room={r.id}
         data-room-name={r.name}
+        data-routed={r.routed ? 'true' : 'false'}
         data-systems={r.systems.join(' ')}
         data-codes={codes(r.systems).join(' ')}
       />
@@ -286,7 +398,8 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
   .bx {
     width: 100%;
     height: auto;
-    --bx-active: var(--signal);
+    /* Armak blue, not red: red is only for the one action and FAIL (rule 7). Blue stays apart from the ink walls. */
+    --bx-active: var(--armak-blue);
     --bx-idle: var(--steel-light);
   }
 
@@ -407,6 +520,10 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
     stroke-dasharray: 2 4;
   }
 
+  .bx-desk {
+    transition: transform 600ms var(--ease-in-out);
+  }
+
   .bx-cone {
     fill: currentColor;
     fill-opacity: 0.06;
@@ -449,40 +566,128 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
     fill-opacity: 0.12;
   }
 
+  /* The perimeter light's cone: same blue as the rest of the lit layer, a little fainter (rule 6: no cable colours here) */
   .bx-layer.is-active .bx-cone--light {
-    fill: var(--t568-orange);
-    fill-opacity: 0.14;
+    fill-opacity: 0.08;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    .bx-layer.is-active .bx-flow {
-      stroke-dasharray: 10 6;
-      animation: bx-flow 0.9s linear infinite;
-    }
-
-    .bx-layer.is-active .bx-arc {
-      animation: bx-pulse 1.6s ease-in-out infinite;
-    }
-
-    .bx-layer.is-active .bx-arc:nth-child(odd) {
-      animation-delay: 0.3s;
-    }
+  /* While a room route shows, the layers dim a touch faster than usual (160 ms) */
+  :global(.bx[data-route]) .bx-layer {
+    transition-duration: var(--dur-fast);
   }
 
-  @keyframes bx-flow {
-    to {
-      stroke-dashoffset: -16;
-    }
+  /* ── B7: "years from now" view ──
+     Desks move 16 units right and every device layer dims; the cabling stays put, in ink. Transitions, not
+     keyframes, so flipping the switch fast turns round from wherever things are. */
+  :global(.bx[data-when='later']) .bx-desk {
+    transform: translateX(16px);
   }
 
-  @keyframes bx-pulse {
-    0%,
-    100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.25;
-    }
+  :global(.bx[data-when='later']) .bx-layer:not([data-layer='structured-cabling']) {
+    opacity: 0.22;
+  }
+
+  :global(.bx[data-when='later']) .bx-layer[data-layer='structured-cabling'] {
+    opacity: 1;
+    color: var(--ink);
+  }
+
+  .bx-later {
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+
+  :global(.bx[data-when='later']) .bx-later {
+    opacity: 1;
+    transition: opacity var(--dur-fast) ease calc(300ms + var(--i, 0) * 60ms);
+  }
+
+  .bx-routes,
+  .bx-laters {
+    pointer-events: none;
+  }
+
+  .bx-mk,
+  .bx-mk-dot,
+  .bx-mk-plate,
+  .bx-lead {
+    stroke: var(--armak-blue);
+    stroke-width: 1.5;
+    fill: none;
+  }
+
+  .bx-lead {
+    stroke-width: 1;
+  }
+
+  .bx-mk-dash {
+    stroke-dasharray: 5 3;
+  }
+
+  .bx-mk-dot {
+    fill: var(--armak-blue);
+  }
+
+  .bx-mk-plate {
+    fill: var(--white);
+  }
+
+  .bx-mk-text,
+  .bx-note {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    fill: var(--ink);
+    paint-order: stroke;
+    stroke: var(--white);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+  }
+
+  .bx-mono {
+    font-family: var(--font-mono);
+  }
+
+  /* ── B1: room routes. Ink over a white halo so they read over any lit layer. Hidden until shown. ── */
+  .bx-route {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .bx-route.is-on {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .bx-route-halo,
+  .bx-route-line {
+    fill: none;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    stroke-linejoin: round;
+  }
+
+  .bx-route-halo {
+    stroke: var(--white);
+  }
+
+  .bx-route-halo.bx-r-drops {
+    stroke-width: 6;
+  }
+
+  .bx-route-halo.bx-r-home {
+    stroke-width: 7;
+  }
+
+  .bx-route-line {
+    stroke: var(--ink);
+  }
+
+  .bx-route-line.bx-r-drops {
+    stroke-width: 2;
+  }
+
+  .bx-route-line.bx-r-home {
+    stroke-width: 3;
   }
 
   /* Rooms: invisible hit areas; a faint outline shows which room is under the pointer (mouse only: the rooms are not keyboard stops) */
@@ -493,15 +698,26 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
     outline: none;
   }
 
-  .bx-room:hover {
+  .bx-room.is-shown {
     stroke: var(--ink);
     stroke-width: 1.5;
     stroke-dasharray: 5 4;
   }
 
+  /* Hover outline only where a real pointer exists (a tap on a phone must not leave one stuck) */
+  @media (hover: hover) and (pointer: fine) {
+    .bx-room:hover {
+      stroke: var(--ink);
+      stroke-width: 1.5;
+      stroke-dasharray: 5 4;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .bx-layer {
-      transition: none;
+    .bx-layer,
+    .bx-desk,
+    .bx-later {
+      transition: none !important;
     }
   }
 
@@ -509,7 +725,10 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
   @media (max-width: 639px) {
     .bx-label,
     .bx-sheet,
-    .bx-callout {
+    .bx-callout,
+    .bx-route-note,
+    .bx-mk-text,
+    .bx-later .bx-lead {
       display: none;
     }
   }
@@ -517,7 +736,7 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
 
 <script>
   // The first time a layer becomes active, its solid strokes draw in (once per layer, never again).
-  // Dashed/dotted lines (trunk flow lines, fiber) are skipped and keep the opacity transition.
+  // Dashed/dotted lines (the ISP fiber) are skipped and keep the opacity transition.
   // BuildingExplorer toggles .is-active; we only watch for it. Opacity dimming stays in CSS.
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const STROKES = 'line, path:not(.bx-fill), rect.bx-outline, circle.bx-dot';
@@ -532,7 +751,7 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
       const easing = css.getPropertyValue('--ease-out').trim() || 'ease-out';
       layer.querySelectorAll<SVGGeometryElement>(STROKES).forEach((el) => {
         if (typeof el.getTotalLength !== 'function') return;
-        if (el.classList.contains('bx-flow') || el.classList.contains('bx-fiber')) return;
+        if (el.classList.contains('bx-fiber')) return;
         const cs = getComputedStyle(el);
         if (cs.stroke === 'none') return;
         if (cs.strokeDasharray && cs.strokeDasharray !== 'none') return;

@@ -99,18 +99,34 @@ const { name, title, caption, class: className } = Astro.props;
     border: 1px solid var(--hairline-strong);
     border-radius: var(--radius);
     color: var(--steel);
+    transition:
+      border-color var(--dur-fast) ease,
+      color var(--dur-fast) ease,
+      transform 140ms var(--ease-out);
   }
 
-  /* 44 px touch target without a bigger box */
+  /* 48 x 48 px touch target (36 px box + 6 px each side) without a bigger box */
   .demo__replay::after {
     content: "";
     position: absolute;
-    inset: -4px;
+    inset: -6px;
   }
 
   .demo__replay:hover {
     border-color: var(--ink);
     color: var(--ink);
+  }
+
+  .demo__replay:active {
+    border-color: var(--ink);
+    color: var(--ink);
+    transform: scale(0.97);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .demo__replay:active {
+      transform: none;
+    }
   }
 
   .demo__body {

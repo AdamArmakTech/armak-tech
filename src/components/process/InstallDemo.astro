@@ -8,6 +8,10 @@
  */
 import DemoFrame from './DemoFrame.astro';
 import TraceDemo from './TraceDemo.astro';
+import { signature, isShown, installPhases } from '../../data/content';
+
+const labelsAtBothEnds = isShown(signature.items.labelsAndAsBuilts);
+const showHeadroom = signature.items.rackHeadroom.confirmed === 'yes';
 
 const uid = `in${Math.random().toString(36).slice(2, 8)}`;
 
@@ -24,7 +28,8 @@ const rand = () => {
   return (seed - 1) / 2147483646;
 };
 const pick = <T,>(a: T[]) => a[Math.floor(rand() * a.length)];
-const messColors = ['var(--t568-blue)', 'var(--t568-green)', 'var(--t568-orange)', 'var(--steel)', 'var(--signal)', 'var(--t568-brown)'];
+// Ink and steel tones only (rules 6 and 7): messy by shape and crossing, not by colour
+const messColors = ['var(--ink)', 'var(--steel)', 'var(--steel-light)', 'var(--ink)', 'var(--steel)', 'var(--steel-light)'];
 
 const messyFeeds = Array.from({ length: 14 }, () => {
   const x0 = 110 + rand() * 180;
@@ -48,11 +53,7 @@ const bundles = [0, 1, 2, 3].map((k) => ({
 }));
 const cords = Array.from({ length: 12 }, (_, i) => ({ x: portX(i) + 4, uplink: i >= 10 }));
 
-const steps = [
-  { title: 'Pre-staged', detail: 'Panels, labels and parts prepared before arriving on site.' },
-  { title: 'After-hours install', detail: 'The noisy work happens while the office is closed.' },
-  { title: 'Phased cutover', detail: 'Systems switched over in planned phases, so the business keeps running.' },
-];
+const steps = installPhases;
 ---
 
 <div class="in-pair">
@@ -94,8 +95,8 @@ const steps = [
           {messyFeeds.map((c) => <path d={c.d} style={`stroke:${c.c}`} />)}
           {messyCords.map((c) => <path d={c.d} style={`stroke:${c.c}`} />)}
           <text x="10" y="160" class="in__tag in__tag--bad">BEFORE</text>
-          <text x="10" y="160" class="in__note">
-            <tspan x="10" dy="1.3em">no labels ·</tspan>
+          <text x="10" y="160" class="in__words">
+            <tspan x="10" dy="1.3em">No labels,</tspan>
             <tspan x="10" dy="1.2em">no slack</tspan>
             <tspan x="10" dy="1.2em">management</tspan>
           </text>
@@ -116,14 +117,40 @@ const steps = [
           <!-- labels sit outside the rails, level with what they name (room for phone-size text) -->
           <text x="116" y={PANEL_TOP + 2.5} dy="0.35em" class="in__label" text-anchor="end">A-01</text>
           <text x={LABEL_X} y={PANEL_TOP + 2.5} dy="0.35em" class="in__label">A-12</text>
-          <text x={LABEL_X} y={PANEL_TOP + 17.5} dy="0.35em" class="in__label">A-13 … A-24<tspan x={LABEL_X} dy="1.2em" class="in__note">spare</tspan></text>
+          <text x={LABEL_X} y={PANEL_TOP + 17.5} dy="0.35em" class="in__label">A-13 … A-24<tspan x={LABEL_X} dy="1.2em" class="in__words">Spare</tspan></text>
           <text x={LABEL_X} y={SWITCH_TOP + 3.5} dy="0.35em" class="in__label">SW-1<tspan x={LABEL_X} dy="1.2em" class="in__note">ports 1–12</tspan></text>
           <text x={LABEL_X} y="160" class="in__tag in__tag--good">AFTER</text>
-          <text x={LABEL_X} y="160" class="in__note">
-            <tspan x={LABEL_X} dy="1.3em">dressed ·</tspan>
-            <tspan x={LABEL_X} dy="1.2em">labeled ·</tspan>
+          <text x={LABEL_X} y="160" class="in__words">
+            <tspan x={LABEL_X} dy="1.3em">Dressed,</tspan>
+            <tspan x={LABEL_X} dy="1.2em">labeled,</tspan>
             <tspan x={LABEL_X} dy="1.2em">tested</tspan>
           </text>
+
+          {showHeadroom && (
+            <g>
+              <rect x="132" y="134" width="136" height="22" class="in__room" />
+              <text x={LABEL_X} y="140" dy="0.35em" class="in__words in__words--ink">Room to grow</text>
+            </g>
+          )}
+
+          <!-- callouts in the empty left margin (x 8 to 112); leaders end in a small dot -->
+          <g class="in__callouts">
+            <path d="M106 12 H136" class="in__leader" />
+            <circle cx="136" cy="12" r="2" class="in__dot" />
+            <text x="14" y="8" dy="0.35em" class="in__words in__words--ink"><tspan x="14">Dressed in</tspan><tspan x="14" dy="1.15em">bundles</tspan></text>
+
+            <path d="M108 72 H137" class="in__leader" />
+            <circle cx="137" cy="72" r="2" class="in__dot" />
+            <text x="14" y="66" dy="0.35em" class="in__words in__words--ink"><tspan x="14">Short patch</tspan><tspan x="14" dy="1.15em">cords</tspan></text>
+
+            <path d="M102 98 V47 H131" class="in__leader" />
+            <circle cx="133" cy="47" r="2" class="in__dot" />
+            <text x="14" y="94" dy="0.35em" class="in__words in__words--ink">
+              {labelsAtBothEnds
+                ? [<tspan x="14">Labeled at</tspan>, <tspan x="14" dy="1.15em">both ends</tspan>]
+                : [<tspan x="14">Every port</tspan>, <tspan x="14" dy="1.15em">labeled</tspan>]}
+            </text>
+          </g>
         </g>
 
         <!-- divider -->
@@ -135,9 +162,9 @@ const steps = [
       </svg>
 
       <label class="in__slider">
-        <span class="t-mono">Before</span>
+        <span>Before</span>
         <input type="range" min="0" max="100" value="50" step="1" aria-label="Compare the closet before and after" data-in-range />
-        <span class="t-mono">After</span>
+        <span>After</span>
       </label>
     </div>
 
@@ -179,10 +206,39 @@ const steps = [
     };
 
     let sweeping = false;
+    // The native slider already follows the finger with no easing (the clip changes in the same frame).
     range.addEventListener('input', () => {
       sweeping = false;
       setSplit(Number(range.value));
     });
+
+    // Dragging on the picture itself: pointer capture, split follows the pointer exactly, no easing.
+    const svg = root.querySelector<SVGSVGElement>('.in__rack')!;
+    let dragging = false;
+    const splitFromPointer = (e: PointerEvent) => {
+      const r = svg.getBoundingClientRect();
+      if (r.width > 0) setSplit(((e.clientX - r.left) / r.width) * 100);
+    };
+    svg.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      dragging = true;
+      sweeping = false;
+      svg.setPointerCapture(e.pointerId);
+      root.classList.add('in--dragging');
+      splitFromPointer(e);
+    });
+    svg.addEventListener('pointermove', (e) => {
+      if (dragging) splitFromPointer(e);
+    });
+    const endDrag = (e: PointerEvent) => {
+      if (!dragging) return;
+      dragging = false;
+      root.classList.remove('in--dragging');
+      if (svg.hasPointerCapture(e.pointerId)) svg.releasePointerCapture(e.pointerId);
+    };
+    svg.addEventListener('pointerup', endDrag);
+    svg.addEventListener('pointercancel', endDrag);
+    svg.addEventListener('lostpointercapture', endDrag);
 
     const tween = (from: number, to: number, ms: number, alive: () => boolean) =>
       new Promise<void>((resolve) => {
@@ -289,8 +345,16 @@ const steps = [
     opacity: 0.85;
   }
 
+  /* Horizontal drag moves the split; vertical swipes still scroll the page */
+  .in__rack {
+    touch-action: pan-y;
+    cursor: ew-resize;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
   .in__feed {
-    stroke: var(--t568-blue);
+    stroke: var(--armak-blue);
     stroke-width: 1.75;
   }
 
@@ -299,13 +363,41 @@ const steps = [
   }
 
   .in__cord {
-    stroke: var(--t568-blue);
+    stroke: var(--armak-blue);
     stroke-width: 2.25;
     stroke-linecap: round;
   }
 
   .in__cord--uplink {
-    stroke: var(--t568-green);
+    stroke: var(--ink);
+  }
+
+  .in__room {
+    fill: none;
+    stroke: var(--steel);
+    stroke-width: 1.25;
+    stroke-dasharray: 4 3;
+  }
+
+  .in__leader {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1;
+  }
+
+  .in__dot {
+    fill: var(--ink);
+  }
+
+  /* Plain words: Geist sans, sentence case (rule 4) */
+  .in__words {
+    font-family: var(--font-sans);
+    font-size: clamp(9.5px, calc(var(--u, 1) * 10.5px), 12.5px);
+    fill: var(--steel);
+  }
+
+  .in__words--ink {
+    fill: var(--ink);
   }
 
   /* SVG text is sized in screen pixels via --u (see fitSvgText), capped to fit the drawing:
@@ -332,7 +424,8 @@ const steps = [
 
   /* Paper halo keeps text readable where it crosses cables */
   .in__before text,
-  .in__after text {
+  .in__after text,
+  .in__after .in__words {
     paint-order: stroke;
     stroke: var(--paper);
     stroke-width: calc(var(--u, 1) * 3px);
@@ -340,11 +433,11 @@ const steps = [
   }
 
   .in__tag--bad {
-    fill: var(--signal);
+    fill: var(--ink);
   }
 
   .in__tag--good {
-    fill: var(--pass);
+    fill: var(--ink);
   }
 
   .in__divider line {
@@ -377,10 +470,20 @@ const steps = [
 
   .in__slider input {
     width: 100%;
-    height: 40px; /* touch target; the track stays thin */
+    height: 44px; /* touch target; the track stays thin */
     margin: 0;
     accent-color: var(--ink);
     cursor: ew-resize;
+    touch-action: pan-y;
+  }
+
+  .in__slider input:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+
+  .in--dragging .in__rack {
+    cursor: grabbing;
   }
 
   /* Timeline */

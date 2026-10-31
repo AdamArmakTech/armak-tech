@@ -34,7 +34,10 @@
       x = Math.max(8, Math.min(x, vw - w - 8));
       let y = r.top - h - gap;
       if (y < 8) y = r.bottom + gap;
-      pop.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+      pop.style.translate = `${Math.round(x)}px ${Math.round(y)}px`;
+      // Grow from the word: origin sits at the link's centre, measured inside the popover.
+      const ox = Math.max(0, Math.min(w, r.left + r.width / 2 - x));
+      pop.style.transformOrigin = `${Math.round(ox)}px ${y < r.top ? h : 0}px`;
     };
 
     const show = (a: HTMLAnchorElement) => {
@@ -124,12 +127,15 @@
     box-shadow: var(--shadow-raise);
     font-family: var(--font-sans);
     opacity: 0;
-    transition: opacity var(--dur-fast) ease;
+    scale: 0.96;
+    transition: opacity 120ms var(--ease-out), scale 120ms var(--ease-out);
     pointer-events: auto;
   }
 
   .term-pop.is-on {
     opacity: 1;
+    scale: 1;
+    transition-duration: 200ms;
   }
 
   .term-pop[hidden] {
@@ -180,6 +186,7 @@
   @media (prefers-reduced-motion: reduce) {
     .term-pop {
       transition: none;
+      scale: 1;
     }
   }
 </style>

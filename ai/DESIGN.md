@@ -33,7 +33,16 @@ the site says or does Y." If a change can't be tied to a rule, don't make it.
 10. **Motion is kept but restrained** (owner, 2026-10-29; additions approved 2026-10-30). What animates:
     smooth scroll, heading line reveals, counting numbers, the demos (a test runs, a step advances, a
     cable traces), map dots landing once on first view, scope-sheet rows revealing once, the step number
-    ticking, and the explorer layer drawing in once per layer. Nothing else animates; no new scroll
+    ticking, and the explorer layer drawing in once per layer. Added 2026-10-31 (owner approved the ten
+    animations and ten diagram features, 2026-10-30): press feedback on buttons, chips and replay buttons; the closet
+    slider following the finger; the glossary popover growing from its word; swipe down to close the glossary sheet;
+    direction-aware form steps and step-number tick; FAQ and "What’s this?" answers unfolding; menus dropping from the
+    header; the trace port lighting when the route arrives; the thank-you slip and quiz result entering; a sliding
+    highlight behind the active tab (process steps, explorer, cable test mode). Diagram motions: a room’s cable route
+    drawing back to its closet; the design plan drawing itself (walls, jacks, routes); the trace legs and the record
+    row wipe; the cable test gauges filling as each check passes; the job timeline hatch wiping in once; the
+    Today / 10 years from now switch on the cutaway; the cable-plant chart bars growing once. Hover nudges run only on
+    devices with a real hover. Nothing loops forever. Nothing else animates; no new scroll
     effects. Every animation shows its final state immediately under reduced motion and when scripts do
     not run.
 
@@ -67,7 +76,7 @@ the logo blue #1d3f8f). Blue appears as a full surface once per page at most (th
   onto the hero edge; the PASS stamp presses in; the numbers slip feeds out like a receipt; the coupon's
   perforation pulls on hover; schedule rows fill in; the blueprint traces itself; sheets lift slightly as they
   reach the top of the screen. Every animation plays once (hover ones on hover), is short (≤ 900 ms), uses
-  transform/opacity/clip-path/stroke-dashoffset only, and shows the final state immediately under reduced motion
+  transform/opacity/clip-path/stroke-dashoffset only (plus grid-template-rows for the FAQ and "What’s this?" unfolds, approved 2026-10-30), and shows the final state immediately under reduced motion
   and when scripts do not run. No other scroll effects.
 - Sheets: white (#fff) or paper, 1px hairline edge, `--shadow-raise` only on the sheet that crosses a band edge.
   Big type is allowed for the hero headline and for measured figures (the "28"). Codes, red and photos rules

@@ -109,8 +109,10 @@ const hasIncludes = !!includes && includes.length > 0;
     transition: transform var(--dur) var(--ease-out);
   }
 
-  .tile:hover .tile__arrow {
-    transform: translate(3px, -3px);
+  @media (hover: hover) and (pointer: fine) {
+    .tile:hover .tile__arrow {
+      transform: translate(3px, -3px);
+    }
   }
 
   .tile__desc {

@@ -199,8 +199,10 @@ const featured = publishedProjects.slice(0, 3);
     transition: transform var(--dur) var(--ease-out);
   }
 
-  .project__card:hover .project__more :global(svg) {
-    transform: translate(2px, -2px);
+  @media (hover: hover) and (pointer: fine) {
+    .project__card:hover .project__more :global(svg) {
+      transform: translate(2px, -2px);
+    }
   }
 
   .projects__foot {

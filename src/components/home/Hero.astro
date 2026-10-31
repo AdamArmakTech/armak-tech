@@ -1,4 +1,5 @@
 ---
+import { ArrowRight } from '@lucide/astro';
 import CableTest from '../ui/CableTest.astro';
 import Button from '../ui/Button.astro';
 import { site, yearsInBusiness } from '../../data/site';
@@ -39,7 +40,7 @@ const routes = [
         {routes.map((r) => (
           <li>
             <a class="route" href={r.href}>
-              <span class="route__title">{r.title}</span>
+              <span class="route__title">{r.title}<ArrowRight class="route__arrow" size={18} stroke-width={1.75} aria-hidden="true" /></span>
               <span class="route__detail">{r.detail}</span>
             </a>
           </li>
@@ -221,6 +222,24 @@ const routes = [
     font-weight: 600;
     letter-spacing: -0.01em;
     color: var(--paper);
+  }
+
+  /* Same arrow as the buttons, in the title colour, so the rows read as links on touch screens */
+  .route__title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .route__title :global(.route__arrow) {
+    flex: none;
+    transition: transform var(--dur) var(--ease-out);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .route:hover .route__arrow {
+      transform: translateX(4px);
+    }
   }
 
   .route:hover .route__title {

@@ -57,7 +57,7 @@ export const process = [
   {
     code: '01',
     title: 'Assess',
-    body: 'We walk the site with you and write down what’s there: pathways, closets, power and existing systems. Nothing is priced until that’s done.',
+    body: 'We walk the site with you and write down what’s there: pathways, closets, power and existing systems.',
   },
   {
     code: '02',
@@ -197,3 +197,167 @@ export function placeholderCount() {
  */
 export const publishedProjects = projects.filter((p) => !p.placeholder);
 export const showProjects = publishedProjects.length > 0;
+
+/* ── Signature practices (ai/FATHER-CHECKLIST.md section A) ──
+ * Used in B7 (cutaway), B8, B9 (sheet) and B10 (chart notes). confirmed:
+ *   'yes'       shown as an Armak default
+ *   'sometimes' shown with "On some jobs" (B7, B9 only; B8 needs 'yes')
+ *   'no' | null shown nowhere (not in the drawing, the sheet or the chart)
+ * The owner confirmed all ten as defaults in chat on 2026-10-30.
+ * Numbers on the site come only from ai/research/cable-plant-lifespan-sources.md. */
+export type Answer = null | 'yes' | 'sometimes' | 'no';
+
+export interface SignatureItem {
+  confirmed: Answer;
+  /** The checklist line this answers, for tracing the fact back. */
+  checklist: 'A1' | 'A2' | 'A3' | 'A4' | 'A5' | 'A6' | 'A7' | 'A8' | 'A9' | 'A10';
+  /** What Armak installs. Short; used in the drawing (B7), the sheet (B9) and the chart notes (B10). */
+  label: string;
+  /** One plain sentence on what it makes possible later. Used in B7's list and B9's sheet. */
+  detail: string;
+  /** B9 left column: the version that is enough for today. Describes an option, names nobody. */
+  today: string;
+}
+
+export type SignatureKey =
+  | 'cat6aDefault' | 'twoDropsPerAp' | 'spareFiberStrands' | 'emptyConduit' | 'rackHeadroom'
+  | 'zoneCabling' | 'ceilingGridJacks' | 'identicalJacks' | 'openStandards' | 'labelsAndAsBuilts';
+
+export const signature: {
+  confirmedBy: 'owner' | null;
+  confirmedOn: string | null; // ISO date
+  /** Item 11, the owner's own words. null until he writes them. Not rendered anywhere yet. */
+  inOwnWords: string | null;
+  items: Record<SignatureKey, SignatureItem>;
+} = {
+  confirmedBy: 'owner',
+  confirmedOn: '2026-10-30',
+  inOwnWords: null,
+  items: {
+    cat6aDefault: {
+      confirmed: 'yes', checklist: 'A1',
+      label: 'Cat 6A for new drops',
+      detail: 'Carries 10 Gb/s over the full 100 m, so faster equipment can use the same cable.',
+      today: 'Cat 6, enough for today’s speeds',
+    },
+    twoDropsPerAp: {
+      confirmed: 'yes', checklist: 'A2',
+      label: 'Two cables to each Wi-Fi access point',
+      detail: 'The second cable is already in place when it is needed.',
+      today: 'One cable to each access point',
+    },
+    spareFiberStrands: {
+      confirmed: 'yes', checklist: 'A3',
+      label: 'Spare fiber strands in every backbone',
+      detail: 'Unused strands run between the closets, ready to connect later.',
+      today: 'Only the strands in use today',
+    },
+    emptyConduit: {
+      confirmed: 'yes', checklist: 'A4',
+      label: 'Empty conduit with pull strings',
+      detail: 'New cable can be pulled through later without opening walls.',
+      today: 'Conduit only where cable runs today',
+    },
+    rackHeadroom: {
+      confirmed: 'yes', checklist: 'A5',
+      label: 'Room to grow in the rack',
+      detail: 'Rack space, power and cooling beyond what today’s equipment needs.',
+      today: 'A rack sized for today’s equipment',
+    },
+    zoneCabling: {
+      confirmed: 'yes', checklist: 'A6',
+      label: 'Zone cabling in open offices',
+      detail: 'Cables meet at a point in the ceiling, so desks can move with short new runs.',
+      today: 'A separate run from the closet to every desk',
+    },
+    ceilingGridJacks: {
+      confirmed: 'yes', checklist: 'A7',
+      label: 'Jacks ready in the ceiling',
+      detail: 'Cameras and access points can be added or moved without a new cable run.',
+      today: 'Ceiling cables only where devices hang today',
+    },
+    identicalJacks: {
+      confirmed: 'yes', checklist: 'A8',
+      label: 'The same jack everywhere',
+      detail: 'Any jack can serve a phone, a computer or a camera. The role is set at the switch.',
+      today: 'Different jacks for different uses',
+    },
+    openStandards: {
+      confirmed: 'yes', checklist: 'A9',
+      label: 'Open standards by default',
+      detail: 'No lock-in to one brand of equipment.',
+      today: 'One brand’s system from end to end',
+    },
+    labelsAndAsBuilts: {
+      confirmed: 'yes', checklist: 'A10',
+      label: 'Labels at both ends, and drawings handed over',
+      detail: 'Every cable is labeled to TIA-606 at the jack and at the panel, and you get drawings of what was installed.',
+      today: 'Labels at the panel only',
+    },
+  },
+};
+
+export const isShown = (s: SignatureItem) => s.confirmed === 'yes' || s.confirmed === 'sometimes';
+export const shownSignature = (keys: SignatureKey[]) =>
+  keys.map((k) => ({ key: k, ...signature.items[k] })).filter(isShown);
+
+/* ── Lifespans (used in B10 and the "10 years" label in B7) ──
+ * Numbers come only from ai/research/cable-plant-lifespan-sources.md (section B).
+ * Cabling: BICSI design minimum, owner-approved. Devices: no maker publishes how long a customer
+ * keeps a device, so this stays empty. Do not fill it. */
+export interface Lifespan { years: number | null; basis: string | null; source: string | null; sourceUrl: string | null; footnote: string | null }
+export const lifespans: { cabling: Lifespan; devices: Lifespan } = {
+  cabling: {
+    years: 10,
+    basis: 'BICSI 005-2016 design horizon',
+    source: 'ANSI/BICSI 005-2016, section 5.4.1.2.2',
+    sourceUrl: 'https://aux.bicsi.org/om/BICSI-005-2016.pdf',
+    footnote: 'Why 10 years: the BICSI 005-2016 design guide says to plan backbone cabling for at least 10 years after it goes into service.',
+  },
+  devices: { years: null, basis: null, source: null, sourceUrl: null, footnote: null },
+};
+export const cablingSourced = lifespans.cabling.years !== null && !!lifespans.cabling.sourceUrl;
+
+/* ── Wi-Fi generations (used in B10) ──
+ * One labeled basis: Wi-Fi Alliance certification launch dates.
+ * Numbers come only from ai/research/cable-plant-lifespan-sources.md (section D). */
+export const wifiBasis = 'Wi-Fi Alliance certification launch dates';
+export const wifiGenerations = [
+  { name: 'Wi-Fi 5', year: 2013, date: '2013-06-19', sourceUrl: 'https://www.wi-fi.org/news-events/newsroom/wi-fi-certified-ac-takes-wi-fi-performance-to-new-heights' },
+  { name: 'Wi-Fi 6', year: 2019, date: '2019-09-16', sourceUrl: 'https://www.wi-fi.org/news-events/newsroom/wi-fi-certified-6-delivers-new-wi-fi-era' },
+  { name: 'Wi-Fi 6E', year: 2021, date: '2021-01-07', sourceUrl: 'https://www.wi-fi.org/news-events/newsroom/wi-fi-alliance-delivers-wi-fi-6e-certification-program' },
+  { name: 'Wi-Fi 7', year: 2024, date: '2024-01-08', sourceUrl: 'https://wi-fi.org/news-events/newsroom/wi-fi-alliance-introduces-wi-fi-certified-7' },
+];
+
+/* ── Device support windows (used in B10 notes) ──
+ * Numbers come only from ai/research/cable-plant-lifespan-sources.md (section C). */
+export const deviceSupport = [
+  { maker: 'Cisco', years: 5, what: 'years of hardware support after a product stops being sold', sourceLabel: 'Cisco end-of-life policy', sourceUrl: 'https://www.cisco.com/c/en/us/products/eos-eol-policy.html' },
+  { maker: 'Axis', years: 6, what: 'years of camera hardware and repair service after a camera is discontinued', sourceLabel: 'Axis discontinuation statement', sourceUrl: 'https://www.axis.com/dam/public/9f/a1/28/discontinuation-statement-axis-p1245-p1265_-p1275-en-06-24-en-US-442584.pdf' },
+];
+
+/* ── Cabling warranty sentence (used in B10 footnote) ──
+ * Owner-approved wording. About the manufacturers only, not a claim about Armak.
+ * Sources: ai/research/cable-plant-lifespan-sources.md section A. */
+export const cablingWarranty = {
+  text: 'Installed by an authorized partner, CommScope and Panduit cabling can be registered for manufacturer system warranties of up to 25 years.',
+  sources: [
+    { label: 'CommScope 25-year extended product warranty', url: 'https://webresources.commscope.com/download/assets/Technical+Document%3A+CommScope+Network+Infrastructure+System+25+Year+Extended+Product+Warranty/306b2bf63bd311f09d2d068e18034550' },
+    { label: 'Panduit Certification Plus System Warranty', url: 'https://www.panduit.com/en/legal-information/certification-plus-system-warranty.html' },
+  ],
+};
+
+/* ── Install phases (used in B4 Install demo and B6 job timeline) ──
+ * Words match InstallDemo.astro's steps array exactly. */
+export const installPhases = [
+  { id: 'prestaged', title: 'Pre-staged', detail: 'Panels, labels and parts prepared before arriving on site.' },
+  { id: 'afterhours', title: 'After-hours install', detail: 'The noisy work happens while the office is closed.' },
+  { id: 'cutover', title: 'Phased cutover', detail: 'Systems switched over in planned phases, so the business keeps running.' },
+];
+
+/* ── Two-tier assessment copy (used in D, the plan/contact assessment choice) ──
+ * Owner-approved 2026-10-31, verbatim. */
+export const assessmentTiers = [
+  { id: 'quote', value: 'Free rough quote', title: 'Free rough quote', body: 'Tell us about the job and send plans or photos if you have them. We’ll give you a ballpark number. No site visit.' },
+  { id: 'onsite', value: 'On-site assessment (paid)', title: 'On-site assessment (paid)', body: 'A technician walks your site, checks the closets, pathways and power, and gives you an accurate estimate. The fee is credited toward your project if you hire us.' },
+] as const;

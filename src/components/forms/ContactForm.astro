@@ -8,6 +8,7 @@
  */
 import Button from '../ui/Button.astro';
 import { site, services } from '../../data/site';
+import { assessmentTiers } from '../../data/content';
 
 interface Props {
   id?: string;
@@ -42,10 +43,29 @@ const f = (name: string) => `${id}-${name}`;
 
     <!-- Step 1 -->
     <div class="cform__step" data-step="1" role="group" aria-labelledby={f('s1-title')}>
-      <div class="cform__progress" data-js-only hidden>
+      <div class="cform__progress" data-js-only hidden data-focus-first tabindex="-1">
         <p class="t-mono cform__count">Step 1 of 2</p>
         <span class="cform__bars" aria-hidden="true"><span class="is-on"></span><span></span></span>
       </div>
+
+      <!-- First question: which way to start (owner decision 2026-10-31). Native radios: required, keyboard, no-JS post. -->
+      <fieldset class="cform__tiers" data-tiers aria-describedby={f('tier-error')}>
+        <legend class="cform__legend">How would you like to start? <span class="cform__req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>
+        <div class="cform__tier-list">
+          {assessmentTiers.map((t) => (
+            <label class="tier">
+              <input type="radio" name="request_type" value={t.value} data-tier={t.id} required />
+              <span class="tier__dot" aria-hidden="true"></span>
+              <span class="tier__text">
+                <span class="tier__title">{t.title}</span>
+                <span class="tier__body">{t.body}</span>
+              </span>
+            </label>
+          ))}
+        </div>
+        <p class="cform__error" id={f('tier-error')} data-error-for="request_type" aria-live="polite"></p>
+      </fieldset>
+
       <H class="t-h3 cform__title" id={f('s1-title')} tabindex="-1">What are you building?</H>
 
       <fieldset class="cform__chips" aria-describedby={f('type-error')}>
@@ -129,10 +149,14 @@ const f = (name: string) => `${id}-${name}`;
   <div class="cform__success" data-success hidden>
     <p class="t-mono cform__success-label"><span class="cform__success-mark" aria-hidden="true"></span>Request received</p>
     <H class="t-h3 cform__title" tabindex="-1" data-success-title>Thanks. We’ve got your project details.</H>
-    <ol role="list" class="cform__next">
+    <ol role="list" class="cform__next" data-next-for="onsite">
       <li><span class="t-mono">01</span>We review what you’re building and where.</li>
       <li><span class="t-mono">02</span>We reach out to schedule a site assessment.</li>
       <li><span class="t-mono">03</span>You get a written plan and price for the work.</li>
+    </ol>
+    <ol role="list" class="cform__next" data-next-for="quote" hidden>
+      <li><span class="t-mono">01</span>We review what you’re building and where.</li>
+      <li><span class="t-mono">02</span>We give you a ballpark number. No site visit.</li>
     </ol>
     <p class="t-small t-muted">
       Need us sooner? Call <a class="cform__link" href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}
@@ -204,8 +228,14 @@ const f = (name: string) => `${id}-${name}`;
     background: var(--ink);
   }
 
-  .cform__title:focus {
+  .cform__title:focus,
+  .cform__progress:focus {
     outline: none;
+  }
+
+  .cform__progress:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 4px;
   }
 
   .cform__title:focus-visible {
@@ -242,6 +272,103 @@ const f = (name: string) => `${id}-${name}`;
 
   .cform__req {
     color: var(--steel);
+  }
+
+  /* Two-tier choice: full-width selectable rows, ink when selected (no red, no green) */
+  .cform__tiers {
+    display: grid;
+    gap: 0.875rem;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  .cform__tiers[hidden] {
+    display: none;
+  }
+
+  .cform__legend {
+    padding: 0;
+    margin-bottom: 0.875rem;
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .cform__tier-list {
+    display: grid;
+    gap: 0.625rem;
+  }
+
+  .tier {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.25rem minmax(0, 1fr);
+    gap: 0.875rem;
+    align-items: start;
+    min-height: 44px;
+    padding: 1rem;
+    background: var(--white);
+    border: 1px solid var(--field-line);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+  }
+
+  .tier:hover {
+    border-color: var(--ink);
+  }
+
+  .tier:has(input:checked) {
+    border-color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--ink);
+  }
+
+  .tier:has(input:focus-visible) {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+
+  /* The native radio stays (keyboard, no-JS); it sits invisibly over the whole row and the dot draws it */
+  .tier input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .tier__dot {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.125rem;
+    border: 1px solid var(--field-line);
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: inset 0 0 0 4px var(--white);
+  }
+
+  .tier:has(input:checked) .tier__dot {
+    border-color: var(--ink);
+    background: var(--ink);
+  }
+
+  .tier__text {
+    display: grid;
+    gap: 0.25rem;
+  }
+
+  .tier__title {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .tier__body {
+    font-size: var(--fs-small);
+    color: var(--text);
   }
 
   .cform__req-note,
@@ -396,6 +523,11 @@ const f = (name: string) => `${id}-${name}`;
     display: none;
   }
 
+  /* Step changes (JS only): see showStep. Reduced motion is handled there. */
+  .cform__step.is-moving {
+    will-change: transform, opacity;
+  }
+
   /* No-JS: both steps visible — separate them with a rule */
   .cform:not(.is-enhanced) .cform__step[data-step="2"] {
     padding-top: 2rem;
@@ -438,6 +570,37 @@ const f = (name: string) => `${id}-${name}`;
     gap: 0.75rem;
     padding-block: 0.875rem;
     border-bottom: 1px solid var(--hairline);
+  }
+
+  .cform__next[hidden] {
+    display: none;
+  }
+
+  /* Thank-you slip: label, heading, rows, footnote rise in turn (transform and opacity only; last delay
+     480 ms + 400 ms = 880 ms). Off under reduced motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .cform__success.is-in > :not(.cform__next),
+    .cform__success.is-in .cform__next li {
+      animation: slip-in 400ms var(--ease-out) both;
+      animation-delay: calc(var(--i, 0) * 80ms);
+    }
+
+    .cform__success.is-in > :nth-child(2) { --i: 1; }
+    .cform__success.is-in .cform__next li:nth-child(1) { --i: 2; }
+    .cform__success.is-in .cform__next li:nth-child(2) { --i: 3; }
+    .cform__success.is-in .cform__next li:nth-child(3) { --i: 4; }
+    .cform__success.is-in > :last-child { --i: 5; }
+  }
+
+  @keyframes slip-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   .cform__next .t-mono {
@@ -500,16 +663,69 @@ const f = (name: string) => `${id}-${name}`;
       }
     }
 
+    // Direction-aware step change: forward enters from the right, Back from the left. The old step leaves
+    // faster (140 ms) than the new one arrives (300 ms, --ease-out). Instant under reduced motion.
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let moveToken = 0;
     function showStep(n: 1 | 2, focus = true) {
-      steps.forEach((s) => (s.hidden = s.dataset.step !== String(n)));
-      if (focus) steps[n - 1].querySelector<HTMLElement>('.cform__title')?.focus();
+      const target = steps[n - 1];
+      const current = steps.find((s) => !s.hidden);
+      const settle = () => {
+        steps.forEach((s) => {
+          s.hidden = s !== target;
+          s.classList.remove('is-moving');
+        });
+        // Step 1 starts with the first question, so focus goes to the top of the step, not the heading below it
+        if (focus) (target.querySelector<HTMLElement>('[data-focus-first]') ?? target.querySelector<HTMLElement>('.cform__title'))?.focus();
+      };
+      const token = ++moveToken;
+      steps.forEach((s) => s.getAnimations().forEach((a) => a.cancel()));
+      if (!current || current === target || reduceMotion.matches || typeof target.animate !== 'function') {
+        settle();
+        return;
+      }
+      const dir = n > Number(current.dataset.step) ? 1 : -1;
+      const ease = getComputedStyle(root).getPropertyValue('--ease-out').trim() || 'cubic-bezier(0.16, 1, 0.3, 1)';
+      current.classList.add('is-moving');
+      current
+        .animate(
+          [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateX(${-dir * 12}px)` }],
+          { duration: 140, easing: 'ease-in', fill: 'forwards' },
+        )
+        .finished.then(
+          () => {
+            if (token !== moveToken) return;
+            settle();
+            target.classList.add('is-moving');
+            target
+              .animate(
+                [{ opacity: 0, transform: `translateX(${dir * 24}px)` }, { opacity: 1, transform: 'none' }],
+                { duration: 300, easing: ease },
+              )
+              .finished.then(
+                () => target.classList.remove('is-moving'),
+                () => {},
+              );
+          },
+          () => {},
+        );
     }
 
     const chips = () => [...form.querySelectorAll<HTMLInputElement>('input[name="project_type"]')];
     const selectedTypes = () => chips().filter((c) => c.checked).map((c) => c.value);
+    const tiers = () => [...form.querySelectorAll<HTMLInputElement>('input[name="request_type"]')];
+    const selectedTier = () => tiers().find((t) => t.checked && !t.disabled);
+    const tierNeeded = () => tiers().some((t) => !t.disabled);
+    const TIER_ERROR = 'Choose one to continue.';
 
     // ── Step 1 → 2 ─────────────────────────────────────────
     next.addEventListener('click', () => {
+      if (tierNeeded() && !selectedTier()) {
+        setError('request_type', TIER_ERROR);
+        tiers()[0]?.focus();
+        return;
+      }
+      setError('request_type', '');
       if (!selectedTypes().length) {
         setError('project_type', 'Pick at least one, or choose “Not sure yet”.');
         chips()[0]?.focus();
@@ -525,6 +741,7 @@ const f = (name: string) => `${id}-${name}`;
       if (e.target instanceof HTMLInputElement && e.target.name === 'project_type' && selectedTypes().length) {
         setError('project_type', '');
       }
+      if (e.target instanceof HTMLInputElement && e.target.name === 'request_type') setError('request_type', '');
     });
 
     // ── Validation ─────────────────────────────────────────
@@ -592,6 +809,11 @@ const f = (name: string) => `${id}-${name}`;
       e.preventDefault();
       if (sending) return;
 
+      if (tierNeeded() && !selectedTier()) {
+        showStep(1);
+        setError('request_type', TIER_ERROR);
+        return;
+      }
       if (!selectedTypes().length) {
         showStep(1);
         setError('project_type', 'Pick at least one, or choose “Not sure yet”.');
@@ -630,8 +852,14 @@ const f = (name: string) => `${id}-${name}`;
         const json = (await res.json().catch(() => ({}))) as { success?: boolean };
         if (!res.ok || !json.success) throw new Error('Submission rejected');
 
+        // Match the "what happens next" rows to the choice (no choice, e.g. a quick question: the default rows)
+        const tierId = selectedTier()?.dataset.tier ?? 'onsite';
+        const lists = [...success!.querySelectorAll<HTMLElement>('[data-next-for]')];
+        const match = lists.find((l) => l.dataset.nextFor === tierId) ?? lists[0];
+        lists.forEach((l) => (l.hidden = l !== match));
         form.hidden = true;
         success!.hidden = false;
+        success!.classList.add('is-in');
         success!.querySelector<HTMLElement>('[data-success-title]')?.focus();
       } catch {
         setSending(false);
@@ -655,6 +883,16 @@ const f = (name: string) => `${id}-${name}`;
     const topic = form.elements.namedItem('topic') as HTMLInputElement | null;
     const subject = form.elements.namedItem('subject') as HTMLInputElement | null;
     let startStep: 1 | 2 = 1;
+
+    // Quick questions and service requests are not assessments: no tier question for them
+    const dropTiers = () => {
+      tiers().forEach((t) => (t.disabled = true));
+      root.querySelector<HTMLElement>('[data-tiers]')?.setAttribute('hidden', '');
+    };
+    // ?start=quote or ?start=onsite preselects the choice; any other value is ignored
+    const startTier = (params.get('start') ?? '').trim().toLowerCase();
+    const tierPick = tiers().find((t) => t.dataset.tier === startTier);
+    if (tierPick) tierPick.checked = true;
 
     const checkChip = (slug: string) => {
       const chip = chips().find((c) => c.dataset.slug === slug);
@@ -683,6 +921,7 @@ const f = (name: string) => `${id}-${name}`;
     }
 
     if (quick) {
+      dropTiers();
       if (!selectedTypes().length) checkChip('not-sure');
       if (s2Title) s2Title.textContent = 'Ask a quick question';
       if (messageLabel) messageLabel.textContent = 'Your question';
@@ -693,6 +932,7 @@ const f = (name: string) => `${id}-${name}`;
     }
 
     if (support) {
+      dropTiers();
       checkChip('not-sure');
       if (s2Title) s2Title.textContent = 'Tell us what’s wrong';
       if (messageLabel) messageLabel.textContent = 'What’s happening';

@@ -128,8 +128,6 @@ const upgradeQuestions = [
           </label>
         </div>
 
-        <p class="t-small t-muted est__plan">Want these numbers checked against your actual floor? <a class="plan__link" href="/contact/?about=estimate#form">Send us your plan</a> and we’ll scope it.</p>
-
         <dl class="est__out" aria-live="polite">
           <div class="est__row">
             <dt>Data drops <a class="est__term" href="/glossary/#drop">what’s a drop?</a></dt>
@@ -154,6 +152,7 @@ const upgradeQuestions = [
         </dl>
       </form>
       <div class="est__send">
+        <p class="t-small t-muted est__plan">Want these numbers checked against your actual floor? <a class="plan__link" href="/contact/?about=estimate#form">Send us your plan</a> and we’ll scope it.</p>
         <Button variant="ink" size="lg" href={contactHref({ about: 'structured-cabling' })} data-est-send>Send these numbers with my request</Button>
       </div>
       </div>
@@ -268,6 +267,8 @@ const upgradeQuestions = [
     const result = form.querySelector<HTMLElement>('[data-quiz-result]')!;
     const verdict = form.querySelector<HTMLElement>('[data-quiz-verdict]')!;
     const why = form.querySelector<HTMLElement>('[data-quiz-why]')!;
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let swapTimer: number | undefined;
     const pick = (name: string) => (form.elements.namedItem(name) as RadioNodeList | null)?.value || '';
 
     form.addEventListener('change', () => {
@@ -290,9 +291,23 @@ const upgradeQuestions = [
         v = 'You’re in good shape';
         w = 'Recent Cat 6A with no symptoms is as good as it gets. Keep the labels and test reports; they make every future change quick.';
       }
-      verdict.textContent = v;
-      why.textContent = w;
-      result.hidden = false;
+      const show = () => {
+        verdict.textContent = v;
+        why.textContent = w;
+        result.hidden = false;
+        result.classList.remove('is-out', 'is-in');
+        void result.offsetWidth;
+        result.classList.add('is-in');
+      };
+      window.clearTimeout(swapTimer);
+      // Redone quiz: the old answer leaves quickly, then the new one enters. Reduced motion swaps at once.
+      if (!result.hidden && !calm.matches && verdict.textContent !== v) {
+        result.classList.remove('is-in');
+        result.classList.add('is-out');
+        swapTimer = window.setTimeout(show, 120);
+      } else if (result.hidden || verdict.textContent !== v) {
+        show();
+      }
     });
   });
 </script>
@@ -544,6 +559,10 @@ const upgradeQuestions = [
   }
 
   .est__term {
+    display: inline-block;
+    /* 44px tap area, no visual change: padding grows the box, negative margin cancels it */
+    padding-block: 13.5px;
+    margin-block: -13.5px;
     margin-left: 0.5rem;
     font-weight: 400;
     font-size: 0.8125rem;
@@ -603,6 +622,30 @@ const upgradeQuestions = [
 
   .quiz__result[hidden] {
     display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .quiz__result.is-in .quiz__verdict,
+    .quiz__result.is-in .quiz__why {
+      animation: quiz-in 320ms var(--ease-out) both;
+    }
+
+    .quiz__result.is-in .quiz__why {
+      animation-delay: 90ms;
+    }
+
+    .quiz__result.is-out {
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 120ms ease, transform 120ms ease;
+    }
+  }
+
+  @keyframes quiz-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
   }
 
   .quiz__verdict {

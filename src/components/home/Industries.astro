@@ -158,7 +158,16 @@ import { industries } from '../../data/content';
   .industry__link:hover :global(.industry__arrow),
   .industry__link:focus-visible :global(.industry__arrow) {
     color: var(--ink);
+  }
+
+  .industry__link:focus-visible :global(.industry__arrow) {
     transform: translate(3px, -3px);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .industry__link:hover :global(.industry__arrow) {
+      transform: translate(3px, -3px);
+    }
   }
 
   @media (min-width: 900px) {

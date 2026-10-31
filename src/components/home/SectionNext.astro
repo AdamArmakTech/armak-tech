@@ -60,7 +60,9 @@ const { href, label, tone = 'default' } = Astro.props;
     color: var(--signal);
   }
 
-  .snext__link:hover .snext__arrow {
-    transform: translateY(3px);
+  @media (hover: hover) and (pointer: fine) {
+    .snext__link:hover .snext__arrow {
+      transform: translateY(3px);
+    }
   }
 </style>

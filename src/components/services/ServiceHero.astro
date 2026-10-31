@@ -56,8 +56,8 @@ const { service, detail } = Astro.props;
 
       <div class="sheet__block">
         <p class="sheet__heading">Standards &amp; technology</p>
-        <ul role="list" class="sheet__list sheet__list--specs t-mono">
-          {detail.standards.map((s) => <li>{s}</li>)}
+        <ul role="list" class="sheet__list sheet__list--specs">
+          {detail.standards.map((s) => typeof s === 'string' ? <li class="t-mono">{s}</li> : <li class="spec-plain">{s.text}</li>)}
         </ul>
       </div>
 
@@ -203,7 +203,7 @@ const { service, detail } = Astro.props;
 
   @media (prefers-reduced-motion: no-preference) {
     .svc-hero__headline {
-      animation: svc-title-in 1.1s var(--ease-out) both;
+      animation: svc-title-in 0.8s var(--ease-out) both;
     }
   }
 
@@ -302,6 +302,15 @@ const { service, detail } = Astro.props;
     height: 6px;
     background: var(--ink);
     transform: translateY(-2px);
+  }
+
+  /* Plain phrases (not standard names or codes) read as ordinary sentence-case text */
+  .sheet__list--specs .spec-plain {
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: 400;
+    letter-spacing: normal;
+    text-transform: none;
   }
 
   .sheet__list--specs {

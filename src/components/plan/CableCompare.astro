@@ -120,10 +120,19 @@ const cables = [
     border-collapse: collapse;
   }
 
+  /* 44px tap height without changing the look: an invisible box grows 11px above and below the link */
   .cc__name a {
+    position: relative;
+    display: inline-block;
     color: var(--ink);
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  .cc__name a::after {
+    content: "";
+    position: absolute;
+    inset: -11px 0;
   }
 
   .cc__val {

@@ -116,8 +116,10 @@ const routes = [
     transition: transform var(--dur) var(--ease-out);
   }
 
-  .next__route:hover .next__arrow {
-    transform: translateX(3px);
+  @media (hover: hover) and (pointer: fine) {
+    .next__route:hover .next__arrow {
+      transform: translateX(3px);
+    }
   }
 
   .next__route:hover .next__title {

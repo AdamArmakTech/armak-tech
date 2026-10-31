@@ -1,0 +1,398 @@
+---
+/**
+ * B10: one cable plant, several device generations. A year-axis chart, 2013 to this year.
+ * Every date and figure comes from src/data/content.ts, where each carries a source.
+ * Bar positions are computed from the years, never typed in. Plain HTML, not SVG, so text stays readable.
+ * Rule 9 (real labels, text you can read), rule 4 (mono only for years and numbers).
+ */
+import { lifespans, cablingSourced, wifiBasis, wifiGenerations, deviceSupport, cablingWarranty, shownSignature } from '../../data/content';
+
+const START = wifiGenerations[0].year;
+const END = new Date().getFullYear();
+const span = END - START;
+const pct = (y: number) => ((y - START) / span) * 100;
+
+const cabYears = lifespans.cabling.years ?? 0;
+const cabSolid = Math.min(100, pct(START + cabYears));
+
+const segs = wifiGenerations.map((g, i) => {
+  const next = wifiGenerations[i + 1];
+  const left = pct(g.year);
+  const right = next ? pct(next.year) : 100;
+  return { ...g, left, width: right - left, open: !next, delay: 300 + i * 80 };
+});
+
+const ticks = [...new Set([...wifiGenerations.map((g) => g.year), END])].map((y) => ({
+  year: y,
+  left: pct(y),
+  edge: y === START ? 'start' : y === END ? 'end' : y === wifiGenerations[wifiGenerations.length - 1].year ? 'last' : 'mid',
+}));
+
+const signature = shownSignature(['cat6aDefault', 'spareFiberStrands', 'emptyConduit']);
+
+const cisco = deviceSupport.find((d) => d.maker === 'Cisco');
+const axis = deviceSupport.find((d) => d.maker === 'Axis');
+---
+
+{cablingSourced && (
+<div class="plant" data-plant>
+  <h3 class="t-h3 plant__title">One cable plant, several Wi-Fi releases</h3>
+
+  <div class="plant__chart">
+    <div class="plant__row">
+      <p class="plant__label">Cabling in the walls and ceilings</p>
+      <div class="plant__track">
+        <div class="plant__cable" data-bar style="--d: 0ms; --t: 600ms">
+          <span class="plant__solid" style={`width: ${cabSolid}%`}></span>
+          <span class="plant__open" style={`left: ${cabSolid}%`}></span>
+        </div>
+        <p class="plant__over">
+          Designed for <span class="t-mono">{cabYears}+</span> years<sup><a href="#plant-note-1" aria-label="Note 1">1</a></sup>
+        </p>
+      </div>
+      {signature.length > 0 && (
+        <p class="plant__sig">Put in on day one: {signature.map((s) => s.label).join(' · ')}</p>
+      )}
+    </div>
+
+    <div class="plant__row">
+      <p class="plant__label">
+        Wi-Fi releases
+        <span class="plant__basis">Dates are {wifiBasis}<sup><a href="#plant-note-2" aria-label="Note 2">2</a></sup></span>
+      </p>
+      <div class="plant__track">
+        {segs.map((s) => (
+          <span
+            class:list={['plant__seg', { 'plant__seg--open': s.open }]}
+            data-bar
+            style={`left: ${s.left}%; width: ${s.width}%; --d: ${s.delay}ms; --t: 240ms`}
+          ></span>
+        ))}
+      </div>
+      <ul role="list" class="plant__names plant__names--wide" aria-hidden="true">
+        {segs.map((s) => (
+          <li style={`left: ${s.left}%; width: ${s.width}%`}>
+            <span class="plant__name">{s.name}</span>
+          </li>
+        ))}
+      </ul>
+      <ul role="list" class="plant__names plant__names--list">
+        {segs.map((s) => (
+          <li>
+            <span class="plant__name">{s.name}</span>
+            <span class="t-mono plant__yr">{s.year}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="plant__axis" aria-hidden="true">
+      {ticks.map((t) => (
+        <span class={`plant__tick plant__tick--${t.edge} t-mono`} style={`left: ${t.left}%`}>{t.year}</span>
+      ))}
+    </div>
+  </div>
+
+  <p class="plant__caption">Example: cabling put in when Wi-Fi 5 certification launched in <span class="t-mono">{START}</span>. The chart shows timing only, not cable speeds.</p>
+
+  {cisco && axis && (
+    <p class="plant__notes">
+      Makers support a device for a set time after they stop selling it: Cisco, <span class="t-mono">{cisco.years}</span> years of hardware support<sup><a href="#plant-note-3" aria-label="Note 3">3</a></sup>; Axis, <span class="t-mono">{axis.years}</span> years of camera hardware service<sup><a href="#plant-note-4" aria-label="Note 4">4</a></sup>.
+    </p>
+  )}
+
+  <p class="plant__notes">
+    {cablingWarranty.text}<sup><a href="#plant-note-5" aria-label="Note 5">5</a>, <a href="#plant-note-6" aria-label="Note 6">6</a></sup>
+  </p>
+
+  <ol class="plant__foot" aria-label="Notes and sources">
+    <li id="plant-note-1">
+      {lifespans.cabling.footnote} Source: <a href={lifespans.cabling.sourceUrl!}>{lifespans.cabling.source}</a>.
+    </li>
+    <li id="plant-note-2">
+      Wi-Fi Alliance announcements:
+      {segs.map((s, i) => (<>{i > 0 && ','} <a href={s.sourceUrl}>{s.name}</a></>))}.
+    </li>
+    {cisco && <li id="plant-note-3"><a href={cisco.sourceUrl}>{cisco.sourceLabel}</a>.</li>}
+    {axis && <li id="plant-note-4"><a href={axis.sourceUrl}>{axis.sourceLabel}</a>.</li>}
+    {cablingWarranty.sources.map((s, i) => (
+      <li id={`plant-note-${5 + i}`}><a href={s.url}>{s.label}</a>.</li>
+    ))}
+  </ol>
+</div>
+)}
+
+<script>
+  // Bars grow from the left the first time the chart is seen. Armed here only, so with no script or under
+  // reduced motion the bars are full from the start.
+  import { onFirstView, reduceMotion } from '../../scripts/demo';
+
+  document.querySelectorAll<HTMLElement>('[data-plant]').forEach((root) => {
+    if (reduceMotion) return;
+    root.classList.add('is-armed');
+    onFirstView(root.querySelector(".plant__chart") ?? root, () => root.classList.add("is-drawn"), 0.35);
+  });
+</script>
+
+<style>
+  .plant {
+    margin-top: var(--space-block);
+    padding-top: var(--space-block);
+    border-top: 1px solid var(--hairline);
+    display: grid;
+    gap: var(--sp-5);
+    min-width: 0;
+  }
+
+  .plant__title {
+    max-width: 24ch;
+  }
+
+  .plant__chart {
+    display: grid;
+    gap: var(--sp-6);
+    min-width: 0;
+  }
+
+  .plant__row {
+    display: grid;
+    gap: var(--sp-2);
+    min-width: 0;
+  }
+
+  .plant__label {
+    display: grid;
+    gap: 2px;
+    font-size: var(--fs-small);
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .plant__basis {
+    font-size: var(--fs-label);
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  .plant__track {
+    position: relative;
+    height: 2.25rem;
+  }
+
+  /* Cabling: solid for the design years, then open (dashed) to show "at least" */
+  .plant__cable {
+    position: absolute;
+    inset: 0;
+    transform-origin: left center;
+  }
+
+  .plant__solid {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: var(--ink);
+  }
+
+  .plant__open {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    border: 1.5px dashed var(--ink);
+    border-left: 0;
+  }
+
+  .plant__over {
+    position: absolute;
+    left: var(--sp-3);
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+    font-size: var(--fs-label);
+    color: var(--paper);
+    white-space: nowrap;
+  }
+
+  .plant__sig {
+    font-size: var(--fs-label);
+    color: var(--text);
+  }
+
+  .plant__seg {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border: 1.5px solid var(--steel);
+    background: none;
+    transform-origin: left center;
+  }
+
+  .plant__seg--open {
+    border-right-style: dashed;
+  }
+
+  /* Wi-Fi names: under each segment from 640px, a plain list under it on phones */
+  .plant__names {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .plant__names--wide {
+    display: none;
+  }
+
+  .plant__names--list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-1) var(--sp-4);
+  }
+
+  .plant__names li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-2);
+    font-size: var(--fs-label);
+  }
+
+  .plant__name {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .plant__yr {
+    color: var(--steel);
+    font-size: var(--fs-label);
+  }
+
+  /* Year axis */
+  .plant__axis {
+    display: none;
+    position: relative;
+    height: 1.75rem;
+    border-top: 1px solid var(--hairline-strong);
+  }
+
+  .plant__tick {
+    position: absolute;
+    top: var(--sp-1);
+    font-size: var(--fs-label);
+    color: var(--steel);
+    transform: translateX(-50%);
+  }
+
+  .plant__tick--start {
+    transform: none;
+  }
+
+  .plant__tick--last {
+    transform: translateX(-75%);
+  }
+
+  .plant__tick--end {
+    transform: translateX(-100%);
+  }
+
+  .plant__notes :global(.t-mono),
+  .plant__caption :global(.t-mono) {
+    font-size: 0.92em;
+  }
+
+  .plant__caption {
+    font-size: var(--fs-label);
+    color: var(--text);
+  }
+
+  .plant__notes {
+    max-width: 65ch;
+    color: var(--text);
+  }
+
+  .plant sup {
+    font-size: 0.75em;
+    line-height: 0;
+    margin-left: 1px;
+  }
+
+  .plant sup a {
+    padding-inline: 2px;
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  .plant__over sup a {
+    color: var(--paper);
+  }
+
+  .plant__foot {
+    display: grid;
+    gap: var(--sp-2);
+    margin: 0;
+    padding-left: 1.5em;
+    max-width: 75ch;
+    font-size: var(--fs-label);
+    color: var(--text);
+    overflow-wrap: anywhere;
+  }
+
+  .plant__foot a {
+    color: var(--text);
+    text-decoration: underline;
+  }
+
+
+
+  /* Draw once on first view; armed only by the script */
+  .plant.is-armed [data-bar] {
+    transform: scaleX(0.001);
+  }
+
+  .plant.is-armed.is-drawn [data-bar] {
+    transform: scaleX(1);
+    transition: transform var(--t) var(--ease-out) var(--d);
+  }
+
+  .plant.is-armed .plant__over {
+    opacity: 0;
+  }
+
+  .plant.is-armed.is-drawn .plant__over {
+    opacity: 1;
+    transition: opacity var(--dur) ease 300ms;
+  }
+
+  @media (min-width: 640px) {
+    .plant__axis {
+      display: block;
+    }
+
+    .plant__tick--last {
+      transform: translateX(-50%);
+    }
+
+    .plant__names--wide {
+      display: block;
+      position: relative;
+      height: 1.5rem;
+    }
+
+    .plant__names--wide li {
+      position: absolute;
+      top: 0;
+      flex-direction: column;
+      gap: 0;
+      padding-left: var(--sp-1);
+    }
+
+    .plant__names--list {
+      display: none;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .plant__track {
+      height: 1.5rem;
+    }
+  }
+</style>

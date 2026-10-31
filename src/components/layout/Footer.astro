@@ -164,6 +164,9 @@ const year = new Date().getFullYear();
     display: inline-block;
     padding-block: 0.7rem;
     margin-block: -0.7rem;
+    /* Short words (About, Terms) were under 44px wide: pad the sides, cancelled by negative margin */
+    padding-inline: 0.5rem;
+    margin-inline: -0.5rem;
     color: var(--ink);
     text-decoration: underline;
     text-decoration-color: transparent;

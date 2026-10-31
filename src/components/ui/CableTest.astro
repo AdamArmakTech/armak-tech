@@ -152,6 +152,7 @@ const barPos = (b: Bar) =>
       </button>
       <fieldset class="ct__mode">
         <legend class="visually-hidden">Which cable to test</legend>
+        <span class="ct__mode-thumb" aria-hidden="true"></span>
         <label><input type="radio" name={`${uid}-mode`} value="pass" checked data-ct-mode /><span>Passing<span class="ct__mode-word"> cable</span></span></label>
         <label><input type="radio" name={`${uid}-mode`} value="fail" data-ct-mode /><span>Failing<span class="ct__mode-word"> cable</span></span></label>
       </fieldset>
@@ -211,14 +212,18 @@ const barPos = (b: Bar) =>
               </div>
               {c.bar && (
                 <div class:list={['ct__bar', `ct__bar--${c.bar.kind}`]} style={`--pos:${barPos(c.bar).toFixed(3)}; --limit:${c.bar.kind === 'length' ? 0.9 : LIMIT_AT}`} data-ct-bar>
-                  <span class="ct__bar-fill"></span>
+                  <span class="ct__bar-track"><span class="ct__bar-fill"></span></span>
                   <span class="ct__bar-limit"><span class="t-mono">{c.bar.kind === 'length' ? `limit ${c.bar.limit} m` : 'limit'}</span></span>
                 </div>
               )}
               <details class="ct__explain">
                 <summary>What’s this?</summary>
-                <p>{c.explain}</p>
-                <a href={`/glossary/#${c.slug}`}>More in the glossary <ArrowRight size={14} stroke-width={1.75} aria-hidden="true" /></a>
+                <div class="ct__explain-body">
+                  <div class="ct__explain-inner">
+                    <p>{c.explain}</p>
+                    <a href={`/glossary/#${c.slug}`}>More in the glossary <ArrowRight size={14} stroke-width={1.75} aria-hidden="true" /></a>
+                  </div>
+                </div>
               </details>
             </div>
           </li>
@@ -489,12 +494,48 @@ const barPos = (b: Bar) =>
     font-weight: 500;
   }
 
+  .ct__run,
+  .ct__replay {
+    transition: transform 140ms var(--ease-out), background var(--dur-fast) ease, color var(--dur-fast) ease,
+      border-color var(--dur-fast) ease;
+  }
+
   .ct__run:hover {
     background: var(--graphite);
   }
 
+  /* Press feedback: a small push-in, then it springs back */
+  .ct__run:active,
+  .ct__replay:active {
+    transform: scale(0.97);
+  }
+
+  .ct__run:active {
+    background: var(--graphite);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ct__run,
+    .ct__replay {
+      transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+    }
+
+    .ct__run:active,
+    .ct__replay:active {
+      transform: none;
+    }
+
+    .ct__replay:active {
+      border-color: var(--ink);
+      color: var(--ink);
+    }
+  }
+
   .ct__mode {
-    display: inline-flex;
+    position: relative;
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
     border: 1px solid var(--field-line);
     border-radius: var(--radius);
     padding: 2px;
@@ -508,7 +549,7 @@ const barPos = (b: Bar) =>
   .ct__mode input {
     position: absolute;
     opacity: 0;
-    inset: 0;
+    inset: -3px 0; /* 44px tall hit area, invisible */
     cursor: pointer;
   }
 
@@ -517,13 +558,47 @@ const barPos = (b: Bar) =>
     padding: 0.45rem 0.75rem;
     border-radius: var(--radius);
     color: var(--steel);
-    transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
+    transition: color var(--dur-fast) ease;
   }
 
   .ct__mode input:checked + span {
     background: var(--paper-sunken);
     color: var(--ink);
     font-weight: 500;
+  }
+
+  /* One highlight slides behind the selected option (transform only). Without :has() support
+     the selected option keeps its own background, as before. */
+  .ct__mode-thumb {
+    display: none;
+  }
+
+  @supports selector(:has(*)) {
+    .ct__mode-thumb {
+      display: block;
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      left: 2px;
+      width: calc((100% - 4px) / 2);
+      background: var(--paper-sunken);
+      border-radius: var(--radius);
+      transition: transform 280ms var(--ease-out);
+    }
+
+    .ct__mode:has(input[value='fail']:checked) .ct__mode-thumb {
+      transform: translateX(100%);
+    }
+
+    .ct__mode input:checked + span {
+      background: transparent;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ct__mode-thumb {
+        transition: none;
+      }
+    }
   }
 
   .ct__mode input[value='fail']:checked + span {
@@ -761,11 +836,18 @@ const barPos = (b: Bar) =>
     position: relative;
     height: 8px;
     margin-bottom: 1.1rem;
+  }
+
+  /* The clipped track holds the tint and the fill; the limit tick sits outside it */
+  .ct__bar-track {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
     border-radius: 4px;
     background: var(--paper-sunken);
   }
 
-  .ct__bar--margin {
+  .ct__bar--margin .ct__bar-track {
     background: linear-gradient(
       to right,
       color-mix(in srgb, var(--signal) 12%, var(--paper-sunken)) 0 calc(var(--limit) * 100%),
@@ -776,14 +858,15 @@ const barPos = (b: Bar) =>
   .ct__bar-fill {
     position: absolute;
     inset: 0 auto 0 0;
-    width: 0;
-    border-radius: 4px;
+    width: 100%;
     background: var(--ink);
-    transition: width 0.65s var(--ease-out);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 480ms var(--ease-out);
   }
 
   .ct__check[data-state='pass'] .ct__bar-fill {
-    width: calc(var(--pos) * 100%);
+    transform: scaleX(var(--pos));
     background: var(--pass);
   }
 
@@ -821,6 +904,10 @@ const barPos = (b: Bar) =>
   .ct__explain summary {
     display: inline-flex;
     align-items: center;
+    /* 44px tap target without moving anything: padding is cancelled by the negative margin */
+    min-height: 44px;
+    padding-block: 0.75rem;
+    margin-block: -0.75rem;
     gap: 0.35rem;
     cursor: pointer;
     list-style: none;
@@ -841,6 +928,31 @@ const barPos = (b: Bar) =>
 
   .ct__explain[open] summary {
     color: var(--ink);
+  }
+
+  .ct__explain-body {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  /* Unfold: the answer's height eases open (grid rows 0fr to 1fr). Without ::details-content
+     support, or with no script, the <details> still opens instantly. */
+  @supports selector(::details-content) {
+    .ct__explain::details-content {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 240ms var(--ease-out), content-visibility 240ms allow-discrete;
+    }
+
+    .ct__explain[open]::details-content {
+      grid-template-rows: 1fr;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .ct__explain::details-content {
+        transition: none;
+      }
+    }
   }
 
   .ct__explain p {
@@ -993,8 +1105,16 @@ const barPos = (b: Bar) =>
   }
 
   .ct__how {
+    position: relative;
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  /* 44px tall tap area, vertical only so it never reaches the replay button beside it */
+  .ct__how::after {
+    content: "";
+    position: absolute;
+    inset: -10px 0;
   }
 
   .ct__how:hover {

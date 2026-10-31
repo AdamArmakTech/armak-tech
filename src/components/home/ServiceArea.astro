@@ -12,6 +12,8 @@ type LngLat = [number, number];
 
 const hq = site.hq;
 const isHq = (name: string) => name === hq.city;
+// Dots land within 900ms total: last start (HQ) at most 580ms + 320ms transition
+const STAG = Math.max(1, Math.min(40, Math.floor(580 / (serviceArea.length + 1))));
 
 // ── Geometry (computed at build time) ───────────────────────────────────────
 const lngs = serviceArea.map((c) => c.lng);
@@ -98,12 +100,12 @@ const groups = counties.map((county) => ({
               </g>
               <polygon class="sx-hull" points={hullPoints} />
               {serviceArea.filter((c) => !isHq(c.name)).map((c, i) => (
-                <g class="sx-city" data-city={c.name} style={`--i:${i}`}>
+                <g class="sx-city" data-city={c.name} style={`--i:${i};--st:${STAG}ms`}>
                   <circle cx={px(c.lng)} cy={py(c.lat)} r="7" />
                   {schematicLabels.has(c.name) && <text x={px(c.lng) + 14} y={py(c.lat) + 6}>{c.name}</text>}
                 </g>
               ))}
-              <g class="sx-hq" data-city={hq.city} style={`--i:${serviceArea.length}`}>
+              <g class="sx-hq" data-city={hq.city} style={`--i:${serviceArea.length};--st:${STAG}ms`}>
                 <circle class="sx-hq__ring" cx={px(hq.lng)} cy={py(hq.lat)} r="22" />
                 <circle class="sx-hq__dot" cx={px(hq.lng)} cy={py(hq.lat)} r="11" />
                 <text x={px(hq.lng) - 30} y={py(hq.lat) - 30} text-anchor="end">HQ · {hq.city}</text>
@@ -289,7 +291,7 @@ const groups = counties.map((county) => ({
     font-weight: 600;
   }
 
-  /* First view: the schematic dots land one by one (40ms apart), HQ last. The script sets
+  /* First view: the schematic dots land one by one (up to 40ms apart, squeezed so the last starts by 580ms), HQ last; all done by 900ms. The script sets
      data-dots="pending" before the figure is seen, then "in". Without JS, or with reduced
      motion, the attribute is never set and everything is simply shown. */
   .sx-city circle,
@@ -300,12 +302,12 @@ const groups = counties.map((county) => ({
 
   .area__map[data-dots] .sx-city,
   .area__map[data-dots] .sx-hq {
-    transition: opacity var(--dur) var(--ease-out) calc(var(--i, 0) * 40ms);
+    transition: opacity var(--dur) var(--ease-out) calc(var(--i, 0) * var(--st, 40ms));
   }
 
   .area__map[data-dots] .sx-city circle,
   .area__map[data-dots] .sx-hq circle {
-    transition: transform var(--dur) var(--ease-out) calc(var(--i, 0) * 40ms);
+    transition: transform var(--dur) var(--ease-out) calc(var(--i, 0) * var(--st, 40ms));
   }
 
   .area__map[data-dots="pending"] .sx-city,
@@ -658,7 +660,7 @@ const groups = counties.map((county) => ({
   /** Land the city dots together over --dur, then HQ after the last city (MapLibre transitions are
    *  per layer, so the per-dot 40ms stagger of the schematic becomes one group, then HQ). */
   function showDots(map: MapLibreMap, cityCount: number) {
-    const hqDelay = Math.min(cityCount * DOT_STAGGER_MS, 600);
+    const hqDelay = Math.min(cityCount * DOT_STAGGER_MS, 580);
     for (const id of DOT_LAYERS) {
       const delay = id === 'armak-city-dots' ? 0 : hqDelay;
       for (const prop of ['circle-radius', 'circle-opacity', 'circle-stroke-opacity']) {

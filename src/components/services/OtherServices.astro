@@ -116,7 +116,16 @@ const others = services.filter((s) => s.slug !== current);
   .other:hover :global(.other__arrow),
   .other:focus-visible :global(.other__arrow) {
     color: var(--ink);
+  }
+
+  .other:focus-visible :global(.other__arrow) {
     transform: translate(3px, -3px);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .other:hover :global(.other__arrow) {
+      transform: translate(3px, -3px);
+    }
   }
 
   @media (min-width: 900px) {

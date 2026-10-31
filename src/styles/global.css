@@ -320,11 +320,24 @@ textarea.field__control {
   border: 1px solid var(--field-line);
   border-radius: var(--radius);
   font-size: var(--fs-small);
-  transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+  transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease,
+    transform 140ms var(--ease-out);
 }
 
 .chip:hover span {
   border-color: var(--ink);
+}
+
+/* Press feedback: small squeeze (no scale under reduced motion, the ink border is enough) */
+.chip input:active + span {
+  border-color: var(--ink);
+  transform: scale(0.97);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip input:active + span {
+    transform: none;
+  }
 }
 
 .chip input:checked + span {

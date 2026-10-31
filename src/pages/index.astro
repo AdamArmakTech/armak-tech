@@ -34,11 +34,6 @@ if (!showProjects) {
   </div>
 </Base>
 
-<script>
-  // Sheets lift as they reach the top of the screen (Direction A, rule 10 extended). This has to stay a client
-  // script: an import in the frontmatter above runs at build time, where there is no IntersectionObserver.
-  import '../scripts/sheets';
-</script>
 
 <style>
   /* Direction A: the homepage breathes more than inner pages (80-160px between sections) */

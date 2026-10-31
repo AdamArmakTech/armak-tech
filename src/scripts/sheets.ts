@@ -2,7 +2,7 @@
  * "Sheets lift as they reach the top" (Direction A, rule 10 extended).
  * A sheet is any element marked [data-sheet], plus the home page's white sheet panels listed below
  * (found by class name so the home components need no edits). When a sheet's top edge passes ~30% from
- * the top of the viewport it gets .is-lifted (2px up, slightly deeper shadow, 300 ms; styles in
+ * the top of the viewport it gets .is-lifted (2px up, no shadow change, 300 ms; styles in
  * global.css, motion-allowed only); it relaxes when it scrolls back below. No scroll listeners.
  */
 const HOME_SHEETS = ['.home .steps', '.home .industries__grid', '.home .coupon'];

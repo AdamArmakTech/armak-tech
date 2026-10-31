@@ -176,8 +176,10 @@ const Heading = headingLevel;
     transition: transform var(--dur) var(--ease-out);
   }
 
-  .pcard:hover .pcard__more :global(svg) {
-    transform: translate(2px, -2px);
+  @media (hover: hover) and (pointer: fine) {
+    .pcard:hover .pcard__more :global(svg) {
+      transform: translate(2px, -2px);
+    }
   }
 
   /* Tablet: horizontal cards, image left */

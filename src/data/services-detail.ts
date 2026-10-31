@@ -18,6 +18,9 @@ import badgeReader from '../assets/photos/badge-reader.jpg';
 import deskPhone from '../assets/photos/desk-phone.jpg';
 import conferenceRoom from '../assets/photos/conference-room.jpg';
 
+/** A spec line: a plain string (real standard or code, mono) or a plain phrase (sans) */
+export type Standard = string | { text: string; plain: true };
+
 export interface Capability {
   title: string;
   body: string;
@@ -35,8 +38,8 @@ export interface ServiceDetail {
   intro: string;
   /** 4–6 items expanding the service's `includes` list */
   capabilities: Capability[];
-  /** Short mono spec lines (standards / technologies) — general, not Armak claims */
-  standards: string[];
+  /** Short spec lines (standards / technologies) — general, not Armak claims. Real standard names and codes show in mono; plain phrases (plain: true) show in sans, sentence case */
+  standards: Standard[];
   /** Which partner categories from content.ts to show on the page (empty = hide the section) */
   partnerCategories: Partner['category'][];
   faqs: Faq[];
@@ -124,7 +127,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       'TIA-606 labeling',
       'Cat 6A · Cat 8',
       'Single-mode · Multimode fiber',
-      'Field-tested & documented',
+      { text: 'Field-tested & documented', plain: true },
     ],
     partnerCategories: ['Infrastructure'],
     faqs: [
@@ -184,7 +187,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       'IEEE 802.1Q VLANs',
       'PoE · PoE+ · PoE++ (802.3af/at/bt)',
       'Wi-Fi 6 / 6E / 7',
-      'Next-gen firewall',
+      { text: 'Next-gen firewall', plain: true },
       'Rack UPS & PDU',
     ],
     partnerCategories: ['Network'],
@@ -242,7 +245,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       'NVR & VMS',
       'H.264 · H.265',
       'ONVIF interoperability',
-      'Remote viewing',
+      { text: 'Remote viewing', plain: true },
     ],
     partnerCategories: ['Security'],
     faqs: [
@@ -417,7 +420,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       'AV-over-IP',
       '70V / 100V distributed audio',
       'USB-C presentation',
-      'Commercial-grade displays',
+      { text: 'Commercial-grade displays', plain: true },
     ],
     partnerCategories: ['AV'],
     faqs: [

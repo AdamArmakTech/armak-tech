@@ -188,7 +188,12 @@ const description =
 
   .sector__svc:hover :global(.sector__svc-arrow) {
     color: var(--ink);
-    transform: translateX(3px);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .sector__svc:hover :global(.sector__svc-arrow) {
+      transform: translateX(3px);
+    }
   }
 
   @media (min-width: 640px) {

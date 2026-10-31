@@ -2,21 +2,42 @@
 /**
  * Step 03 · Install — "Trace a cable".
  * A small interactive under the before/after slider: tap one of four labeled jacks on the sample
- * office plan (shared OfficePlan), and its cable route draws back to the IDF closet while the
- * matching port lights on a patch-panel strip. One route is lit at a time.
- * Teaches: matching labels on both ends make a connection easy to find. SAMPLE data.
- * Motion: route draws over --dur-slow; under prefers-reduced-motion it appears instantly.
+ * office plan (shared OfficePlan), and its cable runs up the wall, across the ceiling and into the
+ * IDF closet. When the route arrives, the matching port lights on a patch-panel strip and one
+ * record row fills in. One route is lit at a time.
+ * Same four jacks, same spots and same trunk line as the Design demo (TRUNK_Y 128, rack x 73).
+ * Teaches: matching labels on both ends make a connection easy to find. SAMPLE data, no test date.
+ * Motion (WAAPI, script only): branch 0-120 ms, trunk 120-560 ms, closet 560-700 ms; the port lights
+ * at 700 ms; the record row wipes in 700-900 ms. Reduced motion: everything at once.
+ * No JavaScript: jack 2B-15 is server-rendered already traced; the script clears it on start.
+ * Listens for `armak:trace` (sent by the Design demo): scrolls here, lights that jack, focuses its button.
  */
 import DemoFrame from './DemoFrame.astro';
 import OfficePlan from './OfficePlan.astro';
+import { signature, isShown } from '../../data/content';
 
-// Plan viewBox 400 x 262. Jack dot positions; routes run along the ceiling to the rack in the closet.
+const TRUNK_Y = 128;
+const RACK_X = 73;
+const CLOSET_Y = 62;
+
+// Plan viewBox 400 x 262. Jack positions match the Design demo's drops exactly.
 const jacks = [
-  { id: '2B-15', port: 'B-15', x: 110, y: 92, d: 'M110 92 V101 H42 V50 H64' },
-  { id: '2B-14', port: 'B-14', x: 195, y: 92, d: 'M195 92 V97 H36 V50 H64' },
-  { id: '2A-07', port: 'B-07', x: 230, y: 150, d: 'M230 150 V120 H39 V50 H64' },
-  { id: '2C-03', port: 'B-03', x: 300, y: 92, d: 'M300 92 V105 H48 V50 H64' },
-];
+  { id: '2B-15', port: 'B-15', x: 100, y: 72 },
+  { id: '2B-14', port: 'B-14', x: 176, y: 72 },
+  { id: '2C-03', port: 'B-03', x: 300, y: 84 },
+  { id: '2A-07', port: 'B-07', x: 206, y: 166 },
+].map((j) => ({
+  ...j,
+  legs: [
+    `M${j.x} ${j.y} V${TRUNK_Y}`,
+    `M${j.x} ${TRUNK_Y} H${RACK_X}`,
+    `M${RACK_X} ${TRUNK_Y} V${CLOSET_Y}`,
+  ],
+}));
+const first = jacks[0];
+const lineFor = (id: string, port: string) =>
+  `Jack ${id} lands on port ${port}. Matching labels mean anyone can find it in seconds.`;
+const recordTitle = isShown(signature.items.labelsAndAsBuilts) ? 'Handover record' : 'Test record';
 const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
 ---
 
@@ -25,83 +46,227 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
   title="Trace a cable"
   caption="Every jack and port gets a matching label, and the job is documented. That is what makes later moves and changes fast."
 >
-  <div class="tr">
+  <div class="tr" id="trace">
     <div class="tr__plan">
-      <svg viewBox="0 0 400 262" role="img" data-fit-text aria-label="Sample office floor plan with four labeled wall jacks and the IDF closet at the top left. Choose a jack on the plan to see its cable route.">
-        <OfficePlan />
-        {jacks.map((j) => (
-          <path d={j.d} pathLength="1" class="tr__route" data-tr-route={j.id} />
-        ))}
-        {jacks.map((j) => (
-          <circle cx={j.x} cy={j.y} r="4" class="tr__dot" data-tr-dot={j.id} />
-        ))}
-      </svg>
-      <div class="tr__jacks" role="group" aria-label="Jacks to trace">
-        {jacks.map((j) => (
-          <button
-            type="button"
-            class="tr__jack"
-            style={`left:${pct(j.x, 400)};top:${pct(j.y, 262)}`}
-            aria-pressed="false"
-            aria-label={`Trace jack ${j.id}`}
-            data-tr-jack={j.id}
-            data-port={j.port}
-          >
-            <span class="t-mono tr__jack-label">{j.id}</span>
-          </button>
-        ))}
+      <div class="tr__stage">
+        <svg viewBox="0 0 400 262" role="img" data-fit-text aria-label="Sample office floor plan with four labeled wall jacks and the IDF closet at the top left. Choose a jack on the plan to see its cable route.">
+          <OfficePlan />
+          {jacks.map((j) => (
+            <g class:list={['tr__route', { 'is-lit': j.id === first.id }]} data-tr-route={j.id}>
+              {j.legs.map((d) => (
+                <path d={d} pathLength="1" class="tr__seg" />
+              ))}
+            </g>
+          ))}
+          {jacks.map((j) => (
+            <circle cx={j.x} cy={j.y} r="4" class:list={['tr__dot', { 'is-lit': j.id === first.id }]} data-tr-dot={j.id} />
+          ))}
+        </svg>
+        <div class="tr__jacks" role="group" aria-label="Jacks to trace">
+          {jacks.map((j) => (
+            <button
+              type="button"
+              class="tr__jack"
+              style={`left:${pct(j.x, 400)};top:${pct(j.y, 262)}`}
+              aria-pressed={j.id === first.id ? 'true' : 'false'}
+              aria-label={`Trace jack ${j.id}`}
+              data-tr-jack={j.id}
+              data-port={j.port}
+            >
+              <span class="t-mono tr__jack-label">{j.id}</span>
+            </button>
+          ))}
+        </div>
       </div>
+      <p class="tr__words" data-tr-words>
+        <span class="tr__word is-lit" data-tr-word>Up the wall</span>
+        <span class="tr__sep" aria-hidden="true">·</span>
+        <span class="tr__word is-lit" data-tr-word>across the ceiling</span>
+        <span class="tr__sep" aria-hidden="true">·</span>
+        <span class="tr__word is-lit" data-tr-word>into the closet</span>
+      </p>
     </div>
 
     <div class="tr__side">
       <div class="tr__panel">
         <span class="t-mono tr__panel-name">IDF2 · B</span>
         <div class="tr__ports" aria-hidden="true">
-          {Array.from({ length: 24 }, (_, i) => (
-            <span class="tr__port" data-tr-port={`B-${String(i + 1).padStart(2, '0')}`}></span>
-          ))}
+          {Array.from({ length: 24 }, (_, i) => {
+            const p = `B-${String(i + 1).padStart(2, '0')}`;
+            return <span class:list={['tr__port', { 'is-lit': p === first.port }]} data-tr-port={p}></span>;
+          })}
         </div>
-        <p class="t-mono tr__readout" data-tr-readout>Port: none lit</p>
+        <p class="t-mono tr__readout" data-tr-readout>Port: {first.port}</p>
       </div>
-      <p class="tr__line" data-tr-line>Choose a jack to trace its cable.</p>
+
+      <div class="tr__record">
+        <div class="tr__record-head">
+          <span class="tr__record-title">{recordTitle}</span>
+          <span class="t-mono tr__tag">Sample</span>
+        </div>
+        <div class="tr__table" role="table" aria-label={`${recordTitle}, sample`}>
+          <div class="tr__row tr__row--head" role="row">
+            <span role="columnheader">Jack</span>
+            <span role="columnheader">Panel</span>
+            <span role="columnheader">Port</span>
+            <span role="columnheader">Result</span>
+          </div>
+          <div class="tr__row tr__row--data" role="row" data-tr-row>
+            <span class="t-mono" role="cell" data-tr-cell="jack">{first.id}</span>
+            <span class="t-mono" role="cell" data-tr-cell="panel">IDF2-B</span>
+            <span class="t-mono" role="cell" data-tr-cell="port">{first.port}</span>
+            <span class="t-mono tr__pass" role="cell" data-tr-cell="result">PASS</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="tr__line" data-tr-line>{lineFor(first.id, first.port)}</p>
     </div>
   </div>
 </DemoFrame>
 
 <script>
-  import { bindReplay, announce, fitSvgText } from '../../scripts/demo';
+  import { bindReplay, announce, fitSvgText, reduceMotion } from '../../scripts/demo';
+
+  const EASE_OUT = 'cubic-bezier(0.16, 1, 0.3, 1)';
+  const HINT = 'Choose a jack to trace its cable.';
+  const FADE = 120;
+  // Legs of the route: [start, end] in ms from the moment a jack is chosen
+  const LEGS: [number, number][] = [
+    [0, 120],
+    [120, 560],
+    [560, 700],
+  ];
+  const ARRIVE = 700;
 
   document.querySelectorAll<HTMLElement>('[data-demo="trace"]').forEach((root) => {
+    const tr = root.querySelector<HTMLElement>('#trace')!;
     const jacks = [...root.querySelectorAll<HTMLButtonElement>('[data-tr-jack]')];
-    const routes = [...root.querySelectorAll<SVGPathElement>('[data-tr-route]')];
+    const routes = [...root.querySelectorAll<SVGGElement>('[data-tr-route]')];
     const dots = [...root.querySelectorAll<SVGCircleElement>('[data-tr-dot]')];
     const ports = [...root.querySelectorAll<HTMLElement>('[data-tr-port]')];
+    const words = [...root.querySelectorAll<HTMLElement>('[data-tr-word]')];
     const line = root.querySelector<HTMLElement>('[data-tr-line]')!;
     const readout = root.querySelector<HTMLElement>('[data-tr-readout]')!;
-    const HINT = 'Choose a jack to trace its cable.';
+    const row = root.querySelector<HTMLElement>('[data-tr-row]')!;
+    const cell = (k: string) => row.querySelector<HTMLElement>(`[data-tr-cell="${k}"]`)!;
+
+    let token = 0;
+    let anims: Animation[] = [];
+    let current: string | null = null;
 
     fitSvgText(root);
 
+    const stop = () => {
+      token++;
+      anims.forEach((a) => a.cancel());
+      anims = [];
+    };
+
+    const fillRow = (id: string | null, port: string | null) => {
+      cell('jack').textContent = id ?? '—';
+      cell('panel').textContent = id ? 'IDF2-B' : '—';
+      cell('port').textContent = port ?? '—';
+      cell('result').textContent = id ? 'PASS' : '—';
+      cell('result').classList.toggle('tr__pass', !!id);
+    };
+
     const clear = () => {
+      stop();
+      current = null;
       jacks.forEach((b) => b.setAttribute('aria-pressed', 'false'));
       routes.forEach((r) => r.classList.remove('is-lit'));
       dots.forEach((d) => d.classList.remove('is-lit'));
       ports.forEach((p) => p.classList.remove('is-lit'));
+      words.forEach((w) => w.classList.remove('is-lit'));
       readout.textContent = 'Port: none lit';
       line.textContent = HINT;
+      fillRow(null, null);
     };
 
-    const light = (btn: HTMLButtonElement) => {
-      const id = btn.dataset.trJack!;
-      const port = btn.dataset.port!;
-      clear();
-      btn.setAttribute('aria-pressed', 'true');
-      routes.find((r) => r.dataset.trRoute === id)?.classList.add('is-lit');
-      dots.find((d) => d.dataset.trDot === id)?.classList.add('is-lit');
+    const arrive = (id: string, port: string) => {
       ports.find((p) => p.dataset.trPort === port)?.classList.add('is-lit');
       readout.textContent = `Port: ${port}`;
       line.textContent = `Jack ${id} lands on port ${port}. Matching labels mean anyone can find it in seconds.`;
-      announce(root, line.textContent);
+      announce(root, `${line.textContent} Result: pass. Sample record filled in.`);
+    };
+
+    const start = (btn: HTMLButtonElement) => {
+      const id = btn.dataset.trJack!;
+      const port = btn.dataset.port!;
+      const mine = ++token;
+      current = id;
+      jacks.forEach((b) => b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'));
+      dots.forEach((d) => d.classList.toggle('is-lit', d.dataset.trDot === id));
+      ports.forEach((p) => p.classList.remove('is-lit'));
+      routes.forEach((r) => r.classList.toggle('is-lit', r.dataset.trRoute === id));
+      fillRow(id, port);
+      readout.textContent = 'Port: none lit';
+      line.textContent = HINT;
+
+      if (reduceMotion) {
+        words.forEach((w) => w.classList.add('is-lit'));
+        arrive(id, port);
+        return;
+      }
+
+      words.forEach((w) => w.classList.remove('is-lit'));
+      const route = routes.find((r) => r.dataset.trRoute === id)!;
+      const segs = [...route.querySelectorAll<SVGPathElement>('.tr__seg')];
+      const next: Animation[] = [];
+      segs.forEach((seg, i) => {
+        const [from, to] = LEGS[i];
+        next.push(
+          seg.animate(
+            [
+              { strokeDashoffset: 1, opacity: 0, offset: 0 },
+              { strokeDashoffset: 1, opacity: 1, offset: 0.001 },
+              { strokeDashoffset: 0, opacity: 1, offset: 1 },
+            ],
+            { delay: from, duration: to - from, easing: EASE_OUT, fill: 'backwards' },
+          ),
+        );
+        // The word for this leg lights as the leg starts
+        const w = words[i];
+        const a = w.animate([{ opacity: 0.65 }, { opacity: 1 }], {
+          delay: from,
+          duration: 160,
+          easing: 'ease',
+          fill: 'backwards',
+        });
+        next.push(a);
+        a.finished.then(() => mine === token && w.classList.add('is-lit')).catch(() => {});
+        // Class takes over at the end of the fade, so a cancelled run never leaves a half state
+        setTimeout(() => mine === token && w.classList.add('is-lit'), from + 160);
+      });
+      // Record row: one clip-path wipe, 700-900 ms
+      next.push(
+        row.animate(
+          [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }],
+          { delay: ARRIVE, duration: 200, easing: EASE_OUT, fill: 'backwards' },
+        ),
+      );
+      anims = next;
+      setTimeout(() => mine === token && arrive(id, port), ARRIVE);
+    };
+
+    const choose = (btn: HTMLButtonElement) => {
+      if (current && !reduceMotion) {
+        // Fade the old route and row first (120 ms), then start the new trace
+        const old = routes.find((r) => r.dataset.trRoute === current);
+        const mine = ++token;
+        anims.forEach((a) => a.cancel());
+        anims = [];
+        const fades = [old, row]
+          .filter(Boolean)
+          .map((el) => (el as Element).animate([{ opacity: 1 }, { opacity: 0 }], { duration: FADE, easing: 'ease', fill: 'forwards' }));
+        anims = fades;
+        setTimeout(() => {
+          if (mine !== token) return;
+          fades.forEach((a) => a.cancel());
+          start(btn);
+        }, FADE);
+      } else start(btn);
     };
 
     jacks.forEach((b) =>
@@ -110,7 +275,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
         if (b.getAttribute('aria-pressed') === 'true') {
           clear();
           announce(root, 'Trace cleared');
-        } else light(b);
+        } else choose(b);
       }),
     );
 
@@ -118,6 +283,21 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
       clear();
       announce(root, 'Trace cleared');
     });
+
+    // The Design demo sends this when a labeled jack is chosen there
+    document.addEventListener('armak:trace', (e) => {
+      const id = (e as CustomEvent<{ jack?: string }>).detail?.jack;
+      const btn = jacks.find((b) => b.dataset.trJack === id);
+      if (!btn) return;
+      requestAnimationFrame(() => {
+        tr.scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' });
+        if (btn.getAttribute('aria-pressed') !== 'true') choose(btn);
+        btn.focus({ preventScroll: true });
+      });
+    });
+
+    // Script is running: drop the no-JS example so the visitor starts from a choice
+    clear();
   });
 </script>
 
@@ -126,14 +306,21 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     display: grid;
     gap: 1rem;
     min-width: 0;
+    scroll-margin-top: 5rem;
   }
 
   .tr__plan {
+    display: grid;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .tr__stage {
     position: relative;
     min-width: 0;
   }
 
-  .tr__plan svg {
+  .tr__stage svg {
     display: block;
     width: 100%;
     height: auto;
@@ -142,22 +329,23 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     border-radius: var(--radius);
   }
 
-  /* Route: drawn with stroke-dashoffset (pathLength is 1). Hidden until lit. */
+  /* Route: three legs, each drawn with stroke-dashoffset (pathLength is 1). Hidden until lit. */
   .tr__route {
+    opacity: 0;
+  }
+
+  .tr__route.is-lit {
+    opacity: 1;
+  }
+
+  .tr__seg {
     fill: none;
     stroke: var(--ink);
     stroke-width: 2.5;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    opacity: 0;
-  }
-
-  .tr__route.is-lit {
-    opacity: 1;
     stroke-dashoffset: 0;
-    transition: stroke-dashoffset var(--dur-slow) var(--ease-in-out);
   }
 
   .tr__dot {
@@ -208,9 +396,28 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     color: var(--white);
   }
 
-  .tr__jack:focus-visible {
-    outline: 2px solid var(--ink);
-    outline-offset: 1px;
+
+  /* The three words under the plan, lit one by one as each leg starts */
+  .tr__words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+
+  .tr__word {
+    opacity: 0.65; /* 6.3:1 on white */
+  }
+
+  .tr__word.is-lit {
+    opacity: 1;
+  }
+
+  .tr__sep {
+    color: var(--steel);
   }
 
   .tr__side {
@@ -251,7 +458,6 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     background: var(--white);
     border: 1px solid var(--ink);
     border-radius: 1px;
-    transition: background-color var(--dur-fast) ease;
   }
 
   .tr__port.is-lit {
@@ -261,6 +467,63 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     outline-offset: 1px;
   }
 
+  /* Record: one sample row, hairline between header and row */
+  .tr__record {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--white);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
+  }
+
+  .tr__record-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .tr__record-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+
+  .tr__tag {
+    padding: 0.15rem 0.4rem;
+    border: 1px solid var(--hairline-strong);
+    border-radius: var(--radius);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--steel);
+  }
+
+  .tr__row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+
+  .tr__row > * {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .tr__row--head {
+    border-bottom: 1px solid var(--hairline);
+    color: var(--steel);
+  }
+
+  .tr__pass {
+    color: var(--pass);
+  }
+
   .tr__line {
     min-height: 3.1em; /* room for the longest line, so nothing jumps */
     margin: 0;
@@ -268,16 +531,9 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     line-height: 1.55;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .tr__route.is-lit,
-    .tr__port {
-      transition: none;
-    }
-  }
-
   /* Phones: label scale fallback, as the other plan demos */
   @container (max-width: 520px) {
-    .tr__plan svg {
+    .tr__stage svg {
       --u: 1.25;
     }
   }

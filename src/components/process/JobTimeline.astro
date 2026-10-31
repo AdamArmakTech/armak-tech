@@ -1,0 +1,262 @@
+---
+/**
+ * B6: one job from start to finish, above the five steps. Shows what the tabs cannot: the order in time,
+ * where after-hours work and phased cutover sit, and that support has no end. No durations, no step names.
+ * Design rules: 3 (codes 01-05 are real), 4 (mono only for the codes), 5 (hairlines), 10 (one hatch wipe).
+ */
+import { process as steps, installPhases } from '../../data/content';
+
+const [prestaged, afterhours, cutover] = installPhases;
+---
+
+<figure class="jt" aria-labelledby="jt-cap" data-job-timeline>
+  <figcaption id="jt-cap" class="visually-hidden">How the five steps fit one job</figcaption>
+
+  <div class="jt__strip">
+    {steps.map((s) => (
+      <div class:list={['jt__seg', { 'jt__seg--wide': s.code === '03' }]} data-code={s.code}>
+        <div class="jt__body">
+          {s.code === '03' ? (
+            <>
+              <span class="jt__part jt__part--plain"><span class="visually-hidden">{prestaged.title}</span></span>
+              <span class="jt__part jt__part--hatch" data-jt-hatch><span class="visually-hidden">{afterhours.title}</span></span>
+              <span class="jt__part jt__part--stair"><span class="visually-hidden">{cutover.title}</span></span>
+            </>
+          ) : null}
+        </div>
+        <span class="t-mono jt__code">{s.code}</span>
+      </div>
+    ))}
+    <svg class="jt__arrow" viewBox="0 0 24 28" aria-hidden="true" focusable="false">
+      <path d="M0 14 H21 M14 7 L21 14 L14 21" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="square" />
+    </svg>
+  </div>
+
+  <p class="jt__note">Not to scale.</p>
+
+  <ul role="list" class="jt__legend">
+    <li><span class="jt__sw jt__sw--hatch" aria-hidden="true"></span>Noisy work can be scheduled after hours.</li>
+    <li><span class="jt__sw jt__sw--stair" aria-hidden="true"></span>Cutover in planned phases.</li>
+    <li>
+      <svg class="jt__sw jt__sw--arrow" viewBox="0 0 24 28" aria-hidden="true" focusable="false">
+        <path d="M0 14 H21 M14 7 L21 14 L14 21" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" />
+      </svg>We stay available after the job is done.
+    </li>
+  </ul>
+</figure>
+
+<script>
+  import { onFirstView, reduceMotion } from '../../scripts/demo';
+
+  document.querySelectorAll<HTMLElement>('[data-job-timeline]').forEach((root) => {
+    // Active marker: follows aria-selected on the five tabs. Instant (the tab highlight already animates).
+    const tabs = [...document.querySelectorAll<HTMLElement>('[data-steps] [role="tab"]')];
+    const segs = [...root.querySelectorAll<HTMLElement>('.jt__seg')];
+    if (tabs.length) {
+      const sync = () => {
+        const on = tabs.find((t) => t.getAttribute('aria-selected') === 'true');
+        const code = on?.querySelector('.steps__code')?.textContent?.trim();
+        segs.forEach((s) => s.classList.toggle('is-active', s.dataset.code === code));
+      };
+      sync();
+      const mo = new MutationObserver(sync);
+      tabs.forEach((t) => mo.observe(t, { attributes: true, attributeFilter: ['aria-selected'] }));
+    }
+
+    // One hatch wipe on first view. Hidden state is armed here, so no script means the hatch just shows.
+    const hatch = root.querySelector<HTMLElement>('[data-jt-hatch]');
+    if (hatch && !reduceMotion) {
+      hatch.classList.add('is-armed');
+      onFirstView(root, () => {
+        void hatch.offsetWidth;
+        hatch.classList.add('is-in');
+      });
+    }
+  });
+</script>
+
+<style>
+  .jt {
+    margin: 0 0 var(--sp-6);
+    display: grid;
+    gap: var(--sp-2);
+  }
+
+  .jt__strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 2fr 1fr 1fr 1.5rem;
+    column-gap: 4px;
+    align-items: start;
+  }
+
+  /* Each segment: the top line is the "you are here" marker (3px ink when active, 1px hairline otherwise) */
+  .jt__seg {
+    display: grid;
+    gap: var(--sp-1);
+    min-width: 0;
+    padding-top: 6px;
+    position: relative;
+  }
+
+  .jt__seg::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: var(--hairline-strong);
+  }
+
+  .jt__seg.is-active::before {
+    height: 3px;
+    background: var(--ink);
+  }
+
+  .jt__body {
+    display: flex;
+    height: 28px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+  }
+
+  .jt__seg--wide .jt__body {
+    background: none;
+    border: 0;
+    gap: 0;
+  }
+
+  .jt__part {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+  }
+
+  .jt__part + .jt__part {
+    margin-left: -1px;
+  }
+
+  /* 45 degree hatch, the same low-contrast ink as the drawing's hatch */
+  .jt__part--hatch,
+  .jt__sw--hatch {
+    background: repeating-linear-gradient(
+      -45deg,
+      rgba(11, 18, 32, 0.34) 0 1px,
+      transparent 1px 5px
+    );
+  }
+
+  .jt__part--hatch {
+    background-color: var(--paper);
+  }
+
+  /* Three-step stair edge: the filled block steps up from left to right */
+  .jt__part--stair {
+    border: 0;
+    background: var(--paper);
+    margin-left: 0;
+  }
+
+  .jt__part--stair::before,
+  .jt__sw--stair::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+    clip-path: polygon(0 100%, 0 66%, 33.33% 66%, 33.33% 33%, 66.66% 33%, 66.66% 0, 100% 0, 100% 100%);
+    opacity: 0.55;
+  }
+
+  .jt__part--stair {
+    border: 1px solid var(--hairline);
+  }
+
+  .jt__part--hatch.is-armed {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .jt__part--hatch.is-armed.is-in {
+    clip-path: inset(0);
+    transition: clip-path 480ms var(--ease-out);
+  }
+
+  .jt__code {
+    color: var(--text);
+    font-size: var(--fs-label, 13px);
+    line-height: 1.2;
+  }
+
+  .jt__seg.is-active .jt__code {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .jt__arrow {
+    width: 100%;
+    height: 28px;
+    margin-top: 7px;
+    color: var(--ink);
+  }
+
+  .jt__note {
+    color: var(--text);
+    font-size: 13px;
+    margin: 0;
+  }
+
+  .jt__legend {
+    display: grid;
+    gap: var(--sp-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  .jt__legend li {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .jt__sw {
+    position: relative;
+    flex: none;
+    width: 28px;
+    height: 16px;
+    border: 1px solid var(--hairline-strong);
+    box-sizing: border-box;
+  }
+
+  .jt__sw--hatch {
+    background-color: var(--paper);
+  }
+
+  .jt__sw--stair {
+    background: var(--paper);
+  }
+
+  .jt__sw--arrow {
+    border: 0;
+    height: 18px;
+    color: var(--ink);
+  }
+
+  @media (min-width: 640px) {
+    .jt__legend {
+      grid-auto-flow: column;
+      justify-content: start;
+      gap: var(--sp-5);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .jt__strip {
+      grid-template-columns: 1fr 1fr 2fr 1fr 1fr 2rem;
+      column-gap: 6px;
+    }
+  }
+</style>
