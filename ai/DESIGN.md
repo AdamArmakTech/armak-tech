@@ -81,3 +81,10 @@ the logo blue #1d3f8f). Blue appears as a full surface once per page at most (th
 - Sheets: white (#fff) or paper, 1px hairline edge, `--shadow-raise` only on the sheet that crosses a band edge.
   Big type is allowed for the hero headline and for measured figures (the "28"). Codes, red and photos rules
   (2, 3, 7) are unchanged.
+
+## Owner decision 2026-10-31: back to the live site's look (overrides Direction A where they differ)
+After seeing Direction A at computer width the owner said it "looks completely different and not in a good way":
+empty space and an off layout in the hero, the photo gone, the three choice boxes gone. He chose "old look, keep the
+new features": the look and layout of the live site (GitHub main, 9d6993e) come back; everything built since stays
+(diagram features, animations, two-tier quote choice, UX-law fixes, honest copy, owner-confirmed facts).
+Direction A is saved as git tag `direction-a-final` (11afcf0) in case it is wanted again.
