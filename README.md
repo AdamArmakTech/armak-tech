@@ -10,7 +10,6 @@ Built with [Astro](https://astro.build) (static output).
 - `src/assets/`: Images optimized at build time.
 - `public/`: Static files served as-is.
 - `ai/`: AI-assisted development state, plans and guidelines.
-- `legacy/`: Previous Vite + EJS site, kept for reference during the redesign (not built).
 - `dist/`: Generated production-ready static site.
 
 Design system review page: `/styleguide/` (run `npm run dev`, then open http://localhost:4321/styleguide/).

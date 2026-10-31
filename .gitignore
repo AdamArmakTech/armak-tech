@@ -9,6 +9,9 @@ coverage
 # Production
 dist
 
+# Tool cache
+.vite
+
 # Misc
 .DS_Store
 *.local

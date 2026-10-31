@@ -1,5 +1,5 @@
 /**
- * Converts the partner logos in /public into uniform single-color (ink) PNGs in
+ * Converts the partner logos in scripts/logo-sources/ into uniform single-color (ink) PNGs in
  * src/assets/partners/, trimmed and height-normalized for the proof strip.
  *
  *   node scripts/prepare-logos.mjs

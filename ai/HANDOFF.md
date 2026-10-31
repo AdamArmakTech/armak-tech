@@ -8,9 +8,10 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
   Every push to `main` goes live in ~2 min. Other branches get preview URLs. Vercel project: `armak-tech`
   (team adamarmaktechs-projects). Owner logs into Vercel with an email, not GitHub.
 - **Branches:** `main` = live; `redesign` = kept identical to main; `old-site` = untouched backup of the
-  pre-redesign site (commit 757cf43; its Vercel deployment can also be rolled back to). `feat/reconfigure-structure`
+  pre-redesign site (commit 757cf43, on GitHub; checked 2026-10-31; its Vercel deployment can also be rolled back to).
+  It exists only on GitHub, not as a local branch. `feat/reconfigure-structure`
   is Carlitos's old branch from May (unused).
-- **Local folder:** `C:\Users\Aram\Documents\all-sites\armak-tech`. Pushing uses `gh` credentials:
+- **Local folder:** `E:\all-sites\armak-tech` (`C:\Users\Aram\Documents\all-sites` points there). Pushing uses `gh` credentials:
   `git -c credential.helper= -c "credential.helper=!gh auth git-credential" push https://github.com/AdamArmakTech/armak-tech.git HEAD:refs/heads/main`
   (the machine's SSH key is not registered on GitHub). Push `redesign` the same way to keep it in sync.
 - **Carlitos (carlitoswillis)** has write access and pushes directly to `main` (last: Oct 14 — security headers,
