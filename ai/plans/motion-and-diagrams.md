@@ -85,3 +85,4 @@ Record in `src/data/content.ts` as `signature.<item>.confirmed = 'yes'` with `co
   On-site assessment (paid): "A technician walks your site, checks the closets, pathways and power, and gives you an accurate estimate. The fee is credited toward your project if you hire us."
   The contact form starts by asking which one the visitor wants. No fee amount shown.
 - Existing rule breaks noted in diagram-specs.md ("Noticed while reading"): owner was told they'd be fixed in this run and did not object. Fix them.
+- Owner answers 2026-10-31: (1) step 01 sentence removal OK; (2) contact lead now "Start with a free rough quote, or book an on-site assessment for an accurate estimate."; (3) plans/photos go to contact@armak.tech (owner chose this address); (5) free-quote emails titled "Free Quote Request"; (6) glossary answer reworded; (7) open standards vs CommScope/Panduit warranty: owner says no conflict. (4) submit button text: still to decide.
