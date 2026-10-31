@@ -79,3 +79,9 @@ Record in `src/data/content.ts` as `signature.<item>.confirmed = 'yes'` with `co
   (a) Free rough quote: no site visit, a loose number from what the client sends (description, plans, photos).
   (b) Paid on-site assessment: a technician walks the site and gives an accurate estimate; the fee is credited toward the project if they hire Armak.
   Site copy: explain both on /contact/ and in the Assess step; the form lets the visitor pick which one. Pending owner OK on the exact wording.
+- FINAL (owner, 2026-10-31): paid on-site assessment fee IS credited toward the project. Red button text stays "Request a site assessment" everywhere. Projects count stays "946+".
+  Approved wording:
+  Free rough quote: "Tell us about the job and send plans or photos if you have them. We'll give you a ballpark number. No site visit."
+  On-site assessment (paid): "A technician walks your site, checks the closets, pathways and power, and gives you an accurate estimate. The fee is credited toward your project if you hire us."
+  The contact form starts by asking which one the visitor wants. No fee amount shown.
+- Existing rule breaks noted in diagram-specs.md ("Noticed while reading"): owner was told they'd be fixed in this run and did not object. Fix them.
