@@ -91,6 +91,8 @@ const jsonLd = JSON.stringify(businessJsonLd).replace(/</g, '\\u003c');
     <Footer cta={footerCta} />
     <script>
       import '../scripts/motion';
+      // Any [data-sheet] lifts as it reaches the top of the screen, on every page (Direction A, rule 10 extended).
+      import '../scripts/sheets';
     </script>
   </body>
 </html>

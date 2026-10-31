@@ -39,6 +39,9 @@
   Owner decisions 2026-10-30: /contact/ keeps no dark band (form is the action); HQ map dot stays red; the
   networking service is named "Networking & Wi-Fi" everywhere (site.ts). Still open: "publish" to push
   `intent-redesign` → main.
+  Approved 2026-10-30 afternoon: the ten extra animations ("All ten") and the ten diagram features ("All of them"); list, order of work and gating in `ai/plans/motion-and-diagrams.md`. Features 7-10 show only facts the owner confirms himself (he makes the decisions, 2026-10-30); the questions are in `ai/FATHER-CHECKLIST.md` section A.
+  Owner confirmed all ten signature practices in chat (2026-10-30, about 15:30): Cat 6A default, two drops per access point, spare fiber strands, empty conduit + pull string, rack/power headroom, zone cabling, ceiling-grid jacks, identical jacks (role at the switch), open standards, labels both ends + handover drawings. Features 7-10 are unblocked.
+  Warranty partner status: owner says yes (2026-10-30, both CommScope and Panduit, named by the owner the same day; one warranty sentence allowed, see ai/plans/motion-and-diagrams.md). Own-words line for the sheet: none ("everything").
 - **Mobile usability pass — 2026-10-29 evening (local commit e875cc0, NOT pushed).** From a Vercel Web Design
   Guidelines review + Playwright pass over all 15 pages (clean: 0 console errors, 0 broken links, no sideways
   scroll). Fixed: 44px call icon in the header below 1200px; menu button reads "Close menu" when open; form send
@@ -82,8 +85,10 @@
       icons removed; scroll fade-ins ~107 → ~14; hero card overlap fixed; JSON-LD hours derived from site.ts.
 
 ## Still to do (see ai/plans/site-audit.md for exact fixes)
-- [ ] MUST 1: www.armak.tech has no TLS cert → Vercel → Settings → Domains → add www.armak.tech as redirect to armak.tech (owner action)
-- [ ] MUST 2: 24/7 — site now says "24/7 support for contracted clients" everywhere; confirm with Armak
+- [x] MUST 1 — done 2026-10-30: www.armak.tech added to the Vercel project as a 308 permanent redirect to armak.tech (owner said yes in chat); certificate issued, https://www.armak.tech/ now lands on https://armak.tech/ (HTTP 200).
+- [ ] License number on the site (CSLB). Parked by owner 2026-10-30. Public CSLB search for "Armak" found no license; owner to say which name it is under, or confirm none. Site still says "Licensed · Bonded · Insured".
+- [ ] REVISIT (owner, 2026-10-30): BICSI-certified techs and bonded/insured kept as "yes" for now; owner will supply details.
+- [x] MUST 2 — confirmed by owner 2026-10-30: 24/7 support is for contracted clients only (matches the site).
 - [ ] SHOULD (left): real /projects/ redirect in vercel.json; Hero quick links (add Services)
 - [ ] Finish speed pass (measure LCP/bytes, font subsets, cache headers) and verify nothing changed visually
 - [ ] Decide whether to delete legacy/ (redundant with the old-site branch)

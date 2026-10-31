@@ -272,24 +272,39 @@ const next = steps.slice(0, 2);
       display: grid;
     }
 
+    /* The hero card is only a third of the row here: each label sits above its value so the values get the
+       whole card width instead of breaking in the middle of a phrase */
+    .contact__details--hero .contact__rows li {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
     .contact__details--body {
       display: none;
     }
 
+    /* Stretch, not start: the stub is as tall as the card, so the perforation and both notches always
+       run the card's full height, whichever of the form (step 2) or the stub is taller */
     .coupon {
       grid-template-columns: repeat(12, minmax(0, 1fr));
-      align-items: start;
+      align-items: stretch;
     }
 
     .contact__panel {
       grid-column: 1 / span 8;
     }
 
+    /* Only "What happens next" shows in the stub here, so the stub is a plain block (a grid row would be only
+       as tall as its content) and the sticky child below can slide down the stub's full height */
     .contact__info {
       grid-column: 9 / -1;
+      display: block;
       border-top: 0;
       border-left: var(--perf);
       padding: var(--sp-8) var(--sp-7);
+    }
+
+    /* What follows you down the long form. The stub itself stays put, so its perforation is never cut short */
+    .contact__next {
       position: sticky;
       top: calc(var(--header-h) + 1.5rem);
     }

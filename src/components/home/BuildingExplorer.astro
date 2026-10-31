@@ -3,6 +3,8 @@
  * Interactive building cutaway — the homepage's signature section.
  * Tabs (one per service) highlight that system's layer in BuildingSvg.
  * Click-only: nothing advances on its own (DESIGN.md rule 10).
+ * Keyboard: the chips, the tabs and the buttons in the sheet are the tab stops. The sheet itself is not
+ * one (it holds focusable controls), and the drawing's rooms are pointer-only, so they get no focus listeners.
  */
 import SectionHead from '../ui/SectionHead.astro';
 import Button from '../ui/Button.astro';
@@ -54,7 +56,7 @@ const industryRows = industries.map((ind) => {
         </div>
       </div>
 
-      <div class="explorer__stage" data-sheet id="explorer-panel" role="tabpanel" aria-labelledby={`explorer-tab-${services[0].slug}`} tabindex="0">
+      <div class="explorer__stage" data-sheet id="explorer-panel" role="tabpanel" aria-labelledby={`explorer-tab-${services[0].slug}`}>
         <div class="explorer__drawing">
           <BuildingSvg />
         </div>
@@ -190,7 +192,9 @@ const industryRows = industries.map((ind) => {
 
     chips.forEach((chip) => chip.addEventListener('click', () => chooseIndustry(chip)));
 
-    // Room hover / focus: light the systems drawn in that room, then restore on leave.
+    // Room hover: light the systems drawn in that room, then restore on leave.
+    // Pointer only on purpose. The rooms are aria-hidden shapes with no name, and Chromium turns an SVG
+    // element into a keyboard tab stop as soon as it has a focus or blur listener, so there are none.
     rooms.forEach((room) => {
       const show = () => {
         const slugs = (room.dataset.systems ?? '').split(' ').filter(Boolean);
@@ -199,8 +203,6 @@ const industryRows = industries.map((ind) => {
       const hide = () => paint(base.slugs, base.label);
       room.addEventListener('mouseenter', show);
       room.addEventListener('mouseleave', hide);
-      room.addEventListener('focus', show);
-      room.addEventListener('blur', hide);
     });
 
     select(0);
@@ -230,6 +232,20 @@ const industryRows = industries.map((ind) => {
   .explorer .explorer__chips-label,
   .explorer .explorer__foot-text {
     color: var(--paper);
+  }
+
+  /*
+   * Focus ring on the blue field. The site ring is red (--signal), only 1.75:1 against this blue (a ring
+   * needs 3:1). Paper is 8.8:1, so every control on the blue (chips, tabs, All services) draws a paper ring.
+   * The drawing sheet is white, where a paper ring would vanish, so its controls keep the red ring (5.6:1).
+   * The sheet rule must stay below the blue one: same strength, the later rule wins.
+   */
+  .explorer :global(:focus-visible) {
+    outline-color: var(--paper);
+  }
+
+  .explorer__stage :global(:focus-visible) {
+    outline-color: var(--signal);
   }
 
   @media (min-width: 1024px) {
@@ -310,7 +326,11 @@ const industryRows = industries.map((ind) => {
     scrollbar-width: none;
     margin-inline: calc(var(--gutter) * -1);
     padding-inline: var(--gutter);
-    padding-bottom: 2px;
+    /* A scrolling strip clips anything outside its padding box, which cut the focus ring (3px gap plus a
+       2px line) down to two side bars. 6px of room above and below, pulled back by an equal negative
+       margin, shows the whole ring and moves nothing (the bottom keeps its old 2px). */
+    padding-block: 6px 8px;
+    margin-block: -6px;
   }
 
   .explorer__tabs::-webkit-scrollbar {
@@ -366,7 +386,6 @@ const industryRows = industries.map((ind) => {
   .explorer__stage {
     display: grid;
     gap: 1.5rem;
-    outline-offset: 6px;
     background: var(--white);
     color: var(--text);
     padding: clamp(0.75rem, 0.3rem + 2vw, 2.5rem);

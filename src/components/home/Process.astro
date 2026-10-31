@@ -288,10 +288,14 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     }
   }
 
+  /* Hairline edge (DESIGN.md Direction A: sheets have a 1px hairline edge). White on paper is only
+     about 1.1:1, so without it the sheet has no visible boundary. Phones: full-bleed band, so top and
+     bottom only. 900px and up: inset sheet, all four sides. */
   .steps {
     background: var(--white);
     padding: var(--sp-5) var(--gutter) var(--sp-6);
     margin-inline: calc(var(--gutter) * -1);
+    border-block: 1px solid var(--hairline);
   }
 
   .steps :global(.demo),
@@ -303,6 +307,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     .steps {
       margin-inline: 0;
       padding: clamp(2rem, 1rem + 2vw, 3.5rem);
+      border: 1px solid var(--hairline);
     }
   }
 
@@ -358,7 +363,12 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     scrollbar-width: none;
     margin-inline: calc(var(--gutter) * -1);
     padding-inline: var(--gutter);
-    padding-bottom: 2px;
+    /* A scrolling strip clips anything outside its padding box, which cut the focus ring (3px gap plus a
+       2px line) down to two side bars. 6px of room above and below, pulled back by an equal negative
+       margin, shows the whole ring and moves nothing (the bottom keeps its old 2px). From 900px the strip
+       is a column and the rule further down resets both. */
+    padding-block: 6px 8px;
+    margin-block: -6px;
   }
 
   .steps__tabs::-webkit-scrollbar {

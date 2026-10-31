@@ -35,7 +35,8 @@ const others = services.filter((s) => s.slug !== current);
   .others {
     display: grid;
     gap: var(--sp-6);
-    padding-bottom: var(--space-block);
+    /* ServiceCta below carries the full section gap, so no bottom padding here */
+    padding-bottom: 0;
   }
 
   .others__head {
@@ -74,7 +75,8 @@ const others = services.filter((s) => s.slug !== current);
     grid-template-columns: minmax(0, 1fr);
     gap: var(--sp-1);
     min-height: 44px;
-    padding: var(--sp-5) var(--sp-7) var(--sp-5) 0;
+    /* Phones: the arrow sits in the code row above the name, so a long name can use the full width */
+    padding: var(--sp-5) 0;
   }
 
   .other__code {
@@ -87,6 +89,8 @@ const others = services.filter((s) => s.slug !== current);
     letter-spacing: var(--tracking-heading);
     line-height: 1.1;
     color: var(--ink);
+    /* If a name has to wrap (tiny phones, large text), keep the lines even so no word is left alone */
+    text-wrap: balance;
     transition: color var(--dur-fast) ease;
   }
 
@@ -104,12 +108,14 @@ const others = services.filter((s) => s.slug !== current);
   }
 
   .other:hover .other__name {
-    color: var(--signal);
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .other:hover :global(.other__arrow),
   .other:focus-visible :global(.other__arrow) {
-    color: var(--signal);
+    color: var(--ink);
     transform: translate(3px, -3px);
   }
 
@@ -119,10 +125,14 @@ const others = services.filter((s) => s.slug !== current);
     }
 
     .other {
-      grid-template-columns: 5rem minmax(0, 5fr) minmax(0, 4fr);
+      /* Code, name, layer. The layer is only as wide as its text and the name gets the rest, so every name stays on one line
+         (the longest, Structured Cabling & Fiber, still fits the 630px sheet at 1024) */
+      grid-template-columns: 3rem minmax(0, 1fr) auto;
       align-items: baseline;
-      gap: var(--col-gap);
+      column-gap: var(--sp-4);
       padding-block: var(--sp-6);
+      /* Room for the arrow, which sits in the layer's row on desktop */
+      padding-right: var(--sp-6);
     }
 
     .other :global(.other__arrow) {

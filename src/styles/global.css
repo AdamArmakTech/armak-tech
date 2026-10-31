@@ -183,9 +183,15 @@ p:not(.surface-ink *) {
   padding-block: var(--space-section);
 }
 
-/* Neighbouring plain sections share one gap. Sections with their own surface
-   (.section--tight, e.g. the white .delivery band) keep their top padding. */
-.section:not(.section--tight) + .section:not(.section--tight) {
+/* Neighbouring plain sections share one gap: the second drops its top padding, so the pair is one
+   --space-section apart, not two. A section with its own surface keeps its top padding: .section--tight
+   (own spacing) and .surface-ink (an ink band has an edge: it keeps the padding inside that edge, and the
+   section after it keeps the gap under that edge).
+   Astro emits a module script element after some components (Industries), and a script between two
+   sections defeats "+", so the rule also matches across one or two scripts. */
+.section:not(.section--tight, .surface-ink) + .section:not(.section--tight, .surface-ink),
+.section:not(.section--tight, .surface-ink) + script + .section:not(.section--tight, .surface-ink),
+.section:not(.section--tight, .surface-ink) + script + script + .section:not(.section--tight, .surface-ink) {
   padding-top: 0;
 }
 
@@ -389,18 +395,15 @@ textarea.field__control {
 }
 
 /* Sheets lift as they reach the top of the screen (rule 10 extended). Marked [data-sheet]; sheets.ts adds
-   .is-lifted when the sheet's top edge passes ~30% from the top of the viewport. Paper, not an effect. */
+   .is-lifted when the sheet's top edge passes ~30% from the top of the viewport. Paper, not an effect.
+   The lift is transform only. DESIGN.md Direction A allows transform, opacity, clip-path and stroke-dashoffset,
+   and a shadow only on the sheet that crosses a band edge, so a lifted sheet gets no shadow of its own. */
 @media (prefers-reduced-motion: no-preference) {
   [data-sheet] {
-    transition:
-      transform 300ms var(--ease-out),
-      box-shadow 300ms var(--ease-out);
+    transition: transform 300ms var(--ease-out);
   }
 
   [data-sheet].is-lifted {
     transform: translateY(-2px);
-    box-shadow:
-      0 1px 0 rgba(11, 13, 16, 0.04),
-      0 10px 24px -14px rgba(11, 13, 16, 0.2);
   }
 }

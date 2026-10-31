@@ -21,9 +21,12 @@ const {
   title = 'Five steps, every job.',
   intro = 'The same process from a single-rack retrofit to a multi-site rollout. Nothing is signed off until it has been tested and documented.',
 } = Astro.props;
+// section--tight is on purpose. It opts this band out of the "neighbouring sections share one gap"
+// rule in global.css, which zeroes the top padding of a .section that follows another .section
+// (service detail pages: Capabilities, then this band). The padding itself comes from .delivery below.
 ---
 
-<section class="section delivery surface-ink">
+<section class="section section--tight delivery surface-ink">
   <div class="container">
     <SectionHead title={title} intro={intro} />
 

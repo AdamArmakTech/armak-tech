@@ -47,7 +47,7 @@ const jsonLd = {
             <a href={`/services/${s.slug}/`}>
               <span class="t-mono svc-index-hero__idx-code">{s.code}</span>
               <span class="svc-index-hero__idx-name">{s.name}</span>
-              <span class="svc-index-hero__idx-go">See service <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" /></span>
+              <span class="svc-index-hero__idx-go"><span class="svc-index-hero__idx-go-label">See service</span> <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" /></span>
             </a>
           </li>
         ))}
@@ -150,6 +150,7 @@ const jsonLd = {
     background: var(--white);
     border: 1px solid var(--hairline);
     border-radius: var(--radius);
+    container-type: inline-size;
   }
 
   .svc-index-hero__index li + li {
@@ -186,7 +187,9 @@ const jsonLd = {
   }
 
   .svc-index-hero__index a:hover .svc-index-hero__idx-name {
-    color: var(--signal);
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   @media (max-width: 420px) {
@@ -196,6 +199,26 @@ const jsonLd = {
 
     .svc-index-hero__index a {
       grid-template-columns: 3.5rem minmax(0, 1fr);
+    }
+  }
+
+  /* The card is a size container. A row 410px wide or less (the card less its padding and border, so
+     about 476px of card at 1024+) has no room for "See service" beside the longest name, which needs
+     about 215px. The words go and the arrow stays, so every name stays on one line and the rows stay
+     even. The words are only hidden visually; they stay in the link's name for screen readers. */
+  @container (max-width: 410px) {
+    .svc-index-hero__idx-go {
+      align-self: center;
+    }
+
+    .svc-index-hero__idx-go-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
     }
   }
 
@@ -347,7 +370,9 @@ const jsonLd = {
   }
 
   .svc-row__link:hover .svc-row__name {
-    color: var(--signal);
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   @media (min-width: 640px) {

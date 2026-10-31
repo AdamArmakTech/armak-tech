@@ -475,15 +475,21 @@ const upgradeQuestions = [
     gap: var(--sp-6);
   }
 
-  /* The inputs are a form slip: paper on the white sheet */
+  /* The inputs are a form slip: paper on the white sheet. Two by two, so no field is left alone on a row; one column on small phones. */
   .est__inputs {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--sp-5) var(--col-gap);
     padding: var(--sp-5);
     background: var(--paper);
     border: 1px solid var(--hairline);
     min-width: 0;
+  }
+
+  @media (max-width: 420px) {
+    .est__inputs {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
 
   .est__out {
@@ -558,8 +564,6 @@ const upgradeQuestions = [
   }
 
   .quiz__q {
-    display: grid;
-    gap: 0.875rem;
     padding: var(--sp-5) 0;
     border: 0;
     min-width: 0;
@@ -570,13 +574,22 @@ const upgradeQuestions = [
     border-top: 1px solid var(--hairline);
   }
 
+  /*
+   * The legend floats so it is an ordinary block inside the row. A normal legend sits ON the fieldset's
+   * top edge: the row rule ran through the question text, the first question stuck to the ink rule, and
+   * the row padding fell between a question and its own answers. Floated, all three rows read alike:
+   * space above the question, a tight gap to its answers, then the next rule.
+   */
   .quiz__legend {
+    float: left;
+    width: 100%;
     padding: 0;
-    margin-bottom: 0.875rem;
+    margin: 0 0 0.875rem;
     font-weight: 600;
   }
 
   .quiz__options {
+    clear: left;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;

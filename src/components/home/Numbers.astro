@@ -3,6 +3,10 @@
  * Direction A: "a total and its slip". The years in business stand at poster size on the ink
  * band; the other figures are listed on a paper slip with a torn (zigzag) lower edge, like the
  * summary page of a test report. Figures come from src/data/site.ts only.
+ *
+ * Only the years figure counts up. The slip figures are plain text on purpose: the slip prints
+ * its final numbers, and a counter inside the clipped slip would only start after the print
+ * ended, so the figures would snap back to near zero and count up again.
  */
 import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../data/site';
 
@@ -35,24 +39,24 @@ const rows = [
     </div>
 
     <div class="numbers__slip" data-slip>
-     <div class="slip__paper" style={`clip-path: ${slipClip}`}>
-      <ul role="list" class="slip__rows">
-        {rows.map((r) => (
-          <li class="slip__row">
-            <span class="slip__label">
-              {r.label}
-              {r.detail && <span class="slip__detail">{r.detail}</span>}
-            </span>
-            <span class="slip__leader" aria-hidden="true"></span>
-            <span class="slip__value">
-              {typeof r.value === 'number'
-                ? <span data-count={r.value}>{r.value.toLocaleString('en-US')}</span>
-                : r.value}{r.suffix}
-            </span>
-          </li>
-        ))}
-      </ul>
-     </div>
+      <div class="slip__feed">
+        <div class="slip__paper" style={`clip-path: ${slipClip}`}>
+          <ul role="list" class="slip__rows">
+            {rows.map((r) => (
+              <li class="slip__row">
+                <span class="slip__label">
+                  {r.label}
+                  {r.detail && <span class="slip__detail">{r.detail}</span>}
+                </span>
+                <span class="slip__leader" aria-hidden="true"></span>
+                <span class="slip__value">
+                  {typeof r.value === 'number' ? r.value.toLocaleString('en-US') : r.value}{r.suffix}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -60,6 +64,10 @@ const rows = [
 <script>
   // The slip feeds out like a receipt the first time it is seen. Without this script, or under
   // reduced motion, the slip is never armed and stays fully visible.
+  //
+  // Watch [data-slip] itself, which is never clipped. The armed clip-path sits on its inner
+  // .slip__feed. A browser reports an element clipped to nothing as 0% visible, so watching the
+  // clipped element would never fire and the slip would stay hidden.
   import { onFirstView, reduceMotion } from '../../scripts/demo';
 
   const slip = document.querySelector<HTMLElement>('[data-slip]');
@@ -153,9 +161,12 @@ const rows = [
     font-size: var(--fs-body);
   }
 
+  /* Dotted leader from label to figure. It is baseline-aligned, not end-aligned, so it sits on the
+     label's first line and the figure's baseline even when the label has a detail line or wraps.
+     The small lift raises the dots clear of the baseline. */
   .slip__leader {
-    align-self: end;
-    margin-bottom: 0.45em;
+    align-self: baseline;
+    transform: translateY(-0.3em);
     border-bottom: 3px dotted var(--hairline-strong);
     min-width: var(--sp-5);
   }
@@ -168,14 +179,16 @@ const rows = [
     line-height: 1;
   }
 
-  /* Receipt feed: the wrapper is uncovered top to bottom in short printer steps (clip-path only;
-     the zigzag edge lives on .slip__paper). Plays once. */
+  /* Receipt feed: .slip__feed is uncovered top to bottom in short printer steps (clip-path only;
+     the zigzag edge lives on .slip__paper). Plays once. Keep the clip on .slip__feed and never on
+     .numbers__slip: the script watches .numbers__slip, and a browser reports an element clipped to
+     nothing as 0% visible, so the slip would never print. */
   @media (prefers-reduced-motion: no-preference) {
-    .numbers__slip.is-armed {
+    .numbers__slip.is-armed .slip__feed {
       clip-path: inset(0 0 100% 0);
     }
 
-    .numbers__slip.is-printed {
+    .numbers__slip.is-printed .slip__feed {
       animation: slip-feed 900ms steps(22, end) forwards;
     }
   }

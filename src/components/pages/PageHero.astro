@@ -215,7 +215,15 @@ const hasAside = Astro.slots.has('aside');
     white-space: normal;
   }
 
+  /* Below 1024px the wrapper has no box of its own (display: contents), so whatever a page slots in is the grid
+     item itself. A page that hides its aside card on small screens (contact) then leaves no empty second row and
+     no row gap under the lead. A card that stays visible (the 404 link test) lays out exactly as before. */
   .page-hero__aside {
+    display: contents;
+    min-width: 0;
+  }
+
+  .page-hero__aside > :global(*) {
     min-width: 0;
   }
 
@@ -230,6 +238,7 @@ const hasAside = Astro.slots.has('aside');
     }
 
     .page-hero__aside {
+      display: block;
       grid-column: 9 / -1;
     }
   }

@@ -119,12 +119,12 @@ const routes = [
 
   @media (prefers-reduced-motion: no-preference) {
     .hero__title {
-      animation: hero-title-in 1.1s var(--ease-out) both;
+      animation: hero-title-in 800ms var(--ease-out) both;
     }
 
-    /* Same values as the global [data-reveal] transition (opacity + 24px rise, --dur-slow, --ease-out) */
+    /* Same values as the global [data-reveal] transition (opacity + 24px rise, --ease-out); 680ms so the longest delay (220ms) ends by 900ms */
     .hero-in {
-      animation: hero-in var(--dur-slow) var(--ease-out) var(--reveal-delay, 0ms) both;
+      animation: hero-in 680ms var(--ease-out) var(--reveal-delay, 0ms) both;
     }
 
     /* The report sheet is placed on the desk: drops in from 24px up with a slight tilt, shadow
@@ -289,6 +289,13 @@ const routes = [
   }
 
   @media (max-width: 899px) {
+    /* The sheet settles in tilted, and edge to edge that swings its corner 10-16px past the screen
+       edge for the first second, so the page could be panned sideways. Clip the band sideways only:
+       clip (not hidden) makes no scroll container, and the sheet still hangs over the band's foot. */
+    .hero {
+      overflow-x: clip;
+    }
+
     /* On a phone the sheet runs edge to edge, like a page laid on the desk */
     .hero__media {
       margin-inline: calc(var(--gutter) * -1);
@@ -299,7 +306,10 @@ const routes = [
     /* The headline holds seven columns; the report sheet takes the other five, starting level
        with the headline's second line so type and sheet lock together. */
     .hero {
-      --hero-fs: min(11rem, 11.2vw);
+      /* 10rem, not 11rem: "the future." has to fit the seven-column box, which stops growing once the
+         container reaches 1360px. At 11rem it no longer fit from ~1475px wide, the headline broke into
+         three lines and the sheet dropped ~150px. At 10rem it fits with ~24px to spare. */
+      --hero-fs: min(10rem, 11.2vw);
     }
 
     .hero__grid {

@@ -1,19 +1,21 @@
 # Questions for Dad (yes / sometimes / no, plus a line if you want)
 
+> Owner note (2026-10-30): the owner makes all the decisions and answers these himself. His father is background, not the approver. The file name stays so existing links work.
+
 These unlock two things on armak.tech: a "Today / 10 years from now" switch on the building drawing, and the
 first real project page. Nothing goes on the site until you've answered. Answers can be one word each.
 
 ## A. What Armak does that most installers skip (drives the "future" switch)
-1. Cat 6A instead of Cat 6 for new drops?  ☐ yes ☐ sometimes ☐ no
-2. Two cable drops to each wireless access point location?  ☐ yes ☐ sometimes ☐ no
-3. Spare fiber strands in every backbone run?  ☐ yes ☐ sometimes ☐ no
-4. Empty conduit with pull strings for later?  ☐ yes ☐ sometimes ☐ no
-5. Rack, power and cooling headroom beyond today's need?  ☐ yes ☐ sometimes ☐ no
-6. Zone cabling / consolidation points in open offices?  ☐ yes ☐ sometimes ☐ no
-7. Jacks pre-placed in the ceiling grid for cameras and APs?  ☐ yes ☐ sometimes ☐ no
-8. Identical jacks everywhere, with the role set at the switch?  ☐ yes ☐ sometimes ☐ no
-9. Open standards, no vendor lock-in, by default?  ☐ yes ☐ sometimes ☐ no
-10. TIA-606 labels on both ends plus as-built drawings handed over?  ☐ yes ☐ sometimes ☐ no
+1. Cat 6A instead of Cat 6 for new drops?  ☑ yes (owner, 2026-10-30)
+2. Two cable drops to each wireless access point location?  ☑ yes (owner, 2026-10-30)
+3. Spare fiber strands in every backbone run?  ☑ yes (owner, 2026-10-30)
+4. Empty conduit with pull strings for later?  ☑ yes (owner, 2026-10-30)
+5. Rack, power and cooling headroom beyond today's need?  ☑ yes (owner, 2026-10-30)
+6. Zone cabling / consolidation points in open offices?  ☑ yes (owner, 2026-10-30)
+7. Jacks pre-placed in the ceiling grid for cameras and APs?  ☑ yes (owner, 2026-10-30)
+8. Identical jacks everywhere, with the role set at the switch?  ☑ yes (owner, 2026-10-30)
+9. Open standards, no vendor lock-in, by default?  ☑ yes (owner, 2026-10-30)
+10. TIA-606 labels on both ends plus as-built drawings handed over?  ☑ yes (owner, 2026-10-30)
 11. In your words: what do you do that most installers skip? ____________________________
 
 ## B. One real project for the site (drives the first case study)

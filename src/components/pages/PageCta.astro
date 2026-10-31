@@ -32,9 +32,20 @@ const id = `${code}-cta-title`; // code only keeps the heading id unique; it is 
 </section>
 
 <style>
-  /* One white sheet on paper (DESIGN.md Direction A). The section carries the gap above the footer. */
+  /* One white sheet on paper (DESIGN.md Direction A). The section carries the gap above the footer.
+     The block above already owns the gap to the sheet (its own bottom padding), so the sheet adds
+     none: neighbouring sections share one gap (tokens.css). */
   .page-cta {
-    padding-block: var(--space-section);
+    padding-top: 0;
+    padding-bottom: var(--space-section);
+  }
+
+  /* These two blocks have no bottom gap of their own, so the sheet keeps the full gap after them:
+     the blue sample-report field on /plan/ (its padding sits inside the band) and the project grid.
+     "~" and not "+": Astro can emit a script tag between two sections, which would break "+". */
+  :global(.plan-report) ~ .page-cta,
+  :global(.plist) ~ .page-cta {
+    padding-top: var(--space-section);
   }
 
   .page-cta__sheet {
@@ -88,12 +99,15 @@ const id = `${code}-cta-title`; // code only keeps the heading id unique; it is 
       align-items: end;
     }
 
+    /* Copy takes 6 columns and the side takes 5, with one empty column between (the same split as
+       ServiceCta). The red button needs about 297px; the old 4-column side was 259px at 1024 and
+       wrapped its label onto two lines up to about 1150px. */
     .page-cta__copy {
-      grid-column: 1 / span 7;
+      grid-column: 1 / span 6;
     }
 
     .page-cta__side {
-      grid-column: 9 / -1;
+      grid-column: 8 / -1;
     }
   }
 </style>

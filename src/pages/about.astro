@@ -37,7 +37,11 @@ const story = [
   },
 ];
 
-/** Tags from the original site's value cards, paired with `pillars` in order. */
+/**
+ * Tags from the original site's value cards, paired with `pillars` in order.
+ * Each one is shown as a plain label above its title, with no 01 to 04 numbers (DESIGN.md rule 3: index
+ * codes only for real things).
+ */
 const pillarTags = ['Precision', 'Scale', 'Speed', 'Service'];
 
 const thisYear = new Date().getFullYear();
@@ -133,9 +137,7 @@ const SHOW_PLACEHOLDERS = false;
       <ul role="list" class="principles__grid sheet" data-sheet>
         {pillars.map((p, i) => (
           <li class="principle">
-            <span class="principle__index">
-              {String(i + 1).padStart(2, '0')}{pillarTags[i] && ` · ${pillarTags[i]}`}
-            </span>
+            {pillarTags[i] && <span class="principle__tag">{pillarTags[i]}</span>}
             <h3 class="t-h4">{p.title}</h3>
             <p class="t-small t-muted">{p.body}</p>
           </li>
@@ -350,12 +352,12 @@ const SHOW_PLACEHOLDERS = false;
     gap: var(--sp-6) var(--col-gap);
   }
 
+  /* These two sheets stay inset like the hero, story and closing sheets, with the full 1px hairline edge on
+     all four sides at every width (Direction A: a sheet keeps its edge). No negative margin, no side reset. */
   .principles__grid,
   .creds__grid {
     display: grid;
-    margin-inline: calc(var(--gutter) * -1);
     padding: var(--sp-2) var(--gutter);
-    border-inline: 0;
   }
 
   .principle + .principle,
@@ -375,7 +377,7 @@ const SHOW_PLACEHOLDERS = false;
     font-size: var(--fs-body);
   }
 
-  .principle__index {
+  .principle__tag {
     font-size: var(--fs-label);
     font-weight: 500;
     color: var(--steel);
@@ -394,6 +396,8 @@ const SHOW_PLACEHOLDERS = false;
     font-weight: 600;
     letter-spacing: -0.02em;
     line-height: 1.15;
+    /* Balanced like the site headings: when it wraps on a phone it breaks into two even lines. */
+    text-wrap: balance;
   }
 
   .cred :global(.cred__flag) {
@@ -477,7 +481,6 @@ const SHOW_PLACEHOLDERS = false;
 
     .principles__grid,
     .creds__grid {
-      margin-inline: 0;
       padding: var(--sp-3) var(--sp-7);
     }
 
@@ -488,7 +491,7 @@ const SHOW_PLACEHOLDERS = false;
       padding-block: var(--sp-6);
     }
 
-    .principle__index {
+    .principle__tag {
       grid-column: 1;
       grid-row: 1;
     }
@@ -508,6 +511,13 @@ const SHOW_PLACEHOLDERS = false;
       align-items: baseline;
       column-gap: var(--col-gap);
       padding-block: var(--sp-6);
+    }
+
+    /* A row with one child (the three credentials today) spans the whole sheet. Without this the text is
+       squeezed into the 7fr cell while the 5fr cell beside it stays empty. A row that gains a license
+       number or a flag has two children and keeps the two-column split. */
+    .cred__text:only-child {
+      grid-column: 1 / -1;
     }
   }
 

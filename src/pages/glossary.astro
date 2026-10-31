@@ -54,7 +54,7 @@ const jsonLd = {
     <label class="gl-search" for="gl-search-input">
       <Search size={20} stroke-width={1.75} aria-hidden="true" />
       <span class="visually-hidden">Search the glossary</span>
-      <input id="gl-search-input" type="search" placeholder="Search a term, like PoE or patch panel…" autocomplete="off" data-gl-search />
+      <input id="gl-search-input" type="search" placeholder="Search a term, like PoE" autocomplete="off" data-gl-search />
     </label>
   </PageHero>
 
@@ -145,6 +145,20 @@ const jsonLd = {
     const groups = [...root.querySelectorAll<HTMLElement>('[data-gl-group]')];
     const letters = [...root.querySelectorAll<HTMLAnchorElement>('[data-gl-letter]')];
     const total = items.length;
+
+    /* ── Pinned toolbar height ──────────────────────────── */
+    // The stylesheet already holds a safe height for each width (--gl-toolbar-h). This swaps in the real one,
+    // so bigger text or an extra row of chips can't push the toolbar over a term the keyboard just focused.
+    const toolbar = root.querySelector<HTMLElement>('.gl__toolbar');
+    if (toolbar && 'ResizeObserver' in window) {
+      const syncToolbarHeight = () => {
+        const pinned = getComputedStyle(toolbar).position !== 'static';
+        root.style.setProperty('--gl-toolbar-h', pinned ? `${toolbar.offsetHeight}px` : '0px');
+      };
+      syncToolbarHeight();
+      new ResizeObserver(syncToolbarHeight).observe(toolbar);
+      window.addEventListener('resize', syncToolbarHeight);
+    }
 
     /* ── Drawer ─────────────────────────────────────────── */
     const openTerm = (slug: string, { updateHash = true } = {}) => {
@@ -277,7 +291,13 @@ const jsonLd = {
     outline: none;
   }
 
-  /* ── Toolbar (sticky under the header) ── */
+  /* The browser's default placeholder grey is 4.15:1 on the paper; the form-field token is 4.7:1 (WCAG 1.4.3). */
+  .gl-search input::placeholder {
+    color: var(--placeholder);
+    opacity: 1;
+  }
+
+  /* ── Toolbar (pinned under the header on phones and from 1024px up) ── */
   /*
    * Direction A: the glossary is an index sheet. One white sheet on the paper, the toolbar held at
    * its head, each letter a ruled row of terms.
@@ -311,6 +331,20 @@ const jsonLd = {
     margin-bottom: 0;
     background: var(--white);
     border-bottom: 1px solid var(--ink);
+  }
+
+  /*
+   * How tall the toolbar is while it is pinned. The terms below it use this as their scroll-margin-top.
+   * When the keyboard moves focus to a term (Shift+Tab especially), the browser scrolls it up to html's
+   * scroll-padding-top, which is the header plus 1rem and sits above the bottom of the toolbar, so the
+   * focused term stopped behind the toolbar (WCAG 2.4.11, focus not obscured). The extra margin lands it
+   * just below the toolbar instead.
+   * Phones: 139px, the A-Z bar and the chips are one-line strips. 1024px up: 239px, the height with two rows
+   * of chips. With one row it is 185px: the script in this file swaps in the real height, and without scripts
+   * the spare 54px does no harm. 640-1023px: the toolbar is not pinned, so 0 (see that media query below).
+   */
+  .gl {
+    --gl-toolbar-h: 8.6875rem;
   }
 
   .gl__az {
@@ -360,6 +394,24 @@ const jsonLd = {
     flex-shrink: 0;
   }
 
+  /*
+   * Phones keep one-line strips that swipe sideways. From 640px up there is room for everything, so the
+   * A-Z bar and the category chips wrap instead: a mouse can't swipe a strip, and nothing showed that Z or
+   * Standards were cut off. The letters are capped at 14 per row so they sit on two even rows (14 + 13).
+   */
+  @media (min-width: 640px) {
+    .gl__az {
+      flex-wrap: wrap;
+      max-width: 41rem;
+      overflow: visible;
+    }
+
+    .gl__cats {
+      flex-wrap: wrap;
+      overflow: visible;
+    }
+  }
+
   .gl__status:empty {
     display: none;
   }
@@ -372,7 +424,14 @@ const jsonLd = {
     scroll-margin-top: calc(var(--header-h) + 9rem);
   }
 
-  .gl__group + .gl__group {
+  /* display:grid above beats the browser's [hidden] rule, so letters with no matching term stayed on screen
+     as empty rows (the first result sat under 0-9, A and B) */
+  .gl__group[hidden] {
+    display: none;
+  }
+
+  /* a hairline only between letters that are shown, never above the first one (rule 5: hairlines separate rows) */
+  .gl__group:not([hidden]) ~ .gl__group {
     border-top: 1px solid var(--hairline);
   }
 
@@ -394,20 +453,57 @@ const jsonLd = {
     }
   }
 
+  /*
+   * 640-1023px: the wrapped toolbar is up to 285px tall, too much to pin under the header, so it scrolls
+   * with the page. Nothing is pinned, so a letter jump or a focused term only has to clear the header
+   * (html scroll-padding-top).
+   */
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .gl__toolbar {
+      position: static;
+    }
+
+    .gl__group {
+      scroll-margin-top: 0;
+    }
+
+    .gl {
+      --gl-toolbar-h: 0px;
+    }
+  }
+
   @media (min-width: 1024px) {
     .gl__group {
       grid-template-columns: 2fr 10fr;
       align-items: start;
+      /* clears the pinned toolbar: 185px with one row of chips, 239px with two */
+      scroll-margin-top: calc(var(--header-h) + 10.5rem);
     }
 
     .gl__list {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .gl {
+      /* the pinned toolbar with two rows of chips: 239px (185px with one row) */
+      --gl-toolbar-h: 14.9375rem;
     }
   }
 
   /* ── Term rows ── */
   .term {
     border-bottom: 1px solid var(--hairline);
+  }
+
+  /*
+   * Keyboard focus and #links scroll a term up to just under the header. Adding the pinned toolbar's height
+   * (--gl-toolbar-h, set with the toolbar above) lands it below the toolbar, not behind it. The summary is
+   * what takes focus. The links inside a term only take focus in the no-JS fallback, where it opens inline.
+   */
+  .term,
+  .term__summary,
+  .term__body :global(a) {
+    scroll-margin-top: var(--gl-toolbar-h);
   }
 
   .term__summary {

@@ -47,11 +47,16 @@ import { industries } from '../../data/content';
     gap: var(--sp-6) var(--col-gap);
   }
 
+  /* Hairline edge (DESIGN.md Direction A: sheets have a 1px hairline edge). White on paper is only
+     about 1.1:1, so without it the sheet has no visible boundary. Phones: full-bleed band, so top and
+     bottom only. 900px and up: inset sheet, all four sides. Same treatment as .steps in Process.astro
+     and .coupon in ContactSection.astro. */
   .industries__grid {
     display: grid;
     background: var(--white);
     padding: var(--sp-2) var(--gutter);
     margin-inline: calc(var(--gutter) * -1);
+    border-block: 1px solid var(--hairline);
   }
 
   /* Hairlines only between rows (rule 5). Drawn as a pseudo-element so it can scale in. */
@@ -120,7 +125,9 @@ import { industries } from '../../data/content';
   }
 
   .industry__link:hover .industry__name {
-    color: var(--signal);
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .industry__link:focus-visible {
@@ -150,7 +157,7 @@ import { industries } from '../../data/content';
 
   .industry__link:hover :global(.industry__arrow),
   .industry__link:focus-visible :global(.industry__arrow) {
-    color: var(--signal);
+    color: var(--ink);
     transform: translate(3px, -3px);
   }
 
@@ -158,6 +165,7 @@ import { industries } from '../../data/content';
     .industries__grid {
       margin-inline: 0;
       padding: var(--sp-3) var(--sp-7);
+      border: 1px solid var(--hairline);
     }
 
     .industry__link {

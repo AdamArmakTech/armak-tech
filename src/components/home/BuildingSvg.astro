@@ -35,7 +35,7 @@ const wifiArcs = (x: number, c: number) => [
 ];
 
 /**
- * Rooms for the hover/focus lookup. `systems` is read off this drawing: a system is listed only if
+ * Rooms for the mouse-hover lookup. `systems` is read off this drawing: a system is listed only if
  * some element of its layer is drawn inside the room's bounds (or its trunk/riser runs through it).
  * Bounds: [x, y, w, h] in viewBox units, matching the walls above.
  */
@@ -51,7 +51,7 @@ const rooms: { id: string; name: string; box: [number, number, number, number]; 
 const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x.slug === sl)!.code).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 ---
 
-<svg class="bx" viewBox="0 0 880 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cutaway drawing of a three-storey commercial building showing where each of the six systems runs: cabling, networking and Wi-Fi, cameras, access control, phones, and audio-video. The system selected in the tabs is highlighted, and hovering or focusing a room lights the systems that serve it." focusable="false">
+<svg class="bx" viewBox="0 0 880 620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Cutaway drawing of a three-storey commercial building showing where each of the six systems runs: cabling, networking and Wi-Fi, cameras, access control, phones, and audio-video. The system selected in the tabs is highlighted, and hovering a room with a mouse lights the systems that serve it." focusable="false">
   <defs>
     <pattern id="bx-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
       <line x1="0" y1="0" x2="0" y2="8" class="bx-hatch-line" />
@@ -263,7 +263,7 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
     <rect x="652" y="466" width="50" height="30" class="bx-outline bx-screen" />
   </g>
 
-  <!-- ───────────── Rooms: hover / focus targets (drawn last so they sit on top) ───────────── -->
+  <!-- ───────────── Rooms: mouse-hover targets only, aria-hidden and not tab stops (drawn last so they sit on top) ───────────── -->
   <g class="bx-rooms">
     {rooms.map((r) => (
       <rect
@@ -427,10 +427,12 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
   }
 
   /* Blueprint trace: until the drawing has traced itself, the system layers wait (set by the script
-     below, only when motion is allowed). Removing the class lets them fade in on the normal transition. */
+     below, only when motion is allowed). Removing the class lets them fade in on the normal transition.
+     !important because the dimming rules below have the same specificity and come later; without it
+     the layers show (cabling lit, the rest faint) while the walls are still hidden. */
   :global(.bx.bx-wait) .bx-layer {
-    opacity: 0;
-    transition: none;
+    opacity: 0 !important;
+    transition: none !important;
   }
 
   /* Dim everything when one layer is in focus */
@@ -483,7 +485,7 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
     }
   }
 
-  /* Rooms: invisible hit areas; a faint outline shows which room is under the pointer or focus */
+  /* Rooms: invisible hit areas; a faint outline shows which room is under the pointer (mouse only: the rooms are not keyboard stops) */
   .bx-room {
     fill: transparent;
     stroke: none;
@@ -491,8 +493,7 @@ const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x
     outline: none;
   }
 
-  .bx-room:hover,
-  .bx-room:focus-visible {
+  .bx-room:hover {
     stroke: var(--ink);
     stroke-width: 1.5;
     stroke-dasharray: 5 4;

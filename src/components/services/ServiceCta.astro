@@ -70,6 +70,14 @@ const { title, body, about } = Astro.props;
     max-width: 16ch;
   }
 
+  /* DESIGN.md rule 9: headings fit two lines on a 375px phone. The 16ch cap and the 28px floor made the longest title run to three. */
+  @media (max-width: 420px) {
+    .cta__title {
+      font-size: 1.5rem;
+      max-width: none;
+    }
+  }
+
   .cta__lead {
     color: var(--text);
   }
@@ -86,12 +94,14 @@ const { title, body, about } = Astro.props;
       align-items: end;
     }
 
+    /* Copy takes 6 columns and the side takes 5, with one empty column between. The red
+       button needs about 297px; the old 4-column side was 259px at 1024 and wrapped its label. */
     .cta__copy {
-      grid-column: 1 / span 7;
+      grid-column: 1 / span 6;
     }
 
     .cta__side {
-      grid-column: 9 / -1;
+      grid-column: 8 / -1;
     }
   }
 </style>

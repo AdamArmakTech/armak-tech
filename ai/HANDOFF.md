@@ -25,13 +25,13 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
 1. **Plain language.** He isn't a developer. No jargon ("branch", "commit", "merge", "CSP") without saying what it means.
    When he says "I don't understand," simplify, don't elaborate.
 2. **Facts come from Armak only.** Never invent projects, testimonials, certifications, prices, response times, client
-   names. Placeholders stay hidden on the live site. His father (founder, in the trade since 1998) is the source of
-   truth; turn technical questions into short yes/no checklists he can hand to his father.
+   names. Placeholders stay hidden on the live site. The owner makes all the decisions and answers fact questions himself (owner, 2026-10-30); his father founded the
+   company (in the trade since 1998) but is not the gate. Put technical questions to the owner as short yes/no lists.
 3. **No AI-sounding writing.** No slogans, no "not just X", no "no guesswork", no stacked em-dashes, no "actually",
    no filler. The site's copy was cleaned on Oct 13; keep it that way. No AI-looking stock photos.
 4. **Marketing angle to build in (not yet on the site):** "We engineer with the future in mind." Armak's engineering
    method is built into how the company operates, so installs adapt to future technology even when choices look
-   unusual today. Needs 2–3 real examples from his father before it goes on the site. Checklist for the father
+   unusual today. Needs 2–3 real examples from the owner before it goes on the site. Checklist for the owner
    (yes/sometimes/no): Cat 6A over Cat 6; two drops per AP; spare fiber strands; empty conduit with pull strings;
    rack/power/cooling headroom; zone cabling (consolidation points); pre-placed ceiling-grid jacks; identical jacks
    with roles set at the switch; open standards / no vendor lock-in; TIA-606 labels + as-builts; "what do you do that

@@ -119,6 +119,19 @@ const Tag = href ? 'a' : 'button';
     --btn-border: var(--paper);
   }
 
+  /*
+   * outline-inverse is tuned for ink. On the homepage explorer's blue field its ink hairline is only
+   * 1.4:1 against the blue, so the button looked like a dark box. There it takes the same paper-at-60%
+   * line as the chips and tabs (--on-blue-line, set on .explorer), and full paper on hover.
+   */
+  :global(.explorer) .btn--outline-inverse {
+    --btn-border: var(--on-blue-line);
+  }
+
+  :global(.explorer) .btn--outline-inverse:hover {
+    --btn-border: var(--paper);
+  }
+
   .btn--link {
     padding: 0.7rem 0;
     margin-block: -0.7rem;

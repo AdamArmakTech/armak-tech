@@ -34,6 +34,8 @@ const { photo, testCard = false, caption } = Astro.props;
 <style>
   .band {
     position: relative;
+    /* width of the cable-test card; the caption keeps this much room clear on its right from 640 to 1023px */
+    --band-card-w: 330px;
   }
 
   /* Direction A: the photo is a print mounted on a white sheet, caption underneath */
@@ -72,8 +74,19 @@ const { photo, testCard = false, caption } = Astro.props;
     .band :global(.band__card) {
       display: grid;
       position: relative;
-      width: min(330px, 88%);
+      width: min(var(--band-card-w), 88%);
       margin: -6rem 1.5rem 0 auto;
+    }
+  }
+
+  /* 640-1023: the card sits in flow, pulled up over the bottom edge of the photo, which is where the caption
+     lives. Keep the caption clear of it: card width + 2rem of padding on the right makes the sentence wrap
+     before the card, not run under it (balanced, so no single word is left alone on line two). The sentence
+     says the photo is not an Armak job site, so it has to stay readable. Only when the card is there. */
+  @media (min-width: 640px) and (max-width: 1023px) {
+    .band--card .band__caption {
+      padding-right: calc(var(--band-card-w) + 2rem);
+      text-wrap: balance;
     }
   }
 
