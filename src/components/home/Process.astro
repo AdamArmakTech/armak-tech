@@ -15,7 +15,7 @@ import InstallDemo from '../process/InstallDemo.astro';
 import SupportDemo from '../process/SupportDemo.astro';
 import JobTimeline from '../process/JobTimeline.astro';
 import RoomForLater from '../process/RoomForLater.astro';
-import { process as steps, pillars, assessmentTiers } from '../../data/content';
+import { process as steps, pillars } from '../../data/content';
 
 const demos: Record<string, any> = {
   '01': AssessDemo,
@@ -77,19 +77,6 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
                 <p class="t-mono steps__intro-label"><span>Step <span class="steps__num"><span class="steps__num-v">{s.code}</span></span></span> · {s.title}</p>
                 <h3 class="visually-hidden">{s.title}</h3>
                 <p class="steps__intro-body">{s.body}</p>
-                {s.code === '01' && (
-                  <div class="steps__ways">
-                    <p class="steps__ways-lead">Two ways to start:</p>
-                    <ul role="list" class="steps__ways-list">
-                      {assessmentTiers.map((t) => (
-                        <li class="steps__way">
-                          <strong class="steps__way-title">{t.title}</strong>
-                          <span class="steps__way-body">{t.body}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </div>
               {s.code === '04' ? <CableTest variant="full" id="cable-test" /> : Demo && <Demo />}
             </div>
@@ -541,43 +528,6 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     inset: 0;
   }
 
-  /* Two ways to start (Assess step): two rows, a hairline between them (rule 5) */
-  .steps__ways {
-    display: grid;
-    gap: var(--sp-2);
-    max-width: 40em;
-  }
-
-  .steps__ways-lead {
-    color: var(--text);
-    font-size: var(--fs-small);
-  }
-
-  .steps__ways-list {
-    display: grid;
-    border-top: 1px solid var(--hairline);
-  }
-
-  .steps__way {
-    display: grid;
-    gap: var(--sp-1);
-    padding: var(--sp-3) 0;
-    color: var(--text);
-    font-size: var(--fs-small);
-    line-height: 1.5;
-    border-bottom: 1px solid var(--hairline);
-  }
-
-  .steps__way:last-child {
-    border-bottom: 0;
-  }
-
-  .steps__way-title {
-    font-weight: 600;
-    color: var(--ink);
-  }
-
-  .steps__intro-body {
     font-size: var(--fs-lead);
     line-height: 1.5;
     max-width: 40em;

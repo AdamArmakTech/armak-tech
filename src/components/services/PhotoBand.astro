@@ -10,11 +10,9 @@ import type { ServicePhoto } from '../../data/services-detail';
 interface Props {
   photo: ServicePhoto;
   testCard?: boolean;
-  /** Optional plain caption shown under the image. */
-  caption?: string;
 }
 
-const { photo, testCard = false, caption } = Astro.props;
+const { photo, testCard = false } = Astro.props;
 ---
 
 <div class:list={['band container', { 'band--card': testCard }]}>
@@ -26,7 +24,6 @@ const { photo, testCard = false, caption } = Astro.props;
       sizes="(min-width: 1360px) 1280px, 100vw"
       loading="lazy"
     />
-    {caption && <figcaption class="band__caption">{caption}</figcaption>}
   </figure>
   {testCard && <CableTest variant="compact" demoHref="/#cable-test" class="band__card" />}
 </div>
@@ -34,8 +31,6 @@ const { photo, testCard = false, caption } = Astro.props;
 <style>
   .band {
     position: relative;
-    /* width of the cable-test card; the caption keeps this much room clear on its right */
-    --band-card-w: 330px;
   }
 
   .band__frame {
@@ -48,14 +43,6 @@ const { photo, testCard = false, caption } = Astro.props;
     object-fit: cover;
     border-radius: var(--radius);
     background: var(--paper-sunken);
-  }
-
-  /* Caption sits under the photo, plain text (stock photos must not pass as Armak jobs, DESIGN.md rule 2) */
-  .band__caption {
-    padding-top: var(--sp-2);
-    font-family: var(--font-sans);
-    font-size: var(--fs-label);
-    color: var(--steel);
   }
 
   /* Card is skipped on phones (it would dwarf the photo) and overlaps the photo from 700px */
@@ -73,16 +60,6 @@ const { photo, testCard = false, caption } = Astro.props;
       position: relative;
       width: min(330px, 88%);
       margin: -6rem 1.5rem 0 auto;
-    }
-  }
-
-  /* From 640 the card overlaps the bottom edge of the figure, where the caption lives. Card width plus its
-     offset from the right edge (2.5rem at 1024+, 1.5rem below) and a 1rem gap stay clear, so the sentence
-     wraps before the card and is never covered. Only when the card is there. */
-  @media (min-width: 640px) {
-    .band--card .band__caption {
-      padding-right: calc(var(--band-card-w) + 3.5rem);
-      text-wrap: balance;
     }
   }
 

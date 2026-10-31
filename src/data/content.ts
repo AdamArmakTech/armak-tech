@@ -57,7 +57,7 @@ export const process = [
   {
     code: '01',
     title: 'Assess',
-    body: 'We walk the site with you and write down what’s there: pathways, closets, power and existing systems.',
+    body: 'We walk the site with you and write down what’s there: pathways, closets, power and existing systems. The assessment fee is credited toward your project if you hire us.',
   },
   {
     code: '02',
@@ -354,10 +354,3 @@ export const installPhases = [
   { id: 'afterhours', title: 'After-hours install', detail: 'The noisy work happens while the office is closed.' },
   { id: 'cutover', title: 'Phased cutover', detail: 'Systems switched over in planned phases, so the business keeps running.' },
 ];
-
-/* ── Two-tier assessment copy (used in D, the plan/contact assessment choice) ──
- * Owner-approved 2026-10-31, verbatim. */
-export const assessmentTiers = [
-  { id: 'quote', value: 'Free rough quote', title: 'Free rough quote', body: 'Tell us about the job, and email any plans or photos to contact@armak.tech. We’ll give you a ballpark number. No site visit.' },
-  { id: 'onsite', value: 'On-site assessment (paid)', title: 'On-site assessment (paid)', body: 'A technician walks your site, checks the closets, pathways and power, and gives you an accurate estimate. The fee is credited toward your project if you hire us.' },
-] as const;

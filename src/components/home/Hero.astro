@@ -85,7 +85,6 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
         fetchpriority="high"
       />
     </div>
-    <p class="hero__caption">Illustrative photo</p>
     <CableTest variant="compact" class="hero__card" />
   </div>
 </section>
@@ -357,24 +356,14 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
     object-fit: cover;
   }
 
-  /* Caption sits directly under the photo, on the side the test card does not overlap */
-  .hero__caption {
-    padding-top: var(--sp-2);
-    font-size: var(--fs-label);
-    line-height: 1.4;
-    color: var(--steel);
-    text-align: left;
-    white-space: nowrap;
-  }
-
-  /* Phones: the card sits below the caption (no room beside it for the caption at this width) */
+  /* Phones: the card sits below the photo */
   .hero__media :global(.hero__card) {
     position: relative;
     width: min(320px, 100%);
     margin: var(--sp-3) 0 0;
   }
 
-  /* Tablets: card overlaps the lower part of the photo, right-aligned; caption stays on the left */
+  /* Tablets: card overlaps the lower part of the photo, right-aligned */
   @media (min-width: 640px) {
     .hero__media :global(.hero__card) {
       width: min(320px, 86%);
@@ -396,11 +385,6 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
 
     .hero__media {
       padding-bottom: 4rem;
-    }
-
-    /* The card hangs over the photo's lower left, so the caption goes to the right */
-    .hero__caption {
-      text-align: right;
     }
 
     .hero__frame img {
