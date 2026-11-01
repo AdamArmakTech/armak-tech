@@ -3,6 +3,10 @@
   "framework": "astro",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/armak-logo.png", "destination": "/logo.png", "permanent": true },
+    { "source": "/armak-logo-color.png", "destination": "/logo.png", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/(.*)",
