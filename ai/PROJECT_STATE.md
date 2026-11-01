@@ -8,6 +8,14 @@
 - Plan / design rationale: `ai/plans/redesign.md` ("Precision Infrastructure", light editorial, Astro).
 
 ## Done
+- **Code cleanup, Batches 1 and 2 — 2026-10-31 (branch `intent-redesign`, commits 216ab1a and cebf891, NOT pushed).**
+  From the plan in `ai/CODE_REVIEW_2026-10-31.md`; owner approved each path list. Batch 1: dead code removed
+  (F1-F7, F9, F10, F31, F32), no visible change. Batch 2: `legacy/` (29 files), tracked `.vite` cache and
+  `ai/ai-context.sh` removed; README, ARCHITECTURE, HANDOFF and the prepare-logos comment updated (F29, F30, F39, F40).
+  The old site stays on the GitHub `old-site` branch (757cf43, checked 2026-10-31). Checks: astro check 0 errors,
+  build 18 pages, browser check clean. Left: Batch 3 (old logo files, needs path-list approval), Batch 4 (one source
+  for facts/links; F17 needs owner OK), Batch 6 (owner decisions). Batch 5 waits for the redesign. The unused
+  `"legacy"` exclude in `tsconfig.json` can go with Batch 4.
 - **Seven UI details — 2026-10-30 (commit 699ae0e).** Open/closed status by the phone (hours.ts, from site.hours,
   Los Angeles time); estimator numbers carried into the contact form (`?note=` in cta.ts + ContactForm prefill with
   Clear); hover/tap definitions on glossary links (TermPopover.astro); "Do you cover my city?" search over the
