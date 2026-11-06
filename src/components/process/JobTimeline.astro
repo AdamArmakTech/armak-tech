@@ -46,7 +46,7 @@ const [prestaged, afterhours, cutover] = installPhases;
 </figure>
 
 <script>
-  import { onFirstView, reduceMotion } from '../../scripts/demo';
+  import { onFirstView, prefersReducedMotion } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-job-timeline]').forEach((root) => {
     // Active marker: follows aria-selected on the five tabs. Instant (the tab highlight already animates).
@@ -65,7 +65,7 @@ const [prestaged, afterhours, cutover] = installPhases;
 
     // One hatch wipe on first view. Hidden state is armed here, so no script means the hatch just shows.
     const hatch = root.querySelector<HTMLElement>('[data-jt-hatch]');
-    if (hatch && !reduceMotion) {
+    if (hatch && !prefersReducedMotion()) {
       hatch.classList.add('is-armed');
       onFirstView(root, () => {
         void hatch.offsetWidth;

@@ -118,7 +118,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion, fitSvgText } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="support"]').forEach((root) => {
     fitSvgText(root);
@@ -146,6 +146,9 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       status.textContent = state === 'open' ? 'Open' : state === 'progress' ? 'In progress' : 'Done';
     };
 
+    // Decided once per demo: reset() hides the parts for the animation, so a setting changed later must not leave it blank.
+    const reduced = prefersReducedMotion();
+
     const reset = () => {
       box.classList.add('sp--instant');
       setStage(-1);
@@ -162,7 +165,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     };
 
     const run = createRun(async (alive) => {
-      if (reduceMotion) return;
+      if (reduced) return;
       reset();
       await sleep(250);
       if (!alive()) return;
@@ -212,7 +215,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       announce(root, 'Tested, record updated, ticket done');
     });
 
-    if (!reduceMotion) {
+    if (!reduced) {
       reset();
       onFirstView(root, run);
     }

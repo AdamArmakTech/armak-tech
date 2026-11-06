@@ -9,6 +9,7 @@ import ServiceTile from '../components/ui/ServiceTile.astro';
 import Stat from '../components/ui/Stat.astro';
 import CtaDock from '../components/layout/CtaDock.astro';
 import { services, site, yearsInBusiness, FOUNDED, serviceArea } from '../data/site';
+import { contactHref, CTA_LABEL } from '../lib/cta';
 
 import cableBundles from '../assets/photos/cabling-bundles-white.jpg';
 import rackRow from '../assets/photos/wifi-ap-tray.jpg';
@@ -104,7 +105,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
       <div class="sg-panel">
         <p class="t-mono t-muted">Buttons</p>
         <div class="sg-wrap">
-          <Button>Request a site assessment</Button>
+          <Button>{CTA_LABEL}</Button>
           <Button variant="ink">Ink</Button>
           <Button variant="outline" icon="none">Outline</Button>
           <Button variant="link">Text link</Button>
@@ -121,7 +122,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
       </div>
       <div class="sg-panel">
         <p class="t-mono t-muted">Spec strip</p>
-        <SpecStrip items={[`Est. ${FOUNDED}`, 'BICSI-certified', 'Licensed & bonded', '24/7 support']} />
+        <SpecStrip items={[`Est. ${FOUNDED}`, 'BICSI-certified', 'Licensed & bonded', `${site.supportHours} support`]} />
       </div>
     </div>
   </section>
@@ -144,7 +145,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
     <div class="stats">
       <Stat value={yearsInBusiness} label="Years in business" detail={`Since ${FOUNDED}. Computed at build, so never out of date.`} />
       <Stat value={site.projectsDelivered} suffix="+" label="Projects delivered" />
-      <Stat value="24/7" label="Support" detail="For contracted clients." />
+      <Stat value={site.supportHours} label="Support" detail={`For ${site.supportScope}.`} />
       <Stat value={serviceArea.length} label="Cities served" />
     </div>
   </section>
@@ -184,7 +185,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
         <p class="t-mono t-muted">Mid-page prompt</p>
         <div class="sg-wrap">
           <p class="t-mono t-muted">Every job starts at step 01.</p>
-          <Button href="/contact/" icon="arrow">Request a site assessment</Button>
+          <Button href={contactHref()} icon="arrow">{CTA_LABEL}</Button>
         </div>
       </div>
     </div>

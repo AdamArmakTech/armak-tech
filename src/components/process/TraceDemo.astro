@@ -126,7 +126,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
 </DemoFrame>
 
 <script>
-  import { bindReplay, announce, fitSvgText, reduceMotion } from '../../scripts/demo';
+  import { bindReplay, announce, fitSvgText, prefersReducedMotion } from '../../scripts/demo';
 
   const EASE_OUT = 'cubic-bezier(0.16, 1, 0.3, 1)';
   const HINT = 'Choose a jack to trace its cable.';
@@ -204,7 +204,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
       readout.textContent = 'Port: none lit';
       line.textContent = HINT;
 
-      if (reduceMotion) {
+      if (prefersReducedMotion()) {
         words.forEach((w) => w.classList.add('is-lit'));
         arrive(id, port);
         return;
@@ -251,7 +251,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     };
 
     const choose = (btn: HTMLButtonElement) => {
-      if (current && !reduceMotion) {
+      if (current && !prefersReducedMotion()) {
         // Fade the old route and row first (120 ms), then start the new trace
         const old = routes.find((r) => r.dataset.trRoute === current);
         const mine = ++token;
@@ -290,7 +290,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
       const btn = jacks.find((b) => b.dataset.trJack === id);
       if (!btn) return;
       requestAnimationFrame(() => {
-        tr.scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' });
+        tr.scrollIntoView({ block: 'nearest', behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
         if (btn.getAttribute('aria-pressed') !== 'true') choose(btn);
         btn.focus({ preventScroll: true });
       });

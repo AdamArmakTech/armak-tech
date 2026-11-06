@@ -11,8 +11,10 @@ import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
 import TermDetail from '../components/glossary/TermDetail.astro';
 import Button from '../components/ui/Button.astro';
+import JsonLd from '../components/ui/JsonLd.astro';
 import { glossary, groups, alphabet, categoryLabels, type GlossaryCategory } from '../data/glossary';
 import { site } from '../data/site';
+import { contactHref } from '../lib/cta';
 
 const usedCategories = (Object.keys(categoryLabels) as GlossaryCategory[]).filter((c) =>
   glossary.some((e) => e.category === c),
@@ -45,7 +47,7 @@ const jsonLd = {
   description="Plain-English A–Z of cabling, networking, security camera, access control, phone and AV terms, with answers to the questions people ask."
   footerCta={false}
 >
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
+  <JsonLd data={jsonLd} slot="head" />
 
   <PageHero
     label="Glossary"
@@ -121,7 +123,7 @@ const jsonLd = {
     <div class="gl-drawer__body" data-gl-drawer-body></div>
     <div class="gl-drawer__cta">
       <p class="t-mono t-muted">Not sure what your building needs?</p>
-      <Button href="/contact/?mode=quick#form" icon="arrow" data-gl-drawer-cta>Ask about this term</Button>
+      <Button href={contactHref({ mode: 'quick' })} icon="arrow" data-gl-drawer-cta>Ask about this term</Button>
     </div>
   </dialog>
 
@@ -133,6 +135,9 @@ const jsonLd = {
 </Base>
 
 <script>
+  import { prefersReducedMotion } from '../scripts/demo';
+  import { contactHref } from '../lib/cta';
+
   const root = document.querySelector<HTMLElement>('[data-gl]');
   const drawer = document.querySelector<HTMLDialogElement>('[data-gl-drawer]');
   const drawerTitle = document.querySelector<HTMLElement>('[data-gl-drawer-title]');
@@ -169,7 +174,7 @@ const jsonLd = {
 
       drawerTitle.textContent = body.dataset.termTitle ?? '';
       const cta = drawer.querySelector<HTMLAnchorElement>('[data-gl-drawer-cta]');
-      if (cta) cta.href = '/contact/?about=' + encodeURIComponent(body.dataset.termTitle ?? '') + '&mode=quick#form';
+      if (cta) cta.href = contactHref({ about: body.dataset.termTitle ?? '', mode: 'quick' });
       drawerBody.replaceChildren(...[...body.children].map((n) => n.cloneNode(true)));
       drawerBody.scrollTop = 0;
 
@@ -198,7 +203,6 @@ const jsonLd = {
     // Phones: drag the header down to dismiss the sheet. Only the header starts a drag, so the content still scrolls.
     const dragHead = drawer.querySelector<HTMLElement>('.gl-drawer__head');
     const phone = window.matchMedia('(max-width: 639px)');
-    const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
     if (dragHead) {
       let startY = 0;
       let lastY = 0;
@@ -207,7 +211,7 @@ const jsonLd = {
       let dragging = false;
       let pid = -1;
       const settle = (ms: number, y: string) => {
-        drawer.style.transition = calm.matches ? 'none' : `transform ${ms}ms var(--ease-out)`;
+        drawer.style.transition = prefersReducedMotion() ? 'none' : `transform ${ms}ms var(--ease-out)`;
         drawer.style.transform = y;
       };
       dragHead.addEventListener('pointerdown', (e) => {
@@ -233,7 +237,7 @@ const jsonLd = {
         dragging = false;
         const dy = Math.max(0, e.clientY - startY);
         if (dy > drawer.offsetHeight * 0.3 || velocity > 0.6) {
-          if (calm.matches) closeDrawer();
+          if (prefersReducedMotion()) closeDrawer();
           else {
             settle(160, 'translateY(100%)');
             window.setTimeout(closeDrawer, 160);

@@ -135,7 +135,7 @@ const layers = [
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion, fitSvgText } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="design"]').forEach((root) => {
     const box = root.querySelector<HTMLElement>('.ds')!;
@@ -171,6 +171,9 @@ const layers = [
       box.dataset.focus = id;
       chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.dsChip === id)));
     };
+
+    // Decided once per demo: reset() hides the parts for the animation, so a setting changed later must not leave it blank.
+    const reduced = prefersReducedMotion();
 
     // Hidden starting state (armed here, so no-JS and reduced motion keep the finished plan)
     const reset = () => {
@@ -232,7 +235,7 @@ const layers = [
     };
 
     const run = createRun(async (alive) => {
-      if (reduceMotion) return;
+      if (reduced) return;
       reset();
       await sleep(150);
       if (!alive()) return;
@@ -267,7 +270,7 @@ const layers = [
       }),
     );
 
-    if (!reduceMotion) {
+    if (!reduced) {
       reset();
       onFirstView(root, run);
     }

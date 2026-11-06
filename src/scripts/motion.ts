@@ -8,6 +8,7 @@
  * Everything is skipped under prefers-reduced-motion; content is always present in HTML.
  */
 import Lenis from 'lenis';
+import { prefersReducedMotion } from './demo';
 import 'lenis/dist/lenis.css';
 
 declare global {
@@ -18,7 +19,6 @@ declare global {
 }
 
 const root = document.documentElement;
-const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function showEverything() {
   document.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-revealed'));
@@ -141,7 +141,7 @@ async function initSplitHeadings(lenis: Lenis) {
 function boot() {
   root.classList.add('motion-ready');
 
-  if (reduceMotion) {
+  if (prefersReducedMotion()) {
     showEverything();
     return;
   }

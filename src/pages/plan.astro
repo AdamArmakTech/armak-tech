@@ -158,7 +158,7 @@ const upgradeQuestions = [
         </dl>
       </form>
       <div class="est__send">
-        <p class="t-small t-muted est__plan">Want these numbers checked against your actual floor? <a class="plan__link" href="/contact/?about=estimate#form">Send us your plan</a> and we’ll scope it.</p>
+        <p class="t-small t-muted est__plan">Want these numbers checked against your actual floor? <a class="plan__link" href={contactHref({ about: 'estimate' })}>Send us your plan</a> and we’ll scope it.</p>
         <Button variant="ink" size="lg" href={contactHref({ about: 'structured-cabling' })} data-est-send>Send these numbers with my request</Button>
       </div>
     </section>
@@ -222,6 +222,7 @@ const upgradeQuestions = [
 
 <script>
   import { contactHref } from '../lib/cta';
+  import { prefersReducedMotion } from '../scripts/demo';
 
   // ── Print just the checklist ──
   document.querySelectorAll<HTMLButtonElement>('[data-print-checklist]').forEach((btn) => {
@@ -280,7 +281,6 @@ const upgradeQuestions = [
     const result = form.querySelector<HTMLElement>('[data-quiz-result]')!;
     const verdict = form.querySelector<HTMLElement>('[data-quiz-verdict]')!;
     const why = form.querySelector<HTMLElement>('[data-quiz-why]')!;
-    const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
     let swapTimer: number | undefined;
     const pick = (name: string) => (form.elements.namedItem(name) as RadioNodeList | null)?.value || '';
 
@@ -314,7 +314,7 @@ const upgradeQuestions = [
       };
       window.clearTimeout(swapTimer);
       // Redone quiz: the old answer leaves quickly, then the new one enters. Reduced motion swaps at once.
-      if (!result.hidden && !calm.matches && verdict.textContent !== v) {
+      if (!result.hidden && !prefersReducedMotion() && verdict.textContent !== v) {
         result.classList.remove('is-in');
         result.classList.add('is-out');
         swapTimer = window.setTimeout(show, 120);

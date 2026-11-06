@@ -735,13 +735,14 @@ const mk = (k: (typeof laterKeys)[number]) => shownKeys.indexOf(k);
 </style>
 
 <script>
+  import { prefersReducedMotion } from '../../scripts/demo';
+
   // The first time a layer becomes active, its solid strokes draw in (once per layer, never again).
   // Dashed/dotted lines (the ISP fiber) are skipped and keep the opacity transition.
   // BuildingExplorer toggles .is-active; we only watch for it. Opacity dimming stays in CSS.
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const STROKES = 'line, path:not(.bx-fill), rect.bx-outline, circle.bx-dot';
 
-  if (!reduceMotion) {
+  if (!prefersReducedMotion()) {
     const running = new WeakMap<Element, Animation>();
 
     const draw = (layer: Element) => {

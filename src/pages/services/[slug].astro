@@ -14,7 +14,9 @@ import FaqList from '../../components/services/FaqList.astro';
 import OtherServices from '../../components/services/OtherServices.astro';
 import TermPopover from '../../components/glossary/TermPopover.astro';
 import ServiceCta from '../../components/services/ServiceCta.astro';
+import JsonLd from '../../components/ui/JsonLd.astro';
 import { services, site, serviceArea, type Service } from '../../data/site';
+import { businessProvider } from '../../data/seo';
 import { servicesDetail, servicePhotos } from '../../data/services-detail';
 import { partners } from '../../data/content';
 
@@ -32,21 +34,6 @@ const hasPartners = partners.some((p) => detail.partnerCategories.includes(p.cat
 const pageUrl = new URL(`/services/${service.slug}/`, site.url).href;
 
 /* ── Structured data ── */
-const provider = {
-  '@type': 'ProfessionalService', // same type + @id as the site-wide business entry (src/data/seo.ts)
-  '@id': `${site.url}/#business`,
-  name: site.name,
-  url: `${site.url}/`,
-  telephone: site.phoneHref.replace(/^tel:/, ''),
-  email: site.email,
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: site.hq.city,
-    addressRegion: site.hq.region,
-    addressCountry: site.hq.country,
-  },
-};
-
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -57,7 +44,7 @@ const jsonLd = {
       serviceType: service.name,
       description: detail.metaDescription,
       url: pageUrl,
-      provider,
+      provider: businessProvider,
       areaServed: [
         { '@type': 'AdministrativeArea', name: 'Southern California' },
         ...serviceArea.map((c) => ({ '@type': 'City', name: `${c.name}, CA` })),
@@ -93,18 +80,11 @@ const jsonLd = {
 ---
 
 <Base
-  title={{
-    'structured-cabling': 'Structured Cabling in Southern California',
-    networking: 'Networking & Wi-Fi in Southern California',
-    'video-surveillance': 'Video Surveillance in Southern California',
-    'access-control': 'Access Control in Southern California',
-    'voip-unified-comms': 'VoIP Phone Systems in Southern California',
-    'audio-video': 'Commercial AV in Southern California',
-  }[service.slug]}
+  title={detail.title}
   description={detail.metaDescription}
   footerCta={false}
 >
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
+  <JsonLd data={jsonLd} slot="head" />
 
   <ServiceHero service={service} detail={detail} />
 

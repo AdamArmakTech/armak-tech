@@ -16,11 +16,12 @@ import Numbers from '../components/home/Numbers.astro';
 import PartnerStrip from '../components/home/PartnerStrip.astro';
 import ServiceArea from '../components/home/ServiceArea.astro';
 import { site, FOUNDED, yearsInBusiness, serviceArea, counties } from '../data/site';
+import { contactHref, CTA_LABEL } from '../lib/cta';
 import { pillars, credentials } from '../data/content';
 // TODO(photo): interim stock (see assets/photos/CREDITS.md), replace with a real Armak photo
 import storyPhoto from '../assets/photos/cabling-bundles-white.jpg';
 
-const description = `Armak Technologies has designed and installed low-voltage, networking and security systems across Southern California since ${FOUNDED}. Glendale HQ.`;
+const description = `Armak Technologies has designed and installed low-voltage, networking and security systems across Southern California since ${FOUNDED}. ${site.hq.city} HQ.`;
 
 /** The original site's three "about" cards, tightened. */
 const story = [
@@ -221,7 +222,7 @@ const SHOW_PLACEHOLDERS = false;
       </ul>
       <div class="team__foot">
         <p class="t-small t-muted">Want to work with us?</p>
-        <Button href="/contact/" variant="link">Request a site assessment</Button>
+        <Button href={contactHref()} variant="link">{CTA_LABEL}</Button>
       </div>
     </div>
   </section>

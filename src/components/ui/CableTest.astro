@@ -22,7 +22,8 @@ interface Props {
 
 const { variant = 'full', id, demoHref = '#cable-test', class: className } = Astro.props;
 const full = variant === 'full';
-const uid = `ct${Math.random().toString(36).slice(2, 8)}`;
+// Stable id (no random part, so builds are repeatable): a page shows at most one card of each variant.
+const uid = `ct-${variant}`;
 
 /* ── Wire map geometry (viewBox 320 × 174) ── */
 const pinY = (i: number) => 30 + i * 19;
@@ -261,9 +262,8 @@ const barPos = (b: Bar) =>
 </figure>
 
 <script>
-  import { fitSvgText } from '../../scripts/demo';
+  import { fitSvgText, prefersReducedMotion } from '../../scripts/demo';
 
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   document.querySelectorAll<HTMLElement>('[data-ct]').forEach((root) => {
@@ -331,7 +331,7 @@ const barPos = (b: Bar) =>
     };
 
     const run = async () => {
-      if (reduceMotion) return showFinal();
+      if (prefersReducedMotion()) return showFinal();
       const id = ++runId;
       const alive = () => id === runId;
       reset();
@@ -390,7 +390,7 @@ const barPos = (b: Bar) =>
 
     // Play once, the first time the demo is mostly on screen.
     // Inside the Process stepper, the stepper starts it instead (avoids a double start).
-    if (!reduceMotion) {
+    if (!prefersReducedMotion()) {
       reset();
       if (root.closest('[data-steps]')) return;
       const io = new IntersectionObserver(

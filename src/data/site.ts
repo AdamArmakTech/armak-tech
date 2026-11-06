@@ -8,6 +8,10 @@ export const FOUNDED = 1998;
 /** Computed at build time, so it stays correct on every rebuild. */
 export const yearsInBusiness = new Date().getFullYear() - FOUNDED;
 
+// The two pieces of the support line are shown separately in the homepage Numbers section.
+const SUPPORT_HOURS = '24/7';
+const SUPPORT_SCOPE = 'contracted clients';
+
 export const site = {
   name: 'Armak Technologies',
   shortName: 'Armak',
@@ -21,7 +25,9 @@ export const site = {
   emailHref: 'mailto:sales@armak.tech',
   hq: { city: 'Glendale', region: 'CA', country: 'US', lat: 34.1425, lng: -118.2551 },
   hours: 'Mon–Fri · 8 AM – 6 PM',
-  support: '24/7 support for contracted clients',
+  support: `${SUPPORT_HOURS} support for ${SUPPORT_SCOPE}`,
+  supportHours: SUPPORT_HOURS,
+  supportScope: SUPPORT_SCOPE,
   // TODO(content): confirm license number + classification with Armak before launch
   license: null as string | null,
   projectsDelivered: 946,

@@ -4,6 +4,7 @@ import Logo from '../ui/Logo.astro';
 import Button from '../ui/Button.astro';
 import { nav as allNav, services, site } from '../../data/site';
 import { showProjects } from '../../data/content';
+import { contactHref, CTA_LABEL } from '../../lib/cta';
 
 // "Projects" only appears once real projects exist
 const nav = allNav.filter((item) => item.href !== '/projects/' || showProjects);
@@ -55,7 +56,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
         <!-- Filled by the script below from the visitor's clock; empty (and hidden) until then -->
         <span class="site-header__status" data-hours={site.hours} data-header-status hidden></span>
       </div>
-      <Button href="/contact/" variant="primary" class="site-header__cta">Request a site assessment</Button>
+      <Button href={contactHref()} variant="primary" class="site-header__cta">{CTA_LABEL}</Button>
       <a class="site-header__call" href={site.phoneHref} aria-label={`Call Armak, ${site.phone}`}>
         <Phone size={22} stroke-width={1.5} aria-hidden="true" />
       </a>
@@ -84,7 +85,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       <aside class="mega__aside">
         <p class="t-mono t-muted">Not sure what you need?</p>
         <p class="t-h4">Book a site assessment. We’ll walk the space and scope it with you.</p>
-        <Button href="/contact/" variant="ink">Request a site assessment</Button>
+        <Button href={contactHref()} variant="ink">{CTA_LABEL}</Button>
         <a class="mega__all" href="/services/">All services →</a>
       </aside>
     </div>
@@ -108,7 +109,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
         <li><a href="/contact/">Contact</a></li>
       </ul>
       <div class="mobile-menu__actions">
-        <Button href="/contact/" variant="primary" size="lg">Request a site assessment</Button>
+        <Button href={contactHref()} variant="primary" size="lg">{CTA_LABEL}</Button>
         <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
       </div>
     </div>
@@ -116,7 +117,8 @@ const isActive = (href: string) => path === href || path.startsWith(href);
 </header>
 
 <script>
-  import { parseHours, openStatus } from '../../lib/hours';
+  import { mountOpenStatus } from '../../lib/hours';
+  import { prefersReducedMotion } from '../../scripts/demo';
 
   const header = document.querySelector<HTMLElement>('[data-header]');
 
@@ -131,7 +133,6 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     const menuToggle = header.querySelector<HTMLButtonElement>('[data-menu-toggle]');
     const menu = header.querySelector<HTMLElement>('[data-menu]');
 
-    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
     const timers = new WeakMap<HTMLElement, number>();
 
     const setOpen = (toggle: HTMLButtonElement | null, panel: HTMLElement | null, open: boolean) => {
@@ -152,7 +153,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       } else if (!panel.hidden) {
         panel.removeAttribute('data-shown');
         panel.inert = true;
-        if (reduceMotion.matches) panel.hidden = true;
+        if (prefersReducedMotion()) panel.hidden = true;
         else timers.set(panel, window.setTimeout(() => { panel.hidden = true; }, 170));
       }
       header.toggleAttribute(
@@ -249,19 +250,11 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     }
 
     // Open/closed line next to the phone number, refreshed every minute
-    const statusEl = header.querySelector<HTMLElement>('[data-header-status]');
-    const hours = statusEl ? parseHours(statusEl.dataset.hours ?? '') : null;
-    if (statusEl && hours) {
-      const update = () => {
-        const s = openStatus(new Date(), hours);
-        statusEl.textContent = s.label;
-        statusEl.hidden = !s.label;
-        statusEl.toggleAttribute('data-open-now', s.open);
-      };
-      update();
-      const timer = window.setInterval(update, 60_000);
-      window.addEventListener('pagehide', () => window.clearInterval(timer), { once: true });
-    }
+    mountOpenStatus(header.querySelector<HTMLElement>('[data-header-status]'), (s, el) => {
+      el.textContent = s.label;
+      el.hidden = !s.label;
+      el.toggleAttribute('data-open-now', s.open);
+    });
   }
 </script>
 

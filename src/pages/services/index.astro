@@ -6,6 +6,8 @@ import Base from '../../layouts/Base.astro';
 import Label from '../../components/ui/Label.astro';
 import Button from '../../components/ui/Button.astro';
 import SpecStrip from '../../components/ui/SpecStrip.astro';
+import JsonLd from '../../components/ui/JsonLd.astro';
+import { contactHref, CTA_LABEL } from '../../lib/cta';
 import DeliverySteps from '../../components/services/DeliverySteps.astro';
 import ServiceCta from '../../components/services/ServiceCta.astro';
 import { services, site, FOUNDED, yearsInBusiness } from '../../data/site';
@@ -29,7 +31,7 @@ const jsonLd = {
 ---
 
 <Base title="Low-Voltage, Network & Security Services" description={description} footerCta={false}>
-  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')} />
+  <JsonLd data={jsonLd} slot="head" />
 
   <section class="svc-index-hero container" aria-labelledby="services-title">
     <div class="svc-index-hero__copy">
@@ -41,7 +43,7 @@ const jsonLd = {
         walk-through to the final report.
       </p>
       <div class="svc-index-hero__ctas" data-dock-start>
-        <Button href="/contact/" size="lg">Request a site assessment</Button>
+        <Button href={contactHref()} size="lg">{CTA_LABEL}</Button>
         <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
       </div>
     </div>

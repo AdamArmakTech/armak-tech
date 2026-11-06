@@ -29,7 +29,7 @@ const projectTypes = [...services.map((s) => ({ name: s.name, slug: s.slug })), 
 const f = (name: string) => `${id}-${name}`;
 ---
 
-<div class:list={['cform', className]} id={id} data-contact-form data-phone={site.phone} data-email={site.email}>
+<div class:list={['cform', className]} id={id} data-contact-form data-phone={site.phone} data-phone-href={site.phoneHref} data-email={site.email}>
   <form class="cform__form" action={endpoint} method="POST" data-cform-form>
     <!-- Web3Forms config (same fields as the original site's form) -->
     <input type="hidden" name="access_key" value={accessKey} />
@@ -496,6 +496,8 @@ const f = (name: string) => `${id}-${name}`;
 </style>
 
 <script>
+  import { prefersReducedMotion } from '../../scripts/demo';
+
   const MIN_PHONE_DIGITS = 7;
 
   type Field = HTMLInputElement | HTMLTextAreaElement;
@@ -511,7 +513,7 @@ const f = (name: string) => `${id}-${name}`;
     if (!form || steps.length !== 2 || !next || !back || !submit || !status || !success) return;
 
     const phone = root.dataset.phone ?? '';
-    const phoneHref = `tel:+1${phone.replace(/\D/g, '')}`;
+    const phoneHref = root.dataset.phoneHref ?? '';
     const email = root.dataset.email ?? '';
     const submitLabel = submit.querySelector<HTMLElement>('.btn__label');
     let sending = false;
@@ -535,7 +537,6 @@ const f = (name: string) => `${id}-${name}`;
 
     // Direction-aware step change: forward enters from the right, Back from the left. The old step leaves
     // faster (140 ms) than the new one arrives (300 ms, --ease-out). Instant under reduced motion.
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let moveToken = 0;
     function showStep(n: 1 | 2, focus = true) {
       const target = steps[n - 1];
@@ -550,7 +551,7 @@ const f = (name: string) => `${id}-${name}`;
       };
       const token = ++moveToken;
       steps.forEach((s) => s.getAnimations().forEach((a) => a.cancel()));
-      if (!current || current === target || reduceMotion.matches || typeof target.animate !== 'function') {
+      if (!current || current === target || prefersReducedMotion() || typeof target.animate !== 'function') {
         settle();
         return;
       }
@@ -659,8 +660,7 @@ const f = (name: string) => `${id}-${name}`;
         '.',
       );
       // Make the failure visible and announced: scroll to it and move focus there.
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      status!.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+      status!.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'center' });
       status!.focus({ preventScroll: true });
     }
 

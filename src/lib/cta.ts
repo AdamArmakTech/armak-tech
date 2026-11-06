@@ -32,4 +32,7 @@ export function contactHref({ about, mode, intent, note }: ContactLink = {}): st
   return `/contact/${query ? `?${query}` : ''}#form`;
 }
 
+/** The main button text. One place, so the wording cannot drift between pages. */
+export const CTA_LABEL = 'Request a site assessment';
+
 export const checklistHref = '/plan/#checklist';

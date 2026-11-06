@@ -1,0 +1,14 @@
+---
+/**
+ * One place for structured data (JSON-LD) blocks. Escapes "<" so no string in the data can
+ * close the script element early. Pages use it with slot="head"; Base uses it directly.
+ */
+interface Props {
+  data: unknown;
+}
+
+const { data } = Astro.props;
+const json = JSON.stringify(data).replace(/</g, '\\u003c');
+---
+
+<script type="application/ld+json" set:html={json} />

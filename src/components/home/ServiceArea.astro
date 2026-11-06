@@ -567,10 +567,11 @@ const groups = counties.map((county) => ({
   import maplibreCssUrl from 'maplibre-gl/dist/maplibre-gl.css?url';
   import type { GeoJSONSourceSpecification, Map as MapLibreMap } from 'maplibre-gl';
 
-  // MapLibre cannot read CSS custom properties — literal token values.
-  const INK = '#0b0d10';
-  const SIGNAL = '#d0101a';
-  const WHITE = '#ffffff';
+  // MapLibre cannot read CSS custom properties, so initMap reads the token values once when the map is built.
+  // The literals are the fallbacks if a variable is empty.
+  let INK = '#0b0d10';
+  let SIGNAL = '#d0101a';
+  let WHITE = '#ffffff';
   const STYLE_URL = 'https://tiles.openfreemap.org/styles/positron';
   const LOAD_TIMEOUT_MS = 15000;
 
@@ -580,9 +581,8 @@ const groups = counties.map((county) => ({
     cities: { name: string; county: string; lng: number; lat: number; hq: boolean }[];
   }
 
-  import { onFirstView } from '../../scripts/demo';
+  import { onFirstView, prefersReducedMotion } from '../../scripts/demo';
 
-  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Live map instances, so the city search can pulse a marker on the real map when it is on.
   const mapInstances = new WeakMap<HTMLElement, { map: MapLibreMap; lib: typeof import('maplibre-gl') }>();
   const DOT_STAGGER_MS = 40;
@@ -773,6 +773,12 @@ const groups = counties.map((county) => ({
     root.dataset.state = 'loading';
     if (status) status.textContent = 'Loading map…';
 
+    const token = (name: string, fallback: string) =>
+      getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+    INK = token('--ink', INK);
+    SIGNAL = token('--signal', SIGNAL);
+    WHITE = token('--white', WHITE);
+
     let map: MapLibreMap | undefined;
     try {
       const [maplibregl] = await Promise.all([import('maplibre-gl'), loadStylesheet(maplibreCssUrl)]);
@@ -798,7 +804,7 @@ const groups = counties.map((county) => ({
         touchPitch: false,
         maxPitch: 0,
         renderWorldCopies: false,
-        fadeDuration: reduceMotion ? 0 : 300,
+        fadeDuration: prefersReducedMotion() ? 0 : 300,
         // Always-visible, single-line attribution (the compact variant opens over the map on mobile).
         attributionControl: { compact: false },
       });
@@ -821,7 +827,7 @@ const groups = counties.map((county) => ({
       map.on('load', () => {
         if (!map || root.dataset.state === 'error') return;
         addOverlay(map, data, narrow);
-        if (!reduceMotion) {
+        if (!prefersReducedMotion()) {
           hideDots(map);
           const reveal = () => map && showDots(map, data.cities.length);
           if (root.dataset.seen) reveal();
@@ -841,7 +847,7 @@ const groups = counties.map((county) => ({
   document.querySelectorAll<HTMLElement>('[data-area-map]').forEach((root) => {
     // Dots land once, the first time the figure is on screen (schematic via CSS, map via paint transitions)
     // If IntersectionObserver is missing or setup throws, the dots are never left hidden.
-    if (!reduceMotion && 'IntersectionObserver' in window) {
+    if (!prefersReducedMotion() && 'IntersectionObserver' in window) {
       try {
         root.dataset.dots = 'pending';
         onFirstView(root, () => {
@@ -896,7 +902,7 @@ const groups = counties.map((county) => ({
       v.trim().toLowerCase().replace(/\s+/g, ' ').replace(/,?\s+ca$/, '').replace(/,$/, '').trim();
 
     function highlight(name: string) {
-      if (reduceMotion) return;
+      if (prefersReducedMotion()) return;
       const li = document.querySelector<HTMLElement>(`.area__city[data-city="${CSS.escape(name)}"]`);
       if (!li) return;
       const c = cssVar('--paper-sunken') || '#ebe9e3';
@@ -910,7 +916,7 @@ const groups = counties.map((county) => ({
     }
 
     function pulse(name: string) {
-      if (reduceMotion) return;
+      if (prefersReducedMotion()) return;
       const dur = slowMs();
       const q = CSS.escape(name);
       const dot = root!.querySelector<SVGElement>(`.sx-city[data-city="${q}"] circle, .sx-hq[data-city="${q}"] .sx-hq__dot`);

@@ -32,6 +32,8 @@ export interface Faq {
 }
 
 export interface ServiceDetail {
+  /** Page title; Base.astro appends " | Armak Technologies" */
+  title: string;
   /** Page h1 — short, confident, sentence case */
   headline: string;
   /** 2–3 sentence lead under the h1 */
@@ -93,6 +95,7 @@ export const servicePhotos: Partial<Record<ServiceSlug, ServicePhoto>> = {
 export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
   /* ── A-01 ─────────────────────────────────────────────────────────── */
   'structured-cabling': {
+    title: 'Structured Cabling in Southern California',
     headline: 'Structured cabling, tested and documented.',
     intro:
       'Every system in your building rides on the physical layer. We install Cat 6A, Cat 8 and fiber to ANSI/TIA standards, then test, label and document every run before we leave the site.',
@@ -154,6 +157,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
 
   /* ── A-02 ─────────────────────────────────────────────────────────── */
   networking: {
+    title: 'Networking & Wi-Fi in Southern California',
     headline: 'Networks that stay up long after install day.',
     intro:
       'Switches, firewalls, VLANs, UPS power and enterprise Wi-Fi, designed around how your building works. One team from the patch panel to the access point.',
@@ -215,6 +219,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
 
   /* ── A-03 ─────────────────────────────────────────────────────────── */
   'video-surveillance': {
+    title: 'Video Surveillance in Southern California',
     headline: 'Cameras placed where they’re needed.',
     intro:
       'High-resolution IP cameras, network video recorders and remote viewing, on a network sized to carry the video. We also install LED perimeter and yard lighting so the cameras have light to work with at night.',
@@ -272,6 +277,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
 
   /* ── A-04 ─────────────────────────────────────────────────────────── */
   'access-control': {
+    title: 'Access Control in Southern California',
     headline: 'Control who gets in, and when.',
     intro:
       'Card and mobile credentials, electric strikes, maglocks and video intercoms that let the right people in and keep a record of who did. We also install time and attendance systems for any size workforce.',
@@ -329,6 +335,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
 
   /* ── A-05 ─────────────────────────────────────────────────────────── */
   'voip-unified-comms': {
+    title: 'VoIP Phone Systems in Southern California',
     headline: 'Business phones that are simple to use and manage.',
     intro:
       'Cloud phone systems, call flows that send callers to the right person, and onboarding that gets your team comfortable from the first call. We also set up paging, messaging and backup.',
@@ -390,6 +397,7 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
 
   /* ── A-06 ─────────────────────────────────────────────────────────── */
   'audio-video': {
+    title: 'Commercial AV in Southern California',
     headline: 'Rooms that work when the meeting starts.',
     intro:
       'Displays, speakers, mounts and tuning for conference rooms, digital signage and distributed audio. Meeting rooms are set up so anyone can walk in and start a call.',

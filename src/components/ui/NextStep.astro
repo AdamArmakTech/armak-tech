@@ -10,7 +10,7 @@
 import { ArrowRight } from '@lucide/astro';
 import Button from './Button.astro';
 import { site } from '../../data/site';
-import { contactHref, checklistHref } from '../../lib/cta';
+import { contactHref, checklistHref, CTA_LABEL } from '../../lib/cta';
 
 interface Props {
   about?: string;
@@ -40,7 +40,7 @@ const routes = [
 ---
 
 <div class:list={['next', `next--${tone}`, className]}>
-  <Button href={contactHref({ about })} size="lg" variant="primary">Request a site assessment</Button>
+  <Button href={contactHref({ about })} size="lg" variant="primary">{CTA_LABEL}</Button>
   <ul role="list" class="next__routes">
     {routes.map(({ href, title, detail }) => (
       <li>

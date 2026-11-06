@@ -4,7 +4,7 @@ import { ArrowRight } from '@lucide/astro';
 import CableTest from '../ui/CableTest.astro';
 import { site, yearsInBusiness } from '../../data/site';
 import { credentials } from '../../data/content';
-import { contactHref } from '../../lib/cta';
+import { contactHref, CTA_LABEL } from '../../lib/cta';
 
 // The front door: sort visitors by what they came for instead of one button for everyone
 const paths = [
@@ -12,7 +12,7 @@ const paths = [
     href: contactHref(),
     title: 'I need a quote',
     detail: 'You know what you need. Tell us the site and we’ll scope it.',
-    go: 'Request a site assessment',
+    go: CTA_LABEL,
     primary: true,
   },
   {
@@ -90,22 +90,14 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
 </section>
 
 <script>
-  import { parseHours, openStatus } from '../../lib/hours';
+  import { mountOpenStatus } from '../../lib/hours';
 
   // Appends " · Open now" (hours are already in the line) (or the next opening) after the call line; empty until the client fills it
-  const el = document.querySelector<HTMLElement>('[data-hero-status]');
-  const hours = el ? parseHours(el.dataset.hours ?? '') : null;
-  if (el && hours) {
-    const update = () => {
-      const s = openStatus(new Date(), hours);
-      const short = s.label.replace(/ · until .*$/, '');
-      el.textContent = short ? ` · ${short}` : '';
-      el.hidden = !s.label;
-    };
-    update();
-    const timer = window.setInterval(update, 60_000);
-    window.addEventListener('pagehide', () => window.clearInterval(timer), { once: true });
-  }
+  mountOpenStatus(document.querySelector<HTMLElement>('[data-hero-status]'), (s, el) => {
+    const short = s.label.replace(/ · until .*$/, '');
+    el.textContent = short ? ` · ${short}` : '';
+    el.hidden = !s.label;
+  });
 </script>
 
 <style>

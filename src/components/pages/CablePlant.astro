@@ -125,10 +125,10 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
 <script>
   // Bars grow from the left the first time the chart is seen. Armed here only, so with no script or under
   // reduced motion the bars are full from the start.
-  import { onFirstView, reduceMotion } from '../../scripts/demo';
+  import { onFirstView, prefersReducedMotion } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-plant]').forEach((root) => {
-    if (reduceMotion) return;
+    if (prefersReducedMotion()) return;
     root.classList.add('is-armed');
     onFirstView(root.querySelector(".plant__chart") ?? root, () => root.classList.add("is-drawn"), 0.35);
   });

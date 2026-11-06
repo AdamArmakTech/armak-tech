@@ -1,10 +1,12 @@
 // Open/closed status from the one hours string in src/data/site.ts.
 // Pure and dependency-free so it can run in the browser.
+// mountOpenStatus is the one browser-only helper (it touches the page only when called).
 
 export type Hours = { days: number[]; open: string; close: string };
 export type OpenStatus = { open: boolean; label: string };
 
-const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+/** Day names by JS day number (0 = Sunday), the numbers parseHours returns. seo.ts uses it too. */
+export const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const DAY_INDEX: Record<string, number> = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
 
 const to24 = (h: string, m: string | undefined, ap: string): string => {
@@ -71,4 +73,15 @@ export function openStatus(now: Date, hours: Hours, tz = 'America/Los_Angeles'):
     return { open: false, label: `Opens ${name} at ${fmt(hours.open)}` };
   }
   return { open: false, label: '' };
+}
+
+/** Fills el from its data-hours attribute now and every minute, using render to write the status; stops when the page is hidden. Safe to call with null. */
+export function mountOpenStatus(el: HTMLElement | null, render: (status: OpenStatus, el: HTMLElement) => void, tz?: string): void {
+  if (!el) return;
+  const hours = parseHours(el.dataset.hours ?? '');
+  if (!hours) return;
+  const update = () => render(openStatus(new Date(), hours, tz), el);
+  update();
+  const timer = window.setInterval(update, 60_000);
+  window.addEventListener('pagehide', () => window.clearInterval(timer), { once: true });
 }

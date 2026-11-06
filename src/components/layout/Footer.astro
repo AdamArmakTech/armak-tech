@@ -4,6 +4,7 @@ import Button from '../ui/Button.astro';
 import Stripe from '../ui/Stripe.astro';
 import { site, services, serviceArea, FOUNDED } from '../../data/site';
 import { showProjects } from '../../data/content';
+import { contactHref, CTA_LABEL } from '../../lib/cta';
 
 interface Props {
   cta?: boolean;
@@ -21,7 +22,7 @@ const year = new Date().getFullYear();
     <div class="site-footer__cta">
       <p class="t-h1 site-footer__headline">Let’s scope your<br />next build.</p>
       <div class="site-footer__cta-actions">
-        <Button href="/contact/" variant="primary" size="lg">Request a site assessment</Button>
+        <Button href={contactHref()} variant="primary" size="lg">{CTA_LABEL}</Button>
         <Button href={site.phoneHref} variant="outline-inverse" size="lg" icon="phone" class="tel">{site.phone}</Button>
       </div>
     </div>

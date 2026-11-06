@@ -7,6 +7,7 @@
  */
 import Button from '../ui/Button.astro';
 import { site } from '../../data/site';
+import { contactHref, CTA_LABEL } from '../../lib/cta';
 
 interface Props {
   /** Static, in-flow copy for /styleguide/ (no behaviour, always visible) */
@@ -22,7 +23,7 @@ const { preview = false } = Astro.props;
   data-cta-dock={preview ? undefined : ''}
   inert={!preview}
 >
-  <Button href="/contact/" class="cta-dock__primary">Request a site assessment</Button>
+  <Button href={contactHref()} class="cta-dock__primary">{CTA_LABEL}</Button>
   <Button href={site.phoneHref} variant="outline" icon="phone" class="cta-dock__call"><span class="visually-hidden">Call {site.phone}</span></Button>
 </aside>
 

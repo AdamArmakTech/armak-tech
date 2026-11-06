@@ -9,8 +9,9 @@
  * Under prefers-reduced-motion, demos should skip animation and show their finished state.
  */
 
-export const reduceMotion =
-  typeof window !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** True when the visitor's device asks for less motion. A function, so each caller reads the current setting at the moment it decides. */
+export const prefersReducedMotion = (): boolean =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 

@@ -2,7 +2,7 @@
 /** Compact "how we deliver" timeline built from `process` in content.ts. */
 import SectionHead from '../ui/SectionHead.astro';
 import Button from '../ui/Button.astro';
-import { contactHref } from '../../lib/cta';
+import { contactHref, CTA_LABEL } from '../../lib/cta';
 import { process as steps } from '../../data/content';
 
 interface Props {
@@ -40,7 +40,7 @@ const {
     {cta && (
       <div class="delivery__next" data-dock-hide>
         <p class="t-mono t-muted">Every job starts at step 01.</p>
-        <Button href={contactHref({ about })} icon="arrow">Request a site assessment</Button>
+        <Button href={contactHref({ about })} icon="arrow">{CTA_LABEL}</Button>
       </div>
     )}
   </div>

@@ -88,7 +88,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion, fitSvgText } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="assess"]').forEach((root) => {
     const walk = root.querySelector<SVGPathElement>('[data-as-walk]')!;
@@ -123,6 +123,9 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
       walker.setAttribute('cy', y.toFixed(1));
     };
 
+    // Decided once per demo: reset() hides the parts for the animation, so a setting changed later must not leave it blank.
+    const reduced = prefersReducedMotion();
+
     const reset = () => {
       root.classList.add('as--instant');
       walk.classList.remove('is-drawn');
@@ -136,7 +139,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     };
 
     const run = createRun(async (alive) => {
-      if (reduceMotion) return;
+      if (reduced) return;
       reset();
       await sleep(250);
       if (!alive()) return;
@@ -173,7 +176,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
       announce(root, 'Site report ready');
     });
 
-    if (!reduceMotion) {
+    if (!reduced) {
       reset();
       onFirstView(root, run);
     }

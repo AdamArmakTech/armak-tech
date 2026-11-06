@@ -5,7 +5,7 @@
  */
 import Label from '../ui/Label.astro';
 import Button from '../ui/Button.astro';
-import { contactHref } from '../../lib/cta';
+import { contactHref, CTA_LABEL } from '../../lib/cta';
 import { site, type Service } from '../../data/site';
 import type { ServiceDetail } from '../../data/services-detail';
 
@@ -35,7 +35,7 @@ const { service, detail } = Astro.props;
       </h1>
       <p class="t-lead" data-reveal>{detail.intro}</p>
       <div class="svc-hero__ctas" data-dock-start>
-        <Button href={contactHref({ about: service.slug })} size="lg">Request a site assessment</Button>
+        <Button href={contactHref({ about: service.slug })} size="lg">{CTA_LABEL}</Button>
         <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
       </div>
     </div>
@@ -69,11 +69,13 @@ const { service, detail } = Astro.props;
 </section>
 
 <script>
+  import { prefersReducedMotion } from '../../scripts/demo';
+
   // Scope-sheet rows reveal line by line the first time the sheet is on screen.
   // Bundled (not inline) so the site's Content-Security-Policy allows it; rows stay visible if it never runs.
   (function () {
     var sheets = document.querySelectorAll('.sheet');
-    if (!sheets.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!sheets.length || prefersReducedMotion()) return;
     if (!('IntersectionObserver' in window)) return;
     sheets.forEach(function (sheet) {
       var rows = sheet.querySelectorAll('.sheet__list li');

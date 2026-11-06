@@ -158,7 +158,7 @@ const roomButtons = [
 </section>
 
 <script>
-  import { reduceMotion } from '../../scripts/demo';
+  import { prefersReducedMotion } from '../../scripts/demo';
 
   const css = getComputedStyle(document.documentElement);
   const EASE_OUT = css.getPropertyValue('--ease-out').trim() || 'cubic-bezier(0.16, 1, 0.3, 1)';
@@ -251,7 +251,7 @@ const roomButtons = [
       paint([], `${(rooms.find((r) => r.dataset.room === id)?.dataset.roomName ?? '').toUpperCase()} · TO ${closet}`);
       g.classList.add('is-on');
       setLive(id);
-      if (reduceMotion) return;
+      if (prefersReducedMotion()) return;
       g.querySelectorAll<SVGElement>('.bx-r-drops').forEach((p) =>
         routeAnims.push(p.animate([{ strokeDashoffset: '1' }, { strokeDashoffset: '0' }], { duration: 240, easing: EASE_OUT, fill: 'both' })),
       );
@@ -275,7 +275,7 @@ const roomButtons = [
       routeAnims = [];
       if (paintBase) paint(base.slugs, base.label);
       if (!g) return;
-      if (instant || reduceMotion) {
+      if (instant || prefersReducedMotion()) {
         wipeRoutes();
         return;
       }

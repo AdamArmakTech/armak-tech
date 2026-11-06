@@ -13,7 +13,8 @@ import { signature, isShown, installPhases } from '../../data/content';
 const labelsAtBothEnds = isShown(signature.items.labelsAndAsBuilts);
 const showHeadroom = signature.items.rackHeadroom.confirmed === 'yes';
 
-const uid = `in${Math.random().toString(36).slice(2, 8)}`;
+// Stable id (no random part, so builds are repeatable): rendered once per page.
+const uid = 'in-demo';
 
 // Geometry (viewBox 400 × 215)
 const portX = (i: number) => 133 + i * 11; // 12 ports per row
@@ -184,7 +185,7 @@ const steps = installPhases;
 </div>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, reduceMotion, fitSvgText } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="install"]').forEach((root) => {
     const range = root.querySelector<HTMLInputElement>('[data-in-range]')!;
@@ -254,6 +255,9 @@ const steps = installPhases;
         requestAnimationFrame(frame);
       });
 
+    // Decided once per demo: reset() hides the parts for the animation, so a setting changed later must not leave it blank.
+    const reduced = prefersReducedMotion();
+
     const reset = () => {
       root.classList.add('in--instant');
       setSplit(100);
@@ -263,7 +267,7 @@ const steps = installPhases;
     };
 
     const run = createRun(async (alive) => {
-      if (reduceMotion) return;
+      if (reduced) return;
       reset();
       sweeping = true;
       announce(root, 'Before: tangled, unlabeled cables');
@@ -285,7 +289,7 @@ const steps = installPhases;
       announce(root, 'Pre-staged, installed after hours, cut over in phases');
     });
 
-    if (!reduceMotion) {
+    if (!reduced) {
       reset();
       onFirstView(root, run);
     }
