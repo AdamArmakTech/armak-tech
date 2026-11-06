@@ -74,7 +74,7 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
     Support)? Service pages (service-sheets session, committed here as bbac2d4): 19/31 -> 13/25, the rest being the
     owner's own rules. About page (about-page session, f9d557f on claude/about-page-1c7980): 1/5 -> 0/4. Site
     reveals (site-reveals session, a77120b on claude/site-reveals-9929c9): 25/51 -> 25/48 on 12 pages, the 25 left
-    are pre-existing and listed in its notes. Demo motion (claude/demo-motion-eec65d): pass still running.
+    are pre-existing and listed in its notes. Demo motion (demo-motion session, 47d9005 on claude/demo-motion-eec65d): 10/19 -> 10/18 on four pages, the rest outside its files or owner-approved, listed in its notes. All three branches still unmerged, waiting for the owner.
   - Checks: astro check 0 errors; build 19 pages. Nothing pushed; the owner has not said "publish".
 - **Product photo shortlist — 2026-11-06 morning (research only).** Owner, from his phone: "For video surveillance /
   Access control / Voice and unified comms / Audio & Video: I want you to pull photos from products or items that we
