@@ -31,6 +31,24 @@ export interface Faq {
   a: string;
 }
 
+/**
+ * The 24 generic product drawings in src/assets/products/ (file name without .svg).
+ * Generic gear, no brand or model: the product sheet under each service hero shows four of them.
+ */
+export type ProductFile =
+  | 'patch-panel' | 'cable-box' | 'keystone-jack' | 'patch-cord'
+  | 'network-switch' | 'access-point' | 'firewall' | 'equipment-rack'
+  | 'dome-camera' | 'bullet-camera' | 'ptz-camera' | 'video-recorder'
+  | 'card-reader' | 'door-controller' | 'video-intercom' | 'magnetic-lock'
+  | 'desk-phone' | 'conference-phone' | 'headset' | 'video-bar'
+  | 'touch-panel' | 'ceiling-speaker' | 'wall-display' | 'av-encoder';
+
+export interface ServiceProduct {
+  file: ProductFile;
+  /** One or two plain words: the device type only ("Dome camera"), never a brand or model */
+  caption: string;
+}
+
 export interface ServiceDetail {
   /** Page title; Base.astro appends " | Armak Technologies" */
   title: string;
@@ -44,6 +62,8 @@ export interface ServiceDetail {
   standards: Standard[];
   /** Which partner categories from content.ts to show on the page (empty = hide the section) */
   partnerCategories: Partner['category'][];
+  /** The four generic products on the "What we install" sheet under the hero (ProductBand.astro) */
+  products: ServiceProduct[];
   faqs: Faq[];
   /** ≤155 characters, includes "Southern California" */
   metaDescription: string;
@@ -52,6 +72,11 @@ export interface ServiceDetail {
 /* ── Photos ──
  * TODO(photo): interim stock — replace with real Armak install photos. A service without an
  * entry simply renders no photo band. Tags name the system layer, never a fake job location. */
+/**
+ * Interim stock photos for the old PhotoBand.astro. The service pages no longer show them (2026-11-06: the
+ * product sheet replaced the photo band); kept so PhotoBand.astro still compiles until the owner approves
+ * deleting both. The homepage hero still uses src/assets/photos/ directly.
+ */
 export interface ServicePhoto {
   src: ImageMetadata;
   alt: string;
@@ -133,6 +158,12 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       { text: 'Field-tested & documented', plain: true },
     ],
     partnerCategories: ['Infrastructure'],
+    products: [
+      { file: 'patch-panel', caption: 'Patch panel' },
+      { file: 'cable-box', caption: 'Bulk cable' },
+      { file: 'keystone-jack', caption: 'Keystone jack' },
+      { file: 'patch-cord', caption: 'Patch cord' },
+    ],
     faqs: [
       {
         q: 'Should we install Cat 6 or Cat 6A?',
@@ -195,6 +226,12 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       'Rack UPS & PDU',
     ],
     partnerCategories: ['Network'],
+    products: [
+      { file: 'network-switch', caption: 'Network switch' },
+      { file: 'access-point', caption: 'Access point' },
+      { file: 'firewall', caption: 'Firewall' },
+      { file: 'equipment-rack', caption: 'Equipment rack' },
+    ],
     faqs: [
       {
         q: 'Why segment a network with VLANs?',
@@ -253,6 +290,12 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       { text: 'Remote viewing', plain: true },
     ],
     partnerCategories: ['Security'],
+    products: [
+      { file: 'dome-camera', caption: 'Dome camera' },
+      { file: 'bullet-camera', caption: 'Bullet camera' },
+      { file: 'ptz-camera', caption: 'PTZ camera' },
+      { file: 'video-recorder', caption: 'Video recorder' },
+    ],
     faqs: [
       {
         q: 'How much recording storage do we need?',
@@ -311,6 +354,12 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       'Request-to-exit (REX)',
     ],
     partnerCategories: ['Security'],
+    products: [
+      { file: 'card-reader', caption: 'Card reader' },
+      { file: 'door-controller', caption: 'Door controller' },
+      { file: 'video-intercom', caption: 'Video intercom' },
+      { file: 'magnetic-lock', caption: 'Magnetic lock' },
+    ],
     faqs: [
       {
         q: 'Prox cards, smart cards or mobile credentials?',
@@ -373,6 +422,12 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       'Multicast & SIP paging',
     ],
     partnerCategories: [],
+    products: [
+      { file: 'desk-phone', caption: 'Desk phone' },
+      { file: 'conference-phone', caption: 'Conference phone' },
+      { file: 'headset', caption: 'Headset' },
+      { file: 'video-bar', caption: 'Video bar' },
+    ],
     faqs: [
       {
         q: 'Can we keep our existing phone numbers?',
@@ -431,6 +486,12 @@ export const servicesDetail: Record<ServiceSlug, ServiceDetail> = {
       { text: 'Commercial-grade displays', plain: true },
     ],
     partnerCategories: ['AV'],
+    products: [
+      { file: 'touch-panel', caption: 'Touch panel' },
+      { file: 'ceiling-speaker', caption: 'Ceiling speaker' },
+      { file: 'wall-display', caption: 'Wall display' },
+      { file: 'av-encoder', caption: 'AV encoder' },
+    ],
     faqs: [
       {
         q: 'Why use a commercial display instead of a consumer TV?',

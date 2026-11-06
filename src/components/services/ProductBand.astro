@@ -1,0 +1,250 @@
+---
+/**
+ * Product sheet under the service hero: the four generic products this service installs, drawn
+ * product-style on a plain white sheet with a quiet caption (DESIGN.md rule 2, the way ui.com shows gear;
+ * owner 2026-11-06: generic devices, no brand or logo). Replaces the stock-photo band.
+ *
+ * The sheet is a full-width white band, not another rounded box under the hero's scope sheet (anti-slop
+ * pass 2026-11-06: three stacked white boxes on a phone read as a kit). The drawings are the SVG files in
+ * src/assets/products/ inlined as text, so they stay crisp at any size and keep their own role="img" and
+ * <title>. Structured cabling also shows the compact live cable-test card as a paper panel on the band:
+ * below the drawings on phones, the last 4 of 12 columns from 1024px, never floating over anything.
+ */
+import CableTest from '../ui/CableTest.astro';
+import type { ServiceProduct } from '../../data/services-detail';
+
+interface Props {
+  products: ServiceProduct[];
+  testCard?: boolean;
+}
+
+const { products, testCard = false } = Astro.props;
+
+// Every drawing as text, keyed by path. A glob rather than static imports, so a drawing that is
+// not there yet leaves a gap and a build warning instead of breaking the whole site.
+const drawings = import.meta.glob<string>('../../assets/products/*.svg', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+
+/** Prefix every id (and each url(#…) / href="#…" that uses it): four inline drawings share one page. */
+function scopeIds(svg: string, prefix: string): string {
+  const ids = [...svg.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
+  let out = svg;
+  for (const id of ids) {
+    const esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    out = out
+      .replace(new RegExp(`\\sid="${esc}"`, 'g'), ` id="${prefix}-${id}"`)
+      .replace(new RegExp(`url\\(#${esc}\\)`, 'g'), `url(#${prefix}-${id})`)
+      .replace(new RegExp(`href="#${esc}"`, 'g'), `href="#${prefix}-${id}"`);
+  }
+  return out;
+}
+
+/** Drop the XML prolog and comments (not valid inside an HTML page), then scope the ids. */
+function inlineSvg(raw: string, prefix: string): string {
+  const clean = raw
+    .replace(/<\?xml[^>]*\?>/g, '')
+    .replace(/<!DOCTYPE[^>]*>/gi, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .trim();
+  return scopeIds(clean, prefix);
+}
+
+const items = products.flatMap((p) => {
+  const key = Object.keys(drawings).find((k) => k.endsWith(`/${p.file}.svg`));
+  if (!key) {
+    console.warn(`[ProductBand] no drawing at src/assets/products/${p.file}.svg; "${p.caption}" left off the sheet`);
+    return [];
+  }
+  return [{ ...p, svg: inlineSvg(drawings[key], p.file) }];
+});
+
+// The sheet rises in first; the drawings then appear on it one after another.
+const delay = (i: number) => `--reveal-delay: ${120 + i * 80}ms`;
+---
+
+<section class:list={['products', { 'products--card': testCard }]} aria-labelledby="products-title">
+  <div class="products__inner container">
+    <div class="products__sheet" data-reveal>
+      <h2 id="products-title" class="products__label">What we install</h2>
+      <ul role="list" class="products__list">
+        {items.map((item, i) => (
+          <li class="product" data-reveal style={delay(i)}>
+            <div class="product__art" set:html={item.svg} />
+            <p class="product__caption">{item.caption}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {testCard && (
+      <div class="products__card" data-ui>
+        <CableTest variant="compact" demoHref="/#cable-test" class="products__ct" />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  /* The sheet: one white band across the whole page, between the hero's paper and the next section's paper.
+     Its own padding is the only gap it adds; the hero and the next section keep theirs. */
+  .products {
+    background: var(--white);
+    padding-block: var(--space-block);
+  }
+
+  .products__inner {
+    display: grid;
+    gap: var(--col-gap);
+  }
+
+  .products__sheet {
+    display: grid;
+    align-content: start;
+    gap: var(--sp-5);
+  }
+
+  /* Small red uppercase label (owner decision 2026-11-06: the old rows' red eyebrow labels) */
+  .products__label {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--signal);
+  }
+
+  /* Two by two on phones, four in a row from 640px */
+  .products__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-5) var(--sp-4);
+  }
+
+  .product {
+    display: grid;
+    gap: var(--sp-2);
+    justify-items: center;
+    align-content: start;
+    text-align: center;
+  }
+
+  /* Every drawing shares one 240 × 180 frame, so the four line up; it never grows past its drawn size */
+  .product__art {
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .product__art :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .product__caption {
+    font-size: var(--fs-small);
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--text);
+    text-wrap: balance;
+  }
+
+  /* The sheet rises in (site-wide [data-reveal]); the drawings only fade onto it, staggered, so nothing moves twice */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.js) .product[data-reveal] {
+      transform: none;
+      transition-property: opacity;
+    }
+  }
+
+  /* Test card (structured cabling): a paper panel on the white band, full width under the drawings on phones.
+     The wrapper carries data-ui because the card is a real instrument report, with its own table lines. */
+  .products__card {
+    display: grid;
+  }
+
+  .products :global(.products__ct) {
+    max-width: none;
+    background: var(--paper);
+  }
+
+  @media (min-width: 640px) {
+    .products__sheet {
+      gap: var(--sp-6);
+    }
+
+    .products__list {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--sp-6) var(--sp-5);
+    }
+  }
+
+  /* Tablets: the card is still below the drawings, laid out in two columns so the wire map keeps its drawn size:
+     wire map left; result top right, "Every cable gets tested" bottom right. */
+  @media (min-width: 640px) and (max-width: 1023.98px) {
+    .products :global(.products__ct) {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: auto auto 1fr auto;
+      grid-template-areas:
+        'head head'
+        'sub sub'
+        'map result'
+        'map foot';
+      column-gap: var(--sp-6);
+      align-items: start;
+    }
+
+    .products :global(.products__ct > .ct__head) {
+      grid-area: head;
+    }
+
+    .products :global(.products__ct > .ct__sub) {
+      grid-area: sub;
+    }
+
+    .products :global(.products__ct > .ct__map) {
+      grid-area: map;
+    }
+
+    .products :global(.products__ct > .ct__result) {
+      grid-area: result;
+    }
+
+    .products :global(.products__ct > .ct__foot) {
+      grid-area: foot;
+      align-self: end;
+    }
+  }
+
+  /* Desktop: drawings in 8 of 12 columns, card in the other 4, tops aligned and the same height.
+     Beside the card the four drawings go two by two at 200px: each drawing then takes the same 4-column module
+     as the card, and the block's natural height matches the card's (any few pixels left over centre the grid). */
+  @media (min-width: 1024px) {
+    .products--card .products__inner {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: stretch;
+    }
+
+    .products--card .products__sheet {
+      grid-column: 1 / span 8;
+      grid-template-rows: auto 1fr;
+    }
+
+    .products--card .products__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-self: center;
+    }
+
+    .products--card .product__art {
+      max-width: 200px;
+    }
+
+    .products--card .products__card {
+      grid-column: 9 / -1;
+    }
+  }
+</style>

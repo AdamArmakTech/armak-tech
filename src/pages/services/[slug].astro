@@ -6,7 +6,7 @@
 import type { GetStaticPaths } from 'astro';
 import Base from '../../layouts/Base.astro';
 import ServiceHero from '../../components/services/ServiceHero.astro';
-import PhotoBand from '../../components/services/PhotoBand.astro';
+import ProductBand from '../../components/services/ProductBand.astro';
 import Capabilities from '../../components/services/Capabilities.astro';
 import SectionHead from '../../components/ui/SectionHead.astro';
 import PartnerLogos from '../../components/services/PartnerLogos.astro';
@@ -17,7 +17,7 @@ import ServiceCta from '../../components/services/ServiceCta.astro';
 import JsonLd from '../../components/ui/JsonLd.astro';
 import { services, site, serviceArea, type Service } from '../../data/site';
 import { businessProvider } from '../../data/seo';
-import { servicesDetail, servicePhotos } from '../../data/services-detail';
+import { servicesDetail } from '../../data/services-detail';
 import { partners } from '../../data/content';
 
 export const getStaticPaths = (() =>
@@ -29,7 +29,6 @@ interface Props {
 
 const { service } = Astro.props;
 const detail = servicesDetail[service.slug];
-const photo = servicePhotos[service.slug];
 const hasPartners = partners.some((p) => detail.partnerCategories.includes(p.category));
 const pageUrl = new URL(`/services/${service.slug}/`, site.url).href;
 
@@ -88,7 +87,7 @@ const jsonLd = {
 
   <ServiceHero service={service} detail={detail} />
 
-  {photo && <PhotoBand photo={photo} testCard={service.slug === 'structured-cabling'} />}
+  <ProductBand products={detail.products} testCard={service.slug === 'structured-cabling'} />
 
   <Capabilities serviceName={service.name} items={detail.capabilities} />
 
