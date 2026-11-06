@@ -7,10 +7,13 @@
  * No lines between items and no labels above headings (owner, 2026-11-06, in the session that built this
  * page: "lists with lines" and "red caps labels" read as AI slop). Things are separated by space, links are
  * words in sentences, and the only surface is the chart's white sheet (DESIGN.md rule 5, round 1).
- * Then, so nothing is dead space: who we are (three short pieces), what we install (the six systems), where
- * (every city by county), how a job runs (the five steps) and the cable-plant chart. Hidden placeholder slots
- * (milestones, licence, team) render nothing at all, so the layout closes up around them.
+ * Then, so nothing is dead space: who we are (three short pieces), what we install (the six systems, each
+ * with the equipment photo its service page uses), where (every city by county), how a job runs (the five
+ * steps) and the cable-plant chart. Neighbouring blocks differ in composition: heading beside the content,
+ * then a full-width picture grid, then heading beside the content, then a full-width row of steps.
+ * Hidden placeholder slots (milestones, licence, team) render nothing at all, so the layout closes up.
  */
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
@@ -19,6 +22,8 @@ import CablePlant from '../components/pages/CablePlant.astro';
 import Button from '../components/ui/Button.astro';
 import { site, FOUNDED, services, serviceArea, counties } from '../data/site';
 import { process as steps } from '../data/content';
+// Interim stock equipment photos, the same ones the service pages use (rule 2: the product image, or nothing)
+import { servicePhotos } from '../data/services-detail';
 import { contactHref, CTA_LABEL } from '../lib/cta';
 
 const description = `Armak Technologies has designed and installed low-voltage, networking and security systems across Southern California since ${FOUNDED}. ${site.hq.city} HQ.`;
@@ -64,7 +69,7 @@ const SHOW_PLACEHOLDERS = false;
   />
 
   <div class="about">
-    <!-- Who we are: three short pieces, separated by space -->
+    <!-- Who we are: three short pieces beside the heading -->
     <section class="block container" aria-labelledby="who-title">
       <div class="block__head">
         <h2 id="who-title" class="t-h2 block__title" data-split>Who we are.</h2>
@@ -105,24 +110,40 @@ const SHOW_PLACEHOLDERS = false;
       </div>
     </section>
 
-    <!-- What we install: the six systems, each name linking to its page -->
-    <section class="block container" aria-labelledby="install-title">
-      <div class="block__head">
+    <!-- What we install: the six systems with their equipment photos, full width -->
+    <section class="band container" aria-labelledby="install-title">
+      <div class="band__head">
         <h2 id="install-title" class="t-h2 block__title" data-split>What we install.</h2>
         <p class="block__intro" data-reveal>
           Six systems, from one team. <a href="/services/">See all services.</a>
         </p>
       </div>
-      <div class="block__body">
-        <ul role="list" class="systems">
-          {services.map((s, i) => (
-            <li class="system" data-reveal style={`--reveal-delay: ${i * 50}ms`}>
-              <h3 class="t-h3 system__name"><a href={`/services/${s.slug}/`}>{s.name}</a></h3>
+      <ul role="list" class="systems">
+        {services.map((s, i) => {
+          const photo = servicePhotos[s.slug];
+          const wide = i < 2;
+          return (
+            <li class:list={['system', { 'system--wide': wide }]} data-reveal style={`--reveal-delay: ${i * 50}ms`}>
+              <a class="system__link" href={`/services/${s.slug}/`}>
+                {photo && (
+                  <span class="system__media">
+                    {/* The visible name says what it is; the photo is the service page's interim product shot */}
+                    <Image
+                      src={photo.src}
+                      alt=""
+                      widths={[480, 800, 1200]}
+                      sizes={wide ? '(min-width: 1024px) 50vw, 100vw' : '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw'}
+                      loading="lazy"
+                    />
+                  </span>
+                )}
+                <h3 class="t-h3 system__name">{s.name}</h3>
+              </a>
               <p class="system__short">{s.short}</p>
             </li>
-          ))}
-        </ul>
-      </div>
+          );
+        })}
+      </ul>
     </section>
 
     <!-- Where we work: the headquarters and the counts live here, above the real lists -->
@@ -151,29 +172,28 @@ const SHOW_PLACEHOLDERS = false;
       </div>
     </section>
 
-    <!-- How a job runs: the five steps as short paragraphs; the live demos are on the home page -->
-    <section class="block container" aria-labelledby="how-title">
-      <div class="block__head">
+    <!-- How a job runs: the five steps in a row, full width; the live demos are on the home page -->
+    <section class="band container" aria-labelledby="how-title">
+      <div class="band__head">
         <h2 id="how-title" class="t-h2 block__title" data-split>How we run a job.</h2>
         <p class="block__intro" data-reveal>
           The same five steps on every job, from a single rack to a multi-site rollout. <a href="/#process">Watch each step run on the home page.</a>
         </p>
       </div>
-      <div class="block__body">
-        <ol role="list" class="steps">
-          {steps.map((s, i) => (
-            <li class="step" data-reveal style={`--reveal-delay: ${i * 50}ms`}>
-              <p><strong class="step__title">{s.title}.</strong> {s.body}</p>
-            </li>
-          ))}
-        </ol>
-        <p class="steps__promise" data-reveal>
-          You get a written plan and price before the work starts, the cable test reports when it ends, and {site.supportHours} support for {site.supportScope}.
-        </p>
-      </div>
+      <ol role="list" class="steps">
+        {steps.map((s, i) => (
+          <li class="step" data-reveal style={`--reveal-delay: ${i * 50}ms`}>
+            <h3 class="t-h3 step__title">{s.title}</h3>
+            <p class="step__body">{s.body}</p>
+          </li>
+        ))}
+      </ol>
+      <p class="steps__promise" data-reveal>
+        You get a written plan and price before the work starts, the cable test reports when it ends, and {site.supportHours} support for {site.supportScope}.
+      </p>
     </section>
 
-    <!-- Cabling planned for the long run: the sourced chart -->
+    <!-- Cabling planned for the long run: the sourced chart beside the heading -->
     <section class="block container" aria-labelledby="plant-title">
       <div class="block__head">
         <h2 id="plant-title" class="t-h2 block__title" data-split>Cabling planned for the long run.</h2>
@@ -230,7 +250,7 @@ const SHOW_PLACEHOLDERS = false;
     padding-block: var(--space-block);
   }
 
-  /* ── Block: heading on the left, the content on the right (one column on phones) ── */
+  /* ── Block: heading beside the content from 1024px (one column on phones) ── */
   .block {
     display: grid;
     gap: var(--sp-6) var(--col-gap);
@@ -253,8 +273,7 @@ const SHOW_PLACEHOLDERS = false;
   }
 
   /* Links are words in the sentence: underlined, red only on hover (rule 7, round 3) */
-  .block__intro a,
-  .system__name a {
+  .block__intro a {
     text-decoration: underline;
     text-underline-offset: 0.2em;
     text-decoration-thickness: 1px;
@@ -268,6 +287,24 @@ const SHOW_PLACEHOLDERS = false;
 
   .block__body--sheet :global(.plant) {
     margin-top: 0;
+  }
+
+  /* The chart's own one-line notes get a reading measure here */
+  .block__body--sheet :global(.plant__sig),
+  .block__body--sheet :global(.plant__caption) {
+    max-width: 60ch;
+  }
+
+  /* ── Band: heading on top, content across the full width ── */
+  .band {
+    display: grid;
+    gap: var(--sp-6);
+  }
+
+  .band__head {
+    display: grid;
+    gap: var(--sp-4);
+    min-width: 0;
   }
 
   /* ── Who we are: three short pieces ── */
@@ -290,21 +327,38 @@ const SHOW_PLACEHOLDERS = false;
     color: var(--text);
   }
 
-  /* ── What we install: six short pieces, two columns from 640px ── */
+  /* ── What we install: a photo, the name, one line each ── */
   .systems {
     display: grid;
-    gap: var(--sp-6) var(--col-gap);
+    gap: var(--sp-7) var(--col-gap);
   }
 
   .system {
     display: grid;
-    gap: var(--sp-2);
+    gap: var(--sp-3);
     align-content: start;
     min-width: 0;
   }
 
-  .system__name a {
-    text-decoration-color: var(--hairline-strong);
+  .system__link {
+    display: grid;
+    gap: var(--sp-3);
+    min-width: 0;
+  }
+
+  .system__media {
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--paper-sunken);
+  }
+
+  .system__media img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    transition: transform var(--dur-slow) var(--ease-out);
   }
 
   .system__short {
@@ -353,24 +407,25 @@ const SHOW_PLACEHOLDERS = false;
     color: var(--signal);
   }
 
-  /* ── How we run a job: five short paragraphs, the step name run in ── */
+  /* ── How we run a job: five steps across ── */
   .steps {
     display: grid;
-    gap: var(--sp-4);
+    gap: var(--sp-6) var(--col-gap);
   }
 
-  .step p {
-    max-width: 38em;
+  .step {
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .step__body {
+    max-width: 34em;
     color: var(--text);
   }
 
-  .step__title {
-    font-weight: 600;
-    color: var(--ink);
-  }
-
   .steps__promise {
-    margin-top: var(--sp-6);
     max-width: 38em;
     font-weight: 500;
     color: var(--ink);
@@ -443,16 +498,28 @@ const SHOW_PLACEHOLDERS = false;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .block__intro a:hover,
-    .system__name a:hover {
+    .block__intro a:hover {
       color: var(--signal);
-      text-decoration-color: currentColor;
+    }
+
+    .system__link:hover .system__media img {
+      transform: scale(1.04);
+    }
+
+    .system__link:hover .system__name {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 1px;
     }
   }
 
   @media (min-width: 640px) {
     .systems {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     /* Counties in two balanced columns */
@@ -487,12 +554,33 @@ const SHOW_PLACEHOLDERS = false;
       grid-column: 5 / -1;
     }
 
+    .band {
+      gap: var(--sp-7);
+    }
+
     .story {
       gap: var(--sp-7);
     }
 
+    /* The two biggest systems wide, the other four across */
     .systems {
-      gap: var(--sp-7) var(--col-gap);
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+
+    .system {
+      grid-column: span 3;
+    }
+
+    .system--wide {
+      grid-column: span 6;
+    }
+
+    .system--wide .system__media img {
+      aspect-ratio: 16 / 9;
+    }
+
+    .steps {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
     .team__grid {

@@ -23,6 +23,26 @@ His four screenshots: the story heading "Since 1998"; the hero line "Est. 1998, 
 Earlier the same day: "I LIKE THIS OLD way more than the new way" about the story rows with a small red uppercase
 label above a bold title and a short body, a hairline between rows (LEGACY / OUR STANDARD / SCOPE).
 
+## Anti-slop inspector pass (taste-skill `inspect.mjs`, asked for by the main session, same day)
+Run from the worktree root; reports in `.taste-skill/` (gitignored). Lint (`lint.mjs` on about.astro): 0 FAIL, 0 WARN.
+- **Before** (second version, 83a8068, dev server at 1440/768/390): **1 FAIL, 5 WARN.** FAIL `few-pictures` (0 pictures
+  on the page). WARN: `palette-cream`, `no-footage`, `measure` (160 characters per line), `dev-server`, `off-centre`
+  (margins 80 left, 112 right at 1440).
+- **After** (third version, production build on `astro preview`, 1440/768/390): **0 FAIL, 4 WARN.** The four that
+  remain, each defended: `palette-cream` is the site's paper ground `#f4f3ef`, a fixed brand token (DESIGN.md, the owner
+  keeps the live look); `no-footage`: Armak has no footage and stock clips would be the slop the owner is removing;
+  `measure`: the 160-character line is the footer's "Serving Southern California: …" city string in the shared
+  `Footer.astro`, not this page's (the chart's own one-line notes are capped at 60ch from this page); `off-centre`
+  80 vs 97 px at 1440 is the text measure stopping short of the right margin, the frame itself is symmetrical
+  (measured: every section 32 px from both edges in a 1425 px window).
+- What changed for the FAIL: "What we install" now carries the six interim equipment photos the service pages already
+  use (`servicePhotos` in `src/data/services-detail.ts`, credits in `src/assets/photos/CREDITS.md`), one per system,
+  full width: the two biggest systems wide, the other four across, no boxes, no borders (rule 2: the product image or
+  nothing; these are the interim product shots until the ui.com-style images arrive). Neighbouring blocks now differ
+  in composition (heading beside the content, then a full-width picture grid, then beside, then a full-width row of
+  the five steps, then beside). Not changed: the paper colour, the fonts, the page's copy, the chart.
+- Not done, on purpose: no video, no stock scenes with people, no new numbers, no red labels, no lines.
+
 ## Where the facts were (before) and where they are now
 Before, the founding era appeared six times: the title ("since 1998"), the lead ("For 28 years"), the spec line
 ("Est. 1998"), the story heading ("28 years in business."), the facts card ("Founded 1998") and the story row title
