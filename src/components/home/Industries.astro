@@ -1,5 +1,4 @@
 ---
-import { ArrowUpRight } from '@lucide/astro';
 import SectionHead from '../ui/SectionHead.astro';
 import { industries } from '../../data/content';
 ---
@@ -7,7 +6,6 @@ import { industries } from '../../data/content';
 <section id="industries" class="section industries">
   <div class="container">
     <SectionHead
-      label="Industries"
       title="Buildings we plan for."
       intro="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan the install around them."
     />
@@ -16,9 +14,8 @@ import { industries } from '../../data/content';
       {industries.map((ind) => (
         <li class="industry">
           <a href={`/industries/#${ind.slug}`} class="industry__link">
-            <h3 class="t-h4 industry__name">{ind.name}</h3>
-            <p class="t-small t-muted industry__need">{ind.need}</p>
-            <ArrowUpRight class="industry__arrow" size={18} stroke-width={1.5} aria-hidden="true" />
+            <h3 class="t-h3 industry__name">{ind.name}</h3>
+            <p class="industry__need">{ind.need}</p>
           </a>
         </li>
       ))}
@@ -27,83 +24,43 @@ import { industries } from '../../data/content';
 </section>
 
 <style>
-  /* Spec-table grid: outer border on the list, each cell draws its right + bottom rule */
+  /* Eight building types, two columns (four on wide screens), separated by space only */
   .industries__grid {
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    border-top: 1px solid var(--hairline);
-    border-left: 1px solid var(--hairline);
-  }
-
-  .industry {
-    border-right: 1px solid var(--hairline);
-    border-bottom: 1px solid var(--hairline);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-7) var(--sp-5);
   }
 
   .industry__link {
-    position: relative;
     display: grid;
-    gap: 0.75rem;
+    gap: 0.5rem;
     align-content: start;
     height: 100%;
-    padding: 1.5rem 1.25rem 1.75rem;
-    transition: background var(--dur-fast) ease;
-  }
-
-  .industry__link:focus-visible {
-    outline-offset: -2px;
   }
 
   .industry__need {
     max-width: 28em;
-    padding-right: 1.5rem;
-  }
-
-  /* Quiet arrow on every row. On touch screens it stays visible (there is no hover to reveal it). */
-  .industry__link :global(.industry__arrow) {
-    position: absolute;
-    right: 1.25rem;
-    bottom: 1.5rem;
-    color: var(--steel);
-    transition: opacity var(--dur) ease, transform var(--dur) var(--ease-out);
-  }
-
-  .industry__link:focus-visible :global(.industry__arrow) {
-    color: var(--ink);
+    font-size: var(--fs-small);
+    color: var(--text);
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .industry__link:hover {
-      background: var(--white);
-    }
-
-    .industry__link :global(.industry__arrow) {
-      opacity: 0;
-      transform: translate(-4px, 4px);
-    }
-
-    .industry__link:hover :global(.industry__arrow),
-    .industry__link:focus-visible :global(.industry__arrow) {
-      opacity: 1;
-      transform: none;
-      color: var(--ink);
+    .industry__link:hover .industry__name {
+      text-decoration: underline;
+      text-underline-offset: 4px;
     }
   }
 
-  @media (min-width: 640px) {
+  @media (max-width: 520px) {
     .industries__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 1fr);
     }
   }
 
-  @media (min-width: 1024px) {
+  @media (min-width: 900px) {
     .industries__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .industry__link {
-      min-height: 220px;
-      padding: 1.5rem 1.5rem 2rem;
+      gap: var(--sp-8) var(--sp-6);
     }
   }
 </style>

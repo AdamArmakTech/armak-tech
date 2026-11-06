@@ -1,6 +1,6 @@
 ---
 /**
- * Step 03 · Install — "The closet, before and after".
+ * Install — "The closet, before and after".
  * The same rack drawn two ways (tangled vs dressed + labeled) with a before/after slider, then a
  * 3-step timeline (pre-staged → after-hours install → cutover).
  * Teaches: a clean, labeled install is traceable and easy to change; work is planned around the
@@ -95,7 +95,7 @@ const steps = installPhases;
         <g clip-path={`url(#${uid}-before)`} class="in__before">
           {messyFeeds.map((c) => <path d={c.d} style={`stroke:${c.c}`} />)}
           {messyCords.map((c) => <path d={c.d} style={`stroke:${c.c}`} />)}
-          <text x="10" y="160" class="in__tag in__tag--bad">BEFORE</text>
+          <text x="10" y="160" class="in__tag in__tag--bad">Before</text>
           <text x="10" y="160" class="in__words">
             <tspan x="10" dy="1.3em">No labels,</tspan>
             <tspan x="10" dy="1.2em">no slack</tspan>
@@ -120,7 +120,7 @@ const steps = installPhases;
           <text x={LABEL_X} y={PANEL_TOP + 2.5} dy="0.35em" class="in__label">A-12</text>
           <text x={LABEL_X} y={PANEL_TOP + 17.5} dy="0.35em" class="in__label">A-13 … A-24<tspan x={LABEL_X} dy="1.2em" class="in__words">Spare</tspan></text>
           <text x={LABEL_X} y={SWITCH_TOP + 3.5} dy="0.35em" class="in__label">SW-1<tspan x={LABEL_X} dy="1.2em" class="in__note">ports 1–12</tspan></text>
-          <text x={LABEL_X} y="160" class="in__tag in__tag--good">AFTER</text>
+          <text x={LABEL_X} y="160" class="in__tag in__tag--good">After</text>
           <text x={LABEL_X} y="160" class="in__words">
             <tspan x={LABEL_X} dy="1.3em">Dressed,</tspan>
             <tspan x={LABEL_X} dy="1.2em">labeled,</tspan>
@@ -317,8 +317,7 @@ const steps = installPhases;
   .in__rack {
     width: 100%;
     height: auto;
-    background: var(--paper);
-    border: 1px solid var(--hairline);
+    background: var(--paper-sunken);
     border-radius: var(--radius);
   }
 
@@ -411,7 +410,7 @@ const steps = installPhases;
   .in__unit {
     font-family: var(--font-mono);
     font-size: clamp(9px, calc(var(--u, 1) * 10px), 12.5px);
-    letter-spacing: 0.06em;
+    letter-spacing: normal;
     fill: var(--steel);
   }
 
@@ -423,7 +422,7 @@ const steps = installPhases;
     font-family: var(--font-mono);
     font-size: clamp(9px, calc(var(--u, 1) * 11px), 14px);
     font-weight: 600;
-    letter-spacing: 0.1em;
+    letter-spacing: normal;
   }
 
   /* Paper halo keeps text readable where it crosses cables */
@@ -431,7 +430,7 @@ const steps = installPhases;
   .in__after text,
   .in__after .in__words {
     paint-order: stroke;
-    stroke: var(--paper);
+    stroke: var(--paper-sunken);
     stroke-width: calc(var(--u, 1) * 3px);
     stroke-linejoin: round;
   }
@@ -494,14 +493,13 @@ const steps = installPhases;
   .in__steps {
     display: grid;
     align-content: start;
-    border-top: 1px solid var(--hairline);
+    gap: 0.25rem;
   }
 
   .in__step {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     padding-block: 0.75rem;
-    border-bottom: 1px solid var(--hairline);
     opacity: 0.3;
     transform: translateX(-4px);
     transition: opacity 0.35s ease, transform 0.35s var(--ease-out);

@@ -1,7 +1,7 @@
 ---
 /**
- * Shared shell for the animated process demos — same card language as the cable test
- * (src/components/ui/CableTest.astro): white card, hairline, red "live" dot, SAMPLE tag,
+ * Shared shell for the animated process demos — same sheet language as the cable test
+ * (src/components/ui/CableTest.astro): white sheet (no border, no shadow), red "live" dot, Sample badge,
  * replay button, and a plain-English caption telling the visitor what they're looking at.
  *
  * Put the demo's own markup in the default slot. The demo's script finds its frame via
@@ -12,7 +12,7 @@ import { RotateCcw } from '@lucide/astro';
 interface Props {
   /** Unique demo name, used as data-demo="{name}" for the script to find it */
   name: string;
-  /** Short title after "Live demo ·", e.g. "Site walk" */
+  /** Short title after "Live demo:", e.g. "Site walk" */
   title: string;
   /** One or two plain-English sentences: what the visitor is watching and why it matters */
   caption: string;
@@ -20,13 +20,14 @@ interface Props {
 }
 
 const { name, title, caption, class: className } = Astro.props;
+const titleLower = title.charAt(0).toLowerCase() + title.slice(1);
 ---
 
 <figure class:list={['demo', className]} data-demo={name}>
   <header class="demo__head">
-    <span class="t-mono demo__title">Live demo · {title}</span>
+    <span class="t-meta demo__title">Live demo: {titleLower}</span>
     <span class="demo__tools">
-      <span class="t-mono demo__sample">Sample</span>
+      <span class="t-meta demo__sample">Sample</span>
       <button type="button" class="demo__replay" data-demo-replay>
         <RotateCcw size={15} stroke-width={1.75} aria-hidden="true" />
         <span class="visually-hidden">Replay {title} demo</span>
@@ -48,9 +49,7 @@ const { name, title, caption, class: className } = Astro.props;
     gap: 1rem;
     padding: 1.25rem;
     background: var(--white);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-raise);
     font-size: var(--fs-small);
   }
 
@@ -85,9 +84,10 @@ const { name, title, caption, class: className } = Astro.props;
   }
 
   .demo__sample {
-    padding: 0.15rem 0.4rem;
-    border: 1px solid var(--hairline-strong);
+    padding: 0.15rem 0.5rem;
     border-radius: var(--radius);
+    background: var(--paper-sunken);
+    font-size: var(--fs-label);
   }
 
   .demo__replay {
@@ -96,11 +96,12 @@ const { name, title, caption, class: className } = Astro.props;
     place-items: center;
     width: 36px;
     height: 36px;
-    border: 1px solid var(--hairline-strong);
+    border: 0;
     border-radius: var(--radius);
+    background: var(--paper-sunken);
     color: var(--steel);
     transition:
-      border-color var(--dur-fast) ease,
+      background var(--dur-fast) ease,
       color var(--dur-fast) ease,
       transform 140ms var(--ease-out);
   }
@@ -113,12 +114,10 @@ const { name, title, caption, class: className } = Astro.props;
   }
 
   .demo__replay:hover {
-    border-color: var(--ink);
     color: var(--ink);
   }
 
   .demo__replay:active {
-    border-color: var(--ink);
     color: var(--ink);
     transform: scale(0.97);
   }
@@ -134,8 +133,7 @@ const { name, title, caption, class: className } = Astro.props;
   }
 
   .demo__caption {
-    padding-top: 0.875rem;
-    border-top: 1px solid var(--hairline);
+    padding-top: 0.5rem;
     color: var(--text);
     line-height: 1.55;
   }

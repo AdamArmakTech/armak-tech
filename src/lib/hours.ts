@@ -61,7 +61,7 @@ export function openStatus(now: Date, hours: Hours, tz = 'America/Los_Angeles'):
   const todayOpen = hours.days.includes(dow);
 
   if (todayOpen && mins >= openAt && mins < closeAt) {
-    return { open: true, label: `Open now · until ${fmt(hours.close)}` };
+    return { open: true, label: `Open now, until ${fmt(hours.close)}` };
   }
   if (todayOpen && mins < openAt) {
     return { open: false, label: `Opens today at ${fmt(hours.open)}` };

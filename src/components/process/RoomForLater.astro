@@ -2,7 +2,7 @@
 /**
  * B9: "Enough for today / What Armak installs". Only practices the owner confirmed (shownSignature).
  * Renders nothing when fewer than 3 rows are shown. No competitor column, no animation.
- * Design rules: 5 (hairlines between schedule rows), 7 (ticks are ink, never green), 1 (the headline, itemized).
+ * Design rules: 7 (ticks are ink, never green), 1 (the headline, itemized). A white sheet with no outline; the rows keep their lines.
  */
 import { signature, shownSignature, type SignatureKey } from '../../data/content';
 
@@ -61,7 +61,6 @@ const rows = shownSignature(keys);
 
   .rfl__sheet {
     background: var(--white);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius);
     padding: var(--sp-5) var(--sp-4);
   }
@@ -83,11 +82,11 @@ const rows = shownSignature(keys);
 
   .rfl__table th {
     text-align: left;
-    font-family: var(--font-mono);
-    font-weight: 400;
-    font-size: var(--fs-label);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    font-size: var(--fs-small);
+    letter-spacing: normal;
+    text-transform: none;
     color: var(--steel);
     padding: 0 var(--sp-4) var(--sp-2) 0;
     border-bottom: 1px solid var(--hairline-strong);

@@ -18,11 +18,11 @@
   <!-- lobby (door gap y185–207 on its west wall) -->
   <path class="plan__wall" d="M290 250 V207 M290 185 V160 H390" />
 
-  <text x="15" y="24" class="plan__label">CLOSET</text>
-  <text x="100" y="24" class="plan__label">OFFICE</text>
-  <text x="230" y="24" class="plan__label">CONFERENCE</text>
-  <text x="26" y="242" class="plan__label">OPEN OFFICE</text>
-  <text x="377" y="178" class="plan__label" text-anchor="end">LOBBY</text>
+  <text x="15" y="24" class="plan__label t-readout">Closet</text>
+  <text x="100" y="24" class="plan__label t-readout">Office</text>
+  <text x="230" y="24" class="plan__label t-readout">Conference</text>
+  <text x="26" y="242" class="plan__label t-readout">Open office</text>
+  <text x="377" y="178" class="plan__label t-readout" text-anchor="end">Lobby</text>
 
   <g class="plan__furn">
     <!-- rack in the closet -->
@@ -54,7 +54,7 @@
   .plan__label {
     font-family: var(--font-mono);
     font-size: clamp(9px, calc(var(--u, 1) * 9.5px), 12px);
-    letter-spacing: 0.06em;
+    letter-spacing: normal;
     fill: var(--steel);
   }
 

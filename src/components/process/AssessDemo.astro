@@ -1,12 +1,13 @@
 ---
 /**
- * Step 01 · Assess — "Site walk".
+ * Assess — "Site walk".
  * A walk path draws through a small office floor plan; at each stop a pin drops and a finding
  * is logged. Teaches: the site is documented as it really is before anything is priced.
  * Server-renders the finished walk (no-JS / reduced motion); the script replays it.
  */
 import DemoFrame from './DemoFrame.astro';
 import OfficePlan from './OfficePlan.astro';
+import { Check } from '@lucide/astro';
 
 // Stops along the walk: [x, y] on the plan + what gets written down (sample findings)
 const stops = [
@@ -70,11 +71,11 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     </svg>
 
     <div class="as__side">
-      <p class="t-mono as__side-title">Findings</p>
+      <p class="t-meta as__side-title">Findings</p>
       <ol role="list" class="as__list">
         {stops.map((s, i) => (
           <li class="as__item is-on" data-as-item={i}>
-            <span class="as__num t-mono">{i + 1}</span>
+            <span class="as__num t-readout">{i + 1}</span>
             <span class="as__text">
               <span class="as__item-title">{s.title}</span>
               <span class="as__item-detail">{s.detail}</span>
@@ -82,7 +83,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
           </li>
         ))}
       </ol>
-      <p class="as__done is-on t-mono" data-as-done>✓ Site report ready · priced from this</p>
+      <p class="as__done is-on t-meta" data-as-done><Check size={12} stroke-width={2.25} aria-hidden="true" /> Site report ready, priced from this</p>
     </div>
   </div>
 </DemoFrame>
@@ -193,8 +194,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
   .as__plan {
     width: 100%;
     height: auto;
-    background: var(--paper);
-    border: 1px solid var(--hairline);
+    background: var(--paper-sunken);
     border-radius: var(--radius);
   }
 
@@ -209,7 +209,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
   .as__note {
     font-family: var(--font-mono);
     font-size: clamp(9px, calc(var(--u, 1) * 9px), 11.5px);
-    letter-spacing: 0.06em;
+    letter-spacing: normal;
     fill: var(--steel);
   }
 
@@ -291,7 +291,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
 
   .as__list {
     display: grid;
-    border-top: 1px solid var(--hairline);
+    gap: 0.25rem;
   }
 
   .as__item {
@@ -300,7 +300,6 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     gap: 0.625rem;
     align-items: start;
     padding-block: 0.5rem;
-    border-bottom: 1px solid var(--hairline);
     transition: background 0.3s ease;
   }
 
@@ -346,6 +345,9 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
   }
 
   .as__done {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
     justify-self: start;
     padding: 0.4rem 0.6rem;
     border-radius: var(--radius);
@@ -438,7 +440,6 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     .as__done {
       margin-top: 0.625rem;
       font-size: 0.8125rem;
-      letter-spacing: 0.04em;
       line-height: 1.4;
     }
 

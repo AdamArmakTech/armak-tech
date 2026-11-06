@@ -1,6 +1,5 @@
 ---
 import { Image } from 'astro:assets';
-import Label from '../ui/Label.astro';
 import { partners } from '../../data/content';
 
 /** Optical sizing: wide wordmarks get shorter so every logo carries similar visual weight. */
@@ -12,17 +11,12 @@ const heightFor = (w: number, h: number) => {
 
 <section class="partners" aria-labelledby="partners-title">
   <div class="container">
-    <div class="partners__head">
-      <Label>Platforms we install</Label>
-      <p id="partners-title" class="t-small t-muted">
-        Brands we install and support.
-      </p>
-    </div>
-    <ul role="list" class="partners__grid">
+    <p id="partners-title" class="t-meta partners__line">Brands we install and support.</p>
+    <ul role="list" class="partners__row">
       {partners.map((p) => {
         const h = heightFor(p.logo.width, p.logo.height);
         return (
-          <li class="partners__item">
+          <li>
             <Image
               src={p.logo}
               alt={p.name}
@@ -41,71 +35,29 @@ const heightFor = (w: number, h: number) => {
 <style>
   .partners {
     padding-block: var(--space-block);
-    border-block: 1px solid var(--hairline);
-    background: var(--white);
   }
 
-  .partners__head {
+  .partners__line {
+    margin-bottom: var(--sp-5);
+  }
+
+  .partners__row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem 2rem;
-    margin-bottom: 2.5rem;
+    gap: var(--sp-6) var(--sp-7);
   }
 
-  .partners__grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    border-top: 1px solid var(--hairline);
-    border-left: 1px solid var(--hairline);
-  }
-
-  .partners__item {
-    display: grid;
-    place-items: center;
-    min-height: 104px;
-    padding: 1.25rem;
-    border-right: 1px solid var(--hairline);
-    border-bottom: 1px solid var(--hairline);
-  }
-
-  /* 13 logos do not divide into rows, so the last one stretches across the leftover cells.
-     Recheck these spans (here and in the two media queries below) if the number of partners
-     in src/data/content.ts changes. */
-  .partners__item:last-child {
-    grid-column: span 2;
-  }
-
-  .partners__item img {
+  .partners__row img {
+    height: 26px;
     width: auto;
     opacity: 0.78;
     transition: opacity var(--dur) ease;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .partners__item:hover img {
+    .partners__row li:hover img {
       opacity: 1;
-    }
-  }
-
-  @media (min-width: 640px) {
-    .partners__grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .partners__item:last-child {
-      grid-column: span 4;
-    }
-  }
-
-  @media (min-width: 1100px) {
-    .partners__grid {
-      grid-template-columns: repeat(7, 1fr);
-    }
-
-    .partners__item:last-child {
-      grid-column: span 2;
     }
   }
 </style>

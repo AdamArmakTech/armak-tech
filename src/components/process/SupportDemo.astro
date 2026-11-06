@@ -1,12 +1,13 @@
 ---
 /**
- * Step 05 · Support — "A move request" (MAC: move, add, change).
+ * Support — "A move request" (MAC: move, add, change).
  * A ticket comes in → the as-built record says which panel ports are involved → the patch cord
  * is moved from A-14 to A-22 → the link is tested and the record updated → ticket done.
  * Teaches: support is quick and tidy because the install was labeled and documented.
  * Server-renders the finished state (no-JS / reduced motion).
  */
 import DemoFrame from './DemoFrame.astro';
+import { Check } from '@lucide/astro';
 
 // Panel / switch geometry (viewBox 300 × 133): 12 ports per row
 const px = (i: number) => 22 + i * 22;
@@ -37,7 +38,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
   caption="Moves, adds and changes go fast when the install was labeled and documented: look up the record, move one patch cord, test it, update the record. No tracing wires through the ceiling."
 >
   <div class="sp">
-    <ol role="list" class="sp__stages t-mono">
+    <ol role="list" class="sp__stages t-meta">
       {stages.map((s, i) => (
         <li class="sp__stage is-done" data-sp-stage={i}><span class="sp__stage-dot" aria-hidden="true"></span>{s}</li>
       ))}
@@ -47,22 +48,22 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       <div class="sp__left">
         <div class="sp__ticket is-on" data-sp-ticket>
           <div class="sp__ticket-top">
-            <span class="t-mono">Ticket MAC-0417</span>
-            <span class="sp__status t-mono" data-sp-status data-state="done">Done</span>
+            <span class="t-meta">Ticket <span class="t-readout">MAC-0417</span></span>
+            <span class="sp__status t-meta" data-sp-status data-state="done">Done</span>
           </div>
           <p class="sp__ticket-body">Move desk <strong>2B-14</strong> to <strong>3A-02</strong></p>
         </div>
 
         <table class="sp__records">
-          <caption class="t-mono">As-built record</caption>
+          <caption class="t-meta">As-built record</caption>
           <thead>
             <tr><th scope="col">Desk jack</th><th scope="col">Panel port</th></tr>
           </thead>
           <tbody>
             {records.map((r) => (
               <tr class:list={['sp__row', { 'is-hit': r.key }]} data-sp-row={r.key || undefined}>
-                <td class="t-mono">{r.jack}</td>
-                <td class="t-mono">{r.port}{r.key === 'to' && <span class="sp__updated" data-sp-updated> · in use</span>}</td>
+                <td class="t-readout">{r.jack}</td>
+                <td class="t-readout">{r.port}{r.key === 'to' && <span class="sp__updated" data-sp-updated>, in use</span>}</td>
               </tr>
             ))}
           </tbody>
@@ -73,7 +74,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
         <svg class="sp__panel" viewBox="0 0 300 133" role="img" data-fit-text aria-label="Patch panel A above a network switch; the patch cord for the moved desk goes from port A-22 down to the switch">
           <!-- panel A -->
           <rect x="10" y={PANEL_Y} width="280" height="36" class="sp__box" />
-          <text x="10" y={PANEL_Y - 5} class="sp__tiny">PATCH PANEL A</text>
+          <text x="10" y={PANEL_Y - 5} class="sp__tiny t-readout">Patch panel A</text>
           {Array.from({ length: 12 }, (_, i) => (
             <g>
               <rect x={px(i)} y={PANEL_Y + 5} width="12" height="10" class="sp__port" />
@@ -82,7 +83,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
           ))}
           <!-- switch -->
           <rect x="10" y={SWITCH_Y} width="280" height="36" class="sp__box" />
-          <text x="10" y={SWITCH_Y + 48} class="sp__tiny">SWITCH</text>
+          <text x="10" y={SWITCH_Y + 48} class="sp__tiny t-readout">Switch</text>
           {Array.from({ length: 12 }, (_, i) => (
             <g>
               <rect x={px(i)} y={SWITCH_Y + 5} width="12" height="10" class="sp__port" />
@@ -109,8 +110,8 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
         </svg>
 
         <ul role="list" class="sp__checks">
-          <li class="is-on" data-sp-check><span aria-hidden="true">✓</span> Link tested at the new desk</li>
-          <li class="is-on" data-sp-check><span aria-hidden="true">✓</span> Record updated: 3A-02 → A-22</li>
+          <li class="is-on" data-sp-check><span aria-hidden="true"><Check size={14} stroke-width={2.25} /></span> Link tested at the new desk</li>
+          <li class="is-on" data-sp-check><span aria-hidden="true"><Check size={14} stroke-width={2.25} /></span> Record updated: 3A-02 → A-22</li>
         </ul>
       </div>
     </div>
@@ -288,10 +289,8 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     display: grid;
     gap: 0.4rem;
     padding: 0.75rem 0.875rem;
-    border: 1px solid var(--hairline-strong);
-    border-left: 3px solid var(--ink);
     border-radius: var(--radius);
-    background: var(--paper);
+    background: var(--paper-sunken);
     opacity: 0;
     transform: translateY(-8px);
     transition: opacity 0.35s ease, transform 0.4s var(--ease-out);
@@ -355,8 +354,6 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
   .sp__records td {
     padding: 0.4rem 0.5rem;
     border-bottom: 1px solid var(--hairline);
-    letter-spacing: 0.02em;
-    text-transform: none;
     transition: background 0.3s ease, color 0.3s ease;
   }
 
@@ -385,8 +382,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     width: 100%;
     height: auto;
     padding: 0.25rem;
-    background: var(--paper);
-    border: 1px solid var(--hairline);
+    background: var(--paper-sunken);
     border-radius: var(--radius);
     overflow: visible;
   }
@@ -405,7 +401,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
   .sp__tiny {
     font-family: var(--font-mono);
     font-size: clamp(9px, calc(var(--u, 1) * 9.5px), 10px);
-    letter-spacing: 0.08em;
+    letter-spacing: normal;
     fill: var(--steel);
   }
 
@@ -463,7 +459,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     font-size: clamp(9px, calc(var(--u, 1) * 10.5px), 11.5px);
     font-weight: 600;
     paint-order: stroke;
-    stroke: var(--paper);
+    stroke: var(--paper-sunken);
     stroke-width: 3px;
     stroke-linejoin: round;
   }
@@ -496,9 +492,15 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     transition: opacity 0.3s ease;
   }
 
+  .sp__checks li {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
   .sp__checks li span {
+    display: inline-flex;
     color: var(--pass);
-    font-weight: 700;
   }
 
   .sp__checks li.is-on {
@@ -535,7 +537,6 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       justify-content: space-between;
       gap: 0.35rem 0.5rem;
       font-size: 0.8125rem;
-      letter-spacing: 0.01em;
     }
 
     .sp__stage {

@@ -90,7 +90,7 @@ const routes = rooms
       apCount,
       dropsPath: ds.map((d) => `M${d.x} ${d.y} V${d.tray}`).join(' '),
       homePath: `M${far.x} ${far.tray} H195 V${toY}`,
-      line1: `${plural(ds.length, 'cable drop')} · ${plural(apCount, 'access point')}`,
+      line1: `${plural(ds.length, 'cable drop')}, ${plural(apCount, 'access point')}`,
       note: notes[r.id],
     };
   });
@@ -113,8 +113,8 @@ const mk = (k: (typeof laterKeys)[number]) => shownKeys.indexOf(k);
 
   <!-- Drawing sheet -->
   <rect x="0" y="0" width="880" height="620" fill="url(#bx-grid)" />
-  <text x="40" y="52" class="bx-sheet">SECTION A–A · TYPICAL COMMERCIAL BUILDING</text>
-  <text x="840" y="52" class="bx-sheet bx-end" data-bx-layer-name>ALL SYSTEMS</text>
+  <text x="40" y="52" class="bx-sheet t-readout">Typical commercial building</text>
+  <text x="840" y="52" class="bx-sheet bx-end t-readout" data-bx-layer-name>All systems</text>
 
   <!-- ───────────── Structure (always visible) ───────────── -->
   <g class="bx-structure">
@@ -203,7 +203,7 @@ const mk = (k: (typeof laterKeys)[number]) => shownKeys.indexOf(k);
     ))}
     <!-- ISP fiber entrance -->
     <path class="bx-fiber" d="M165 545 H58" />
-    <text x="40" y="536" class="bx-callout">ISP · FIBER</text>
+    <text x="40" y="536" class="bx-callout">ISP fiber</text>
     <g class="bx-fill">
       <rect x="171" y="471" width="48" height="5" />
       <rect x="171" y="480" width="48" height="5" />
@@ -419,7 +419,7 @@ const mk = (k: (typeof laterKeys)[number]) => shownKeys.indexOf(k);
     font-family: var(--font-mono);
     /* SVG units: the drawing scales to ~0.65-1x, so 14 here is ~9-14px on screen */
     font-size: 14px;
-    letter-spacing: 0.06em;
+    letter-spacing: 0;
     fill: var(--steel);
   }
 

@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import { ArrowRight } from '@lucide/astro';
+import Button from '../ui/Button.astro';
 import CableTest from '../ui/CableTest.astro';
 import { site, yearsInBusiness } from '../../data/site';
 import { credentials } from '../../data/content';
@@ -19,7 +19,7 @@ const paths = [
     href: '/plan/',
     title: 'I’m planning a project',
     detail: 'Still figuring it out. Get the checklist and a rough estimate.',
-    go: 'Checklist · Estimator',
+    go: 'Checklist and estimator',
     primary: false,
   },
   {
@@ -36,7 +36,7 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
 
 <section class="hero container" aria-labelledby="hero-title">
   <div class="hero__copy">
-    <nav class="hero__links t-mono" aria-label="Quick links">
+    <nav class="hero__links t-meta" aria-label="Quick links">
       <ul role="list">
         <li><a href="/industries/">Industries</a></li>
         <li><a href="/about/">About</a></li>
@@ -48,54 +48,54 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
     <h1 id="hero-title" class="t-display hero__title">Built for the future.</h1>
     <!-- hero-in = the same fade/rise as [data-reveal], but CSS-only so the hero (and its LCP photo)
          paints on first render instead of waiting for motion.ts to download and boot -->
-    <p class="t-lead hero-in">
+    <p class="t-lead hero__lead hero-in">
       {yearsInBusiness} years designing, installing and certifying the cabling, networks and security
       systems Southern California businesses run on.
     </p>
+    <Button class="hero__cta hero-in" href={contactHref()} style="--reveal-delay: 80ms">{CTA_LABEL}</Button>
+    <div class="hero__media hero-in" style="--reveal-delay: 150ms">
+      <div class="hero__frame">
+        <!-- sizes = the photo's real rendered width: 5/12 of the container on desktop (520px at the
+             1360px cap), full width minus the side gutters below 1000px -->
+        <Image
+          src={heroPhoto}
+          alt="A technician in a hi-vis vest working at a network rack with tools laid out on the floor"
+          widths={[560, 720, 840, 1120, 1280, 1600]}
+          sizes="(min-width: 1360px) 520px, (min-width: 1000px) 39vw, calc(100vw - 2rem)"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+      <CableTest variant="compact" class="hero__card" />
+    </div>
     <div class="hero__choose hero-in" data-dock-start style="--reveal-delay: 120ms">
-      <p class="t-mono hero__choose-label" id="hero-paths-label">Pick the closest fit</p>
+      <p class="t-meta hero__choose-label" id="hero-paths-label">Pick the closest fit</p>
       <ul role="list" class="hero__paths" aria-labelledby="hero-paths-label">
         {paths.map((p) => (
           <li>
             <a class:list={['path', { 'path--primary': p.primary }]} href={p.href}>
               <span class="path__title">{p.title}</span>
               <span class="path__detail">{p.detail}</span>
-              <span class="t-mono path__go">{p.go} <ArrowRight size={14} stroke-width={2} aria-hidden="true" /></span>
+              <span class="t-meta path__go">{p.go}</span>
             </a>
           </li>
         ))}
       </ul>
       <p class="t-small hero__phone">Or call <a class="tel" href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}<span data-hero-status data-hours={site.hours} hidden></span></p>
     </div>
-    <ul role="list" class="hero__creds t-mono hero-in" style="--reveal-delay: 220ms">
+    <ul role="list" class="hero__creds t-meta hero-in" style="--reveal-delay: 220ms">
       {credentials.map((c) => <li>{c}</li>)}
     </ul>
-  </div>
-
-  <div class="hero__media hero-in" style="--reveal-delay: 150ms">
-    <div class="hero__frame">
-      <!-- sizes = the photo's real rendered width: 5/12 of the container on desktop (520px at the
-           1360px cap), full width minus the side gutters below 1000px -->
-      <Image
-        src={heroPhoto}
-        alt="A technician in a hi-vis vest working at a network rack with tools laid out on the floor"
-        widths={[560, 720, 840, 1120, 1280, 1600]}
-        sizes="(min-width: 1360px) 520px, (min-width: 1000px) 39vw, calc(100vw - 2rem)"
-        loading="eager"
-        fetchpriority="high"
-      />
-    </div>
-    <CableTest variant="compact" class="hero__card" />
   </div>
 </section>
 
 <script>
   import { mountOpenStatus } from '../../lib/hours';
 
-  // Appends " · Open now" (hours are already in the line) (or the next opening) after the call line; empty until the client fills it
+  // Appends ". Open now" (hours are already in the line) or the next opening after the call line; empty until the client fills it
   mountOpenStatus(document.querySelector<HTMLElement>('[data-hero-status]'), (s, el) => {
-    const short = s.label.replace(/ · until .*$/, '');
-    el.textContent = short ? ` · ${short}` : '';
+    const short = s.label.replace(/, until .*$/, '');
+    el.textContent = short ? `. ${short}` : '';
     el.hidden = !s.label;
   });
 </script>
@@ -103,30 +103,38 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
 <style>
   .hero {
     display: grid;
-    gap: var(--space-block) var(--col-gap);
+    gap: 1.75rem var(--col-gap);
     padding-top: clamp(1.5rem, 1rem + 2vw, 3rem);
     padding-bottom: var(--space-section);
   }
 
+  /* The copy wrapper dissolves into the page grid at every width, so the HTML order (links, title,
+     lead, button, photo and card, the three tiles, credentials) is also the order on screen and for
+     the keyboard. Desktop places the same items in two columns with grid-template-areas below. */
   .hero__copy {
-    display: grid;
-    gap: 1.75rem;
-    align-content: end;
-    justify-items: start;
+    display: contents;
   }
 
+  .hero :global(.hero__cta) {
+    justify-self: start;
+  }
 
-  /* Quick links row (same spot and look as the old spec strip, but clickable) */
+  .hero__title,
+  .hero__lead,
+  .hero :global(.hero__cta),
+  .hero__creds {
+    justify-self: start;
+  }
+
+  /* Quick links row: plain text, spacing only */
   .hero__links {
     width: 100%;
-    padding-block: 1rem;
-    border-block: 1px solid var(--hairline);
   }
 
   .hero__links ul {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 0;
+    gap: 0 var(--sp-5);
   }
 
   .hero__links li {
@@ -134,32 +142,27 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
     align-items: center;
   }
 
-  .hero__links li:not(:last-child)::after {
-    content: "";
-    width: 4px;
-    height: 4px;
-    margin-inline: 1rem;
-    background: var(--signal);
-  }
-
   .hero__links a {
     display: inline-block;
-    font-size: 0.875rem;
     /* Taller tap area (48px; rows overlap a little when the links wrap, still above the 24px minimum); the negative margin cancels the padding so spacing is unchanged */
     padding-block: 0.8rem;
     margin-block: -0.8rem;
-    color: var(--ink);
+    color: var(--steel);
     transition: color var(--dur-fast) ease;
   }
 
   @media (hover: hover) and (pointer: fine) {
     .hero__links a:hover {
-      color: var(--signal);
+      color: var(--ink);
     }
   }
 
   .hero__title {
     max-width: 11ch;
+  }
+
+  .hero__lead {
+    color: var(--text);
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -206,40 +209,19 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
     width: 100%;
   }
 
-  .hero__choose-label {
-    color: var(--steel);
-  }
-
   .hero__paths {
     display: grid;
-    gap: 0.625rem;
+    gap: var(--sp-3);
   }
 
   .path {
     display: grid;
     gap: 0.35rem;
     height: 100%;
-    padding: 0.875rem 1rem 1rem;
+    padding: 1rem 1.125rem 1.125rem;
     background: var(--white);
-    border: 1px solid var(--hairline);
-    border-top: 2px solid var(--ink);
     border-radius: var(--radius);
-    transition: border-color var(--dur-fast) ease, transform var(--dur) var(--ease-out);
-  }
-
-  .path--primary {
-    border-top-color: var(--signal);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .path:hover {
-      border-color: var(--ink);
-      border-top-color: inherit;
-    }
-
-    .path--primary:hover {
-      border-top-color: var(--signal);
-    }
+    transition: transform var(--dur) var(--ease-out);
   }
 
   /* Press feedback: small squeeze (none under reduced motion) */
@@ -256,43 +238,29 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
   .path__title {
     font-weight: 600;
     letter-spacing: -0.01em;
+    color: var(--ink);
   }
 
   .path__detail {
-    font-size: 0.875rem;
+    font-size: var(--fs-small);
     line-height: 1.45;
-    color: var(--steel);
+    color: var(--text);
   }
 
   .path__go {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
     margin-top: 0.4rem;
     color: var(--ink);
-    transition: color var(--dur-fast) ease;
-  }
-
-  .path--primary .path__go {
-    color: var(--signal);
-  }
-
-  .path__go :global(svg) {
-    transition: transform var(--dur) var(--ease-out);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .path:hover .path__go {
-      color: var(--signal);
-    }
-
-    .path:hover .path__go :global(svg) {
-      transform: translateX(3px);
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
   }
 
   .hero__phone {
-    color: var(--steel);
+    color: var(--text);
   }
 
   /* Taller tap area (44px) without moving the line */
@@ -314,21 +282,7 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
   .hero__creds {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 1.5rem;
-    color: var(--steel);
-  }
-
-  .hero__creds li {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .hero__creds li::before {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border: 1px solid var(--ink);
+    gap: 0.5rem var(--sp-5);
   }
 
   .hero__media {
@@ -366,16 +320,31 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
   @media (min-width: 1000px) {
     .hero {
       grid-template-columns: 7fr 5fr;
-      align-items: end;
+      /* 5.5rem keeps the copy clear of the cable-test card, which hangs 4.5rem into the gutter */
+      column-gap: 5.5rem;
+      grid-template-areas:
+        'links media'
+        'title media'
+        'lead media'
+        'cta media'
+        'choose media'
+        'creds media';
+      align-content: end;
+      justify-items: start;
       min-height: calc(100svh - var(--header-h));
     }
 
-    /* Keep the copy clear of the cable-test card, which hangs 4.5rem into the gutter */
-    .hero__copy {
-      padding-right: calc(4.5rem - var(--col-gap) + 1rem);
-    }
+    .hero__links { grid-area: links; }
+    .hero__title { grid-area: title; }
+    .hero__lead { grid-area: lead; }
+    .hero :global(.hero__cta) { grid-area: cta; }
+    .hero__choose { grid-area: choose; justify-self: stretch; }
+    .hero__creds { grid-area: creds; }
 
     .hero__media {
+      grid-area: media;
+      align-self: end;
+      justify-self: stretch;
       padding-bottom: 4rem;
     }
 

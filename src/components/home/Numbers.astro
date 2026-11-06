@@ -1,5 +1,4 @@
 ---
-import Label from '../ui/Label.astro';
 import Stat from '../ui/Stat.astro';
 import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../data/site';
 ---
@@ -7,7 +6,6 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
 <section class="section numbers" aria-labelledby="numbers-title">
   <div class="container">
     <div class="numbers__head">
-      <Label>By the numbers</Label>
       <h2 id="numbers-title" class="t-h3 numbers__title" data-reveal>
         Armak in numbers. <span class="t-muted">Since {FOUNDED}, across Southern California.</span>
       </h2>
@@ -48,6 +46,21 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
     gap: 3rem var(--col-gap);
   }
 
+  /* No rule above each stat; caption in the text face, sentence case */
+  .numbers__grid :global(.stat) {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .numbers__grid :global(.stat__label) {
+    font-family: var(--font-sans);
+    font-size: var(--fs-small);
+    font-weight: 500;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--steel);
+  }
+
   /* Keep the big mono numerals inside narrow phone columns */
   .numbers__grid :global(.stat__value) {
     font-size: clamp(2.5rem, 1.6rem + 4.2vw, 6rem);
@@ -60,13 +73,8 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
       align-items: start;
     }
 
-    .numbers__head > :global(.label) {
-      grid-column: 1 / span 3;
-      margin-top: 0.35rem;
-    }
-
     .numbers__title {
-      grid-column: 4 / -1;
+      grid-column: 1 / -1;
     }
 
     .numbers__grid {

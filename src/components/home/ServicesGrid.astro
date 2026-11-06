@@ -14,8 +14,7 @@ const href = (slug: string) => `/services/${slug}/`;
 <section id="services" class="section services">
   <div class="container">
     <SectionHead
-      label="Services"
-      title="Every low-voltage system your building runs on."
+      title="Six systems, one team."
       intro="We handle cabling, networks, security cameras, door access, phones and AV, so you deal with one team and one point of contact."
     />
 
@@ -23,7 +22,6 @@ const href = (slug: string) => `/services/${slug}/`;
       <ServiceTile
        
         href={href(feature.slug)}
-        code={feature.code}
         title={feature.name}
         description={feature.short}
         image={cableBundles}
@@ -34,7 +32,6 @@ const href = (slug: string) => `/services/${slug}/`;
       <ServiceTile
        
         href={href(second.slug)}
-        code={second.code}
         title={second.name}
         description={second.short}
         image={rackRow}
@@ -45,7 +42,6 @@ const href = (slug: string) => `/services/${slug}/`;
         <ServiceTile
          
           href={href(s.slug)}
-          code={s.code}
           title={s.name}
           description={s.short}
           includes={s.includes}
@@ -55,7 +51,7 @@ const href = (slug: string) => `/services/${slug}/`;
     </div>
 
     <div class="services__foot">
-      <p class="t-mono t-muted">{services.length} disciplines · One point of contact</p>
+      <p class="t-meta">{services.length} disciplines, one point of contact.</p>
       <Button href="/services/" variant="outline">All services</Button>
     </div>
   </div>
@@ -74,8 +70,6 @@ const href = (slug: string) => `/services/${slug}/`;
     justify-content: space-between;
     gap: 1rem 2rem;
     margin-top: var(--col-gap);
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--hairline);
   }
 
   /* Feature tile gets a larger title */

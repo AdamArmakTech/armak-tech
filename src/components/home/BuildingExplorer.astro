@@ -15,16 +15,14 @@ import { contactHref } from '../../lib/cta';
 
 const industryRows = industries.map((ind) => {
   const sys = ind.systems.map((slug) => services.find((s) => s.slug === slug)!).filter(Boolean);
-  return { ...ind, sys, summary: `${ind.name}: typically ${sys.map((s) => s.name).join(' · ')}` };
+  return { ...ind, sys, summary: `${ind.name}: typically ${sys.map((s) => s.name).join(', ')}` };
 });
 
 // B7: the switch's second option, the sheet title for that view, and the list of items drawn on the building.
 const tenYears = cablingSourced && (lifespans.cabling.years ?? 0) >= 10;
 const laterLabel = tenYears ? '10 years from now' : 'Years from now';
-const laterTitle = `${laterLabel.toUpperCase()} · CABLING STAYS`;
+const laterTitle = `${laterLabel}: cabling stays`;
 const laterItems = shownSignature(['cat6aDefault', 'twoDropsPerAp', 'spareFiberStrands', 'emptyConduit', 'zoneCabling', 'ceilingGridJacks']);
-// "Cat 6A" is a standard name, so it is set in mono (rule 4).
-const parts = (text: string) => text.split(/(Cat 6A)/);
 // B1: the rooms that have a route (ids match the rooms in BuildingSvg).
 const roomButtons = [
   { id: 'offices', label: 'Offices' },
@@ -52,7 +50,7 @@ const roomButtons = [
             </button>
           ))}
         </div>
-        <p id="explorer-tabs-label" class="t-mono t-muted explorer__hint">Select a system</p>
+        <p id="explorer-tabs-label" class="t-meta explorer__hint">Select a system.</p>
         <div class="explorer__tabs" role="tablist" aria-labelledby="explorer-tabs-label" aria-orientation="vertical">
           {services.map((s, i) => (
             <button
@@ -65,7 +63,6 @@ const roomButtons = [
               data-slug={s.slug}
               data-layer-name={s.layer}
             >
-              <span class="t-mono explorer__code">{s.code}</span>
               <span class="explorer__name">{s.name}</span>
             </button>
           ))}
@@ -99,7 +96,7 @@ const roomButtons = [
                 <ul role="list" class="bx-later-list" aria-labelledby="bx-later-head">
                   {laterItems.map((it) => (
                     <li>
-                      <strong>{parts(it.label).map((p) => (p === 'Cat 6A' ? <span class="t-mono">{p}</span> : p))}.</strong>{' '}
+                      <strong>{it.label}.</strong>{' '}
                       {it.detail}
                       {it.confirmed === 'sometimes' ? ' On some jobs.' : ''}
                     </li>
@@ -136,11 +133,10 @@ const roomButtons = [
         {services.map((s, i) => (
           <div class="explorer__detail" data-detail={s.slug} hidden={i !== 0}>
             <div class="explorer__detail-head">
-              <span class="t-mono explorer__layer">{s.code} · {s.layer}</span>
               <h3 class="t-h3">{s.name}</h3>
             </div>
             <p class="t-muted">{s.short}</p>
-            <ul role="list" class="explorer__includes t-mono">
+            <ul role="list" class="explorer__includes t-meta">
               {s.includes.map((inc) => <li>{inc}</li>)}
             </ul>
             <div class="explorer__actions">
@@ -186,8 +182,6 @@ const roomButtons = [
     const whenLive = root.querySelector<HTMLElement>('[data-bx-when-live]');
     if (!tabs.length || !panel || !svg) return;
 
-    const codeOf = (slug: string) => tabs.find((t) => t.dataset.slug === slug)?.querySelector('.explorer__code')?.textContent ?? '';
-
     let index = 0;
     // What the drawing shows when nothing else is asked for: the selected tab, or the chosen industry.
     let base: { slugs: string[]; label: string } = { slugs: [], label: '' };
@@ -216,10 +210,10 @@ const roomButtons = [
       const d = Number(g.dataset.drops);
       const a = Number(g.dataset.aps);
       live.append(
-        `${g.dataset.label}: ${d} cable drop${d === 1 ? '' : 's'} · ${a} access point${a === 1 ? '' : 's'} · runs to `,
+        `${g.dataset.label}: ${d} cable drop${d === 1 ? '' : 's'}, ${a} access point${a === 1 ? '' : 's'}, runs to `,
       );
       const code = document.createElement('span');
-      code.className = 't-mono';
+      code.className = 't-readout';
       code.textContent = g.dataset.closet ?? '';
       live.append(code, '.');
     };
@@ -248,7 +242,7 @@ const roomButtons = [
       svg.setAttribute('data-route', id);
       const closet = g.dataset.closet ?? '';
       // No active layer: the existing dimming drops every layer to 0.22.
-      paint([], `${(rooms.find((r) => r.dataset.room === id)?.dataset.roomName ?? '').toUpperCase()} · TO ${closet}`);
+      paint([], `${rooms.find((r) => r.dataset.room === id)?.dataset.roomName ?? ''}: to ${closet}`);
       g.classList.add('is-on');
       setLive(id);
       if (prefersReducedMotion()) return;
@@ -301,7 +295,7 @@ const roomButtons = [
       if (next === 'later') {
         clearRoute({ paintBase: false });
         svg.setAttribute('data-when', 'later');
-        if (layerName) layerName.textContent = whenBox?.dataset.laterTitle ?? 'YEARS FROM NOW · CABLING STAYS';
+        if (layerName) layerName.textContent = whenBox?.dataset.laterTitle ?? 'Years from now: cabling stays';
       } else {
         svg.removeAttribute('data-when');
         if (paintBase) paint(base.slugs, base.label);
@@ -336,7 +330,7 @@ const roomButtons = [
 
       base = {
         slugs: [slug],
-        label: `LAYER ${tab.querySelector('.explorer__code')?.textContent} · ${tab.dataset.layerName?.toUpperCase()}`,
+        label: tab.dataset.layerName ?? '',
       };
       paint(base.slugs, base.label);
       placeHighlight();
@@ -361,7 +355,7 @@ const roomButtons = [
       panel.setAttribute('aria-labelledby', 'explorer-chips-label');
       base = {
         slugs: systems,
-        label: `${chip.textContent?.trim().toUpperCase()} · ${systems.map(codeOf).sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).join(' ')}`,
+        label: chip.textContent?.trim() ?? '',
       };
       paint(base.slugs, base.label);
       placeHighlight();
@@ -463,7 +457,7 @@ const roomButtons = [
           showRoute(room.dataset.room!, false);
         } else {
           const slugs = (room.dataset.systems ?? '').split(' ').filter(Boolean);
-          paint(slugs, `${room.dataset.roomName} · ${room.dataset.codes ?? ''}`);
+          paint(slugs, room.dataset.roomName ?? '');
         }
       });
       room.addEventListener('mouseleave', () => {
@@ -506,25 +500,24 @@ const roomButtons = [
   .explorer__chip {
     min-height: 44px;
     padding: 0.5rem 0.875rem;
-    border: 1px solid var(--field-line);
+    border: 0;
     border-radius: var(--radius);
-    background: transparent;
+    background: var(--paper-sunken);
     color: var(--ink);
     font-family: var(--font-sans);
     font-size: var(--fs-small);
     font-weight: 500;
-    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .explorer__chip:hover {
-      border-color: var(--ink);
+    .explorer__chip[aria-pressed='false']:hover {
+      background: var(--white);
     }
   }
 
   .explorer__chip[aria-pressed='true'] {
     background: var(--ink);
-    border-color: var(--ink);
     color: var(--paper);
   }
 
@@ -537,20 +530,12 @@ const roomButtons = [
     margin-bottom: 0.75rem;
   }
 
-  /* Tabs: horizontal scroller on phones, vertical list on desktop */
+  /* Tabs: a wrapped row on phones and tablets (a sideways scroller reads as cut off), a vertical list on desktop */
   .explorer__tabs {
     position: relative;
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-    margin-inline: calc(var(--gutter) * -1);
-    padding-inline: var(--gutter);
-    /* A scrolling strip clips anything outside its padding box, which cut the focus ring (3px gap plus a
-       2px line) down to two side bars. 6px of room above and below, pulled back by an equal negative
-       margin, shows the whole ring and moves nothing (the bottom keeps its old 2px). */
-    padding-block: 6px 8px;
-    margin-block: -6px;
   }
 
   .explorer__tabs::-webkit-scrollbar {
@@ -565,31 +550,22 @@ const roomButtons = [
     flex-shrink: 0;
     min-height: 44px;
     padding: 0.75rem 1rem;
-    border: 1px solid var(--field-line);
+    border: 0;
     border-radius: var(--radius);
-    background: transparent;
+    background: var(--paper-sunken);
     text-align: left;
-    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .explorer__tab:hover {
-      border-color: var(--ink);
+    .explorer__tab[aria-selected='false']:hover {
+      background: var(--white);
     }
   }
 
   .explorer__tab[aria-selected='true'] {
     background: var(--ink);
-    border-color: var(--ink);
     color: var(--paper);
-  }
-
-  .explorer__code {
-    color: var(--signal);
-  }
-
-  .explorer__tab[aria-selected='true'] .explorer__code {
-    color: var(--logo-red);
   }
 
   .explorer__name {
@@ -606,7 +582,6 @@ const roomButtons = [
 
   .explorer__drawing {
     background: var(--white);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius);
     padding: clamp(0.5rem, 0.2rem + 1.5vw, 1.5rem);
   }
@@ -628,21 +603,10 @@ const roomButtons = [
     gap: 0.5rem;
   }
 
-  .explorer__layer {
-    color: var(--signal);
-  }
-
   .explorer__includes {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .explorer__includes li {
-    padding: 0.35rem 0.6rem;
-    border: 1px solid var(--hairline-strong);
-    border-radius: var(--radius);
-    color: var(--steel);
+    gap: 0.25rem 1.25rem;
   }
 
   .explorer__actions {
@@ -719,20 +683,15 @@ const roomButtons = [
 
     .explorer__tabs {
       flex-direction: column;
-      gap: 0;
+      gap: var(--sp-2);
       overflow: visible;
       margin: 0;
       padding: 0;
-      border-top: 1px solid var(--hairline);
     }
 
     .explorer__tab {
-      display: grid;
-      grid-template-columns: 3.5rem 1fr;
+      display: flex;
       padding: 1.125rem 1rem;
-      border: 0;
-      border-bottom: 1px solid var(--hairline);
-      border-radius: 0;
     }
 
     .explorer__name {
@@ -744,12 +703,6 @@ const roomButtons = [
     }
   }
 
-  @media (min-width: 1000px) and (hover: hover) and (pointer: fine) {
-    .explorer__tab[aria-selected='false']:hover {
-      background: var(--white);
-    }
-  }
-
   /* ── Switch on the drawing's top edge: Today / years from now ──
      Rendered hidden; the script shows it. Ink for the selected side, never red (rule 7). */
   .bx-bar {
@@ -757,7 +710,6 @@ const roomButtons = [
     justify-content: flex-end;
     padding-bottom: var(--sp-2);
     margin-bottom: var(--sp-2);
-    border-bottom: 1px solid var(--hairline);
   }
 
   .bx-bar[hidden] {
@@ -771,8 +723,9 @@ const roomButtons = [
     width: 100%;
     margin: 0;
     padding: 0;
-    border: 1px solid var(--field-line);
+    border: 0;
     border-radius: var(--radius);
+    background: var(--paper-sunken);
   }
 
   .bx-when[hidden] {
@@ -862,10 +815,6 @@ const roomButtons = [
     list-style: none;
   }
 
-  .bx-later-list .t-mono {
-    text-transform: none;
-  }
-
   /* ── Room buttons: pin a route ── */
   .bx-rooms-ui {
     display: grid;
@@ -892,25 +841,24 @@ const roomButtons = [
   .bx-room-btn {
     min-height: 44px;
     padding: 0.5rem 0.875rem;
-    border: 1px solid var(--field-line);
+    border: 0;
     border-radius: var(--radius);
-    background: transparent;
+    background: var(--paper-sunken);
     color: var(--ink);
     font-family: var(--font-sans);
     font-size: var(--fs-small);
     font-weight: 500;
-    transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .bx-room-btn:hover {
-      border-color: var(--ink);
+    .bx-room-btn[aria-pressed='false']:hover {
+      background: var(--white);
     }
   }
 
   .bx-room-btn[aria-pressed='true'] {
     background: var(--ink);
-    border-color: var(--ink);
     color: var(--paper);
   }
 
@@ -938,12 +886,6 @@ const roomButtons = [
     opacity: 0;
     pointer-events: none;
     transition: transform var(--dur) var(--ease-out), opacity var(--dur-fast) ease;
-  }
-
-  @media (min-width: 1000px) {
-    .explorer__tabs :global(.explorer__hl) {
-      border-radius: 0;
-    }
   }
 
   .explorer__tabs.has-hl .explorer__tab[aria-selected='true'],

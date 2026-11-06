@@ -60,17 +60,9 @@ const VB_H = Math.round((VB_W * (maxLat - minLat)) / ((maxLng - minLng) * kx));
 const px = (lng: number) => +(((lng - minLng) / (maxLng - minLng)) * VB_W).toFixed(1);
 const py = (lat: number) => +(((maxLat - lat) / (maxLat - minLat)) * VB_H).toFixed(1);
 
-const gridLngs: number[] = [];
-for (let v = Math.ceil(minLng * 2) / 2; v <= maxLng; v += 0.5) gridLngs.push(v);
-const gridLats: number[] = [];
-for (let v = Math.ceil(minLat * 2) / 2; v <= maxLat; v += 0.5) gridLats.push(v);
-
 const hullPoints = hull.map(([lng, lat]) => `${px(lng)},${py(lat)}`).join(' ');
 /** Only a few anchor cities are labeled in the schematic to keep it legible. */
 const schematicLabels = new Set(['Santa Barbara', 'Lancaster', 'San Bernardino', 'Long Beach', 'Temecula', 'San Diego']);
-
-const fmtCoord = (v: number, pos: string, neg: string) => `${Math.abs(v).toFixed(4)}° ${v >= 0 ? pos : neg}`;
-const hqCoords = `${fmtCoord(hq.lat, 'N', 'S')}, ${fmtCoord(hq.lng, 'E', 'W')}`;
 
 const groups = counties.map((county) => ({
   county,
@@ -82,8 +74,8 @@ const groups = counties.map((county) => ({
   <div class="container">
     <SectionHead
       label="Service area"
-      title="All of Southern California, from Santa Barbara to Chula Vista."
-      intro={`From our ${hq.city} headquarters we serve ${serviceArea.length} cities in ${counties.length} counties, from the Central Coast to San Diego County.`}
+      title={`${serviceArea.length} cities in ${counties.length} counties.`}
+      intro={`All of Southern California, from Santa Barbara to Chula Vista, served from our ${hq.city} headquarters.`}
     />
 
     <div class="area__body">
@@ -91,42 +83,33 @@ const groups = counties.map((county) => ({
         <div class="area__stage">
           <div class="area__fallback">
             <svg class="area__schematic" viewBox={`0 0 ${VB_W} ${VB_H}`} preserveAspectRatio="xMidYMid meet" focusable="false" role="img" aria-label={`Schematic map of the Southern California area we serve, with ${hq.city} headquarters marked. The cities are listed beside the map.`}>
-              <g class="sx-grid">
-                {gridLngs.map((v) => <line x1={px(v)} x2={px(v)} y1="0" y2={VB_H} />)}
-                {gridLats.map((v) => <line x1="0" x2={VB_W} y1={py(v)} y2={py(v)} />)}
-              </g>
-              <g class="sx-ticks">
-                {gridLngs.filter((v) => Number.isInteger(v)).map((v) => <text x={px(v) + 8} y={VB_H - 14}>{`${Math.abs(v)}°W`}</text>)}
-                {gridLats.filter((v) => Number.isInteger(v)).map((v) => <text x="14" y={py(v) - 10}>{`${v}°N`}</text>)}
-              </g>
               <polygon class="sx-hull" points={hullPoints} />
               {serviceArea.filter((c) => !isHq(c.name)).map((c, i) => (
                 <g class="sx-city" data-city={c.name} style={`--i:${i};--st:${STAG}ms`}>
                   <circle cx={px(c.lng)} cy={py(c.lat)} r="7" />
-                  {schematicLabels.has(c.name) && <text x={px(c.lng) + 14} y={py(c.lat) + 6}>{c.name}</text>}
+                  {schematicLabels.has(c.name) && <text class="t-readout" x={px(c.lng) + 14} y={py(c.lat) + 6}>{c.name}</text>}
                 </g>
               ))}
               <g class="sx-hq" data-city={hq.city} style={`--i:${serviceArea.length};--st:${STAG}ms`}>
                 <circle class="sx-hq__ring" cx={px(hq.lng)} cy={py(hq.lat)} r="22" />
                 <circle class="sx-hq__dot" cx={px(hq.lng)} cy={py(hq.lat)} r="11" />
-                <text x={px(hq.lng) - 30} y={py(hq.lat) - 30} text-anchor="end">HQ · {hq.city}</text>
+                <text class="t-readout" x={px(hq.lng) - 30} y={py(hq.lat) - 30} text-anchor="end">{hq.city} HQ</text>
               </g>
             </svg>
           </div>
           <div class="area__canvas" data-map-canvas></div>
-          <p class="area__status t-mono" data-map-status aria-hidden="true">Schematic</p>
+          <p class="area__status t-meta" data-map-status aria-hidden="true">Schematic</p>
         </div>
-        <figcaption class="area__caption t-mono">
-          <span><span class="area__hq-mark" aria-hidden="true"></span>{hq.city} HQ<span class="area__coords"> · {hqCoords}</span></span>
-          <span>{serviceArea.length} cities · {counties.length} counties</span>
+        <figcaption class="area__caption t-meta">
+          <span><span class="area__hq-mark" aria-hidden="true"></span>{hq.city} HQ</span>
+          <span>{serviceArea.length} cities, {counties.length} counties</span>
         </figcaption>
       </figure>
 
       <div class="area__list">
         <div class="area__hq">
-          <p class="t-mono area__hq-label">Headquarters</p>
+          <p class="t-meta area__hq-label">Headquarters</p>
           <p class="t-h3 area__hq-city">{hq.city}, {hq.region}</p>
-          <p class="t-mono t-muted">{hqCoords}</p>
         </div>
 
         <template data-area-search-tpl>
@@ -143,13 +126,12 @@ const groups = counties.map((county) => ({
             <li class="area__county">
               <p class="area__county-head">
                 <span class="area__county-name">{g.county} County</span>
-                <span class="t-mono t-muted">{String(g.cities.length).padStart(2, '0')}</span>
               </p>
               <ul role="list" class="area__cities">
                 {g.cities.map((c) => (
                   <li class:list={['area__city', { 'is-hq': isHq(c.name) }]} data-city={c.name}>
                     {c.name}
-                    {isHq(c.name) && <span class="area__hq-tag t-mono">HQ</span>}
+                    {isHq(c.name) && <span class="area__hq-tag t-meta">HQ</span>}
                   </li>
                 ))}
               </ul>
@@ -173,7 +155,6 @@ const groups = counties.map((county) => ({
     flex-direction: column;
     overflow: hidden;
     background: var(--paper-sunken);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius);
   }
 
@@ -208,24 +189,10 @@ const groups = counties.map((county) => ({
     height: 100%;
   }
 
-  .sx-grid line {
-    stroke: var(--hairline-strong);
-    stroke-width: 1;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .sx-ticks text {
-    font-family: var(--font-mono);
-    font-size: 15px;
-    letter-spacing: 0.08em;
-    fill: var(--steel);
-  }
-
   .sx-hull {
     fill: rgba(11, 13, 16, 0.04);
-    stroke: var(--ink);
+    stroke: var(--steel-light);
     stroke-width: 1;
-    stroke-dasharray: 4 4;
     vector-effect: non-scaling-stroke;
   }
 
@@ -240,8 +207,8 @@ const groups = counties.map((county) => ({
     font-family: var(--font-mono);
     font-size: 20px;
     font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    letter-spacing: normal;
+    text-transform: none;
     fill: var(--ink);
   }
 
@@ -297,8 +264,7 @@ const groups = counties.map((county) => ({
     top: 0.75rem;
     left: 0.75rem;
     padding: 0.3rem 0.5rem;
-    background: var(--paper);
-    border: 1px solid var(--hairline);
+    background: var(--white);
     border-radius: var(--radius);
     color: var(--steel);
   }
@@ -312,7 +278,6 @@ const groups = counties.map((county) => ({
     min-height: 2.75rem;
     padding: 0.5rem 0.875rem;
     background: var(--white);
-    border-top: 1px solid var(--hairline);
     color: var(--steel);
   }
 
@@ -333,7 +298,7 @@ const groups = counties.map((county) => ({
   .area__map :global(.maplibregl-ctrl-group) {
     border-radius: var(--radius);
     box-shadow: none;
-    border: 1px solid var(--hairline-strong);
+    border: 0;
   }
 
   .area__map :global(.maplibregl-ctrl-group button) {
@@ -365,26 +330,18 @@ const groups = counties.map((county) => ({
     gap: 0.5rem;
     padding: 1.25rem;
     background: var(--white);
-    border: 1px solid var(--hairline);
-    border-left: 3px solid var(--signal);
     border-radius: var(--radius);
-  }
-
-  .area__hq-label {
-    color: var(--signal);
   }
 
   .area__counties {
     display: grid;
-    gap: 0;
+    gap: var(--sp-5);
   }
 
   .area__county {
     display: grid;
     align-content: start;
     gap: 0.5rem;
-    padding-block: 0.875rem;
-    border-top: 1px solid var(--hairline);
   }
 
   .area__county-head {
@@ -433,9 +390,10 @@ const groups = counties.map((county) => ({
     font-family: var(--font-sans);
     font-size: 1rem;
     color: var(--ink);
-    background: var(--white);
-    border: 1px solid var(--hairline-strong);
-    border-radius: var(--radius);
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid var(--field-line);
+    border-radius: 0;
   }
 
   .area__search-input:focus-visible {
@@ -469,15 +427,15 @@ const groups = counties.map((county) => ({
     font-family: var(--font-sans);
     font-size: var(--fs-small);
     color: var(--ink);
-    background: var(--white);
-    border: 1px solid var(--hairline-strong);
+    background: var(--paper-sunken);
+    border: 0;
     border-radius: var(--radius);
     cursor: pointer;
   }
 
   @media (hover: hover) and (pointer: fine) {
     .area__search-result :global(.area__suggest button:hover) {
-      background: var(--paper-sunken);
+      background: var(--white);
     }
   }
 
@@ -510,19 +468,11 @@ const groups = counties.map((county) => ({
   }
 
   .area__hq-tag {
-    padding: 0.1rem 0.35rem;
-    font-size: 0.8125rem;
+    font-size: var(--fs-label);
     line-height: 1.3;
-    color: var(--white);
-    background: var(--signal);
-    border-radius: var(--radius);
   }
 
   @media (max-width: 639px) {
-    .area__coords {
-      display: none;
-    }
-
     .sx-city text {
       display: none;
     }

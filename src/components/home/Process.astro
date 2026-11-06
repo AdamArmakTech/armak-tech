@@ -7,7 +7,6 @@
  */
 import SectionHead from '../ui/SectionHead.astro';
 import Button from '../ui/Button.astro';
-import Label from '../ui/Label.astro';
 import CableTest from '../ui/CableTest.astro';
 import AssessDemo from '../process/AssessDemo.astro';
 import DesignDemo from '../process/DesignDemo.astro';
@@ -41,7 +40,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 
     <div class="steps" data-steps>
       <div class="steps__tabs-wrap">
-        <p id="steps-tabs-label" class="t-mono t-muted steps__hint">The five steps</p>
+        <p id="steps-tabs-label" class="visually-hidden">The five steps</p>
         <div class="steps__tabs" role="tablist" aria-labelledby="steps-tabs-label" aria-orientation="vertical" data-tabs>
           {steps.map((s, i) => (
             <button
@@ -55,7 +54,6 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
               style={`--dwell:${dwell(s.code)}ms`}
               data-dwell={dwell(s.code)}
             >
-              <span class="t-mono steps__code">{s.code}</span>
               <span class="steps__name">{s.title}</span>
               <span class="steps__progress" aria-hidden="true"></span>
             </button>
@@ -75,7 +73,6 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
               data-step-panel
             >
               <div class="steps__intro">
-                <p class="t-mono steps__intro-label"><span>Step <span class="steps__num"><span class="steps__num-v">{s.code}</span></span></span> · {s.title}</p>
                 <h3 class="visually-hidden">{s.title}</h3>
                 <p class="steps__intro-body">{s.body}</p>
               </div>
@@ -87,16 +84,15 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     </div>
 
     <div class="process__next" data-dock-hide>
-      <p class="t-mono t-muted process__start">Every job starts at step 01.</p>
+      <p class="t-meta process__start">Every job starts with the assessment.</p>
       <Button href="#contact" icon="arrow">{CTA_LABEL}</Button>
     </div>
 
     <div class="pillars">
-      <Label>Principles</Label>
+      <h3 class="t-h3">Principles</h3>
       <ul role="list" class="pillars__grid">
-        {pillars.map((p, i) => (
+        {pillars.map((p) => (
           <li class="pillar">
-            <span class="t-mono pillar__index">{String(i + 1).padStart(2, '0')}</span>
             <h4 class="t-h4 pillar__title">{p.title}</h4>
             <p class="t-small pillar__body">{p.body}</p>
           </li>
@@ -155,9 +151,6 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     };
 
     function select(i: number, { focus = false, play = false } = {}) {
-      const prev = index;
-      // Forward (down the list, or wrapping 05 to 01) or back
-      const dir = i >= tabs.length ? 1 : i < 0 ? -1 : Math.sign(i - prev) || 1;
       index = (i + tabs.length) % tabs.length;
       tabs.forEach((t, n) => {
         const on = n === index;
@@ -165,38 +158,10 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
         t.tabIndex = on ? 0 : -1;
       });
       panels.forEach((p, n) => p.classList.toggle('is-active', n === index));
-      if (index !== prev) tickNumber(panels[index], tabs[prev].querySelector('.steps__code')?.textContent ?? '', dir);
       moveSlider();
       if (focus) tabs[index].focus();
       if (play) playDemo(panels[index]);
     }
-
-    /** The step number in the panel label ticks over. Forward: the old number slides up and out, the new one
-     *  slides in from below. Back: the same, the other way. Transform and opacity only. */
-    const tickNumber = (panel: HTMLElement, oldCode: string, dir: number) => {
-      if (prefersReducedMotion()) return;
-      const num = panel.querySelector<HTMLElement>('.steps__num');
-      const value = num?.querySelector<HTMLElement>('.steps__num-v');
-      if (!num || !value || !oldCode) return;
-      const css = getComputedStyle(document.documentElement);
-      const raw = css.getPropertyValue('--dur').trim();
-      const ms = (raw.endsWith('ms') ? parseFloat(raw) : parseFloat(raw) * 1000) || 320;
-      const easing = css.getPropertyValue('--ease-out').trim() || 'ease-out';
-      const opts = { duration: ms, easing, fill: 'both' as FillMode };
-      num.querySelector('.steps__num-old')?.remove();
-      const ghost = document.createElement('span');
-      ghost.className = 'steps__num-old';
-      ghost.setAttribute('aria-hidden', 'true');
-      ghost.textContent = oldCode;
-      num.append(ghost);
-      value.animate(
-        [{ transform: `translateY(${dir * 100}%)`, opacity: 0 }, { transform: 'translateY(0)', opacity: 1 }],
-        opts,
-      );
-      ghost
-        .animate([{ transform: 'translateY(0)', opacity: 1 }, { transform: `translateY(${dir * -100}%)`, opacity: 0 }], opts)
-        .finished.then(() => ghost.remove(), () => ghost.remove());
-    };
 
     /** One highlight behind the active tab. It is a 1px square moved and stretched with transform only,
      *  so it never triggers layout. Created here, so without JS the tabs are untouched. */
@@ -354,10 +319,6 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     display: none;
   }
 
-  .steps__hint {
-    margin-bottom: 0.75rem;
-  }
-
   /* Tabs: horizontal scroller on phones, vertical list on desktop (same as the System explorer) */
   .steps__tabs {
     display: flex;
@@ -384,20 +345,22 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     align-items: baseline;
     gap: 0.625rem;
     flex-shrink: 0;
+    min-height: 44px;
     padding: 0.75rem 1rem;
-    border: 1px solid var(--field-line);
+    border: 0;
     border-radius: var(--radius);
-    background: transparent;
+    background: var(--paper-sunken);
     text-align: left;
     overflow: hidden;
     transition:
       background var(--dur) var(--ease-out),
-      border-color var(--dur) var(--ease-out),
       color var(--dur) var(--ease-out);
   }
 
-  .steps__tab:hover {
-    border-color: var(--ink);
+  @media (hover: hover) and (pointer: fine) {
+    .steps__tab[aria-selected='false']:hover {
+      background: var(--white);
+    }
   }
 
   /* Sliding highlight: one element behind the tabs. The selected tab itself goes clear and shows it. */
@@ -433,24 +396,13 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 
   .steps__tab[aria-selected='true'] {
     background: var(--ink);
-    border-color: var(--ink);
     color: var(--paper);
-  }
-
-  .steps__code {
-    color: var(--steel); /* DESIGN.md rule 7: red is for the one action and FAIL */
-    transition: color var(--dur) var(--ease-out);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .steps__tab,
-    .steps__code {
+    .steps__tab {
       transition: none;
     }
-  }
-
-  .steps__tab[aria-selected='true'] .steps__code {
-    color: var(--paper);
   }
 
   .steps__name {
@@ -507,28 +459,8 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     gap: 0.5rem;
   }
 
-  .steps__intro-label {
-    color: var(--steel);
-  }
-
-  /* Step number in the label: a clipped slot the digits slide through */
-  .steps__num {
-    position: relative;
-    display: inline-block;
-    overflow: hidden;
-    vertical-align: bottom;
-    line-height: 1.3;
-  }
-
-  .steps__num-v {
-    display: inline-block;
-  }
-
-  .steps__num :global(.steps__num-old) {
-    position: absolute;
-    inset: 0;
-  }
-
+  .steps__intro-body {
+    color: var(--text);
     font-size: var(--fs-lead);
     line-height: 1.5;
     max-width: 40em;
@@ -548,20 +480,15 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 
     .steps__tabs {
       flex-direction: column;
-      gap: 0;
+      gap: var(--sp-2);
       overflow: visible;
       margin: 0;
       padding: 0;
-      border-top: 1px solid var(--hairline);
     }
 
     .steps__tab {
-      display: grid;
-      grid-template-columns: 3.5rem 1fr;
+      display: flex;
       padding: 1.375rem 1rem;
-      border: 0;
-      border-bottom: 1px solid var(--hairline);
-      border-radius: 0;
     }
 
     .steps__tab[aria-selected='true']:hover {
@@ -588,19 +515,13 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
   .pillars__grid {
     display: grid;
     width: 100%;
-    border-top: 1px solid var(--ink);
+    gap: var(--sp-6) var(--sp-7);
   }
 
   .pillar {
     display: grid;
     gap: 0.75rem;
     align-content: start;
-    padding: 1.5rem 0 2rem;
-    border-bottom: 1px solid var(--hairline);
-  }
-
-  .pillar__index {
-    color: var(--steel);
   }
 
   .pillar__body {
@@ -613,17 +534,6 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .pillar {
-      padding: 1.5rem 1.5rem 2rem;
-    }
-
-    .pillar:nth-child(odd) {
-      padding-left: 0;
-    }
-
-    .pillar:nth-child(even) {
-      border-left: 1px solid var(--hairline);
-    }
   }
 
   @media (min-width: 1024px) {
@@ -631,16 +541,5 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
-    .pillar,
-    .pillar:nth-child(odd) {
-      padding: 1.5rem 1.5rem 0.5rem;
-      border-bottom: 0;
-      border-left: 1px solid var(--hairline);
-    }
-
-    .pillar:first-child {
-      padding-left: 0;
-      border-left: 0;
-    }
   }
 </style>

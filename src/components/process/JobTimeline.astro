@@ -2,7 +2,7 @@
 /**
  * B6: one job from start to finish, above the five steps. Shows what the tabs cannot: the order in time,
  * where after-hours work and phased cutover sit, and that support has no end. No durations, no step names.
- * Design rules: 3 (codes 01-05 are real), 4 (mono only for the codes), 5 (hairlines), 10 (one hatch wipe).
+ * Segments are labelled with the step names. White sheets, no outlines. Design rule 10: one hatch wipe.
  */
 import { process as steps, installPhases } from '../../data/content';
 
@@ -24,7 +24,7 @@ const [prestaged, afterhours, cutover] = installPhases;
             </>
           ) : null}
         </div>
-        <span class="t-mono jt__code">{s.code}</span>
+        <span class="t-meta jt__code">{s.title}</span>
       </div>
     ))}
     <svg class="jt__arrow" viewBox="0 0 24 28" aria-hidden="true" focusable="false">
@@ -55,7 +55,7 @@ const [prestaged, afterhours, cutover] = installPhases;
     if (tabs.length) {
       const sync = () => {
         const on = tabs.find((t) => t.getAttribute('aria-selected') === 'true');
-        const code = on?.querySelector('.steps__code')?.textContent?.trim();
+        const code = on?.id.replace('step-tab-', '');
         segs.forEach((s) => s.classList.toggle('is-active', s.dataset.code === code));
       };
       sync();
@@ -89,7 +89,7 @@ const [prestaged, afterhours, cutover] = installPhases;
     align-items: start;
   }
 
-  /* Each segment: the top line is the "you are here" marker (3px ink when active, 1px hairline otherwise) */
+  /* Each segment: the top line is the "you are here" marker (3px ink when active, nothing otherwise) */
   .jt__seg {
     display: grid;
     gap: var(--sp-1);
@@ -104,12 +104,11 @@ const [prestaged, afterhours, cutover] = installPhases;
     left: 0;
     right: 0;
     top: 0;
-    height: 1px;
-    background: var(--hairline-strong);
+    height: 3px;
+    background: transparent;
   }
 
   .jt__seg.is-active::before {
-    height: 3px;
     background: var(--ink);
   }
 
@@ -117,25 +116,18 @@ const [prestaged, afterhours, cutover] = installPhases;
     display: flex;
     height: 28px;
     background: var(--white);
-    border: 1px solid var(--hairline);
   }
 
   .jt__seg--wide .jt__body {
     background: none;
-    border: 0;
-    gap: 0;
+    gap: 2px;
   }
 
   .jt__part {
     position: relative;
     flex: 1 1 0;
     min-width: 0;
-    border: 1px solid var(--hairline);
     background: var(--white);
-  }
-
-  .jt__part + .jt__part {
-    margin-left: -1px;
   }
 
   /* 45 degree hatch, the same low-contrast ink as the drawing's hatch */
@@ -154,9 +146,7 @@ const [prestaged, afterhours, cutover] = installPhases;
 
   /* Three-step stair edge: the filled block steps up from left to right */
   .jt__part--stair {
-    border: 0;
     background: var(--white);
-    margin-left: 0;
   }
 
   .jt__part--stair::before,
@@ -167,10 +157,6 @@ const [prestaged, afterhours, cutover] = installPhases;
     background: var(--ink);
     clip-path: polygon(0 100%, 0 66%, 33.33% 66%, 33.33% 33%, 66.66% 33%, 66.66% 0, 100% 0, 100% 100%);
     opacity: 0.55;
-  }
-
-  .jt__part--stair {
-    border: 1px solid var(--hairline);
   }
 
   .jt__part--hatch.is-armed {
@@ -184,8 +170,9 @@ const [prestaged, afterhours, cutover] = installPhases;
 
   .jt__code {
     color: var(--text);
-    font-size: var(--fs-label, 13px);
+    font-size: var(--fs-label);
     line-height: 1.2;
+    overflow-wrap: anywhere;
   }
 
   .jt__seg.is-active .jt__code {
@@ -227,7 +214,6 @@ const [prestaged, afterhours, cutover] = installPhases;
     flex: none;
     width: 28px;
     height: 16px;
-    border: 1px solid var(--hairline-strong);
     box-sizing: border-box;
   }
 
@@ -240,7 +226,6 @@ const [prestaged, afterhours, cutover] = installPhases;
   }
 
   .jt__sw--arrow {
-    border: 0;
     height: 18px;
     color: var(--ink);
   }
