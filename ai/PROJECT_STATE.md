@@ -32,6 +32,21 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **Redesign round 2 ("Start round 2"), composition — 2026-11-05 night (one code commit after 13a3756, NOT pushed).**
+  Four Sonnet workers (About, Plan, Glossary, service pages) under the main session's compositions, then the main
+  session's fixes. About: facts card in the hero aside; principles, credentials, numbers, partner grid and service-area
+  blocks removed (they repeat the homepage); title "Low-voltage installs since 1998." (two lines; the old six-word title
+  wrapped to three). Plan: the sample certification report leads the page in the hero aside (5 of 12 columns, copy
+  pinned to the top), bottom copy removed; checklist in two columns, estimator inputs beside results, cabling check in
+  three columns. Glossary: search box in the hero aside as a white sheet; letter column 4.5rem so terms reach the right
+  margin. Service pages: the five-step block is now heading + intro + "See how every job runs" link to /#process (the
+  full copy stays on the services index); services index hero photo = camera-ceiling.jpg (alt describes the photo
+  only), object-position tuned. Measured (inspector): about 8→6 findings (3→1 hard, screens 8→5), plan 9→8 (5→3),
+  glossary 10→9 (6→5), services index 7→7 (2→2), structured cabling 7→8 (4→5: one "covered text under the sticky
+  header" reading and a 9-word FAQ question wrapping at 390). Site total now about 64 findings, 26 hard, from 157/99
+  before round 1. Left: real photographs (owner), motion (round 3), glossary off-centre from the letter column
+  (cosmetic), allowed lines, the sticky header over large text at some phone scroll positions. Evidence:
+  `ai/exports/critique-2026-11-05/round2/`.
 - **Redesign round 1 ("Start round 1") — 2026-11-05 late evening (branch `intent-redesign`, four code commits after
   8935af1, NOT pushed).** The owner's four decisions (title stays; first screen recomposed keeping photo, test card and
   the three boxes; codes and step numbers dropped; mono labels, thin lines and boxed tags switched off) applied through
