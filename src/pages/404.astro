@@ -24,19 +24,19 @@ const routes = [
       <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
     </div>
 
-    <figure slot="aside" class="trace" data-reveal="scale">
-      <header class="trace__head t-meta">
+    <figure slot="aside" class="trace">
+      <header class="trace__head t-meta" data-reveal="fade">
         <span>Link test</span>
         <span class="trace__fail">Fail</span>
       </header>
-      <div class="trace__result">
+      <div class="trace__result" data-reveal>
         <div>
           <p class="trace__status">OPEN</p>
           <p class="t-readout trace__std">HTTP 404, no link detected</p>
         </div>
       </div>
       <nav aria-label="Suggested pages">
-        <ul role="list" class="trace__routes">
+        <ul role="list" class="trace__routes" data-reveal-group data-reveal-step="60">
           {routes.map((r) => (
             <li>
               <a href={r.href}>

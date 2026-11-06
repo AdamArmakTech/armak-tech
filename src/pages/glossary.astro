@@ -88,7 +88,7 @@ const jsonLd = {
     {groups.map((g) => (
       <section class="gl__group" id={`letter-${g.letter === '#' ? 'num' : g.letter}`} data-gl-group={g.letter} aria-labelledby={`gl-h-${g.letter === '#' ? 'num' : g.letter}`}>
         <h2 class="gl__letter" data-reveal id={`gl-h-${g.letter === '#' ? 'num' : g.letter}`}>{g.letter === '#' ? '0–9' : g.letter}</h2>
-        <ul role="list" class="gl__list" data-reveal-group="draw">
+        <ul role="list" class="gl__list" data-reveal-group data-reveal-step="50">
           {g.entries.map((e) => (
             <li data-gl-term={e.slug} data-cat={e.category} data-search={haystack(e)}>
               <details class="term" id={e.slug}>

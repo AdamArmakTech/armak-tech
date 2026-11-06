@@ -96,6 +96,34 @@ Rules of thumb:
 - Owner PDF: `E:\all-sites\armak-tech\ai\exports\reveals-2026-11-06.pdf` (phone-width before/after frames, the
   reveal slowed 6× for the pictures; frames in `ai/exports/reveal-shots/`, both gitignored).
 
+## Anti-slop pass (same day, on the owner's question)
+The taste-skill inspector (`scripts/inspect.mjs`, a real browser at 1440, 768 and 390) was run on the production
+build of 12 pages before and after this pass (`.taste-skill/before` and `.taste-skill/after`, gitignored).
+
+Motion changes made in this pass:
+- The icon-stroke drawing is gone from the 140 glossary rows and the FAQ rows (one flourish repeated 140 times);
+  it stays only on the three homepage "Next" links, where the arrow points down the page.
+- Cascades vary by content instead of one 70 ms step everywhere: logos 40 ms, glossary terms and credentials 50,
+  footer columns and the checklist 60, capability cards and FAQ rows 80, service tiles and project cards 90.
+- A long list no longer arrives as a wall after the cap: full steps up to 5 (350 ms) on desktop and 4 (200 ms) on
+  phones, then a quarter step per block, so nothing waits on a phone.
+- The 404 "link test" card reveals line by line (head, result, route rows) instead of as one block.
+- Not motion, but rule 9 in files of this change: /privacy/, /terms/ and /open-source/ running text is `--text`,
+  not `--steel`.
+
+Counts (12 pages, 3 widths each): before 25 FAIL / 51 WARN, after 25 FAIL / 48 WARN. The one motion finding
+("little motion" on /404) is gone and the grey running text on /privacy/ and /terms/ is fixed. The 25 hard faults
+are identical before and after and lie outside this change or inside the owner's own rules: too few photographs
+(every page; rule 2 waits on product images), the paper palette and no footage (every page), hairlines in the scope
+sheet, cable test and glossary rows (rule 5 allows list rows), mono readouts on /plan/ and /404 (rule 4), labels
+read as "eyebrows" (breadcrumbs, the glossary chips), a three-line FAQ question at 390, white tile text over a
+photo read as 1:1 contrast and a closing heading half below the screen edge read as "covered" (both probe
+artifacts), the outlined license boxes on /open-source/, and uneven-margin warnings from the existing layout.
+One of them is for the main session: the five-step tabs (`.steps__tabs` in Process.astro) scroll sideways at 390
+(`side-scroll`), against the owner's rule that nothing scrolls sideways on phones. Lint (`lint.mjs src`): 63 FAIL /
+26 WARN, all pre-existing patterns (hairline rows, mono readouts, the wire-colour stripe gradient, overlay
+shadows); none from this change.
+
 ## Not done, or for other sessions
 - `src/pages/about.astro` (about-page session): the facts card in the hero is slotted through PageHero's aside, whose
   wrapper has no box below 1024px; add `data-reveal="scale"` on that page's `<div slot="aside">`. The story

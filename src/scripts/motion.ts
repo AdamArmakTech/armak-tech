@@ -8,7 +8,7 @@
  *                           scale           settles from 0.98 to 1 (sheets, cards, panels)
  *                           draw            rise, and the strokes of any inline SVG inside draw themselves
  *  [data-reveal-group]    on a parent: its direct children reveal one after another, top to bottom,
- *                         --reveal-step apart (70 ms, 50 ms on phones), never more than 8 steps. The value
+ *                         --reveal-step apart (70 ms, 50 ms on phones), never more than 5 steps. The value
  *                         is the variant the children use; data-reveal-step="60" changes the gap for that
  *                         group. Children are hidden by CSS before this script runs, so nothing flashes.
  *  [data-split]           heading reveals line-by-line (GSAP SplitText, loaded on demand)
@@ -37,7 +37,7 @@ const REVEAL_SELECTOR = '[data-reveal], [data-reveal-group] > *';
    leaves a blank screen. The lift, the duration and the gap between items are CSS tokens
    (--reveal-y, --reveal-dur, --reveal-step in global.css); only the cap on the cascade lives here. */
 const phone = matchMedia('(max-width: 640px)').matches;
-const CAP = phone ? 6 : 8; // a long list never waits more than this many steps
+const CAP = phone ? 4 : 5; // full steps up to here (350 ms / 200 ms); after it a list only keeps a faint rhythm
 const STROKE_STEP = 90; // ms between strokes inside one "draw" element
 
 function showEverything() {
@@ -121,6 +121,10 @@ function initReveals() {
     return own > 0 ? own : step;
   };
 
+  /* The i-th block of a batch waits i steps up to the cap, then a quarter step more per block, so a
+     long list (a glossary screen) keeps a faint rhythm instead of arriving as a wall after the cap */
+  const delayFor = (i: number, gap: number) => (i <= CAP ? i * gap : CAP * gap + (i - CAP) * (gap / 4));
+
   /* The transition rule lives on .is-revealing only while the reveal plays, so a component's own
      hover or press transition (buttons, cards, logos) comes back untouched afterwards. */
   const reveal = (el: HTMLElement, delay: number) => {
@@ -177,7 +181,7 @@ function initReveals() {
     }
     if (!batch.length) return;
     batch.sort((a, b) => a.row - b.row || a.left - b.left);
-    batch.forEach(({ el }, i) => reveal(el, Math.min(i, CAP) * stepFor(el)));
+    batch.forEach(({ el }, i) => reveal(el, delayFor(i, stepFor(el))));
   };
 
   const collect = (entries: IntersectionObserverEntry[]) => {
