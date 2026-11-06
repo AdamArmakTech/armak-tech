@@ -170,6 +170,21 @@ tabs).
   space... use this information once, and keep the rest of the page alive... make it more intentional" (about-page
   session).
 
+## Owner decisions 2026-11-06, night: sequences, and "robust, accurate, beefy"
+- About the five steps, seen on a desktop: "these should load in a sequence and if someone presses on any of the
+  buttons the sequence should stop but when you scroll on it, it should naturally start animating and when the
+  animation ends it moves onto the next one naturally. the whole site needs to be like this." The rule lives in
+  `autoPlay()` (src/scripts/demo.ts): a piece with several states runs by itself while it overlaps the middle 60%
+  of the screen; a press on a control inside it hands it over to the visitor; scrolling away and back starts it
+  again; hovering never stops it; a hidden tab pauses it; reduced motion never runs it. Rule 10's "nothing loops
+  forever" still holds: a lap rests at its last state and a fresh lap starts on re-entry. Applied to the step strip
+  and the building explorer (the six systems, then the 10-years view).
+- "the animations need to be more robust and accurate and more beefy": every demo shows more of the real job, drawn
+  the way a contractor would recognise (TIA-606 colours where they are claimed, the real order of a rack, two
+  cables per access point, overlapping Wi-Fi cells, a two-unit certifier), with the words unchanged (copy stays
+  owner-fixed; wording fixes are put to him as questions). Beefier never means slower than smooth: each demo stays
+  at or under about 8 s, transform / opacity / clip-path / stroke-dashoffset only.
+
 ## Owner decisions 2026-11-06, evening: the About page's chart, and drawings wherever a photo slot is empty
 - "this whole thing is very sloppy and ugly and it doesnt feel intentional or clever at all" (screenshot of the About
   page's Wi-Fi chart: a black bar, outlined boxes, a year axis, a list of notes). A chart made of bars and boxes

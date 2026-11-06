@@ -72,6 +72,19 @@ below), `ai/plans/site-audit.md` (the October audit) and `ai/AGENTS.md` (rules).
   072cbdd (pushed 2026-11-06 night on "Update the preview"); it asks for the Vercel login first (Deployment
   Protection). Say "publish" to put it live: merge `intent-redesign` into `main` (fast-forward), push `main`, then
   open https://armak.tech and check it.
+- Six yes/no questions from the motion survey (2026-11-06 night); the demos' words are owner-fixed, so nothing
+  below changes until he answers:
+  1. One label scheme in every demo (closet 2A; a link code like 2A-A14 printed on the jack AND on panel A port 14;
+     today the steps contradict each other)?
+  2. The failing cable's text "Pins 3 & 6 crossed" → "Pins 3 & 6 reversed" (a certifier's word for the two wires of
+     one pair swapped)?
+  3. The install legend's "Network gear" for green: keep it as Armak's plain-language colour code, or relabel green
+     "Network connections" (TIA-606 uses purple for equipment)?
+  4. Add two sample findings to the site walk (where the carrier line comes in; the longest run under 90 m)?
+  5. Keep both "Put in on day one" lists on the home page (the table under the steps and the explorer's numbered
+     list), or only the explorer's?
+  6. The About chart is being redrawn as one jack with the access point swapped four times (the old drawing read as
+     one cable feeding four); say if the old one was wanted instead.
 - Approve deleting `src/components/services/PhotoBand.astro` and the `servicePhotos` block in
   `src/data/services-detail.ts` (no page uses either since the About page switched to the drawings, 2026-11-06).
 - The three session worktrees are merged into `intent-redesign` (about-page b9459cf, site-reveals d1486f0,

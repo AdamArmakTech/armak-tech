@@ -32,6 +32,39 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **Motion survey and the "robust, accurate, beefy" build — 2026-11-06 night (in progress at the time of writing).**
+  The owner, on the preview: "the animations need to be more robust and accurate and more beefy". A read-only
+  survey workflow (five lenses: the strip and its demos, the rest of the home page, the other pages, robustness,
+  accuracy; 5 Opus agents, 1.19M tokens, 15 min) found, in short:
+  - Accuracy: the Design plan's Wi-Fi circles never overlap while the caption promises no dead zones, and every
+    access point gets one cable although Armak's confirmed practice is two; the camera wedges are telephoto-narrow;
+    the Install closet runs the carrier hand-off and the backbone through the copper patch panel into the access
+    switch (a real closet: demarc box on the backboard, orange to the firewall; fiber enclosure, white to the
+    switch's uplinks; green firewall-to-switch cord), and 24 cables feed a panel whose label says 12 are spare; the
+    Support demo has no cable manager and tests only panel-to-switch though the row says the desk was tested; the
+    About chart reads as one cable feeding four access points (a bus); the 10-years view slides whole drops instead
+    of the short zone-box runs, IDF-2 has no patch panel or UPS, backbone and horizontal share one line. The jack
+    and port labels contradict each other across Design, Trace, Support, Install and the cable test (2B-14 lands on
+    B-14 in one step and A-14 in another; TIA-606 says the same code sits at both ends). Labels and wording are
+    owner-fixed copy (DESIGN.md), so those go to the owner as questions (HANDOFF).
+  - Robustness: the strip paused under the mouse and stopped for good after one press (fixed, 317068e, d43d7b8);
+    ratio thresholds on tall pieces never fire on a phone held sideways (fixed: everything starts by screen
+    position); the cable test could restart a run the visitor started (fixed); a hidden tab let timers run on
+    without frames (fixed: a hidden tab pauses); the strip could switch steps while the visitor was reading deep in
+    the tall step 03 (fixed: it moves on only while the stage's top edge is on screen); the reveal failsafe could
+    flash a block hidden again when the script booted late (build item); Numbers' two observers could disagree
+    (build item). Both laps now rest at their last state (rule 10) and start fresh on re-entry.
+  - Proposals not taken now (new drawings, each about a day): drawn scenes for the six service pages, drawings for
+    the eight industries (their content is still unconfirmed), a "where each cable goes" section above the Plan
+    page's table, a live sketch beside the estimator. Listed for the owner as a possible next round.
+  The build round launched on the survey (workflow `motion-beef-up`, run wf_a14df82e-220): seven builders each
+  owning its files (Design; Install + Trace; Assess + Support + OfficePlan; CableTest; BuildingSvg + the explorer's
+  years-from-now view; CablePlant; motion.ts + Numbers + PartnerStrip on Sonnet, the rest on Opus), then three
+  sceptics who fix what they find in their own area, then a proofreader; 11 agents, roughly 4 to 6M tokens (said to
+  the owner before launching, per his rule). Hard rules given to every builder: copy byte-identical, transform /
+  opacity / clip-path / stroke-dashoffset only, timers token-guarded, finished() once, reduced motion and no-JS and
+  print show the finished picture, nothing sideways at 320px, each demo at or under about 8 s, the stepper contract
+  untouched. Results, checks and screenshots are recorded in the bullet above this one once the round is done.
 - **The site's rule for sequences — 2026-11-06 night.** The owner, looking at the preview's Install step on a desktop:
   "these should load in a sequence and if someone presses on any of the buttons the sequence should stop but when
   you scroll on it, it should naturally start animating and when the animation ends it moves onto the next one
