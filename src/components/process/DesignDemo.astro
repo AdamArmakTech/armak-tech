@@ -136,7 +136,7 @@ const layers = [
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="design"]').forEach((root) => {
     const box = root.querySelector<HTMLElement>('.ds')!;
@@ -253,6 +253,7 @@ const layers = [
       hint.classList.add('is-on');
       box.classList.add('ds--linked'); // jack codes, 160 ms each, 40 ms apart
       announce(root, 'Plan ready');
+      finished(root);
     });
 
     // Legend chips highlight one layer (press again to show all)

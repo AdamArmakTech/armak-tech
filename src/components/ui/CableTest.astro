@@ -267,7 +267,7 @@ const barPos = (b: Bar) =>
 </figure>
 
 <script>
-  import { fitSvgText, prefersReducedMotion } from '../../scripts/demo';
+  import { fitSvgText, finished, prefersReducedMotion } from '../../scripts/demo';
 
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -381,6 +381,7 @@ const barPos = (b: Bar) =>
       if (!alive()) return;
       setResult(true);
       say(mode === 'pass' ? 'Result: pass' : 'Result: fail. The jack gets re-terminated and retested.');
+      finished(root);
     };
 
     root.querySelectorAll('[data-ct-run]').forEach((b) => b.addEventListener('click', run));

@@ -54,6 +54,14 @@ export function announce(root: Element, text: string) {
 }
 
 /**
+ * Tells the page that a demo has played to its end. The Process stepper (src/components/home/Process.astro)
+ * listens for this on the active step and moves on to the next step after a short hold.
+ */
+export function finished(root: Element) {
+  root.dispatchEvent(new CustomEvent('armak:demo-done', { bubbles: true }));
+}
+
+/**
  * Keeps SVG labels readable when a drawing is scaled down (phones) or up (wide screens).
  * Sets `--u` on every `svg[data-fit-text]` inside `root` to the number of viewBox units per CSS
  * pixel, so CSS can size text in screen pixels, within limits that fit the drawing:

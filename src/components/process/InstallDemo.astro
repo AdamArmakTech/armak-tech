@@ -185,7 +185,7 @@ const steps = installPhases;
 </div>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="install"]').forEach((root) => {
     const range = root.querySelector<HTMLInputElement>('[data-in-range]')!;
@@ -287,6 +287,7 @@ const steps = installPhases;
         s.classList.add('is-on');
       }
       announce(root, 'Pre-staged, installed after hours, cut over in phases');
+      finished(root);
     });
 
     if (!reduced) {

@@ -119,7 +119,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="support"]').forEach((root) => {
     fitSvgText(root);
@@ -214,6 +214,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       setStatus('done');
       setStage(4);
       announce(root, 'Tested, record updated, ticket done');
+      finished(root);
     });
 
     if (!reduced) {

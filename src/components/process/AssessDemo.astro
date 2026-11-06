@@ -89,7 +89,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-demo="assess"]').forEach((root) => {
     const walk = root.querySelector<SVGPathElement>('[data-as-walk]')!;
@@ -175,6 +175,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
       if (!alive()) return;
       done.classList.add('is-on');
       announce(root, 'Site report ready');
+      finished(root);
     });
 
     if (!reduced) {

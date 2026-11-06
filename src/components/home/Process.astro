@@ -1,9 +1,10 @@
 ---
 /**
  * "The Armak standard" — the five steps, each with a live demo.
- * Works like the System explorer: tabs on the left auto-advance (red progress line under the
- * active one); one stage on the right shows the active step and plays its demo. Any click or
- * interaction hands control to the visitor. Without JS every step + demo is shown stacked.
+ * Works like the System explorer: the tabs move on by themselves once the active step's demo has played
+ * to the end (a short hold, then a crossfade to the next step); one stage shows the active step and plays
+ * its demo. Using a tab, or a control inside a demo, hands control to the visitor. Without JS every
+ * step + demo is shown stacked.
  */
 import SectionHead from '../ui/SectionHead.astro';
 import Button from '../ui/Button.astro';
@@ -12,7 +13,6 @@ import AssessDemo from '../process/AssessDemo.astro';
 import DesignDemo from '../process/DesignDemo.astro';
 import InstallDemo from '../process/InstallDemo.astro';
 import SupportDemo from '../process/SupportDemo.astro';
-import JobTimeline from '../process/JobTimeline.astro';
 import RoomForLater from '../process/RoomForLater.astro';
 import { process as steps, pillars } from '../../data/content';
 import { CTA_LABEL } from '../../lib/cta';
@@ -23,9 +23,6 @@ const demos: Record<string, any> = {
   '03': InstallDemo,
   '05': SupportDemo,
 };
-
-// How long each step stays up before advancing (ms). The cable test plays a little longer.
-const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 ---
 
 <section id="process" class="section process">
@@ -35,8 +32,6 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
       title="How every job runs."
       intro="The same five steps on every job, from a single-rack retrofit to a multi-site rollout. Nothing is signed off until it has been tested and documented."
     />
-
-    <JobTimeline />
 
     <div class="steps" data-steps>
       <div class="steps__tabs-wrap">
@@ -51,11 +46,8 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
               aria-selected={i === 0 ? 'true' : 'false'}
               aria-controls={`step-panel-${s.code}`}
               tabindex={i === 0 ? 0 : -1}
-              style={`--dwell:${dwell(s.code)}ms`}
-              data-dwell={dwell(s.code)}
             >
               <span class="steps__name">{s.title}</span>
-              <span class="steps__progress" aria-hidden="true"></span>
             </button>
           ))}
         </div>
@@ -107,65 +99,122 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
 <script>
   import { prefersReducedMotion } from '../../scripts/demo';
 
+  /** The finished demo stays on screen this long before the next step (ms). */
+  const HOLD_MS = 1600;
+  /** If a demo never reports that it is done, move on anyway after this long (ms). */
+  const FALLBACK_MS = 22000;
+  /** Touching one of these inside a demo hands control to the visitor. A scroll or a tap on the drawing does not. */
+  const CONTROL = 'button, a, input, select, textarea, summary, [role="slider"], [role="button"]';
+
   document.querySelectorAll<HTMLElement>('[data-steps]').forEach((root) => {
     const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
     const panels = [...root.querySelectorAll<HTMLElement>('[data-step-panel]')];
     const stage = root.querySelector<HTMLElement>('.steps__stage')!;
+    const tabsEl = root.querySelector<HTMLElement>('[data-tabs]');
     if (!tabs.length) return;
 
     root.classList.add('is-enhanced');
 
     let index = 0;
     let timer: number | undefined;
+    let switching: number | undefined;
     let inView = false;
     let userTookOver = false;
     let hovering = false;
     let focused = false;
+    let doneSeen = false; // the active step's demo has played to the end
+    const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    const autoOn = () => !prefersReducedMotion() && !userTookOver && inView && !hovering && !focused;
 
     /** Restart the active step's demo from the beginning */
     const playDemo = (panel: HTMLElement) => {
       panel.querySelector<HTMLButtonElement>('[data-demo-replay], [data-ct-run]')?.click();
     };
 
-    const startProgress = (tab: HTMLElement) => {
-      tabs.forEach((t) => t.classList.remove('is-timing'));
-      void tab.offsetWidth;
-      tab.classList.add('is-timing');
-    };
-
     const stopAuto = () => {
       window.clearTimeout(timer);
       timer = undefined;
-      tabs.forEach((t) => t.classList.remove('is-timing'));
     };
 
-    const scheduleNext = () => {
+    /** Move on to the next step after `ms`, as long as the stepper is still running by itself. */
+    const armAdvance = (ms: number) => {
       window.clearTimeout(timer);
-      if (prefersReducedMotion() || userTookOver || !inView || hovering || focused) return;
-      const tab = tabs[index];
-      startProgress(tab);
+      timer = undefined;
+      if (!autoOn()) return;
       timer = window.setTimeout(() => {
+        timer = undefined;
+        if (!autoOn()) return;
         select(index + 1, { play: true });
-        scheduleNext();
-      }, Number(tab.dataset.dwell) || 6500);
+        armAdvance(FALLBACK_MS);
+      }, ms);
+    };
+
+    /** Carry on after a pause: straight to the hold if the demo already finished, else wait for it. */
+    const resume = () => armAdvance(doneSeen ? HOLD_MS : FALLBACK_MS);
+
+    // Each demo reports when it has played to the end (finished() in src/scripts/demo.ts): hold, then next step.
+    stage.addEventListener('armak:demo-done', (e) => {
+      if (!panels[index].contains(e.target as Node)) return;
+      doneSeen = true;
+      armAdvance(HOLD_MS);
+    });
+
+    /** Crossfade the two panels and ease the stage from the old height to the new one, so nothing jumps. */
+    const swapPanels = (from: HTMLElement, to: HTMLElement) => {
+      window.clearTimeout(switching);
+      switching = undefined;
+      panels.forEach((p) => p.classList.remove('is-leaving'));
+      if (prefersReducedMotion()) {
+        stage.classList.remove('is-switching');
+        stage.style.removeProperty('--stage-h');
+        from.classList.remove('is-active');
+        to.classList.add('is-active');
+        return;
+      }
+      const h0 = stage.getBoundingClientRect().height;
+      stage.style.setProperty('--stage-h', `${h0}px`);
+      stage.classList.add('is-switching');
+      from.classList.add('is-leaving');
+      from.classList.remove('is-active');
+      to.classList.add('is-active');
+      const h1 = to.offsetHeight;
+      void stage.offsetWidth; // commit the start height before changing it, so the height eases instead of jumping
+      stage.style.setProperty('--stage-h', `${h1}px`);
+      switching = window.setTimeout(() => {
+        from.classList.remove('is-leaving');
+        stage.classList.remove('is-switching');
+        stage.style.removeProperty('--stage-h');
+      }, 480);
+    };
+
+    /** Scroll the phone tab strip so the active tab is in view (on desktop the strip does not scroll). */
+    const showTab = (tab: HTMLElement) => {
+      if (!tabsEl || tabsEl.scrollWidth <= tabsEl.clientWidth + 1) return;
+      const left = tab.offsetLeft - (tabsEl.clientWidth - tab.offsetWidth) / 2;
+      tabsEl.scrollTo({ left: Math.max(0, left), behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
     };
 
     function select(i: number, { focus = false, play = false } = {}) {
-      index = (i + tabs.length) % tabs.length;
+      const next = (i + tabs.length) % tabs.length;
+      const from = panels[index];
+      const to = panels[next];
+      index = next;
+      doneSeen = false;
       tabs.forEach((t, n) => {
         const on = n === index;
         t.setAttribute('aria-selected', String(on));
         t.tabIndex = on ? 0 : -1;
       });
-      panels.forEach((p, n) => p.classList.toggle('is-active', n === index));
+      if (from !== to) swapPanels(from, to);
       moveSlider();
+      showTab(tabs[index]);
       if (focus) tabs[index].focus();
-      if (play) playDemo(panels[index]);
+      if (play) playDemo(to);
     }
 
     /** One highlight behind the active tab. It is a 1px square moved and stretched with transform only,
      *  so it never triggers layout. Created here, so without JS the tabs are untouched. */
-    const tabsEl = root.querySelector<HTMLElement>('[data-tabs]');
     let slider: HTMLElement | null = null;
     function moveSlider() {
       if (!tabsEl) return;
@@ -214,20 +263,25 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
       });
     });
 
-    // Interacting with a demo (cable switch, slider, replay…) also hands over control
-    stage.addEventListener('pointerdown', takeOver);
+    // Using a control inside a demo (cable switch, slider, replay, a jack) hands over control.
+    // A scroll or a tap on the drawing does not, so the steps keep moving on phones.
+    stage.addEventListener('pointerdown', (e) => {
+      if ((e.target as Element).closest?.(CONTROL)) takeOver();
+    });
     stage.addEventListener('keydown', takeOver);
 
-    // Hold still while the pointer is over it or keyboard focus is inside it, so the step
-    // never changes under someone who is reading or tabbing; carry on once they leave.
-    root.addEventListener('mouseenter', () => {
-      hovering = true;
-      stopAuto();
-    });
-    root.addEventListener('mouseleave', () => {
-      hovering = false;
-      scheduleNext();
-    });
+    // With a real pointer: hold still while it is over the steps, so the step never changes under someone
+    // who is reading; carry on once it leaves. (A phone fires mouseenter on a tap and never leaves, so not there.)
+    if (canHover) {
+      root.addEventListener('mouseenter', () => {
+        hovering = true;
+        stopAuto();
+      });
+      root.addEventListener('mouseleave', () => {
+        hovering = false;
+        resume();
+      });
+    }
     root.addEventListener('focusin', () => {
       focused = true;
       stopAuto();
@@ -237,7 +291,7 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
       // Moving between controls inside, or the whole window losing focus, keeps it paused
       if ((to && root.contains(to)) || (!to && root.contains(document.activeElement))) return;
       focused = false;
-      scheduleNext();
+      resume();
     });
 
     // Links to the cable test (hero "See how we test") open step 04 first, so the target is visible.
@@ -266,14 +320,17 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
       select(trace, { play: true });
     });
 
-    // Auto-advance only while the section is on screen
+    // Run only while the section is on screen: play the current demo on arrival, stop when it leaves
     new IntersectionObserver(
       ([entry]) => {
         const wasInView = inView;
         inView = entry.isIntersecting;
         if (inView && !wasInView) {
-          if (!userTookOver) playDemo(panels[index]);
-          scheduleNext();
+          if (!userTookOver) {
+            doneSeen = false;
+            playDemo(panels[index]);
+          }
+          resume();
         } else if (!inView) {
           stopAuto();
         }
@@ -410,27 +467,6 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     font-size: var(--fs-small);
   }
 
-  .steps__progress {
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    height: 3px;
-    width: 100%;
-    background: var(--paper);
-    transform: scaleX(0);
-    transform-origin: left;
-  }
-
-  .steps__tab.is-timing .steps__progress {
-    animation: steps-progress var(--dwell, 6500ms) linear forwards;
-  }
-
-  @keyframes steps-progress {
-    to {
-      transform: scaleX(1);
-    }
-  }
-
   /* Stage */
   .steps__stage {
     display: grid;
@@ -441,16 +477,54 @@ const dwell = (code: string) => (code === '04' ? 8500 : 6500);
     display: grid;
     gap: 1.25rem;
     align-content: start;
+    align-self: start;
+  }
+
+  /* Switching steps (owner, 2026-11-06: "it should look seamless"): the two panels share one cell, the old one
+     fades out as the new one fades in, and the stage eases from the old height to the new one so the page never
+     jumps (grid-template-rows, the same way the FAQ answers unfold). Under reduced motion it is an instant swap. */
+  .steps__stage.is-switching {
+    grid-template-rows: var(--stage-h);
+    overflow: clip;
+    transition: grid-template-rows 420ms var(--ease-out);
+  }
+
+  .steps__stage.is-switching > .steps__panel {
+    grid-area: 1 / 1;
+  }
+
+  .steps.is-enhanced .steps__panel.is-leaving {
+    display: grid;
+    pointer-events: none;
+    animation: steps-out 240ms var(--ease-out) forwards;
   }
 
   .steps.is-enhanced .steps__panel.is-active {
-    animation: steps-in 0.4s var(--ease-out);
+    animation: steps-in 420ms var(--ease-out);
   }
 
   @keyframes steps-in {
     from {
       opacity: 0;
-      transform: translateY(8px);
+      transform: translateY(10px);
+    }
+  }
+
+  @keyframes steps-out {
+    to {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .steps__stage.is-switching {
+      transition: none;
+    }
+
+    .steps.is-enhanced .steps__panel.is-active,
+    .steps.is-enhanced .steps__panel.is-leaving {
+      animation: none;
     }
   }
 
