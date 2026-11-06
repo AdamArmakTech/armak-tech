@@ -1,11 +1,10 @@
 ---
 /**
  * Compact opener shared by every inner page (about, industries, projects, contact, 404):
- * breadcrumb → label (text only) → h1 (t-h1) → lead → optional actions (default slot).
+ * breadcrumb → h1 (t-h1) → lead → optional actions (default slot).
  * Optional `aside` slot sits to the right on desktop; optional `spec` renders a SpecStrip foot.
- * Extra labels (e.g. a "Placeholder" flag) go in the `labels` slot next to the main label.
+ * `label` and `labelTone` are accepted but unused. The `labels` slot (e.g. a hidden "Placeholder" flag) renders in a plain div only when used.
  */
-import Label from '../ui/Label.astro';
 import SpecStrip from '../ui/SpecStrip.astro';
 
 interface Crumb {
@@ -24,7 +23,7 @@ interface Props {
   titleId?: string;
 }
 
-const { label, title, lead, crumbs, spec, labelTone = 'default', titleId = 'page-title' } = Astro.props;
+const { title, lead, crumbs, spec, titleId = 'page-title' } = Astro.props;
 const trail: Crumb[] | undefined = crumbs ? [{ label: 'Home', href: '/' }, ...crumbs] : undefined;
 const hasAside = Astro.slots.has('aside');
 const hasLabels = Astro.slots.has('labels');
@@ -32,7 +31,7 @@ const hasLabels = Astro.slots.has('labels');
 
 <section class="page-hero container" aria-labelledby={titleId} data-dock-start>
   {trail && (
-    <nav class="page-hero__crumbs t-mono" aria-label="Breadcrumb">
+    <nav class="page-hero__crumbs t-meta" aria-label="Breadcrumb">
       <ol role="list">
         {trail.map((c, i) =>
           i === trail.length - 1 ? <li aria-current="page">{c.label}</li> : <li><a href={c.href}>{c.label}</a></li>,
@@ -43,9 +42,8 @@ const hasLabels = Astro.slots.has('labels');
 
   <div class:list={['page-hero__grid', { 'page-hero__grid--aside': hasAside }]}>
     <div class="page-hero__copy">
-      {(label || hasLabels) && (
+      {hasLabels && (
         <div class="page-hero__labels">
-          {label && <Label tone={labelTone}>{label}</Label>}
           <slot name="labels" />
         </div>
       )}
@@ -126,7 +124,7 @@ const hasLabels = Astro.slots.has('labels');
   }
 
   .page-hero__title {
-    max-width: 15ch;
+    max-width: 22ch;
   }
 
   @media (prefers-reduced-motion: no-preference) {

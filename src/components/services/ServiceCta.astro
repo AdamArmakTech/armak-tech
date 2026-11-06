@@ -3,7 +3,6 @@
  * Closing call to action for service pages. Light panel so it doesn't stack against the dark
  * footer; pages using it pass footerCta={false} to Base so the footer's generic CTA doesn't repeat.
  */
-import Label from '../ui/Label.astro';
 import NextStep from '../ui/NextStep.astro';
 
 interface Props {
@@ -20,7 +19,6 @@ const { title, body, about } = Astro.props;
   <div class="cta__panel">
     <div class="cta__body">
       <div class="cta__copy">
-        <Label>Next step</Label>
         <h2 id="cta-title" class="t-h2 cta__title" data-split>{title}</h2>
         <p class="t-lead">{body}</p>
       </div>
@@ -38,8 +36,6 @@ const { title, body, about } = Astro.props;
 
   .cta__panel {
     background: var(--white);
-    border: 1px solid var(--hairline);
-    border-top: 2px solid var(--ink);
     border-radius: var(--radius);
   }
 

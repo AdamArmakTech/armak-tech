@@ -105,8 +105,7 @@ const { preview = false } = Astro.props;
     align-items: center;
     gap: 0.5rem;
     padding: 0.625rem var(--gutter) calc(0.625rem + env(safe-area-inset-bottom, 0px));
-    background: color-mix(in srgb, var(--paper) 96%, transparent);
-    border-top: 1px solid var(--hairline);
+    background: color-mix(in srgb, var(--white) 96%, transparent);
     transform: translateY(100%);
     visibility: hidden;
     transition:
@@ -177,6 +176,5 @@ const { preview = false } = Astro.props;
     max-width: 400px;
     transform: none;
     visibility: visible;
-    border: 1px solid var(--hairline);
   }
 </style>

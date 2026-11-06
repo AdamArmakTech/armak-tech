@@ -35,14 +35,14 @@ const year = new Date().getFullYear();
       </div>
 
       <nav aria-label="Services" class="site-footer__col">
-        <p class="t-mono site-footer__heading">Services</p>
+        <p class="t-meta site-footer__heading">Services</p>
         <ul role="list">
           {services.map((s) => <li><a href={`/services/${s.slug}/`}>{s.name}</a></li>)}
         </ul>
       </nav>
 
       <nav aria-label="Company" class="site-footer__col">
-        <p class="t-mono site-footer__heading">Company</p>
+        <p class="t-meta site-footer__heading">Company</p>
         <ul role="list">
           <li><a href="/industries/">Industries</a></li>
           {showProjects && <li><a href="/projects/">Projects</a></li>}
@@ -53,7 +53,7 @@ const year = new Date().getFullYear();
       </nav>
 
       <div class="site-footer__col">
-        <p class="t-mono site-footer__heading">Contact</p>
+        <p class="t-meta site-footer__heading">Contact</p>
         <address>
           <ul role="list">
             <li><a class="tel" href={site.phoneHref}>{site.phone}</a></li>
@@ -66,12 +66,9 @@ const year = new Date().getFullYear();
       </div>
     </div>
 
-    <div class="site-footer__area">
-      <p class="t-mono site-footer__heading">Serving Southern California</p>
-      <p class="t-small t-muted">{serviceArea.map((c) => c.name).join(' · ')}</p>
-    </div>
+    <p class="t-small t-muted site-footer__area">Serving Southern California: {serviceArea.map((c) => c.name).join(', ')}</p>
 
-    <div class="site-footer__legal t-mono">
+    <div class="site-footer__legal t-meta">
       <span>© {year} {site.name}</span>
       <span>Est. {FOUNDED}</span>
       {site.license && <span>{site.license}</span>}
@@ -91,7 +88,6 @@ const year = new Date().getFullYear();
     display: grid;
     gap: 2rem;
     padding-block: var(--space-block);
-    border-bottom: 1px solid var(--hairline-inverse);
   }
 
   .site-footer__cta-actions {
@@ -181,16 +177,14 @@ const year = new Date().getFullYear();
   }
 
   .site-footer__area {
-    padding-block: 2rem;
-    border-top: 1px solid var(--hairline-inverse);
+    padding-block: var(--sp-5) var(--sp-4);
   }
 
   .site-footer__legal {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem 2rem;
-    padding-block: 1.5rem 2rem;
-    border-top: 1px solid var(--hairline-inverse);
+    padding-block: var(--sp-5) var(--sp-6);
     color: var(--steel-light);
   }
 </style>

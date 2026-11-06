@@ -17,7 +17,7 @@ const { href, label, tone = 'default' } = Astro.props;
 
 <div class:list={['snext container', `snext--${tone}`]}>
   <a class="snext__link" href={href}>
-    <span class="t-mono snext__kicker">{tone === 'cta' ? 'Ready?' : 'Next'}</span>
+    <span class="t-meta snext__kicker">{tone === 'cta' ? 'Ready?' : 'Next'}</span>
     <span class="snext__label">{label}</span>
     <ArrowDown class="snext__arrow" size={18} stroke-width={1.75} aria-hidden="true" />
   </a>
@@ -36,9 +36,8 @@ const { href, label, tone = 'default' } = Astro.props;
     gap: 0.875rem;
     min-height: 48px;
     padding: 0.5rem 0.25rem;
-    border-bottom: 1px solid var(--hairline-strong);
     font-weight: 500;
-    transition: border-color var(--dur-fast) ease, color var(--dur-fast) ease;
+    transition: color var(--dur-fast) ease;
   }
 
   .snext__kicker {
@@ -50,8 +49,8 @@ const { href, label, tone = 'default' } = Astro.props;
     transition: transform var(--dur) var(--ease-out);
   }
 
-  .snext__link:hover {
-    border-color: var(--ink);
+  .snext__link:hover .snext__label {
+    color: var(--signal);
   }
 
   /* Mouse only: on touch, :hover sticks after a tap */
@@ -63,7 +62,6 @@ const { href, label, tone = 'default' } = Astro.props;
 
   .snext--cta .snext__link {
     color: var(--signal);
-    border-color: var(--signal);
   }
 
   .snext--cta .snext__kicker {

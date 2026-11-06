@@ -1,11 +1,9 @@
 ---
-import Label from './Label.astro';
-
 /**
- * Standard section opener on the 12-col grid:
- * hairline rule ─ label (cols 1–3) │ heading + intro (cols 4–12)
- * `code` is accepted so callers compile but is never rendered (owner removed decorative codes).
- * `label` is optional; without it the meta column stays empty.
+ * Standard section opener: heading, optional intro, optional slot.
+ * `code` and `label` are accepted so callers compile but are never rendered
+ * (owner removed decorative codes and small labels above headings).
+ * Sections are separated by space, never by a top rule.
  */
 interface Props {
   code?: string;
@@ -17,14 +15,11 @@ interface Props {
   split?: boolean;
 }
 
-const { label, title, intro, tone = 'default', headingLevel = 'h2', split = true } = Astro.props;
+const { title, intro, tone = 'default', headingLevel = 'h2', split = true } = Astro.props;
 const Heading = headingLevel;
 ---
 
 <header class:list={['section-head', `section-head--${tone}`]}>
-  <div class="section-head__meta">
-    {label && <Label tone={tone === 'inverse' ? 'inverse' : 'default'}>{label}</Label>}
-  </div>
   <div class="section-head__body">
     <Heading class="t-h2 section-head__title" data-split={split ? '' : undefined}>{title}</Heading>
     {intro && <p class="t-lead section-head__intro" data-reveal>{intro}</p>}
@@ -37,18 +32,7 @@ const Heading = headingLevel;
     display: grid;
     grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: var(--col-gap);
-    row-gap: 1.75rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--hairline);
     margin-bottom: var(--space-block);
-  }
-
-  .section-head--inverse {
-    border-top-color: var(--hairline-inverse);
-  }
-
-  .section-head__meta {
-    grid-column: 1 / -1;
   }
 
   .section-head__body {
@@ -58,7 +42,7 @@ const Heading = headingLevel;
   }
 
   .section-head__title {
-    max-width: 18ch;
+    max-width: 24ch;
   }
 
   .section-head__intro {
@@ -66,13 +50,8 @@ const Heading = headingLevel;
   }
 
   @media (min-width: 900px) {
-    .section-head__meta {
-      grid-column: 1 / span 3;
-      padding-top: 0.55rem;
-    }
-
     .section-head__body {
-      grid-column: 4 / -1;
+      grid-column: 1 / span 9;
     }
   }
 </style>

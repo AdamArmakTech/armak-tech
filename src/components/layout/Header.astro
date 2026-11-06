@@ -49,7 +49,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
 
     <div class="site-header__actions">
       <div class="site-header__contact">
-        <a class="site-header__phone t-mono" href={site.phoneHref}>
+        <a class="site-header__phone t-meta" href={site.phoneHref}>
           <Phone size={15} stroke-width={1.75} aria-hidden="true" />
           {site.phone}
         </a>
@@ -75,7 +75,6 @@ const isActive = (href: string) => path === href || path.startsWith(href);
         {services.map((s) => (
           <li>
             <a href={`/services/${s.slug}/`} class="mega__item">
-              <span class="t-mono mega__code">{s.code}</span>
               <span class="mega__name">{s.name}</span>
               <span class="mega__short">{s.short}</span>
             </a>
@@ -83,7 +82,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
         ))}
       </ul>
       <aside class="mega__aside">
-        <p class="t-mono t-muted">Not sure what you need?</p>
+        <p class="t-meta">Not sure what you need?</p>
         <p class="t-h4">Book a site assessment. We’ll walk the space and scope it with you.</p>
         <Button href={contactHref()} variant="ink">{CTA_LABEL}</Button>
         <a class="mega__all" href="/services/">All services →</a>
@@ -94,11 +93,11 @@ const isActive = (href: string) => path === href || path.startsWith(href);
   <!-- Mobile menu -->
   <div class="mobile-menu" id="mobile-menu" hidden data-menu data-lenis-prevent>
     <div class="container mobile-menu__inner">
-      <p class="t-mono t-muted">Services</p>
+      <p class="t-meta">Services</p>
       <ul role="list" class="mobile-menu__services">
         {services.map((s) => (
           <li>
-            <a href={`/services/${s.slug}/`}><span class="t-mono">{s.code}</span>{s.name}</a>
+            <a href={`/services/${s.slug}/`}>{s.name}</a>
           </li>
         ))}
       </ul>
@@ -123,7 +122,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
   const header = document.querySelector<HTMLElement>('[data-header]');
 
   if (header) {
-    // Hairline + denser background once the page scrolls
+    // Denser background once the page scrolls
     const onScroll = () => header.toggleAttribute('data-scrolled', window.scrollY > 8);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
@@ -263,8 +262,6 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 1px solid transparent;
-    transition: border-color var(--dur) ease;
   }
 
   /* Blur lives on a pseudo-element: backdrop-filter on the header itself would make it
@@ -278,11 +275,6 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     backdrop-filter: saturate(1.4) blur(14px);
     -webkit-backdrop-filter: saturate(1.4) blur(14px);
     transition: background var(--dur) ease;
-  }
-
-  .site-header[data-scrolled],
-  .site-header[data-open] {
-    border-bottom-color: var(--hairline);
   }
 
   .site-header[data-scrolled]::before,
@@ -378,7 +370,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     align-items: center;
     gap: 0.5rem;
     color: var(--ink);
-    font-size: 0.8125rem;
+    font-size: var(--fs-small);
     white-space: nowrap;
   }
 
@@ -467,7 +459,6 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     inset-inline: 0;
     top: 100%;
     background: var(--paper);
-    border-bottom: 1px solid var(--hairline);
     box-shadow: var(--shadow-raise);
   }
 
@@ -505,9 +496,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
   .mega__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--hairline);
-    border: 1px solid var(--hairline);
+    gap: var(--sp-2);
   }
 
   .mega__item {
@@ -515,16 +504,12 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     gap: 0.375rem;
     height: 100%;
     padding: 1.25rem;
-    background: var(--paper);
+    background: var(--white);
     transition: background var(--dur-fast) ease;
   }
 
   .mega__item:hover {
-    background: var(--white);
-  }
-
-  .mega__code {
-    color: var(--signal);
+    background: var(--paper-sunken);
   }
 
   .mega__name {
@@ -533,8 +518,8 @@ const isActive = (href: string) => path === href || path.startsWith(href);
   }
 
   .mega__short {
-    font-size: 0.875rem;
-    color: var(--steel);
+    font-size: var(--fs-label);
+    color: var(--text);
     line-height: 1.45;
   }
 
@@ -544,8 +529,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     justify-items: start;
     gap: 1rem;
     padding: 1.25rem;
-    background: var(--white);
-    border: 1px solid var(--hairline);
+    background: var(--paper-sunken);
   }
 
   .mega__all {
@@ -569,7 +553,6 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     inset: var(--header-h) 0 0 0;
     overflow-y: auto;
     background: var(--paper);
-    border-top: 1px solid var(--hairline);
   }
 
   .mobile-menu__inner {
@@ -580,7 +563,6 @@ const isActive = (href: string) => path === href || path.startsWith(href);
 
   .mobile-menu__services {
     display: grid;
-    border-top: 1px solid var(--hairline);
   }
 
   .mobile-menu__services a {
@@ -588,14 +570,8 @@ const isActive = (href: string) => path === href || path.startsWith(href);
     gap: 1rem;
     align-items: baseline;
     padding-block: 0.875rem;
-    border-bottom: 1px solid var(--hairline);
     font-size: 1.0625rem;
     font-weight: 500;
-  }
-
-  .mobile-menu__services .t-mono {
-    color: var(--signal);
-    min-width: 3.25rem;
   }
 
   .mobile-menu__primary {

@@ -143,7 +143,7 @@ h4 {
 .t-lead {
   font-size: var(--fs-lead);
   line-height: 1.5;
-  color: var(--steel);
+  color: var(--text);
   text-wrap: pretty;
   max-width: 38em;
 }
@@ -156,13 +156,24 @@ h4 {
   color: var(--steel);
 }
 
-/* Mono technical label: "A-01 · SERVICES", spec rows, metadata */
-.t-mono {
+/* Quiet metadata in the text face: breadcrumbs, form labels, captions, small badges */
+.t-meta {
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--steel);
+}
+
+/* Instrument readout: only what a technician reads off a tester or drawing (cable IDs, lengths, pins, PASS/FAIL) */
+.t-readout {
   font-family: var(--font-mono);
   font-size: var(--fs-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
   font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ── Layout primitives ─────────────────────────────────── */
@@ -229,10 +240,11 @@ h4 {
 }
 
 .field__label {
-  font-family: var(--font-mono);
-  font-size: var(--fs-label);
-  letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
   color: var(--steel);
 }
 
@@ -243,7 +255,7 @@ h4 {
   border: 0;
   border-bottom: 1px solid var(--field-line);
   border-radius: 0;
-  font-size: 1.0625rem;
+  font-size: var(--fs-body);
   transition: border-color var(--dur-fast) ease;
 }
 
@@ -290,6 +302,8 @@ textarea.field__control {
   align-items: center;
   gap: 0.5rem;
   padding: 0.625rem 1rem;
+  background: var(--paper-sunken);
+  /* A form control needs a visible edge (WCAG 1.4.11); --field-line is the same line the text fields use */
   border: 1px solid var(--field-line);
   border-radius: var(--radius);
   font-size: var(--fs-small);
@@ -298,12 +312,11 @@ textarea.field__control {
 }
 
 .chip:hover span {
-  border-color: var(--ink);
+  background: color-mix(in srgb, var(--paper-sunken) 85%, var(--ink));
 }
 
-/* Press feedback: small squeeze (no scale under reduced motion, the ink border is enough) */
+/* Press feedback: small squeeze */
 .chip input:active + span {
-  border-color: var(--ink);
   transform: scale(0.97);
 }
 

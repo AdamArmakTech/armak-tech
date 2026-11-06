@@ -4,7 +4,6 @@
  * footerCta={false} to Base so the footer's generic CTA doesn't repeat it.
  * `code` only keeps the heading id unique; it is not shown.
  */
-import Label from '../ui/Label.astro';
 import NextStep from '../ui/NextStep.astro';
 import Stripe from '../ui/Stripe.astro';
 
@@ -25,7 +24,6 @@ const id = `${code}-cta-title`;
     <Stripe height={4} />
     <div class="page-cta__body">
       <div class="page-cta__copy">
-        <Label tone="inverse">Next step</Label>
         <h2 id={id} class="t-h2 page-cta__title" data-split>{title}</h2>
         <p class="t-lead">{body}</p>
       </div>

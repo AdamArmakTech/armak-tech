@@ -7,7 +7,6 @@
  *   about  — a service slug or topic; carried into the contact form so it opens on the right thing
  *   tone   — 'light' on paper/white panels, 'inverse' on the dark PageCta panel
  */
-import { ArrowRight } from '@lucide/astro';
 import Button from './Button.astro';
 import { site } from '../../data/site';
 import { contactHref, checklistHref, CTA_LABEL } from '../../lib/cta';
@@ -49,7 +48,6 @@ const routes = [
             <span class="next__title">{title}</span>
             <span class="next__detail">{detail}</span>
           </span>
-          <ArrowRight class="next__arrow" size={16} stroke-width={1.75} aria-hidden="true" />
         </a>
       </li>
     ))}
@@ -78,17 +76,14 @@ const routes = [
 
   .next__routes {
     display: grid;
-    border-top: 1px solid var(--line, var(--hairline));
+    gap: var(--sp-2);
   }
 
   .next__route {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 16px;
     align-items: center;
-    gap: 0.875rem;
     min-height: 56px;
     padding-block: 0.75rem;
-    border-bottom: 1px solid var(--line, var(--hairline));
     transition: color var(--dur-fast) ease;
   }
 
@@ -103,19 +98,8 @@ const routes = [
   }
 
   .next__detail {
-    font-size: 0.8125rem;
+    font-size: var(--fs-small);
     color: var(--muted, var(--steel));
-  }
-
-  .next__arrow {
-    color: var(--muted, var(--steel));
-    transition: transform var(--dur) var(--ease-out);
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    .next__route:hover .next__arrow {
-      transform: translateX(3px);
-    }
   }
 
   .next__route:hover .next__title {
@@ -124,7 +108,6 @@ const routes = [
 
   /* Dark panel */
   .next--inverse {
-    --line: var(--hairline-inverse);
     --muted: var(--steel-light);
     color: var(--paper);
   }
