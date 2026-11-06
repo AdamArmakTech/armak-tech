@@ -57,11 +57,12 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   browser: hCaptcha renders with no console or CSP errors at desktop and 320px, the empty-box guard blocks sending
   (tested with the form pointed at a dead address; no request left the page), the dev server serves /styleguide/,
   the preview returns the 404 page for it. Not testable by Claude: a real send with a ticked box (Claude may not
-  complete captchas) and the 15-second timeout path; both reviewed in code by the proofreader. Open: (1) the
-  proofreader asks whether "ask us to delete it" on /privacy/ still stands now that form emails are kept as
-  business records (owner yes/no); (2) the owner must turn on hCaptcha in the Web3Forms dashboard so the check is
-  enforced on their side; (3) hCaptcha shows "localhost detected" on the local preview only; tick the box once on
-  the Vercel preview URL after the next publish.
+  complete captchas) and the 15-second timeout path; both reviewed in code by the proofreader. Owner answered the
+  proofreader's question the same evening: form emails are kept as business records and NOT deleted on request
+  (first "yes, delete on request", then "nevermind keep them"), so "ask us to delete it" came off /privacy/
+  ("Your choices" now offers a copy or a correction). Open: (1) the owner must turn on hCaptcha in
+  the Web3Forms dashboard so the check is enforced on their side; (2) hCaptcha shows "localhost detected" on the
+  local preview only; tick the box once on the Vercel preview URL after the next publish.
 - **Code cleanup, Batches 3 and 4 — 2026-10-31 and 2026-11-05 (branch `intent-redesign`, commits 06ca766 and 2267b24, NOT pushed).**
   Batch 3 (F38): the two unused old logo files are gone; `vercel.json` redirects their old addresses to `/logo.png`
   (the redirect only runs on Vercel, so check it after the next publish). Batch 4, owner answered two questions
