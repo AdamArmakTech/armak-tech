@@ -87,7 +87,7 @@ const sections = [
 
   {p.image && (
     <div class="container">
-      <figure class="cover" data-reveal>
+      <figure class="cover" data-reveal="clip">
         <Image
           src={p.image}
           alt=""
@@ -103,14 +103,14 @@ const sections = [
 
   <section class="section scope" aria-labelledby="scope-title">
     <div class="container">
-      <div class="scope__head">
+      <div class="scope__head" data-reveal>
         <Label>Scope</Label>
         <h2 id="scope-title" class="t-h3 scope__title">
           The job in numbers.
           {p.placeholder && <span class="t-muted"> Figures to be supplied.</span>}
         </h2>
       </div>
-      <div class="scope__grid">
+      <div class="scope__grid" data-reveal-group>
         {p.scope.map((s) => (
           <div>
             <Stat value={s.value} label={s.label} />
@@ -120,7 +120,7 @@ const sections = [
     </div>
   </section>
 
-  <div class="container story">
+  <div class="container story" data-reveal-group>
     {sections.map((s, i) => (
       <section class="story__row" id={s.id} aria-labelledby={`${s.id}-title`}>
         <div class="story__meta">
@@ -140,11 +140,11 @@ const sections = [
 
   <section class="section related" aria-labelledby="related-title">
     <div class="container">
-      <div class="related__head">
+      <div class="related__head" data-reveal>
         <Label>Related services</Label>
         <h2 id="related-title" class="t-h3">Systems on this project.</h2>
       </div>
-      <ul role="list" class="related__grid">
+      <ul role="list" class="related__grid" data-reveal-group="scale">
         {projectServices.map((s) => (
           <li>
             <ServiceTile href={`/services/${s.slug}/`} code={s.code} title={s.name} description={s.short} />
@@ -157,16 +157,16 @@ const sections = [
   {others.length > 0 && (
     <section class="section section--flush-top more" aria-labelledby="more-title">
       <div class="container">
-        <div class="related__head">
+        <div class="related__head" data-reveal>
           <Label>More projects</Label>
           <h2 id="more-title" class="t-h3">Other case studies.</h2>
         </div>
-        <ul role="list" class="more__grid">
+        <ul role="list" class="more__grid" data-reveal-group="scale">
           {others.map((o) => (
             <li><ProjectCard project={o} /></li>
           ))}
         </ul>
-        <div class="more__foot">
+        <div class="more__foot" data-reveal>
           <Button href="/projects/" variant="outline">All projects</Button>
         </div>
       </div>

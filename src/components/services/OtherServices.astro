@@ -11,11 +11,11 @@ const others = services.filter((s) => s.slug !== current);
 ---
 
 <nav class="others container" aria-label="Other services">
-  <div class="others__head">
+  <div class="others__head" data-reveal>
     <h2 class="t-h3" id="others-title">Other services</h2>
     <p class="others__intro">Most projects involve more than one system. One team handles all of them.</p>
   </div>
-  <ul role="list" class="others__grid">
+  <ul role="list" class="others__grid" data-reveal-group>
     {others.map((s) => (
       <li>
         <a class="other" href={`/services/${s.slug}/`}>

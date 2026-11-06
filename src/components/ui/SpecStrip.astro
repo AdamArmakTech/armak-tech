@@ -11,7 +11,7 @@ interface Props {
 const { items, tone = 'default', class: className } = Astro.props;
 ---
 
-<ul role="list" class:list={['spec-strip', `spec-strip--${tone}`, 't-meta', className]}>
+<ul role="list" class:list={['spec-strip', `spec-strip--${tone}`, 't-meta', className]} data-reveal="fade">
   {items.map((item) => <li>{item}</li>)}
 </ul>
 

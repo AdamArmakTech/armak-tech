@@ -337,20 +337,74 @@ textarea.field__control {
   outline-offset: 2px;
 }
 
-/* ── Motion states (driven by src/scripts/motion.ts) ───── */
+/* ── Motion states (driven by src/scripts/motion.ts) ─────
+   Scroll reveals (DESIGN.md rule 10 as the owner widened it on 2026-11-06: every block reveals once as it
+   enters view, on phones too; transform, opacity, clip-path and stroke-dashoffset only).
+
+   [data-reveal]            one element reveals once as it scrolls into view. The value picks the motion:
+     rise (default)         fades in while lifting --reveal-y
+     fade                   opacity only (breadcrumbs, logos, quiet lines)
+     clip                   a masked wipe upward (photos, figures)
+     scale                  settles from 0.98 to 1 (sheets, cards, panels)
+     draw                   rise, plus the strokes of any inline SVG inside draw themselves
+   [data-reveal-group]      on a parent: its direct children reveal one after another. The value is the
+                            variant they use; the gap is --reveal-step (data-reveal-step="60" overrides it
+                            for one group). Children are hidden here, before the script runs, so nothing flashes.
+   Reduced motion: none of this applies and the content is simply there. Print: everything is visible. */
+:root {
+  --reveal-y: 24px;
+  --reveal-dur: var(--dur-slow);
+  --reveal-step: 70ms;
+}
+
+/* Phones: a shorter lift and a quicker settle, so a thumb-scroll never waits on the page */
+@media (max-width: 640px) {
+  :root {
+    --reveal-y: 16px;
+    --reveal-dur: 700ms;
+    --reveal-step: 50ms;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
-  .js [data-reveal] {
+  /* Waiting to reveal */
+  .js :is([data-reveal], [data-reveal-group] > *):not(.is-revealed) {
     opacity: 0;
-    transform: translate3d(0, 24px, 0);
-    transition:
-      opacity var(--dur-slow) var(--ease-out),
-      transform var(--dur-slow) var(--ease-out);
-    transition-delay: var(--reveal-delay, 0ms);
+    transform: translate3d(0, var(--reveal-y), 0);
   }
 
-  .js [data-reveal].is-revealed {
-    opacity: 1;
+  .js :is([data-reveal="fade"], [data-reveal-group="fade"] > *):not(.is-revealed) {
     transform: none;
+  }
+
+  .js :is([data-reveal="scale"], [data-reveal-group="scale"] > *):not(.is-revealed) {
+    transform: translate3d(0, calc(var(--reveal-y) / 2), 0) scale(0.98);
+  }
+
+  .js :is([data-reveal="clip"], [data-reveal-group="clip"] > *):not(.is-revealed) {
+    opacity: 1;
+    clip-path: inset(100% 0 0 0);
+    transform: translate3d(0, calc(var(--reveal-y) / 2), 0);
+  }
+
+  /* Revealing. The transition lives only while the reveal plays (motion.ts drops .is-revealing after),
+     so a component's own hover or press transition comes back untouched. */
+  .js :is([data-reveal], [data-reveal-group] > *).is-revealing {
+    transition:
+      opacity var(--reveal-dur) var(--ease-out) var(--reveal-delay, 0ms),
+      transform var(--reveal-dur) var(--ease-out) var(--reveal-delay, 0ms),
+      clip-path var(--reveal-dur) var(--ease-out) var(--reveal-delay, 0ms);
+  }
+
+  .js :is([data-reveal="clip"], [data-reveal-group="clip"] > *).is-revealing {
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* draw: motion.ts measures each stroke and sets its dash; the strokes then draw from their start,
+     one after another, as the block rises */
+  .js .reveal-stroke {
+    transition: stroke-dashoffset var(--reveal-dur) var(--ease-out)
+      calc(var(--reveal-delay, 0ms) + var(--stroke-i, 0) * 90ms);
   }
 
   /* Hide split headings until SplitText has prepared them (prevents flash). */
@@ -364,7 +418,7 @@ textarea.field__control {
     animation: split-failsafe 0s linear 2.5s forwards;
   }
 
-  .js:not(.motion-ready) [data-reveal]:not(.is-revealed) {
+  .js:not(.motion-ready) :is([data-reveal], [data-reveal-group] > *):not(.is-revealed) {
     animation: reveal-failsafe 0.6s var(--ease-out) 2.5s forwards;
   }
 }
@@ -379,6 +433,32 @@ textarea.field__control {
   to {
     opacity: 1;
     transform: none;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* Paper never waits on a scroll: everything prints in its final state */
+@media print {
+  [data-reveal],
+  [data-reveal-group] > * {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .reveal-stroke {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
+
+  [data-split] {
+    visibility: visible !important;
+  }
+
+  .split-line {
+    transform: none !important;
   }
 }
 

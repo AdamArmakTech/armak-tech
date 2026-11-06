@@ -25,11 +25,11 @@ const next = steps.slice(0, 2);
   />
 
   <section class="contact container" aria-label="Contact form and details">
-    <div class="contact__panel">
+    <div class="contact__panel" data-reveal="scale">
       <ContactForm id="form" headingLevel={2} />
     </div>
 
-    <aside class="contact__info" aria-label="Contact details">
+    <aside class="contact__info" aria-label="Contact details" data-reveal-group>
       <div class="contact__direct">
         <p class="t-meta">Prefer to talk?</p>
         <a class="contact__phone tel" href={site.phoneHref}>{site.phone}</a>

@@ -67,13 +67,13 @@ const upgradeQuestions = [
     lead="Three tools for the planning stage: what to have ready before anyone visits, a rough idea of quantities, and a quick check on whether your cabling is due for an upgrade."
     crumbs={[{ label: 'Plan a project' }]}
   >
-    <nav class="plan__jump t-meta" aria-label="On this page">
+    <nav class="plan__jump t-meta" aria-label="On this page" data-reveal>
       <a href="#checklist">Checklist</a>
       <a href="#estimator">Estimator</a>
       <a href="#upgrade">Cabling check</a>
       <a href="#which-cable">Which cable?</a>
     </nav>
-    <div slot="aside" class="plan__report">
+    <div slot="aside" class="plan__report" data-reveal="scale">
       <CableTest variant="full" />
     </div>
   </PageHero>
@@ -83,9 +83,9 @@ const upgradeQuestions = [
     <section class="plan__section plan__checklist" id="checklist" aria-labelledby="checklist-title">
       <div class="plan__head">
         <h2 id="checklist-title" class="t-h2" data-split>The site-walk checklist.</h2>
-        <p class="t-lead">Have these ready and the first visit does the work of two.</p>
+        <p class="t-lead" data-reveal>Have these ready and the first visit does the work of two.</p>
       </div>
-      <ol class="checklist">
+      <ol class="checklist" data-reveal-group>
         {checklist.map((item) => (
           <li class="checklist__item">
             <span class="checklist__title">{item.title}</span>
@@ -93,7 +93,7 @@ const upgradeQuestions = [
           </li>
         ))}
       </ol>
-      <div class="plan__tools">
+      <div class="plan__tools" data-reveal>
         <button type="button" class="plan__print" data-print-checklist>
           <Printer size={18} stroke-width={1.75} aria-hidden="true" />
           Print or save as PDF
@@ -106,11 +106,11 @@ const upgradeQuestions = [
     <section class="plan__section plan__section--est" id="estimator" aria-labelledby="estimator-title">
       <div class="plan__head">
         <h2 id="estimator-title" class="t-h2" data-split>Estimate quantities for your office.</h2>
-        <p class="t-lead">Planning numbers from typical office layouts. Walls, ceiling height and how you use the space change them; the real count comes from the site walk.</p>
+        <p class="t-lead" data-reveal>Planning numbers from typical office layouts. Walls, ceiling height and how you use the space change them; the real count comes from the site walk.</p>
       </div>
 
       <form class="est" data-estimator>
-        <div class="est__inputs">
+        <div class="est__inputs" data-reveal-group>
           <label class="field">
             <span class="field__label">Floor area (sq ft)</span>
             <input class="field__control" type="number" autocomplete="off" inputmode="numeric" min="200" max="500000" step="100" value="5000" name="sqft" />
@@ -129,7 +129,7 @@ const upgradeQuestions = [
           </label>
         </div>
 
-        <dl class="est__out" aria-live="polite">
+        <dl class="est__out" aria-live="polite" data-reveal-group>
           <div class="est__row">
             <dt>Data drops <a class="est__term" href="/glossary/#drop">what’s a drop?</a></dt>
             <dd><span data-out="drops">—</span></dd>
@@ -153,8 +153,8 @@ const upgradeQuestions = [
         </dl>
       </form>
       <div class="est__send">
-        <p class="t-small est__plan">Want these numbers checked against your actual floor? <a class="plan__link" href={contactHref({ about: 'estimate' })}>Send us your plan</a> and we’ll scope it.</p>
-        <Button variant="ink" size="lg" href={contactHref({ about: 'structured-cabling' })} data-est-send>Send these numbers with my request</Button>
+        <p class="t-small est__plan" data-reveal>Want these numbers checked against your actual floor? <a class="plan__link" href={contactHref({ about: 'estimate' })}>Send us your plan</a> and we’ll scope it.</p>
+        <Button variant="ink" size="lg" href={contactHref({ about: 'structured-cabling' })} data-est-send data-reveal>Send these numbers with my request</Button>
       </div>
     </section>
 
@@ -165,7 +165,7 @@ const upgradeQuestions = [
       </div>
       <form class="quiz" data-upgrade-check>
         {upgradeQuestions.map((q) => (
-          <fieldset class="quiz__q">
+          <fieldset class="quiz__q" data-reveal>
             <legend class="quiz__legend">{q.label}</legend>
             <div class="quiz__options">
               {q.options.map(([value, label]) => (
@@ -185,7 +185,7 @@ const upgradeQuestions = [
     <section class="plan__section plan__section--wide" id="which-cable" aria-labelledby="which-cable-title">
       <div class="plan__head">
         <h2 id="which-cable-title" class="t-h2" data-split>Which cable?</h2>
-        <p class="t-lead">Four common choices, what each one can do, and when it makes sense.</p>
+        <p class="t-lead" data-reveal>Four common choices, what each one can do, and when it makes sense.</p>
       </div>
       <CableCompare />
     </section>
@@ -193,9 +193,9 @@ const upgradeQuestions = [
     <section class="plan__section plan__next" aria-labelledby="plan-next-title" data-dock-hide>
       <div class="plan__head">
         <h2 id="plan-next-title" class="t-h2" data-split>When you’re ready, we’ll walk the site.</h2>
-        <p class="t-lead">Call or send a note about your building. We’ll walk it with you and put the scope and price in writing.</p>
+        <p class="t-lead" data-reveal>Call or send a note about your building. We’ll walk it with you and put the scope and price in writing.</p>
       </div>
-      <NextStep />
+      <NextStep data-reveal="" />
     </section>
   </div>
 </Base>

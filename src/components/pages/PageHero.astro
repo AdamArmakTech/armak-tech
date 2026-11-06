@@ -3,6 +3,7 @@
  * Compact opener shared by every inner page (about, industries, projects, contact, 404):
  * breadcrumb → h1 (t-h1) → lead → optional actions (default slot).
  * Optional `aside` slot sits to the right on desktop; optional `spec` renders a SpecStrip foot.
+ * The aside wrapper has no box below 1024px, so put data-reveal="scale" on the slotted element itself.
  * `label` and `labelTone` are accepted but unused. The `labels` slot (e.g. a hidden "Placeholder" flag) renders in a plain div only when used.
  */
 import SpecStrip from '../ui/SpecStrip.astro';
@@ -31,7 +32,7 @@ const hasLabels = Astro.slots.has('labels');
 
 <section class="page-hero container" aria-labelledby={titleId} data-dock-start>
   {trail && (
-    <nav class="page-hero__crumbs t-meta" aria-label="Breadcrumb">
+    <nav class="page-hero__crumbs t-meta" aria-label="Breadcrumb" data-reveal="fade">
       <ol role="list">
         {trail.map((c, i) =>
           i === trail.length - 1 ? <li aria-current="page">{c.label}</li> : <li><a href={c.href}>{c.label}</a></li>,

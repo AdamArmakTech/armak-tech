@@ -15,7 +15,7 @@ interface Props {
 const { href, label, tone = 'default' } = Astro.props;
 ---
 
-<div class:list={['snext container', `snext--${tone}`]}>
+<div class:list={['snext container', `snext--${tone}`]} data-reveal="draw">
   <a class="snext__link" href={href}>
     <span class="t-meta snext__kicker">{tone === 'cta' ? 'Ready?' : 'Next'}</span>
     <span class="snext__label">{label}</span>

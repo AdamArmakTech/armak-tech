@@ -25,7 +25,7 @@ const description =
     lead="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan each install around them, and the cabling behind every system goes in to ANSI/TIA standards."
     crumbs={[{ label: 'Industries' }]}
   >
-    <nav class="jump" aria-label="Jump to an industry">
+    <nav class="jump" aria-label="Jump to an industry" data-reveal>
       <ul role="list" class="jump__list">
         {rows.map((r) => (
           <li>
@@ -42,7 +42,7 @@ const description =
     {rows.map((r) => (
       <section id={r.slug} class="sector" aria-labelledby={`${r.slug}-title`}>
         <h2 id={`${r.slug}-title`} class="t-h2 sector__name" data-split>{r.name}</h2>
-        <div class="sector__body">
+        <div class="sector__body" data-reveal-group>
           <p class="t-lead sector__need">{r.need}</p>
           <p class="sector__systems">
             Typical systems:{' '}

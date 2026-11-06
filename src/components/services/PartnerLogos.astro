@@ -19,10 +19,10 @@ const H = 26;
 {list.length > 0 && (
   <section class="plogos" aria-labelledby="plogos-title">
     <div class="container plogos__inner">
-      <p id="plogos-title" class="plogos__sentence">
+      <p id="plogos-title" class="plogos__sentence" data-reveal>
         Hardware from the manufacturers we install and support.
       </p>
-      <ul role="list" class="plogos__row">
+      <ul role="list" class="plogos__row" data-reveal-group="fade" data-reveal-step="40">
         {list.map((p) => (
           <li class="plogos__item">
             <Image

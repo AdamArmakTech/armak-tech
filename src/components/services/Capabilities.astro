@@ -19,7 +19,7 @@ const { serviceName, items } = Astro.props;
       intro="Every job is scoped to your site after a walk-through."
     />
 
-    <ul role="list" class="caps__grid">
+    <ul role="list" class="caps__grid" data-reveal-group data-reveal-step="80">
       {items.map((item) => (
         <li class="cap">
           <h3 class="t-h3 cap__title">{item.title}</h3>
