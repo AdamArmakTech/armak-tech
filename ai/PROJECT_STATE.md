@@ -32,6 +32,34 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **Redesign round 1 ("Start round 1") — 2026-11-05 late evening (branch `intent-redesign`, four code commits after
+  8935af1, NOT pushed).** The owner's four decisions (title stays; first screen recomposed keeping photo, test card and
+  the three boxes; codes and step numbers dropped; mono labels, thin lines and boxed tags switched off) applied through
+  the shared pieces by six Sonnet workers under a written system (main session = builder and judge), then the main
+  session's own fixes and an Opus proofreader pass (verdict FIX: one must, applied: the service-page h1 had lost the
+  service name, so now h1 = service name, the old headline is the lead line; should-notes applied: phone keyboard order
+  in the hero via grid-template-areas, form focus on the step title, chips with a visible edge, middle dots replaced
+  by commas or colons, the services index "includes" as a real list, OtherServices heading id). What changed, in
+  short: `.t-meta` (sans metadata) and `.t-readout` (mono readouts) replace `.t-mono` everywhere; `Label` renders
+  quiet text; `SectionHead`/`PageHero` ignore labels and have no top rule; surfaces are tone steps (no 1px outlines,
+  no resting shadows); five-ish type scale (h1 up to 80px, h2 48px, body 17px in `--text`, small 16px, label 14px);
+  section rhythm 64–112px; hero = quick links, title, lead, red button, photo + test card, three white tiles, creds;
+  partners and service logos as plain wordmark rows; explorer and process tabs by name with ink/paper-sunken fills;
+  service pages: h1 = service name, no codes, "What we handle.", "Talk to us about your project.", scope sheet as a
+  white sheet; services index h1 "Six systems, one team."; homepage services title "Six systems, one team."; service
+  area "24 cities in 7 counties."; legal pages without section rules; glossary stats sentence, filled chips, letter
+  headings with scroll margin; plan checklist as a real `<ol>`. Wording changes beyond the approved list are only label
+  removals, sentence-case drawing labels and separators (middle dots to commas/colons); the proofreader's full list is
+  in its report (session transcript) and none adds a claim. Measured (taste-skill inspector, 1440/768/390, nine pages):
+  findings 157 → 67, hard faults 99 → 28 (per page: home 26→9, services 19→7, structured cabling 18→7, about 19→8,
+  industries 13→7, plan 17→9, glossary 18→10, contact 17→4, privacy 10→6). Left: real photographs (owner), the
+  motion decision (round 3: five pages barely move), composition holes on About, Plan and Glossary first screens
+  (round 2), allowed lines (FAQ, test table, glossary rows), the sticky header covering large text at some scroll
+  positions on phones, and one measurement quirk (the sliding tab highlight is read as paper-on-paper). Owner asides
+  from the proofreader for later: the hero's red button and the first tile both say "Request a site assessment"
+  (guided-CTA copy is owner-fixed); the "Sample" chips on the demos could become plain text. Evidence:
+  `ai/exports/critique-2026-11-05/round1-final/` (screenshots + report.json per page) and the owner's PDF
+  `ROUND1-before-after.pdf` in the same folder. DESIGN.md gained the 2026-11-05 decision section.
 - **Design critique ("critique first") — 2026-11-05 evening (commit 93f8609, `ai/CRITIQUE_2026-11-05.md`).** The owner
   asked what makes the site look AI-made before listing his own design changes. Method: taste-skill critique
   (fourteen passes, juror scores with caps) on inspector screenshots of eight pages at 1440/768/390 plus the copy of all

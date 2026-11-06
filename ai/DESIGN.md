@@ -96,3 +96,19 @@ are --steel again, 5.9:1) and the smaller type/spacing tokens (live sizes are ba
 photos are captioned "Illustrative photo"), rule 3 (no decorative section codes; real codes only), rule 7 (one red
 filled button per screen: the sticky header button turns ink via `data-quiet-cta` while another red button is on
 screen), rule 10 (all approved motion kept). Do not "fix" the live look back toward the refresh without the owner.
+
+## Owner decision 2026-11-05: round 1 of the anti-slop redesign (overrides the 10-31 pause where they differ)
+After the design critique (`ai/CRITIQUE_2026-11-05.md`) the owner decided, question by question: the headline "Built
+for the future." stays (rule 1); the hero keeps the photo, the cable-test card and the three choice boxes, recomposed
+as title, lead, one red button, then the boxes without outlines; NO index codes anywhere (rule 3 is now: codes only for
+real cable IDs, pin numbers and lengths inside the test card and the demo drawings; the A-01..A-06 service codes and the
+01..05 step numbers are gone); rule 4 is back in force (mono = `.t-readout`, only instrument readouts; every other label
+is `.t-meta` or body text; `.t-mono` no longer exists); rule 5 is back (no top rules on sections; lines only in the
+cable-test table, form fields and real list rows such as FAQ and glossary terms; surfaces are tone steps: paper, white
+sheet, paper-sunken, with no 1px borders and no resting shadows); rule 9 is back (leads and running text in `--text`,
+`--steel` only for `.t-meta`; body 17px; the scale is display, h1 up to 80px, h2 48px, h3 22px, lead, body, small 16px,
+label 14px). Section rhythm is 64 to 112px (`--space-section`). Outline buttons and chips are filled tone steps. No
+labels above headings and no boxed tags: `Label` renders quiet text, `SectionHead` and `PageHero` accept but ignore
+`label`, `code` and `spec`. The footer keeps its wire stripe (owner, ART_DIRECTION "keeps"). Measured result (taste-skill
+inspector, nine pages, 1440/768/390): findings 157 → 67, hard faults 99 → 29; what remains is real photographs (owner),
+the motion decision (round 3), composition holes on About, Plan and Glossary (round 2), and allowed lines.
