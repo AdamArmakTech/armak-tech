@@ -68,6 +68,10 @@ below), `ai/plans/site-audit.md` (the October audit) and `ai/AGENTS.md` (rules).
   owner wants computer-rendered pictures instead, the Figma image tool needs a permission rule in the app for
   `mcp__figma__create_new_file` and `mcp__figma__generate_image` (the auto-mode check blocked it). Nothing else is
   needed from the makers now.
+- Preview: `https://armak-tech-git-intent-redesign-adamarmaktechs-projects.vercel.app` shows the redesign branch as of
+  072cbdd (pushed 2026-11-06 night on "Update the preview"); it asks for the Vercel login first (Deployment
+  Protection). Say "publish" to put it live: merge `intent-redesign` into `main` (fast-forward), push `main`, then
+  open https://armak.tech and check it.
 - Approve deleting `src/components/services/PhotoBand.astro` and the `servicePhotos` block in
   `src/data/services-detail.ts` (no page uses either since the About page switched to the drawings, 2026-11-06).
 - The three session worktrees are merged into `intent-redesign` (about-page b9459cf, site-reveals d1486f0,

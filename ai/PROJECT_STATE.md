@@ -32,6 +32,21 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **Preview updated — 2026-11-06 night.** On the owner's "Update the preview" (his answer to the box question "Push the
+  merged site to the preview link so you can look at it on your phone?"), `intent-redesign` was pushed to GitHub
+  (b47565f → 072cbdd, 20 commits; gh account AdamArmakTech; `main` untouched at 9d6993e). Vercel built it: GitHub
+  commit status "Deployment has completed" at 22:45 UTC, deployment 7612556418, unique address
+  `https://armak-tech-81ppvgaew-adamarmaktechs-projects.vercel.app`, branch address
+  `https://armak-tech-git-intent-redesign-adamarmaktechs-projects.vercel.app`. Deployment Protection is still on:
+  anonymous visitors (and curl) get Vercel's login; the in-app browser pane is logged into Vercel, so the checks
+  ran from inside the page there. Checked on the real host: home 200 with the right title; headers HSTS,
+  X-Frame-Options DENY, nosniff, referrer-policy, permissions-policy and the frame-ancestors CSP; `/armak-logo.png`
+  and `/armak-logo-color.png` redirect to `/logo.png` (200, image/png); `/styleguide/` and an unknown address give
+  404; on /contact/ step 2 loads hCaptcha from js.hcaptcha.com and draws the box (newassets.hcaptcha.com, 296×74)
+  with no "localhost" warning (step 1 was passed by ticking one project type; nothing filled in, nothing sent, the
+  box not ticked). Console: only Vercel's own preview feedback script, blocked by the CSP as it should be. Not checked:
+  PageSpeed (it cannot pass the login). Screenshots were not possible (the app window was hidden), so the owner looks
+  himself: the branch address above, after the Vercel login (email).
 - **Side sessions checked and routed here — 2026-11-06 night.** The owner asked that everything from the five side
   sessions be routed to this folder. Checked: every branch is merged into intent-redesign with nothing left behind
   (0 commits ahead), no worktree has uncommitted site work, and each session's note is in `ai/notes/`.
