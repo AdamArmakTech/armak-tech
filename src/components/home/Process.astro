@@ -291,13 +291,37 @@ const demos: Record<string, any> = {
       resume();
     });
 
+    // Stacked (under 900px): each demo plays once as its row reaches the screen, so the page reveals itself
+    // as the visitor scrolls (owner, 2026-11-06). onFirstView in demo.ts stays out of the stepper on purpose,
+    // so the stepper starts them here. A row starts when its top passes 65% of the way down the screen
+    // (threshold 0 with a bottom margin), not when a share of the row's own height is visible: the step 03
+    // row holds two drawings and is taller than a phone held sideways can ever show 35% of at once.
+    const played = new WeakSet<HTMLElement>();
+    const stacked = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting || desktop.matches) continue;
+          const panel = entry.target as HTMLElement;
+          if (!played.has(panel)) startRow(panel);
+        }
+      },
+      { threshold: 0, rootMargin: '0px 0px -35% 0px' },
+    );
+    /** Start a stacked row's demo now and tell the observer, so a link or a jack tap is not followed by a second start */
+    const startRow = (panel: HTMLElement) => {
+      played.add(panel);
+      stacked.unobserve(panel);
+      playDemo(panel);
+    };
+    panels.forEach((p) => stacked.observe(p));
+
     // Links to the cable test (hero "See how we test") open step 04 first, so the target is visible.
     // Capture phase: runs before the smooth-scroll handler measures the target.
     const certify = panels.findIndex((p) => p.querySelector('#cable-test'));
     const openCertify = () => {
       if (certify < 0) return;
       if (!desktop.matches) {
-        playDemo(panels[certify]); // stacked: the panel is already on the page and the link scrolls to it
+        startRow(panels[certify]); // stacked: the panel is already on the page and the link scrolls to it
         return;
       }
       takeOver();
@@ -318,7 +342,7 @@ const demos: Record<string, any> = {
     document.addEventListener('armak:trace', () => {
       if (trace < 0) return;
       if (!desktop.matches) {
-        playDemo(panels[trace]);
+        startRow(panels[trace]);
         return;
       }
       takeOver();
@@ -343,25 +367,6 @@ const demos: Record<string, any> = {
       },
       { threshold: 0.3 },
     ).observe(root);
-
-    // Stacked (under 900px): each demo plays once when about a third of its row is on screen, so the page
-    // reveals itself as the visitor scrolls (owner, 2026-11-06). onFirstView in demo.ts stays out of the
-    // stepper on purpose, so the stepper starts them here.
-    const played = new WeakSet<HTMLElement>();
-    const stacked = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting || desktop.matches) continue;
-          const panel = entry.target as HTMLElement;
-          if (played.has(panel)) continue;
-          played.add(panel);
-          stacked.unobserve(panel);
-          playDemo(panel);
-        }
-      },
-      { threshold: 0.35 },
-    );
-    panels.forEach((p) => stacked.observe(p));
 
     // Crossing 900px either way (a tablet turning, a window resized): keep the two modes from fighting.
     desktop.addEventListener('change', (e) => {

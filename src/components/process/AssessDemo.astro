@@ -1,30 +1,33 @@
 ---
 /**
  * Assess — "Site walk".
- * A walk path draws through a small office floor plan; at each stop a pin drops and a finding
- * is logged. Teaches: the site is documented as it really is before anything is priced.
- * Server-renders the finished walk (no-JS / reduced motion); the script replays it.
+ * A technician walks the sample office from the lobby entrance to the telecom closet. At each stop the
+ * walker pauses, the room is shaded as surveyed, the finding is marked on the plan itself (the old
+ * cameras and keypad, the unlabeled Cat 5e runs, the open ceiling and the wall that needs conduit, the
+ * power panel, the crowded rack), a numbered pin drops, and the finding writes itself into the report,
+ * line by line. Teaches: the site is documented as it really is before anything is priced.
+ * Motion: one Web Animation moves the walker (transform) and one draws the path (stroke-dashoffset), so
+ * nothing runs per frame in script; everything else is a class switched on a timer.
+ * Server-renders the finished walk (no-JS / reduced motion); the script arms and replays it.
  */
 import DemoFrame from './DemoFrame.astro';
 import OfficePlan from './OfficePlan.astro';
 import { Check } from '@lucide/astro';
 
-// Stops along the walk: [x, y] on the plan + what gets written down (sample findings)
+// Stops along the walk: [x, y] on the plan, the room it is in, and what gets written down (sample findings)
 const stops = [
-  { x: 340, y: 196, title: 'Existing systems', detail: '2 analog cameras, 1 keypad door' },
-  { x: 215, y: 196, title: 'Existing cabling', detail: 'Cat 5e, unlabeled' },
-  { x: 215, y: 128, title: 'Pathways', detail: 'Open ceiling to the closet; one wall needs conduit' },
-  { x: 40, y: 128, title: 'Power', detail: '1 dedicated circuit near the rack' },
-  { x: 40, y: 52, title: 'Telecom closet', detail: '1 wall-mount rack, little free space' },
+  { x: 340, y: 196, room: 'lobby', title: 'Existing systems', detail: '2 analog cameras, 1 keypad door' },
+  { x: 215, y: 196, room: 'open', title: 'Existing cabling', detail: 'Cat 5e, unlabeled' },
+  { x: 215, y: 128, room: '', title: 'Pathways', detail: 'Open ceiling to the closet; one wall needs conduit' },
+  { x: 40, y: 128, room: '', title: 'Power', detail: '1 dedicated circuit near the rack' },
+  { x: 40, y: 52, room: 'closet', title: 'Telecom closet', detail: '1 wall-mount rack, little free space' },
 ];
 
-// The walk: lobby entrance → each stop in order (straight segments). Segment lengths give each
-// stop's position along the path; the script moves the walker along the same points.
+// The walk: lobby entrance → each stop in order (straight segments). The script moves the walker along
+// the same points and draws the line at the same pace.
 const points: [number, number][] = [[340, 248], ...stops.map((s) => [s.x, s.y] as [number, number])];
 const walk = 'M' + points.map(([x, y]) => `${x} ${y}`).join(' L');
-const segs = points.slice(1).map(([x, y], i) => Math.hypot(x - points[i][0], y - points[i][1]));
-const total = segs.reduce((a, b) => a + b, 0);
-const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / total);
+const last = points[points.length - 1];
 ---
 
 <DemoFrame
@@ -40,11 +43,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
         </pattern>
       </defs>
 
-      <!-- open-ceiling area (pathway); label kept left of the walk's x=215 leg -->
-      <rect x="92" y="112" width="196" height="40" fill="url(#as-ceiling)" />
-      <text x="148" y="148" class="as__note" text-anchor="middle">OPEN CEILING</text>
-
-      <OfficePlan />
+      <OfficePlan seen={stops.map((s) => s.room).filter(Boolean)} />
 
       <!-- electrical panel on the west wall -->
       <rect x="10" y="118" width="10" height="22" class="as__panel" />
@@ -57,13 +56,42 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
         <rect x="364" y="241" width="7" height="7" rx="1" />
       </g>
 
+      <!-- What each stop finds, drawn on the plan when the walker gets there (all shown without JS) -->
+      <!-- 1 · the two old cameras and the keypad door get a ring each -->
+      <g class="as__mark as__mark--rings is-on" data-as-mark="0">
+        <circle cx="300" cy="166" r="8" />
+        <circle cx="382" cy="166" r="8" />
+        <circle cx="367.5" cy="244.5" r="8" />
+      </g>
+      <!-- 2 · the old, unlabeled runs from the desks to the closet -->
+      <g class="as__mark is-on" data-as-mark="1">
+        <path class="as__old" d="M132 172 V156 H70 V84" pathLength="1" />
+        <path class="as__old" d="M190 212 V156 H132" pathLength="1" />
+      </g>
+      <!-- 3 · the open ceiling (the pathway to the closet) and the one wall that needs conduit -->
+      <g class="as__mark is-on" data-as-mark="2">
+        <rect x="92" y="112" width="196" height="40" fill="url(#as-ceiling)" />
+        <text x="148" y="148" class="as__note" text-anchor="middle">OPEN CEILING</text>
+        <path class="as__conduit" d="M282 114 H388" pathLength="1" />
+      </g>
+      <!-- 4 · the power panel -->
+      <g class="as__mark as__mark--rings is-on" data-as-mark="3">
+        <rect x="5" y="113" width="20" height="32" rx="2" />
+      </g>
+      <!-- 5 · the rack: three of four units taken -->
+      <g class="as__mark as__mark--rack is-on" data-as-mark="4">
+        <rect x="66" y="20" width="14" height="6" />
+        <rect x="66" y="30" width="14" height="6" />
+        <rect x="66" y="40" width="14" height="6" />
+      </g>
+
       <!-- the walk -->
-      <path class="as__walk is-drawn" d={walk} pathLength="1" data-as-walk data-points={JSON.stringify(points)} />
-      <circle class="as__walker" r="6" cx={stops[4].x} cy={stops[4].y} data-as-walker />
+      <path class="as__walk" d={walk} pathLength="1" data-as-walk data-points={JSON.stringify(points)} />
+      <circle class="as__walker" r="6" cx="0" cy="0" style={`transform: translate(${last[0]}px, ${last[1]}px)`} data-as-walker />
 
       <!-- pins -->
       {stops.map((s, i) => (
-        <g class="as__pin is-on" data-as-pin={i} data-at={at[i].toFixed(4)} transform={`translate(${s.x} ${s.y})`}>
+        <g class="as__pin is-on" data-as-pin={i} transform={`translate(${s.x} ${s.y})`}>
           <circle r="10" />
           <text dy="0.36em" text-anchor="middle">{i + 1}</text>
         </g>
@@ -74,7 +102,7 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
       <p class="t-meta as__side-title">Findings</p>
       <ol role="list" class="as__list">
         {stops.map((s, i) => (
-          <li class="as__item is-on" data-as-item={i}>
+          <li class="as__item is-on" data-as-item={i} data-room={s.room}>
             <span class="as__num t-readout">{i + 1}</span>
             <span class="as__text">
               <span class="as__item-title">{s.title}</span>
@@ -89,90 +117,103 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText, moveAlong, walkSchedule, at } from '../../scripts/demo';
+
+  const SPEED = 170; // plan units per second
+  const PAUSE = 300; // ms the walker stops at each finding
+  const LEAD = 250; // ms before the walker sets off
+  const EASE = 'cubic-bezier(0.65, 0, 0.35, 1)'; // --ease-in-out: sets off and comes to a stop on every leg
 
   document.querySelectorAll<HTMLElement>('[data-demo="assess"]').forEach((root) => {
+    const box = root.querySelector<HTMLElement>('.as')!;
     const walk = root.querySelector<SVGPathElement>('[data-as-walk]')!;
     const walker = root.querySelector<SVGCircleElement>('[data-as-walker]')!;
     const pins = [...root.querySelectorAll<SVGGElement>('[data-as-pin]')];
+    const marks = [...root.querySelectorAll<SVGGElement>('[data-as-mark]')];
     const items = [...root.querySelectorAll<HTMLElement>('[data-as-item]')];
+    const rooms = [...root.querySelectorAll<SVGElement>('[data-room]')].filter((el) => el.classList.contains('plan__room'));
     const done = root.querySelector<HTMLElement>('[data-as-done]')!;
     const titles = items.map((li) => li.querySelector('.as__item-title')?.textContent ?? '');
+    let anims: Animation[] = [];
 
     fitSvgText(root);
 
-    // The walk is straight segments, so the walker is placed by simple interpolation —
-    // no getTotalLength()/getPointAtLength(), which can throw while the panel is hidden.
+    // Straight segments, so the timing is simple arithmetic — no getTotalLength(), which can throw while the panel is hidden.
     const points: [number, number][] = JSON.parse(walk.dataset.points || '[[340,248]]');
     const lengths = points.slice(1).map(([x, y], i) => Math.hypot(x - points[i][0], y - points[i][1]));
     const total = lengths.reduce((a, b) => a + b, 0) || 1;
-    const pointAt = (t: number): [number, number] => {
-      let d = t * total;
-      for (let i = 0; i < lengths.length; i++) {
-        if (d <= lengths[i] || i === lengths.length - 1) {
-          const k = lengths[i] ? Math.min(1, d / lengths[i]) : 1;
-          const [x0, y0] = points[i];
-          const [x1, y1] = points[i + 1];
-          return [x0 + (x1 - x0) * k, y0 + (y1 - y0) * k];
-        }
-        d -= lengths[i];
-      }
-      return points[points.length - 1];
-    };
+    const schedule = walkSchedule(points, SPEED, PAUSE, LEAD); // arrive / leave per point
+    const end = schedule[schedule.length - 1].leave;
     const placeWalker = ([x, y]: [number, number]) => {
-      walker.setAttribute('cx', x.toFixed(1));
-      walker.setAttribute('cy', y.toFixed(1));
+      walker.style.transform = `translate(${x}px, ${y}px)`;
     };
 
     // Decided once per demo: reset() hides the parts for the animation, so a setting changed later must not leave it blank.
     const reduced = prefersReducedMotion();
 
     const reset = () => {
-      root.classList.add('as--instant');
-      walk.classList.remove('is-drawn');
+      anims.forEach((a) => a.cancel());
+      anims = [];
+      box.classList.add('as--instant', 'as--armed');
       walk.style.strokeDashoffset = '1';
       pins.forEach((p) => p.classList.remove('is-on'));
+      marks.forEach((m) => m.classList.remove('is-on'));
       items.forEach((li) => li.classList.remove('is-on'));
+      rooms.forEach((r) => r.classList.remove('is-seen'));
       done.classList.remove('is-on');
       placeWalker(points[0]); // lobby entrance
-      void root.offsetWidth;
-      root.classList.remove('as--instant');
+      void box.offsetWidth;
+      box.classList.remove('as--instant');
     };
 
     const run = createRun(async (alive) => {
       if (reduced) return;
       reset();
-      await sleep(250);
+      await sleep(16);
       if (!alive()) return;
 
-      const duration = 4200;
-      const start = performance.now();
-      let next = 0;
+      // The walker: waits at the entrance, then one leg per finding, pausing at each. One composited animation.
+      const pts: [number, number][] = [points[0], points[0]];
+      const times = [0, schedule[0].leave];
+      const offsets = [1, 1]; // how much of the line is still undrawn at each keyframe
+      let drawn = 0;
+      for (let i = 1; i < points.length; i++) {
+        drawn += lengths[i - 1];
+        pts.push(points[i], points[i]);
+        times.push(schedule[i].arrive, schedule[i].leave);
+        offsets.push(1 - drawn / total, 1 - drawn / total);
+      }
+      anims.push(moveAlong(walker, pts, times, EASE));
+      // The red line keeps pace with the walker (same keyframe times, same easing)
+      anims.push(
+        walk.animate(
+          offsets.map((o, i) => ({ strokeDashoffset: o, offset: times[i] / end, easing: EASE })),
+          { duration: end, fill: 'both' },
+        ),
+      );
 
-      await new Promise<void>((resolve) => {
-        const frame = (now: number) => {
-          if (!alive()) return resolve();
-          const t = Math.min(1, (now - start) / duration);
-          placeWalker(pointAt(t));
-          walk.style.strokeDashoffset = String(1 - t);
+      // At each stop: shade the room, mark the finding on the plan, drop the pin, write the report line
+      for (let i = 0; i < pins.length; i++) {
+        const s = schedule[i + 1];
+        at(s.arrive - 120, alive, () => {
+          const room = items[i].dataset.room;
+          if (room) root.querySelector(`.plan__room[data-room="${room}"]`)?.classList.add('is-seen');
+        });
+        at(s.arrive, alive, () => {
+          marks[i]?.classList.add('is-on');
+          pins[i].classList.add('is-on');
+          items[i].classList.add('is-on');
+          announce(root, `Found: ${titles[i]}`);
+        });
+      }
 
-          // Drop each pin and log its finding as the walker reaches it
-          while (next < pins.length && t >= Number(pins[next].dataset.at) - 0.002) {
-            pins[next].classList.add('is-on');
-            items[next].classList.add('is-on');
-            announce(root, `Found: ${titles[next]}`);
-            next++;
-          }
-
-          if (t < 1) requestAnimationFrame(frame);
-          else resolve();
-        };
-        requestAnimationFrame(frame);
-      });
-
+      await sleep(end + 150);
       if (!alive()) return;
-      await sleep(350);
-      if (!alive()) return;
+      // Leave the walker and the line where they ended, then let the animations go
+      placeWalker(points[points.length - 1]);
+      walk.style.strokeDashoffset = '0';
+      anims.forEach((a) => a.cancel());
+      anims = [];
       done.classList.add('is-on');
       announce(root, 'Site report ready');
       finished(root);
@@ -224,15 +265,102 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     fill: var(--steel);
   }
 
+  /* ── What the walk finds, drawn on the plan ── */
+  .as__mark {
+    opacity: 0;
+    transition: opacity 320ms ease;
+  }
+
+  .as__mark.is-on {
+    opacity: 1;
+  }
+
+  /* Rings around the things found: they close in from a little larger, like a circle drawn by hand */
+  .as__mark--rings circle,
+  .as__mark--rings rect {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(1.35);
+    transition: transform 520ms var(--ease-out);
+  }
+
+  .as__mark--rings.is-on circle,
+  .as__mark--rings.is-on rect {
+    transform: none;
+  }
+
+  .as__mark--rings.is-on circle:nth-child(2) {
+    transition-delay: 90ms;
+  }
+
+  .as__mark--rings.is-on circle:nth-child(3) {
+    transition-delay: 180ms;
+  }
+
+  /* The old runs: thin, faint, drawn from the desks back to the closet */
+  .as__old {
+    fill: none;
+    stroke: var(--steel);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+    opacity: 0.6;
+    transition: stroke-dashoffset 560ms var(--ease-in-out);
+  }
+
+  .as__mark.is-on .as__old {
+    stroke-dashoffset: 0;
+  }
+
+  .as__mark.is-on .as__old + .as__old {
+    transition-delay: 160ms;
+  }
+
+  /* The wall that needs conduit: a band along it */
+  .as__conduit {
+    fill: none;
+    stroke: var(--steel);
+    stroke-width: 4;
+    stroke-linecap: butt;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+    opacity: 0.5;
+    transition: stroke-dashoffset 420ms var(--ease-out) 260ms;
+  }
+
+  .as__mark.is-on .as__conduit {
+    stroke-dashoffset: 0;
+  }
+
+  /* The rack: the taken units fill in one after another */
+  .as__mark--rack rect {
+    fill: var(--ink);
+    opacity: 0;
+    transition: opacity 220ms ease;
+  }
+
+  .as__mark--rack.is-on rect {
+    opacity: 0.75;
+  }
+
+  .as__mark--rack.is-on rect:nth-child(2) {
+    transition-delay: 110ms;
+  }
+
+  .as__mark--rack.is-on rect:nth-child(3) {
+    transition-delay: 220ms;
+  }
+
+  /* ── The walk ── */
   .as__walk {
     fill: none;
     stroke: var(--signal);
     stroke-width: 2;
     stroke-dasharray: 1 1;
-    stroke-dashoffset: 1;
-  }
-
-  .as__walk.is-drawn {
     stroke-dashoffset: 0;
   }
 
@@ -274,12 +402,12 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
 
   @keyframes as-drop {
     from {
-      transform: scale(2);
+      transform: scale(1.6);
       opacity: 0;
     }
   }
 
-  /* Findings list */
+  /* ── Findings list ── */
   .as__side {
     display: grid;
     gap: 0.625rem;
@@ -301,12 +429,10 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     gap: 0.625rem;
     align-items: start;
     padding-block: 0.5rem;
-    transition: background 0.3s ease;
   }
 
-  /* Not-yet-reached rows are quieter through colour, not opacity: opacity 0.55 gave the
-     detail text 2.4:1. Now steel on paper = 5.9:1 (title and detail), white on steel badge = 6.5:1. */
-
+  /* Not-yet-reached rows: the number waits in steel; the words are written in when the walker gets there
+     (clipped, not faded, so the row keeps its height and nothing jumps). Steel on paper = 5.9:1. */
   .as__num {
     display: grid;
     place-items: center;
@@ -332,17 +458,28 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
 
   .as__item-title {
     font-weight: 600;
-    color: var(--steel);
-    transition: color 0.3s ease;
-  }
-
-  .as__item.is-on .as__item-title {
     color: var(--ink);
   }
 
   .as__item-detail {
     color: var(--steel);
     font-size: 0.8125rem;
+  }
+
+  /* Armed by the script: each line wipes in from the left as the finding is logged, the detail just after */
+  .as--armed .as__item-title,
+  .as--armed .as__item-detail {
+    clip-path: inset(-4% 100% -4% 0);
+    transition: clip-path 360ms var(--ease-out);
+  }
+
+  .as--armed .as__item.is-on .as__item-title,
+  .as--armed .as__item.is-on .as__item-detail {
+    clip-path: inset(-4% 0% -4% 0);
+  }
+
+  .as--armed .as__item.is-on .as__item-detail {
+    transition-delay: 150ms;
   }
 
   .as__done {
@@ -364,10 +501,26 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     transform: none;
   }
 
+  /* The check draws itself once the line is in place */
+  .as--armed .as__done :global(svg path) {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    transition: stroke-dashoffset 380ms var(--ease-out) 160ms;
+  }
+
+  .as--armed .as__done.is-on :global(svg path) {
+    stroke-dashoffset: 0;
+  }
+
   .as--instant,
   .as--instant * {
     transition: none !important;
     animation: none !important;
+  }
+
+  /* The plan's room floors come from OfficePlan (its own scope), so the scoped * above does not reach them */
+  .as--instant :global(.plan__room) {
+    transition: none !important;
   }
 
   /* Wide stage: plan left, findings right */

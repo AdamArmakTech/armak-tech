@@ -1,7 +1,9 @@
 ---
 /**
  * B9: "Enough for today / What Armak installs". Only practices the owner confirmed (shownSignature).
- * Renders nothing when fewer than 3 rows are shown. No competitor column, no animation.
+ * Renders nothing when fewer than 3 rows are shown. No competitor column.
+ * Motion: the rows arrive once, one after another, as the sheet is scrolled into view, and each ink tick
+ * draws itself (stroke-dashoffset). Armed by the script only; without JS or under reduced motion the sheet is simply there.
  * Design rules: 7 (ticks are ink, never green), 1 (the headline, itemized). A white sheet with no outline; the rows keep their lines.
  */
 import { signature, shownSignature, type SignatureKey } from '../../data/content';
@@ -12,7 +14,7 @@ const rows = shownSignature(keys);
 
 {
   rows.length >= 3 && (
-    <div class="rfl">
+    <div class="rfl" data-rfl>
       <div class="rfl__sheet">
         <table class="rfl__table" role="table">
           <caption class="rfl__cap">
@@ -26,8 +28,8 @@ const rows = shownSignature(keys);
             </tr>
           </thead>
           <tbody role="rowgroup">
-            {rows.map((r) => (
-              <tr role="row">
+            {rows.map((r, i) => (
+              <tr role="row" style={`--i: ${i}`}>
                 <td role="cell" class="rfl__today">{r.today}</td>
                 <td role="cell" class="rfl__installs">
                   <strong class="rfl__label">{r.label}</strong>
@@ -54,9 +56,53 @@ const rows = shownSignature(keys);
   )
 }
 
+<script>
+  import { onFirstView, prefersReducedMotion } from '../../scripts/demo';
+
+  document.querySelectorAll<HTMLElement>('[data-rfl]').forEach((root) => {
+    if (prefersReducedMotion()) return;
+    root.classList.add('is-armed');
+    onFirstView(root, () => root.classList.add('is-shown'), 0.2);
+  });
+</script>
+
 <style>
   .rfl {
     margin-top: var(--space-section);
+  }
+
+  /* Arrival, once: rows 60 ms apart, each tick drawn as its row lands (opacity and stroke only; the rows
+     rise a little where they are cards, under 900px) */
+  .rfl.is-armed tbody tr {
+    opacity: 0;
+  }
+
+  .rfl.is-armed.is-shown tbody tr {
+    opacity: 1;
+    transition: opacity 480ms ease calc(var(--i) * 60ms);
+  }
+
+  .rfl.is-armed .rfl__mark svg path {
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+  }
+
+  .rfl.is-armed.is-shown .rfl__mark svg path {
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 420ms var(--ease-out) calc(var(--i) * 60ms + 240ms);
+  }
+
+  @media (max-width: 899.98px) {
+    .rfl.is-armed tbody tr {
+      transform: translate3d(0, 10px, 0);
+    }
+
+    .rfl.is-armed.is-shown tbody tr {
+      transform: none;
+      transition:
+        opacity 480ms ease calc(var(--i) * 60ms),
+        transform 720ms var(--ease-out) calc(var(--i) * 60ms);
+    }
   }
 
   .rfl__sheet {
@@ -198,6 +244,19 @@ const rows = shownSignature(keys);
     .rfl__table td:first-child,
     .rfl__table th:first-child {
       width: 30%;
+    }
+  }
+  /* Paper never waits on a scroll: printed before the row scrolled into view, it still prints finished */
+  @media print {
+    .rfl.is-armed tbody tr {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
+    }
+
+    .rfl.is-armed .rfl__mark svg path {
+      stroke-dashoffset: 0 !important;
+      transition: none !important;
     }
   }
 </style>

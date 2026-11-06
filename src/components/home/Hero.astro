@@ -66,13 +66,15 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
           fetchpriority="high"
         />
       </div>
-      <CableTest variant="compact" class="hero__card" />
+      <!-- The test report settles onto the photo after it, then its wires draw (startDelay) -->
+      <CableTest variant="compact" class="hero__card" startDelay={800} />
     </div>
-    <div class="hero__choose hero-in" data-dock-start style="--reveal-delay: 120ms">
+    <!-- The chooser arrives as one block; inside it the three tiles land one after another (a list, row by row) -->
+    <div class="hero__choose hero-in" data-dock-start style="--reveal-delay: 140ms">
       <p class="t-meta hero__choose-label" id="hero-paths-label">Pick the closest fit</p>
       <ul role="list" class="hero__paths" aria-labelledby="hero-paths-label">
-        {paths.map((p) => (
-          <li>
+        {paths.map((p, i) => (
+          <li class="hero-in" style={`--reveal-delay: ${200 + i * 70}ms`}>
             <a class:list={['path', { 'path--primary': p.primary }]} href={p.href}>
               <span class="path__title">{p.title}</span>
               <span class="path__detail">{p.detail}</span>
@@ -83,7 +85,7 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
       </ul>
       <p class="t-small hero__phone">Or call <a class="tel" href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}<span data-hero-status data-hours={site.hours} hidden></span></p>
     </div>
-    <ul role="list" class="hero__creds t-meta hero-in" style="--reveal-delay: 220ms">
+    <ul role="list" class="hero__creds t-meta hero-in" style="--reveal-delay: 300ms">
       {credentials.map((c) => <li>{c}</li>)}
     </ul>
   </div>
@@ -199,6 +201,24 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
       opacity: 1;
       transform: none;
       clip-path: inset(0 0 -20% 0);
+    }
+  }
+
+  /* The test report lands on the photo a beat after it (a sheet laid down), then its wires draw in */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__media :global(.hero__card) {
+      animation: hero-card 900ms var(--ease-out) 480ms both;
+    }
+  }
+
+  @keyframes hero-card {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 28px, 0) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
     }
   }
 

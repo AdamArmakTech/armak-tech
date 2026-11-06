@@ -32,6 +32,45 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **Demo animations merged — 2026-11-06 night.** The owner answered "Yes, merge it": `claude/demo-motion-eec65d`
+  (47d9005) is merged into intent-redesign in one commit with the fixes below. One conflict,
+  `src/components/pages/CablePlant.astro`: the branch had added arrival timing and a 65ch measure to the old bar
+  chart; the section drawing from the same evening was kept and the 65ch cap carried over to its caption and
+  day-one line. Everything else merged clean: the richer Assess, Design, Support and Trace demos, the counting cable
+  test (new `startDelay` prop, used by the hero card), the hero card's settle, the Numbers and partner-strip
+  arrivals, the Plan page's cable table and the day-one sheet arriving row by row, the replay arrow, and the
+  branch's note `ai/notes/2026-11-06-demo-motion.md`.
+  - Review after the merge (a workflow of 8 agents: five lenses over the merged files, three sceptics; about 1.2M
+    tokens) confirmed five defects, three of them in this folder's own stacked phone mode; all five fixed in the
+    merge commit and checked again in the browser (a second pass of three sceptics over the fixes found two gaps,
+    in fixes 3 and 5, closed before the commit):
+    1. `Process.astro`, phones: a demo started by the hero's "See how we test" link or by a jack tap was started a
+       second time when its row scrolled in. Now `startRow()` marks the row played for the row observer (checked:
+       one start, one finish after the link tap).
+    2. `Process.astro`, phones: the row observer waited for 35% of the row's own height, which the step 03 and 04
+       rows (1224 and 1600 px on a 667×375 phone held sideways) could never reach, so those demos never started.
+       A row now starts when its top passes 65% of the screen (`threshold: 0, rootMargin: '0px 0px -35% 0px'`);
+       checked at 667×375: both rows start and finish.
+    3. `CableTest.astro`: at the end of the length, loss and return-loss checks the signal dot's class came off in
+       the same tick its move was cancelled, so it flashed at the drawing's corner; it now fades out on the wire
+       120 ms earlier (`FADE_MS`), the insertion-loss check's own opacity animation ends at 0, and the stop routine
+       cancels with transitions switched off, so nothing can fade at the corner in any browser.
+    4. Print: the cable table, the numbers, the partner strip, the day-one sheet and the About chart printed blank if
+       the page was printed before they scrolled in (script-armed; only an observer showed them). Each has an
+       `@media print` block mirroring its shown state; checked with print media emulated: everything at opacity 1
+       while still armed.
+    5. The site walk's finished state with scripts off or reduced motion lacked the three shaded rooms. OfficePlan
+       takes a `seen` prop and AssessDemo renders lobby, open office and closet shaded; checked under reduced
+       motion (3 of 3; Design and Trace plans unchanged). The script's reset snaps that shading off (a global rule,
+       since the rooms belong to OfficePlan's own style scope) before the animated walk shades them again.
+  - Checks at the end: astro check 0 errors (91 files); build 19 pages; 19 pages at 320, 360 and 390 px: no sideways
+    scroll, nothing past the edge; the desktop strip ran a full lap with each demo reporting done exactly once; the
+    five stacked phone demos each played once on scroll; no console errors; reduced motion shows finished states.
+    Screenshots in `ai/exports/demo-merge-2026-11-06.pdf` (sent to the owner's phone). Nothing pushed; the owner has
+    not said "publish".
+  - Known and left alone (older than the merge): on a phone, tapping the hero's test link smooth-scrolls past steps
+    1 to 3 and their demos start as the rows fly by, finishing off screen; the demos themselves (unlike the arrivals
+    above) print in their reset state if printed before they play.
 - **Merge round — 2026-11-06 evening.** The owner answered "Yes, merge both": `claude/about-page-1c7980` (f9d557f) and
   `claude/site-reveals-9929c9` (a77120b) are merged into intent-redesign (b9459cf, d1486f0; no conflicts, no file
   touched by two sides). `claude/demo-motion-eec65d` (47d9005) is still unmerged, waiting on his word. Then, in this
@@ -97,7 +136,7 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
     Support)? Service pages (service-sheets session, committed here as bbac2d4): 19/31 -> 13/25, the rest being the
     owner's own rules. About page (about-page session, f9d557f on claude/about-page-1c7980): 1/5 -> 0/4. Site
     reveals (site-reveals session, a77120b on claude/site-reveals-9929c9): 25/51 -> 25/48 on 12 pages, the 25 left
-    are pre-existing and listed in its notes. Demo motion (demo-motion session, 47d9005 on claude/demo-motion-eec65d): 10/19 -> 10/18 on four pages, the rest outside its files or owner-approved, listed in its notes. All three branches still unmerged, waiting for the owner.
+    are pre-existing and listed in its notes. Demo motion (demo-motion session, 47d9005 on claude/demo-motion-eec65d): 10/19 -> 10/18 on four pages, the rest outside its files or owner-approved, listed in its notes. All three branches still unmerged, waiting for the owner (all three merged by the night of 2026-11-06; see the bullets above).
   - Checks: astro check 0 errors; build 19 pages. Nothing pushed; the owner has not said "publish".
 - **Product photo shortlist — 2026-11-06 morning (research only).** Owner, from his phone: "For video surveillance /
   Access control / Voice and unified comms / Audio & Video: I want you to pull photos from products or items that we

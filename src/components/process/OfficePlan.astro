@@ -1,14 +1,36 @@
 ---
 /**
- * The sample office floor plan shared by the Assess and Design demos (same site, step to step).
+ * The sample office floor plan shared by the Assess, Design and Trace demos (same site, step to step).
  * Renders an SVG <g> — place it inside an <svg viewBox="0 0 400 262" data-fit-text> (fitSvgText in
  * src/scripts/demo.ts sets --u so the room labels stay ≈ 9.5 px on screen, even on phones).
  * Rooms: closet (top-left, with rack), office, conference, open office, lobby (entrance bottom-right).
  * Label positions leave room for the largest label size (12 units) next to the demos' cameras and routes.
+ *
+ * Room floors (`.plan__room`, invisible until a demo adds `is-seen`) let the Assess walk shade each room
+ * as it is surveyed. They paint under the walls and never show on their own. `seen` renders rooms shaded
+ * from the start: the finished state of a walk, for scripts off and reduced motion (the animated run clears
+ * them first and shades them again as it goes).
  */
+interface Props {
+  /** `data-room` ids to render shaded: closet, office, conference, open, hall, lobby */
+  seen?: string[];
+}
+
+const { seen = [] } = Astro.props;
+const room = (id: string) => ['plan__room', { 'is-seen': seen.includes(id) }];
 ---
 
 <g class="plan">
+  <!-- room floors, shaded by a demo (Assess: the room being surveyed) -->
+  <g class="plan__rooms" aria-hidden="true">
+    <rect class:list={room('closet')} data-room="closet" x="10" y="10" width="80" height="70" />
+    <rect class:list={room('office')} data-room="office" x="90" y="10" width="130" height="100" />
+    <rect class:list={room('conference')} data-room="conference" x="220" y="10" width="170" height="100" />
+    <path class:list={room('open')} data-room="open" d="M10 80 H90 V110 H290 V250 H10 Z" />
+    <rect class:list={room('hall')} data-room="hall" x="290" y="110" width="100" height="50" />
+    <rect class:list={room('lobby')} data-room="lobby" x="290" y="160" width="100" height="90" />
+  </g>
+
   <!-- walls: outer shell with the lobby entrance gap (x320–360) -->
   <path class="plan__wall" d="M320 250 H10 V10 H390 V250 H360" />
   <!-- closet (door gap x30–55) -->
@@ -44,6 +66,18 @@
 </g>
 
 <style>
+  .plan__room {
+    fill: var(--ink);
+    fill-opacity: 0;
+    stroke: none;
+    transition: fill-opacity 480ms ease;
+  }
+
+  /* A surveyed room: a faint wash, like a highlighter passed over the drawing */
+  .plan__room.is-seen {
+    fill-opacity: 0.05;
+  }
+
   .plan__wall {
     fill: none;
     stroke: var(--ink);

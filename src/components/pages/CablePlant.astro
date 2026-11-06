@@ -280,6 +280,7 @@ const sceneLabel = `One cable from ${START} to ${END}, with an access point hang
 
   .plant__caption,
   .plant__sig {
+    max-width: 65ch; /* a readable measure under the full-width scene (the same cap as the notes) */
     font-size: var(--fs-label);
     color: var(--text);
   }
@@ -382,6 +383,19 @@ const sceneLabel = `One cable from ${START} to ${END}, with an access point hang
     .plant__scene {
       --drop: 36px;
       --ap: 88px;
+    }
+  }
+  /* Paper never waits on a scroll: printed before the row scrolled into view, it still prints finished */
+  @media print {
+    .plant.is-armed .plant__gens::before,
+    .plant.is-armed .plant__drop,
+    .plant.is-armed .plant__ap,
+    .plant.is-armed .plant__name,
+    .plant.is-armed .plant__yr,
+    .plant.is-armed .plant__end {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
     }
   }
 </style>

@@ -1,4 +1,9 @@
 ---
+/**
+ * "Brands we install and support": a wrapping row of wordmarks (never a marquee, nothing scrolls sideways).
+ * The logos arrive once in a calm stagger the first time the row is seen; armed only by the script, so
+ * without JS or under reduced motion they are simply there.
+ */
 import { Image } from 'astro:assets';
 import { partners } from '../../data/content';
 
@@ -12,11 +17,11 @@ const heightFor = (w: number, h: number) => {
 <section class="partners" aria-labelledby="partners-title">
   <div class="container">
     <p id="partners-title" class="t-meta partners__line">Brands we install and support.</p>
-    <ul role="list" class="partners__row">
-      {partners.map((p) => {
+    <ul role="list" class="partners__row" data-partners>
+      {partners.map((p, i) => {
         const h = heightFor(p.logo.width, p.logo.height);
         return (
-          <li>
+          <li style={`--i: ${i}`}>
             <Image
               src={p.logo}
               alt={p.name}
@@ -31,6 +36,16 @@ const heightFor = (w: number, h: number) => {
     </ul>
   </div>
 </section>
+
+<script>
+  import { onFirstView, prefersReducedMotion } from '../../scripts/demo';
+
+  document.querySelectorAll<HTMLElement>('[data-partners]').forEach((row) => {
+    if (prefersReducedMotion()) return;
+    row.classList.add('is-armed');
+    onFirstView(row, () => row.classList.add('is-shown'), 0.3);
+  });
+</script>
 
 <style>
   .partners {
@@ -58,6 +73,28 @@ const heightFor = (w: number, h: number) => {
   @media (hover: hover) and (pointer: fine) {
     .partners__row li:hover img {
       opacity: 1;
+    }
+  }
+
+  /* Arrival, once: each wordmark rises and fades in 45 ms after the one before (armed by the script) */
+  .partners__row.is-armed li {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+
+  .partners__row.is-armed.is-shown li {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity 520ms ease calc(var(--i) * 45ms),
+      transform 760ms var(--ease-out) calc(var(--i) * 45ms);
+  }
+  /* Paper never waits on a scroll: printed before the row scrolled into view, it still prints finished */
+  @media print {
+    .partners__row.is-armed li {
+      opacity: 1 !important;
+      transform: none !important;
+      transition: none !important;
     }
   }
 </style>
