@@ -1,28 +1,38 @@
 ---
 /**
- * About — facts card in the hero, story since 1998 (original site's copy, tightened),
- * team slot (placeholder until Armak supplies it).
+ * About — every fact has one home on this page (owner, 2026-11-06: the same facts were repeated
+ * four times and the rest was dead space):
+ *   the founding year lives in the title only;
+ *   the headquarters and the city and county counts live in "Where we work" only, above the real lists.
+ * No lines between items and no labels above headings (owner, 2026-11-06, in the session that built this
+ * page: "lists with lines" and "red caps labels" read as AI slop). Things are separated by space, links are
+ * words in sentences, and the only surface is the chart's white sheet (DESIGN.md rule 5, round 1).
+ * Then, so nothing is dead space: who we are (three short pieces), what we install (the six systems, each
+ * with the equipment photo its service page uses), where (every city by county), how a job runs (the five
+ * steps) and the cable-plant chart. Neighbouring blocks differ in composition: heading beside the content,
+ * then a full-width picture grid, then heading beside the content, then a full-width row of steps.
+ * Hidden placeholder slots (milestones, licence, team) render nothing at all, so the layout closes up.
  */
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
 import PlaceholderNote from '../components/pages/PlaceholderNote.astro';
-import SectionHead from '../components/ui/SectionHead.astro';
-import Button from '../components/ui/Button.astro';
 import CablePlant from '../components/pages/CablePlant.astro';
-import { site, FOUNDED, yearsInBusiness, serviceArea, counties } from '../data/site';
+import Button from '../components/ui/Button.astro';
+import { site, FOUNDED, services, serviceArea, counties } from '../data/site';
+import { process as steps } from '../data/content';
+// Interim stock equipment photos, the same ones the service pages use (rule 2: the product image, or nothing)
+import { servicePhotos } from '../data/services-detail';
 import { contactHref, CTA_LABEL } from '../lib/cta';
-// TODO(photo): interim stock (see assets/photos/CREDITS.md), replace with a real Armak photo
-import storyPhoto from '../assets/photos/cabling-bundles-white.jpg';
 
 const description = `Armak Technologies has designed and installed low-voltage, networking and security systems across Southern California since ${FOUNDED}. ${site.hq.city} HQ.`;
 
-/** The original site's three "about" cards, tightened. */
+/** The original site's three "about" cards, tightened. The year is in the title above, so the first piece says what the work was and still is. */
 const story = [
   {
-    title: `Since ${FOUNDED}`,
-    body: 'We design and install low-voltage and networking systems for businesses across Southern California.',
+    title: 'The same trade from day one',
+    body: 'Low-voltage and networking systems for businesses across Southern California. That was the work in the first year, and it is the work now.',
   },
   {
     title: 'Done to standard',
@@ -34,12 +44,19 @@ const story = [
   },
 ];
 
+/** Cities grouped by county, in the order the counties first appear (north to south). */
+const areaRows = counties.map((county) => ({
+  county,
+  cities: serviceArea.filter((c) => c.county === county),
+}));
+const isHq = (name: string) => name === site.hq.city;
+
 const thisYear = new Date().getFullYear();
 
 /**
- * Placeholder slots (milestones, license, certifications, team) stay hidden on the live site.
- * Flip to true to preview them while gathering Armak's real content; add the real data to
- * src/data/site.ts / content.ts and render it instead before showing them publicly.
+ * Placeholder slots (milestones, licence, team) stay hidden on the live site. Flip to true to preview
+ * them while gathering Armak's real content; add the real data to src/data/site.ts / content.ts and
+ * render it instead before showing them publicly. A hidden slot renders nothing, so no gap is left.
  */
 const SHOW_PLACEHOLDERS = false;
 ---
@@ -47,121 +64,176 @@ const SHOW_PLACEHOLDERS = false;
 <Base title={`About Us · SoCal Low-Voltage Since ${FOUNDED}`} description={description} footerCta={false}>
   <PageHero
     title={`Low-voltage installs since ${FOUNDED}.`}
-    lead={`For ${yearsInBusiness} years, organizations across Southern California have relied on Armak Technologies to design, install and support the cabling, networks and security systems they run on.`}
+    lead="Armak Technologies designs, installs, tests and supports the low-voltage systems that Southern California buildings run on. One team, from the first site walk to the final test report."
     crumbs={[{ label: 'About' }]}
-    spec={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`]}
-  >
-    <div slot="aside">
-      <dl class="facts" aria-label="Armak at a glance">
-        <div class="facts__row">
-          <dt>Founded</dt>
-          <dd>{FOUNDED}</dd>
-        </div>
-        <div class="facts__row">
-          <dt>Headquarters</dt>
-          <dd>{site.hq.city}, California</dd>
-        </div>
-        <div class="facts__row">
-          <dt>Cities served</dt>
-          <dd>{serviceArea.length}</dd>
-        </div>
-        <div class="facts__row">
-          <dt>Counties</dt>
-          <dd>{counties.length}</dd>
-        </div>
-      </dl>
-    </div>
-  </PageHero>
+  />
 
-  <!-- Story -->
-  <section class="section story">
-    <div class="container">
-      <SectionHead title={`${yearsInBusiness} years in business.`} />
-
-      <div class="story__body">
-        <figure class="story__figure" data-reveal>
-          <div class="story__photo">
-            <Image
-              src={storyPhoto}
-              alt="Neatly dressed light-blue cable bundles with black Velcro ties running into a rack of patch panels"
-              widths={[480, 720, 960, 1280]}
-              sizes="(min-width: 1024px) 40vw, 100vw"
-              loading="lazy"
-            />
-          </div>
-        </figure>
-
-        <div class="story__side">
-          <ol role="list" class="story__list">
-            {story.map((s) => (
-              <li class="story__item">
-                <h3 class="t-h3">{s.title}</h3>
-                <p>{s.body}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
+  <div class="about">
+    <!-- Who we are: three short pieces beside the heading -->
+    <section class="block container" aria-labelledby="who-title">
+      <div class="block__head">
+        <h2 id="who-title" class="t-h2 block__title" data-split>Who we are.</h2>
       </div>
-
-      <CablePlant />
-
-      <!-- Milestones: only the founding year and current totals are facts; the rest is a slot.
-           Hidden until Armak supplies real milestones (two rows alone read as an empty template). -->
-      {SHOW_PLACEHOLDERS && (
-      <div class="timeline">
-        <h3 class="t-h3">Milestones</h3>
-        <ol role="list" class="timeline__rows">
-          <li class="timeline__row">
-            <span class="timeline__year">{FOUNDED}</span>
-            <span class="timeline__text">{site.name} established.</span>
-          </li>
-          {SHOW_PLACEHOLDERS && (
-            <li class="timeline__row timeline__row--slot">
-              <span class="timeline__year" aria-hidden="true">····</span>
-              <PlaceholderNote class="timeline__note" title="Key milestones">
-                Firsts, growth and notable moments between {FOUNDED} and today, to be supplied by Armak.
-              </PlaceholderNote>
-            </li>
-          )}
-          <li class="timeline__row">
-            <span class="timeline__year">{thisYear}</span>
-            <span class="timeline__text">
-              {site.projectsDelivered}+ projects delivered across {serviceArea.length} Southern California cities.
-            </span>
-          </li>
-        </ol>
-      </div>
-      )}
-    </div>
-  </section>
-
-  <!-- Team (slot until Armak supplies people, photos and permission) -->
-  {SHOW_PLACEHOLDERS && (
-  <section class="section team">
-    <div class="container">
-      <SectionHead
-        title="The people behind the installs."
-        intro="One crew and one point of contact from the first walk-through to the final report."
-      />
-      <ul role="list" class="team__grid">
-        {[1, 2, 3, 4].map((n) => (
-          <li class="member">
-            <div class="member__photo" aria-hidden="true">
-              <span class="t-meta member__flag">Placeholder</span>
+      <div class="block__body">
+        <div class="story">
+          {story.map((s, i) => (
+            <div class="story__item" data-reveal style={`--reveal-delay: ${i * 60}ms`}>
+              <h3 class="t-h3 story__title">{s.title}</h3>
+              <p class="story__body">{s.body}</p>
             </div>
-            <p class="t-meta">Team member {n}</p>
-            <p class="member__name">Name to be supplied</p>
-            <p class="t-meta">Role, photo and short bio, with permission</p>
+          ))}
+        </div>
+
+        <!-- Milestones: only the founding year and current totals are facts; the rest is a slot.
+             Hidden until Armak supplies real milestones (two rows alone read as an empty template). -->
+        {SHOW_PLACEHOLDERS && (
+          <div class="timeline">
+            <h3 class="t-h3">Milestones</h3>
+            <ol role="list" class="timeline__rows">
+              <li class="timeline__row">
+                <span class="timeline__year">{FOUNDED}</span>
+                <span>{site.name} established.</span>
+              </li>
+              <li class="timeline__row">
+                <span class="timeline__year" aria-hidden="true">····</span>
+                <PlaceholderNote title="Key milestones">
+                  Firsts, growth and notable moments between {FOUNDED} and today, to be supplied by Armak.
+                </PlaceholderNote>
+              </li>
+              <li class="timeline__row">
+                <span class="timeline__year">{thisYear}</span>
+                <span>{site.projectsDelivered}+ projects delivered across {serviceArea.length} Southern California cities.</span>
+              </li>
+            </ol>
+          </div>
+        )}
+      </div>
+    </section>
+
+    <!-- What we install: the six systems with their equipment photos, full width -->
+    <section class="band container" aria-labelledby="install-title">
+      <div class="band__head">
+        <h2 id="install-title" class="t-h2 block__title" data-split>What we install.</h2>
+        <p class="block__intro" data-reveal>
+          Six systems, from one team. <a href="/services/">See all services.</a>
+        </p>
+      </div>
+      <ul role="list" class="systems">
+        {services.map((s, i) => {
+          const photo = servicePhotos[s.slug];
+          const wide = i < 2;
+          return (
+            <li class:list={['system', { 'system--wide': wide }]} data-reveal style={`--reveal-delay: ${i * 50}ms`}>
+              <a class="system__link" href={`/services/${s.slug}/`}>
+                {photo && (
+                  <span class="system__media">
+                    {/* The visible name says what it is; the photo is the service page's interim product shot */}
+                    <Image
+                      src={photo.src}
+                      alt=""
+                      widths={[480, 800, 1200]}
+                      sizes={wide ? '(min-width: 1024px) 50vw, 100vw' : '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw'}
+                      loading="lazy"
+                    />
+                  </span>
+                )}
+                <h3 class="t-h3 system__name">{s.name}</h3>
+              </a>
+              <p class="system__short">{s.short}</p>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+
+    <!-- Where we work: the headquarters and the counts live here, above the real lists -->
+    <section class="block container" aria-labelledby="where-title">
+      <div class="block__head">
+        <h2 id="where-title" class="t-h2 block__title" data-split>Where we work.</h2>
+        <p class="block__intro" data-reveal>
+          {serviceArea.length} cities across {counties.length} Southern California counties, served from our {site.hq.city} headquarters. <a href="/#service-area">See the map.</a>
+        </p>
+      </div>
+      <div class="block__body">
+        <ul role="list" class="area" aria-label="Cities we serve, by county">
+          {areaRows.map((r, i) => (
+            <li class="area__group" data-reveal style={`--reveal-delay: ${i * 50}ms`}>
+              <h3 class="area__county">{r.county} County</h3>
+              <ul role="list" class="area__cities">
+                {/* One line per item, the ", " inside it: a line break inside the tag would print as a space before the comma,
+                    and items rendered from a map get no space between them. The name is the only part that cannot wrap. */}
+                {r.cities.map((c, j) => (
+                  <li class:list={['area__city', { 'is-hq': isHq(c.name) }]}><span class="area__name">{c.name}{isHq(c.name) && <span class="area__hq"> HQ</span>}</span>{j < r.cities.length - 1 && ', '}</li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- How a job runs: the five steps in a row, full width; the live demos are on the home page -->
+    <section class="band container" aria-labelledby="how-title">
+      <div class="band__head">
+        <h2 id="how-title" class="t-h2 block__title" data-split>How we run a job.</h2>
+        <p class="block__intro" data-reveal>
+          The same five steps on every job, from a single rack to a multi-site rollout. <a href="/#process">Watch each step run on the home page.</a>
+        </p>
+      </div>
+      <ol role="list" class="steps">
+        {steps.map((s, i) => (
+          <li class="step" data-reveal style={`--reveal-delay: ${i * 50}ms`}>
+            <h3 class="t-h3 step__title">{s.title}</h3>
+            <p class="step__body">{s.body}</p>
           </li>
         ))}
-      </ul>
-      <div class="team__foot">
-        <p class="t-small">Want to work with us?</p>
-        <Button href={contactHref()} variant="link">{CTA_LABEL}</Button>
+      </ol>
+      <p class="steps__promise" data-reveal>
+        You get a written plan and price before the work starts, the cable test reports when it ends, and {site.supportHours} support for {site.supportScope}.
+      </p>
+    </section>
+
+    <!-- Cabling planned for the long run: the sourced chart beside the heading -->
+    <section class="block container" aria-labelledby="plant-title">
+      <div class="block__head">
+        <h2 id="plant-title" class="t-h2 block__title" data-split>Cabling planned for the long run.</h2>
+        <p class="block__intro" data-reveal>
+          Wi-Fi gets a new release every few years. The cabling behind it is meant to stay in the walls far longer, so we put in what the next round of equipment will need.
+        </p>
       </div>
-    </div>
-  </section>
-  )}
+      <div class="block__body block__body--sheet" data-reveal>
+        <CablePlant />
+      </div>
+    </section>
+
+    <!-- Team (slot until Armak supplies people, photos and permission) -->
+    {SHOW_PLACEHOLDERS && (
+      <section class="block container" aria-labelledby="team-title">
+        <div class="block__head">
+          <h2 id="team-title" class="t-h2 block__title">The people behind the installs.</h2>
+          <p class="block__intro">One crew and one point of contact from the first walk-through to the final report.</p>
+        </div>
+        <div class="block__body">
+          <ul role="list" class="team__grid">
+            {[1, 2, 3, 4].map((n) => (
+              <li class="member">
+                <div class="member__photo" aria-hidden="true">
+                  <span class="t-meta member__flag">Placeholder</span>
+                </div>
+                <p class="t-meta">Team member {n}</p>
+                <p class="member__name">Name to be supplied</p>
+                <p class="t-meta">Role, photo and short bio, with permission</p>
+              </li>
+            ))}
+          </ul>
+          <div class="team__foot">
+            <p class="t-small">Want to work with us?</p>
+            <Button href={contactHref()} variant="link" icon="none">{CTA_LABEL}</Button>
+          </div>
+        </div>
+      </section>
+    )}
+  </div>
 
   <PageCta
     code="about"
@@ -171,87 +243,204 @@ const SHOW_PLACEHOLDERS = false;
 </Base>
 
 <style>
-  /* ── Story ── */
-  .story__body {
+  /* ── Page rhythm: neighbouring blocks share one section gap ── */
+  .about {
     display: grid;
-    gap: var(--space-block) var(--col-gap);
+    row-gap: var(--space-section);
+    padding-block: var(--space-block);
   }
 
-  .story__photo {
-    position: relative;
-    overflow: hidden;
-    border-radius: var(--radius);
-    background: var(--paper-sunken);
-  }
-
-  .story__photo img {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-  }
-
-  .story__side {
+  /* ── Block: heading beside the content from 1024px (one column on phones) ── */
+  .block {
     display: grid;
-    gap: var(--space-block);
+    gap: var(--sp-6) var(--col-gap);
+  }
+
+  .block__head {
+    display: grid;
+    gap: var(--sp-4);
     align-content: start;
     min-width: 0;
   }
 
-  .story__list {
+  .block__title {
+    max-width: 14ch;
+  }
+
+  .block__intro {
+    max-width: 30em;
+    color: var(--text);
+  }
+
+  /* Links are words in the sentence: underlined, red only on hover (rule 7, round 3) */
+  .block__intro a {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+    padding-block: 0.6rem;
+    transition: color var(--dur-fast) ease;
+  }
+
+  .block__body {
+    min-width: 0;
+  }
+
+  .block__body--sheet :global(.plant) {
+    margin-top: 0;
+  }
+
+  /* The chart's own one-line notes get a reading measure here */
+  .block__body--sheet :global(.plant__sig),
+  .block__body--sheet :global(.plant__caption) {
+    max-width: 60ch;
+  }
+
+  /* ── Band: heading on top, content across the full width ── */
+  .band {
+    display: grid;
+    gap: var(--sp-6);
+  }
+
+  .band__head {
+    display: grid;
+    gap: var(--sp-4);
+    min-width: 0;
+  }
+
+  /* ── Who we are: three short pieces ── */
+  .story {
     display: grid;
     gap: var(--sp-6);
   }
 
   .story__item {
     display: grid;
-    gap: 0.75rem;
+    gap: var(--sp-2);
   }
 
-  .story__item p {
+  .story__title {
+    max-width: 20ch;
+  }
+
+  .story__body {
     max-width: 34em;
+    color: var(--text);
   }
 
-  /* At a glance: a white sheet, no border (sits in the hero aside) */
-  .facts {
-    max-width: 28rem;
-    margin: 0;
-    padding: var(--sp-3) var(--sp-5);
-    background: var(--white);
+  /* ── What we install: a photo, the name, one line each ── */
+  .systems {
+    display: grid;
+    gap: var(--sp-7) var(--col-gap);
+  }
+
+  .system {
+    display: grid;
+    gap: var(--sp-3);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .system__link {
+    display: grid;
+    gap: var(--sp-3);
+    min-width: 0;
+  }
+
+  .system__media {
+    display: block;
+    overflow: hidden;
     border-radius: var(--radius);
+    background: var(--paper-sunken);
   }
 
-  .facts__row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: var(--sp-4);
-    padding-block: var(--sp-3);
-    font-size: var(--fs-small);
+  .system__media img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    transition: transform var(--dur-slow) var(--ease-out);
   }
 
-  .facts__row dt {
-    color: var(--steel);
+  .system__short {
+    max-width: 32em;
+    color: var(--text);
   }
 
-  .facts__row dd {
-    margin: 0;
-    color: var(--ink);
+  /* ── Where we work: each county with its cities, as running text ── */
+  .area {
+    display: grid;
+    gap: var(--sp-5);
+  }
+
+  .area__group {
+    display: grid;
+    gap: var(--sp-1);
+    break-inside: avoid;
+    min-width: 0;
+  }
+
+  .area__county {
+    font-size: var(--fs-body);
     font-weight: 600;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
   }
 
+  .area__cities {
+    color: var(--text);
+    max-width: 40em;
+  }
+
+  .area__city {
+    display: inline;
+  }
+
+  .area__city.is-hq .area__name {
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  /* The one red detail that means "here" (rule 7, round 3) */
+  .area__hq {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    color: var(--signal);
+  }
+
+  /* ── How we run a job: five steps across ── */
+  .steps {
+    display: grid;
+    gap: var(--sp-6) var(--col-gap);
+  }
+
+  .step {
+    display: grid;
+    gap: var(--sp-2);
+    align-content: start;
+    min-width: 0;
+  }
+
+  .step__body {
+    max-width: 34em;
+    color: var(--text);
+  }
+
+  .steps__promise {
+    max-width: 38em;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  /* ── Placeholder slots (hidden on the live site) ── */
   .timeline {
     display: grid;
-    gap: 1.5rem;
-    justify-items: start;
+    gap: var(--sp-5);
     margin-top: var(--space-block);
   }
 
   .timeline__rows {
     display: grid;
-    gap: var(--sp-5);
-    width: 100%;
+    gap: var(--sp-4);
   }
 
   .timeline__row {
@@ -261,21 +450,12 @@ const SHOW_PLACEHOLDERS = false;
     align-items: baseline;
   }
 
-  .timeline__row--slot {
-    align-items: start;
-  }
-
   .timeline__year {
     font-size: 1.25rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
 
-  .timeline__row--slot .timeline__year {
-    color: var(--steel);
-  }
-
-  /* ── Team ── */
   .team__grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -317,51 +497,90 @@ const SHOW_PLACEHOLDERS = false;
     margin-top: var(--space-block);
   }
 
-  @media (max-width: 420px) {
-    .member__photo .member__flag {
-      top: 0.5rem;
-      left: 0.5rem;
+  @media (hover: hover) and (pointer: fine) {
+    .block__intro a:hover {
+      color: var(--signal);
+    }
+
+    .system__link:hover .system__media img {
+      transform: scale(1.04);
+    }
+
+    .system__link:hover .system__name {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 1px;
     }
   }
 
   @media (min-width: 640px) {
+    .systems {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    /* Counties in two balanced columns */
+    .area {
+      display: block;
+      column-count: 2;
+      column-gap: var(--col-gap);
+    }
+
+    .area__group {
+      margin-bottom: var(--sp-5);
+    }
+
     .timeline__row {
       grid-template-columns: 7rem minmax(0, 1fr);
     }
   }
 
   @media (min-width: 1024px) {
-    .story__body {
+    .block {
       grid-template-columns: repeat(12, minmax(0, 1fr));
       align-items: start;
     }
 
-    .story__figure {
-      grid-column: 1 / span 5;
+    .block__head {
+      grid-column: 1 / span 4;
       position: sticky;
-      top: calc(var(--header-h) + 2rem);
+      top: calc(var(--header-h) + var(--sp-6));
     }
 
-    .story__photo img {
-      aspect-ratio: 4 / 5;
+    .block__body {
+      grid-column: 5 / -1;
     }
 
-    .story__side {
-      grid-column: 7 / -1;
+    .band {
+      gap: var(--sp-7);
     }
 
-    .timeline {
+    .story {
+      gap: var(--sp-7);
+    }
+
+    /* The two biggest systems wide, the other four across */
+    .systems {
       grid-template-columns: repeat(12, minmax(0, 1fr));
-      column-gap: var(--col-gap);
-      align-items: start;
     }
 
-    .timeline > h3 {
-      grid-column: 1 / span 3;
+    .system {
+      grid-column: span 3;
     }
 
-    .timeline__rows {
-      grid-column: 4 / -1;
+    .system--wide {
+      grid-column: span 6;
+    }
+
+    .system--wide .system__media img {
+      aspect-ratio: 16 / 9;
+    }
+
+    .steps {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
     .team__grid {
