@@ -32,6 +32,20 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **Side sessions checked and routed here — 2026-11-06 night.** The owner asked that everything from the five side
+  sessions be routed to this folder. Checked: every branch is merged into intent-redesign with nothing left behind
+  (0 commits ahead), no worktree has uncommitted site work, and each session's note is in `ai/notes/`.
+  | Session | Where it ran | What it produced | Where it lives now |
+  | --- | --- | --- | --- |
+  | site-audit-lists (legal, security, speed lists) | this folder, read-only | `ai/AUDIT_2026-11-05.md` | aa1e048; its 8 to-dos: 6 done in code (styleguide off the live build, privacy rewrite, open-source page, 15 s send limit, hCaptcha box, the faded demo rows gone with the site-walk rewrite), the claims answered 2026-11-05, 2 waiting on the owner (credential claims; the hCaptcha switch in the Web3Forms dashboard); see HANDOFF |
+  | service-sheets (product sheet on the service pages) | this folder | ProductBand.astro, 24 drawings, services-detail.ts, note | bbac2d4 |
+  | about-page (facts once, no dead space) | worktree, `claude/about-page-1c7980` | about.astro, note | merged b9459cf |
+  | site-reveals (every block reveals on scroll) | worktree, `claude/site-reveals-9929c9` | motion.ts, global.css, 30 components, note | merged d1486f0 |
+  | demo-motion (every demo richer) | worktree, `claude/demo-motion-eec65d` | 13 components, demo.ts, note | merged 55fe780 (+ five fixes) |
+  The demo-motion worktree holds one uncommitted local change, two extra dev-server entries in `.claude/launch.json`
+  (ports 4331 and 4333); not site work, it goes with the worktree. Older and unrelated: the three design-direction
+  worktrees of 2026-10-30 under `E:/Claude Installs/Research/armak-directions/` (A was tried and reverted on
+  2026-10-31; B and C were never taken, two commits each); nothing in them is wanted.
 - **Demo animations merged — 2026-11-06 night.** The owner answered "Yes, merge it": `claude/demo-motion-eec65d`
   (47d9005) is merged into intent-redesign in one commit with the fixes below. One conflict,
   `src/components/pages/CablePlant.astro`: the branch had added arrival timing and a 65ch measure to the old bar

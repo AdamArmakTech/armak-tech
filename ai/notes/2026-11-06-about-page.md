@@ -132,3 +132,9 @@ revealed after one scroll through; 6 split headings, all split; final state show
 - `node_modules` was installed in the worktree with `npm ci` (a junction to the main checkout's copy made the dev
   server 404 on the Geist font files through `/@fs/`).
 - Port 4321 belonged to the main checkout's dev server, so this worktree's `armak-dev` ran on 4323.
+
+## Merged (2026-11-06 evening, main session)
+Merged into `intent-redesign` as b9459cf on the owner's "Yes, merge both". The six systems' photos were then replaced
+by the product drawings on a white band (0d00702; the owner had called the photo band "random" the same afternoon),
+and the Wi-Fi chart was redrawn as a section drawing after his "very sloppy and ugly" verdict. See
+`ai/PROJECT_STATE.md`, "Merge round".

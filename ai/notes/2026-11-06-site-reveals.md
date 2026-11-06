@@ -138,3 +138,8 @@ shadows); none from this change.
   entrance animation can move the measured LCP; run PageSpeed on /services/ after the next publish.
 - Local only, reverted before the commit: an `armak-dev-reveals` entry (port 4350) in `.claude/launch.json`, so
   this worktree's dev server did not collide with the other sessions' servers on 4321/4322.
+
+## Merged (2026-11-06 evening, main session)
+Merged into `intent-redesign` as d1486f0 on the owner's "Yes, merge both"; no conflicts. The script-armed arrivals
+that the demo-motion branch added later (Numbers, PartnerStrip, CableCompare, RoomForLater) and the About chart sit
+beside these reveals and got their own `@media print` resets on the night of 2026-11-06. See `ai/PROJECT_STATE.md`.

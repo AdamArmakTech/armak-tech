@@ -7,7 +7,7 @@ the old stacked rows with a small red uppercase label are what he likes ("I LIKE
 so red eyebrow labels are an owner decision; nothing scrolls sideways on phones; layouts intentional, no floating or
 overlapping cards, no dead space.
 
-## What changed (branch `intent-redesign`, NOT committed, NOT pushed)
+## What changed (branch `intent-redesign`; committed by the main session as bbac2d4 on 2026-11-06, NOT pushed)
 - `src/components/services/ProductBand.astro` (new): the "What we install" sheet under every service hero.
 - `src/pages/services/[slug].astro`: renders ProductBand instead of PhotoBand; the photo lookup is gone.
 - `src/data/services-detail.ts`: `ProductFile` (the 24 drawing names, so a typo fails `astro check`), `ServiceProduct`
@@ -114,4 +114,5 @@ before and after, reports in `.taste-skill/sheets-before/` and `.taste-skill/she
   read smaller than the upright ones inside the shared frame. Making them read bigger is a drawing change, not a
   layout change.
 - PhotoBand.astro deletion needs the owner's yes (path above).
-- Not committed; the main session owns the commit.
+- Committed by the main session as bbac2d4 (2026-11-06). The drawing helper later moved to `src/lib/drawings.ts`,
+  shared with the About page (0d00702).

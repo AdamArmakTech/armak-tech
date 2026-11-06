@@ -1,7 +1,9 @@
 # Handoff — armak.tech redesign (written 2026-10-29)
 
 Read this first in a new session. It holds everything that lived only in the previous conversation.
-Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (audit findings) and `ai/AGENTS.md` (rules).
+Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/AUDIT_2026-11-05.md` (the 5 November check of the site against
+the owner's legal, security and speed lists: 8 to-dos, 15 questions; what is still open from it is in the owner actions
+below), `ai/plans/site-audit.md` (the October audit) and `ai/AGENTS.md` (rules).
 
 ## Where things are
 - **Live site:** https://armak.tech — built by Vercel from GitHub **AdamArmakTech/armak-tech**, branch **`main`**.
@@ -71,7 +73,9 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
 - The three session worktrees are merged into `intent-redesign` (about-page b9459cf, site-reveals d1486f0,
   demo-motion 55fe780) and can go when the owner says so: `E:/all-sites/armak-tech/.claude/worktrees/about-page-1c7980`,
   `.../site-reveals-9929c9`, `.../demo-motion-eec65d` (remove with `git worktree remove <path>`, then
-  `git branch -d` the three `claude/...` branches). Nothing in them is unmerged.
+  `git branch -d` the three `claude/...` branches). Nothing in them is unmerged. The same goes for the three
+  design-direction worktrees of 2026-10-30 under `E:/Claude Installs/Research/armak-directions/A`, `B` and `C`
+  (branches `direction-b` and `direction-c`; A was reverted on 2026-10-31): explorations, nothing wanted.
 - The install drawing's legend uses the TIA-606 colour meanings (blue horizontal drops, green network gear, orange
   carrier hand-off, white backbone). Confirm these match how Armak codes its cables; otherwise say the right words.
 - Approve deleting the unused `src/components/process/JobTimeline.astro` (taken off the page 2026-11-06, 1734eeb).
