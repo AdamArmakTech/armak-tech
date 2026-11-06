@@ -42,9 +42,9 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   margin. Service pages: the five-step block is now heading + intro + "See how every job runs" link to /#process (the
   full copy stays on the services index); services index hero photo = camera-ceiling.jpg (alt describes the photo
   only), object-position tuned. Measured (inspector): about 8→6 findings (3→1 hard, screens 8→5), plan 9→8 (5→3),
-  glossary 10→9 (6→5), services index 7→7 (2→2), structured cabling 7→8 (4→5: one "covered text under the sticky
-  header" reading and a 9-word FAQ question wrapping at 390). Site total now about 64 findings, 26 hard, from 157/99
-  before round 1. Left: real photographs (owner), motion (round 3), glossary off-centre from the letter column
+  glossary 10→9 (6→5), services index 7→7 (2→2), structured cabling 7→7 (4→4). Site total now 63 findings, 23 hard
+  (home 9/2, services 7/2, structured cabling 7/4, about 6/1, industries 7/3, plan 8/3, glossary 9/5, contact 4/1,
+  privacy 6/2), from 157/99 before round 1. Left: real photographs (owner), motion (round 3), glossary off-centre from the letter column
   (cosmetic), allowed lines, the sticky header over large text at some phone scroll positions. Evidence:
   `ai/exports/critique-2026-11-05/round2/`.
 - **Redesign round 1 ("Start round 1") — 2026-11-05 late evening (branch `intent-redesign`, four code commits after
