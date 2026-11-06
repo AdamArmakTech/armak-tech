@@ -38,6 +38,12 @@ const typeScale = [
 ];
 
 const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Access control', 'Voice', 'Audio / video', 'Not sure yet'];
+
+// Dev-only page. The style guide is for building the site, not for visitors (owner, 2026-11-05).
+// In a production build it answers "204 No Content" (an empty answer), so Astro writes no file
+// for it and nothing reaches the live site; `npm run dev` still serves it at /styleguide/.
+// (A 404 answer would not do: Astro then writes the 404 page's HTML at this address.)
+if (import.meta.env.PROD) return new Response(null, { status: 204 });
 ---
 
 <Base title="Style guide" noindex>
@@ -122,7 +128,7 @@ const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Acces
       </div>
       <div class="sg-panel">
         <p class="t-mono t-muted">Spec strip</p>
-        <SpecStrip items={[`Est. ${FOUNDED}`, 'BICSI-certified', 'Licensed & bonded', `${site.supportHours} support`]} />
+        <SpecStrip items={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`, 'Test reports included', `${site.supportHours} support`]} />
       </div>
     </div>
   </section>

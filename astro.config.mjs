@@ -19,8 +19,11 @@ export default defineConfig({
         "default-src 'self'",
         "img-src 'self' data: blob:",
         "font-src 'self'",
-        // Contact form (Web3Forms) and the service-area map tiles (OpenFreeMap).
-        "connect-src 'self' https://api.web3forms.com https://tiles.openfreemap.org",
+        // Contact form (Web3Forms, plus the hCaptcha bot check) and the service-area map
+        // tiles (OpenFreeMap).
+        "connect-src 'self' https://api.web3forms.com https://tiles.openfreemap.org https://hcaptcha.com https://*.hcaptcha.com",
+        // The hCaptcha box on the contact form is drawn inside an iframe from hCaptcha.
+        'frame-src https://hcaptcha.com https://*.hcaptcha.com',
         "worker-src 'self' blob:",
         "child-src 'self' blob:",
         "object-src 'none'",
@@ -28,15 +31,26 @@ export default defineConfig({
         "form-action 'self' https://api.web3forms.com",
         'upgrade-insecure-requests',
       ],
-      // style="" attributes (reveal delays, SVG fills) can't be hashed.
+      // hCaptcha's script (js.hcaptcha.com) loads on the contact form.
+      scriptDirective: {
+        resources: ["'self'", 'https://hcaptcha.com', 'https://*.hcaptcha.com'],
+      },
+      // style="" attributes (reveal delays, SVG fills) can't be hashed. hCaptcha also loads
+      // its own styles.
       styleDirective: {
-        resources: ["'self'", { resource: "'unsafe-inline'", kind: 'attribute' }],
+        resources: [
+          "'self'",
+          'https://hcaptcha.com',
+          'https://*.hcaptcha.com',
+          { resource: "'unsafe-inline'", kind: 'attribute' },
+        ],
       },
     },
   },
   integrations: [
     sitemap({
-      // Internal review pages never go in the sitemap.
+      // The style guide only exists on the dev server (see src/pages/styleguide.astro), so it
+      // never belongs in the sitemap.
       // TODO: the Projects area is hidden until real projects exist (see showProjects in
       // src/data/content.ts) — remove the '/projects/' exclusion when real projects are added.
       filter: (page) => !page.includes('/styleguide') && !page.includes('/projects/'),
