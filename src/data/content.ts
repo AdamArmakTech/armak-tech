@@ -16,7 +16,6 @@ import aruba from '../assets/partners/aruba.png';
 import ubiquiti from '../assets/partners/ubiquiti.png';
 import axis from '../assets/partners/axis.png';
 import bosch from '../assets/partners/bosch.png';
-import hikvision from '../assets/partners/hikvision.png';
 import lts from '../assets/partners/lts.png';
 import honeywell from '../assets/partners/honeywell.png';
 import commscope from '../assets/partners/commscope.png';
@@ -44,7 +43,6 @@ export const partners: Partner[] = [
   { name: 'Netgear', logo: netgear, category: 'Network' },
   { name: 'Axis Communications', logo: axis, category: 'Security' },
   { name: 'Bosch', logo: bosch, category: 'Security' },
-  { name: 'Hikvision', logo: hikvision, category: 'Security' },
   { name: 'LTS', logo: lts, category: 'Security' },
   { name: 'Honeywell', logo: honeywell, category: 'Security' },
   { name: 'CommScope', logo: commscope, category: 'Infrastructure' },
@@ -81,8 +79,11 @@ export const process = [
   },
 ];
 
-/* ── Credentials & pillars — wording carried over from the original site ── */
-export const credentials = ['Licensed · Bonded · Insured', 'BICSI-certified technicians', site.support];
+/* ── Credentials & pillars (pillars: wording from the original site; credentials: see the note below) ── */
+// 2026-11-05: the owner was not sure about the contractor licence, bond, insurance or BICSI
+// certification, so those lines stay out until he confirms them. When the licence is confirmed,
+// bring back "Licensed" only with the CSLB number shown next to it.
+export const credentials = ['A written plan and price for every job', 'Cable test reports delivered to you', site.support];
 
 export const pillars = [
   { title: 'Built to standard', body: 'ANSI/TIA-compliant installs. Every cable tested, every port labeled, every job documented to spec.' },

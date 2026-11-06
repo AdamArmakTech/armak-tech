@@ -21,7 +21,9 @@ const heightFor = (w: number, h: number) => {
 };
 
 const n = list.length;
-const cols = `--c-sm:${Math.min(n, 2)};--c-md:${Math.min(n, 3)};--c-lg:${Math.min(n, 6)}`;
+// Four logos make a 2 x 2 block on tablets instead of a row of three plus one on its own.
+const md = n === 4 ? 2 : Math.min(n, 3);
+const cols = `--c-sm:${Math.min(n, 2)};--c-md:${md};--c-lg:${Math.min(n, 6)}`;
 ---
 
 {n > 0 && (
