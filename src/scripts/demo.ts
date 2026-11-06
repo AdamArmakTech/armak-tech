@@ -13,6 +13,11 @@
  *   moveAlong(el, points, times)     // one Web Animation moving an SVG element along a polyline
  *   bezierPoints(p0, p1, p2, p3)     // points along a curved cable, for moveAlong
  *
+ * The site's rule for anything with several states (owner, 2026-11-06 night):
+ *
+ *   const auto = autoPlay(root, { start, stop });   // runs by itself on screen; a press stops it; back on
+ *                                                   // screen it starts again; the mouse pointer changes nothing
+ *
  * Under prefers-reduced-motion, demos should skip animation and show their finished state.
  */
 
@@ -193,4 +198,87 @@ export function bezierPoints(
 /** Evenly spaced times (ms) for `n` points over `ms`, starting at `start`: pairs with bezierPoints / straight runs. */
 export function evenTimes(n: number, ms: number, start = 0): number[] {
   return Array.from({ length: n }, (_, i) => start + (ms * i) / (n - 1 || 1));
+}
+
+
+/* ── The site's rule for anything with several states ──────────────────────────────────────────────────────
+ * Owner, 2026-11-06 night, about the five steps: "these should load in a sequence and if someone presses on
+ * any of the buttons the sequence should stop but when you scroll on it, it should naturally start animating
+ * and when the animation ends it moves onto the next one naturally. the whole site needs to be like this."
+ *
+ * So a piece with several states (the step strip, the building explorer) runs by itself as it scrolls into
+ * view and moves on when each state's motion ends; a press on a control inside it stops that, because the
+ * visitor is now in charge; once it scrolls out of view and comes back, it starts again from where it is;
+ * hovering never stops it. Under reduced motion it never runs by itself.
+ */
+
+/** The controls whose press hands a piece over to the visitor. A scroll, or a tap on a drawing, does not. */
+export const CONTROLS = 'button, a, input, select, textarea, summary, [role="slider"], [role="button"], [role="tab"]';
+
+export interface AutoPlay {
+  /** True while the piece should run by itself: on screen, not handed over, motion allowed */
+  readonly on: boolean;
+  /** Hand the piece over to the visitor: it stops until it has left the screen and come back */
+  takeOver(): void;
+}
+
+/**
+ * `start()` is called when the piece should run by itself (it has just come on screen, or come back after a
+ * hand-over); `stop()` when it should not (it left the screen, or a control was pressed). "On screen" means
+ * overlapping the middle 60% of the viewport, so a piece taller than the screen (a stacked phone row) still
+ * counts, and a piece just peeking in at the bottom edge does not.
+ */
+export function autoPlay(
+  root: HTMLElement,
+  {
+    start,
+    stop,
+    controls = CONTROLS,
+    rootMargin = '-20% 0px -20% 0px',
+  }: { start: () => void; stop: () => void; controls?: string; rootMargin?: string },
+): AutoPlay {
+  let inView = false;
+  let manual = false;
+  const on = () => inView && !manual && !prefersReducedMotion();
+
+  const takeOver = () => {
+    if (manual) return;
+    manual = true;
+    root.classList.add('is-manual');
+    stop();
+  };
+
+  // A press on a control inside the piece. Keys count too, except the ones that only move focus through it.
+  root.addEventListener('pointerdown', (e) => {
+    if ((e.target as Element).closest?.(controls)) takeOver();
+  });
+  root.addEventListener('keydown', (e) => {
+    if (['Tab', 'Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) return;
+    takeOver();
+  });
+
+  if (typeof IntersectionObserver !== 'undefined') {
+    new IntersectionObserver(
+      ([entry]) => {
+        const was = inView;
+        inView = entry.isIntersecting;
+        if (inView && !was) {
+          if (on()) start();
+        } else if (!inView && was) {
+          // Gone from the screen: forget the hand-over, so the next arrival starts it again
+          manual = false;
+          root.classList.remove('is-manual');
+          stop();
+        }
+      },
+      { threshold: 0, rootMargin },
+    ).observe(root);
+  }
+
+  return {
+    get on() {
+      return on();
+    },
+    takeOver,
+  };
 }

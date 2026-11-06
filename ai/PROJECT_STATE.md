@@ -32,6 +32,23 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **The site's rule for sequences — 2026-11-06 night.** The owner, looking at the preview's Install step on a desktop:
+  "these should load in a sequence and if someone presses on any of the buttons the sequence should stop but when
+  you scroll on it, it should naturally start animating and when the animation ends it moves onto the next one
+  naturally. the whole site needs to be like this." Until then the strip paused while the mouse pointer rested on
+  it and, once a tab or control was pressed, never ran by itself again. Now `autoPlay()` in `src/scripts/demo.ts`
+  holds the rule: a piece runs by itself while it overlaps the middle 60% of the screen (so a tall phone row still
+  counts); a press on a control inside it (button, link, field, tab, slider; keys other than Tab) hands it over to
+  the visitor; once it scrolls out of view and comes back it runs again from where it is; hovering never stops it;
+  reduced motion never runs it. Applied to the step strip (`Process.astro`: the hover and focus pauses are gone; the
+  stacked phone rows still play once each on scroll) and to the building explorer (`BuildingExplorer.astro`: on
+  arrival the six systems show themselves one after another, 2.4 s each, then the "10 years from now" view for 4.2 s,
+  then round again; a tab, chip, room button or the switch stops it). Checked in the browser at 1440: the strip kept
+  moving with the pointer over it, stopped on a tab press, replayed and moved on after scrolling away and back; the
+  explorer's lap ran at one timer (2.4 / 4.7 s cadence), stopped on a chip press and resumed after re-entry; at 375
+  the lap runs too; under reduced motion (Playwright) neither runs. astro check 0 errors. The owner also said "the
+  animations need to be more robust and accurate and more beefy": a survey of every animated piece is in progress
+  (workflow), then workers per file and a proofreading pass.
 - **Preview updated — 2026-11-06 night.** On the owner's "Update the preview" (his answer to the box question "Push the
   merged site to the preview link so you can look at it on your phone?"), `intent-redesign` was pushed to GitHub
   (b47565f → 072cbdd, 20 commits; gh account AdamArmakTech; `main` untouched at 9d6993e). Vercel built it: GitHub
