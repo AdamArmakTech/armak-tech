@@ -60,7 +60,11 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   complete captchas) and the 15-second timeout path; both reviewed in code by the proofreader. Owner answered the
   proofreader's question the same evening: form emails are kept as business records and NOT deleted on request
   (first "yes, delete on request", then "nevermind keep them"), so "ask us to delete it" came off /privacy/
-  ("Your choices" now offers a copy or a correction). Open: (1) the owner must turn on hCaptcha in
+  ("Your choices" now offers a copy or a correction). Later the owner asked whether the page had to be so specific;
+  the law (CalOPPA, Bus. & Prof. Code 22575(b)(1)) asks for categories of third parties, and three contractors'
+  policies plus Termly's template name kinds only, so "Who else handles it" now lists kinds of services (hosting,
+  form delivery, email and spam filter, human check, map) with a "when the law requires it" line; the company
+  names stay in the file's header comment. Open: (1) the owner must turn on hCaptcha in
   the Web3Forms dashboard so the check is enforced on their side; (2) hCaptcha shows "localhost detected" on the
   local preview only; tick the box once on the Vercel preview URL after the next publish.
 - **Code cleanup, Batches 3 and 4 — 2026-10-31 and 2026-11-05 (branch `intent-redesign`, commits 06ca766 and 2267b24, NOT pushed).**
