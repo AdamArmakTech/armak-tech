@@ -1,14 +1,16 @@
 ---
 /**
  * Privacy policy (CalOPPA). Plain English and limited to what the site really does:
- * contact form → Web3Forms → sales inbox; Vercel hosting logs; OpenFreeMap map tiles;
- * no cookies, analytics or ads (checked in the code 2026-10-29). Armak should review the wording.
+ * contact form → Web3Forms → Proofpoint spam filter → Microsoft 365 (GoDaddy) sales inbox;
+ * hCaptcha bot check on form step 2; Vercel hosting logs; OpenFreeMap map tiles;
+ * no analytics or ads, no cookies set by the site itself (checked in the code 2026-10-29,
+ * wording updated 2026-11-05). Armak should review the wording.
  */
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import { site } from '../data/site';
 
-const effective = 'October 29, 2026';
+const effective = 'November 5, 2026';
 const description = `How ${site.name} handles the information you send through armak.tech, including the contact form. No ads, no tracking, and your details are never sold.`;
 ---
 
@@ -47,12 +49,28 @@ const description = `How ${site.name} handles the information you send through a
     </section>
 
     <section>
+      <h2 class="t-h3">How long we keep it</h2>
+      <p>
+        We keep the emails the contact form sends us as business records.
+      </p>
+    </section>
+
+    <section>
       <h2 class="t-h3">Who else handles it</h2>
       <ul>
         <li>
           <strong>Web3Forms</strong> delivers the contact form to our inbox ({site.email}) by email. Your browser sends
           the form to them directly, so they receive what you typed and your IP address. Their own privacy policy
           covers what they do with it.
+        </li>
+        <li>
+          <strong>hCaptcha</strong> checks that the contact form is sent by a person. It loads only when you reach the second step of the form, where you enter your details and message.
+          When it loads, it receives your IP address and standard browser details, and it may store data in your
+          browser for its own check. Their own privacy policy covers what they do with it.
+        </li>
+        <li>
+          <strong>Email.</strong> The email carrying your form details first passes through a spam filter run by
+          Proofpoint. It is then stored in our Microsoft 365 mailbox, which we buy through GoDaddy.
         </li>
         <li>
           <strong>Vercel</strong> hosts this website and keeps the standard server logs described above.
@@ -71,6 +89,10 @@ const description = `How ${site.name} handles the information you send through a
         This site doesn’t set cookies, and it has no advertising, analytics or tracking tools. It doesn’t follow you
         across other websites, and no other company runs ads or tracking here. Because of that, we don’t change
         anything when your browser sends a “Do Not Track” signal.
+      </p>
+      <p>
+        There is one exception. The hCaptcha check on the contact form may store data in your browser while it runs.
+        It is not used for advertising, and nothing else on this site does this.
       </p>
     </section>
 

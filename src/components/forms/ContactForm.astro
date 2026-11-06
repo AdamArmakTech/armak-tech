@@ -115,6 +115,18 @@ const f = (name: string) => `${id}-${name}`;
         </div>
       </div>
 
+      <!-- Human check (free hCaptcha checkbox). Site key: the one Web3Forms publishes for free-plan forms
+           (Web3Forms docs, hCaptcha "Manual Setup"). Web3Forms checks the answer on its side. The script
+           loads only when step 2 is first shown. hCaptcha writes its answer into a hidden textarea
+           named h-captcha-response inside this div, so it must stay inside the form. -->
+      <div class="cform__captcha" tabindex="-1" data-captcha-wrap>
+        <div class="h-captcha" data-sitekey="50b2fe65-b00b-4b9e-ad62-3ba471098be2" data-captcha-box></div>
+        <p class="cform__error" data-error-for="captcha" aria-live="polite"></p>
+      </div>
+      <noscript>
+        <p class="t-small t-muted">JavaScript is off in your browser, so this form cannot run its human check. Call us instead: <a class="cform__link" href={site.phoneHref}>{site.phone}</a></p>
+      </noscript>
+
       <div class="cform__actions">
         <Button type="button" variant="outline" size="lg" icon="none" data-back data-js-only hidden>Back</Button>
         <Button type="submit" variant="primary" size="lg" data-submit>Send my request</Button>
@@ -334,6 +346,26 @@ const f = (name: string) => `${id}-${name}`;
     border-bottom-color: var(--signal);
   }
 
+  /* The hCaptcha box is 303px wide (164px in its compact size, used when there is less room, see
+     ensureCaptcha). If it still does not fit, it scrolls sideways instead of clipping. */
+  .cform__captcha {
+    display: grid;
+    gap: 0.5rem;
+    min-width: 0;
+    min-height: 78px;
+    margin-block: var(--sp-2);
+    overflow-x: auto;
+  }
+
+  .cform__captcha:focus {
+    outline: none;
+  }
+
+  .cform__captcha:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 4px;
+  }
+
   .cform__actions {
     display: flex;
     flex-wrap: wrap;
@@ -499,6 +531,31 @@ const f = (name: string) => `${id}-${name}`;
   import { prefersReducedMotion } from '../../scripts/demo';
 
   const MIN_PHONE_DIGITS = 7;
+  // Give up on a send after 15 seconds so a visitor is never stuck on "Sending…".
+  const SEND_TIMEOUT_MS = 15_000;
+
+  declare global {
+    interface Window {
+      hcaptcha?: { reset: (id?: string) => void };
+    }
+  }
+
+  // Load hCaptcha once, the first time step 2 is shown. It renders every .h-captcha box by itself.
+  // The normal box is 303px wide. On a narrow phone the box gets hCaptcha's compact size instead,
+  // decided from the room it really has, which is why this runs after step 2 is visible.
+  let captchaRequested = false;
+  function ensureCaptcha(root: HTMLElement) {
+    if (captchaRequested) return;
+    captchaRequested = true;
+    const wrap = root.querySelector<HTMLElement>('[data-captcha-wrap]');
+    const box = root.querySelector<HTMLElement>('[data-captcha-box]');
+    if (wrap && box && wrap.clientWidth > 0 && wrap.clientWidth < 303) box.dataset.size = 'compact';
+    const s = document.createElement('script');
+    s.src = 'https://js.hcaptcha.com/1/api.js';
+    s.async = true;
+    s.defer = true;
+    document.head.appendChild(s);
+  }
 
   type Field = HTMLInputElement | HTMLTextAreaElement;
 
@@ -546,6 +603,7 @@ const f = (name: string) => `${id}-${name}`;
           s.hidden = s !== target;
           s.classList.remove('is-moving');
         });
+        if (n === 2) ensureCaptcha(root);
         // Focus goes to the top of the step
         if (focus) (target.querySelector<HTMLElement>('[data-focus-first]') ?? target.querySelector<HTMLElement>('.cform__title'))?.focus();
       };
@@ -685,10 +743,19 @@ const f = (name: string) => `${id}-${name}`;
         return;
       }
 
+      // Human check: hCaptcha fills this hidden textarea when the box is ticked.
+      const captchaAnswer = form.querySelector<HTMLTextAreaElement>('textarea[name="h-captcha-response"]')?.value.trim() ?? '';
+      if (!captchaAnswer) {
+        setError('captcha', 'Please tick the “I am human” box first.');
+        root.querySelector<HTMLElement>('[data-captcha-wrap]')?.focus();
+        return;
+      }
+      setError('captcha', '');
+
       // Build the JSON payload; multiple project types are sent as one readable string.
       const payload: Record<string, string> = {};
       for (const [key, value] of new FormData(form)) {
-        if (typeof value !== 'string' || key === 'project_type') continue;
+        if (typeof value !== 'string' || key === 'project_type' || key === 'g-recaptcha-response') continue;
         payload[key] = value.trim();
       }
       payload.project_type = selectedTypes().join(', ');
@@ -702,6 +769,8 @@ const f = (name: string) => `${id}-${name}`;
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify(payload),
+          // Older browsers (Safari before 16) have no AbortSignal.timeout; they send without a limit.
+          signal: typeof AbortSignal.timeout === 'function' ? AbortSignal.timeout(SEND_TIMEOUT_MS) : undefined,
         });
         const json = (await res.json().catch(() => ({}))) as { success?: boolean };
         if (!res.ok || !json.success) throw new Error('Submission rejected');
@@ -711,6 +780,8 @@ const f = (name: string) => `${id}-${name}`;
         success!.classList.add('is-in');
         success!.querySelector<HTMLElement>('[data-success-title]')?.focus();
       } catch {
+        // Includes the 15-second timeout. The old answer is spent, so let the visitor tick the box again.
+        window.hcaptcha?.reset?.();
         setSending(false);
         showError();
       }
