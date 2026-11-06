@@ -45,7 +45,8 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
    consistent Next-step block; CTAs should carry context into the form.
 
 ## Owner actions still open (only Aram/Armak can do these)
-- Vercel → Settings → Domains → add `www.armak.tech` as a redirect to `armak.tech` (www shows a security error today).
+- ~~Vercel → Settings → Domains → add `www.armak.tech` as a redirect to `armak.tech`.~~ Done: www.armak.tech
+  redirects to armak.tech (308), checked 2026-11-05 by the audit session and again with curl.
 - Review/approve the draft privacy page (/privacy/).
 - Answer: 946+ vs 1,000+ projects; 24/7 for everyone or contracted clients only; keep Hikvision (FCC Covered List)
   and Cat 8 as headline offerings?; which industries are really served; confirm BICSI, licensed/bonded/insured.
