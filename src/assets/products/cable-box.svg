@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" role="img">
+<title>Box of network cable</title>
+<ellipse cx="119" cy="152" rx="75.6" ry="6" fill="#0b0d10" fill-opacity="0.07"/>
+<ellipse cx="119" cy="152" rx="53.4" ry="4" fill="#0b0d10" fill-opacity="0.05"/>
+<g stroke="#0b0d10" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+<path d="M120 58L137.1 48.1V138.1L120 148Z" fill="#ebe9e3"/>
+<path d="M30 58L47.1 48.1H137.1L120 58Z" fill="#ffffff"/>
+<path d="M30 58H120V148H30Z" fill="#ffffff"/>
+</g>
+<path d="M39.6 53.1H127.6" stroke="#0b0d10" stroke-width="1.25" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="40" y="70" width="44" height="26" rx="1.5" stroke="#565e6b" stroke-width="1.25" stroke-linejoin="round" stroke-linecap="round"/>
+<g transform="rotate(4 128.6 95)">
+<ellipse cx="128.6" cy="95" rx="4.8" ry="10.5" fill="#ffffff" stroke="#0b0d10" stroke-width="1.25" stroke-linejoin="round" stroke-linecap="round"/>
+<ellipse cx="128.6" cy="95" rx="2.8" ry="7.8" fill="#0b0d10"/>
+</g>
+<g stroke="#0b0d10" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" fill="#1d3f8f">
+<path d="M129 92H150A23 23 0 0 1 173 115V120H167V115A17 17 0 0 0 150 98H129Z"/>
+<path d="M121 136a43 14 0 1 0 86 0a43 14 0 1 0-86 0zM127 136a37 8 0 1 0 74 0a37 8 0 1 0-74 0z" fill-rule="evenodd"/>
+<path d="M115 131a43 14 0 1 0 86 0a43 14 0 1 0-86 0zM121 131a37 8 0 1 0 74 0a37 8 0 1 0-74 0z" fill-rule="evenodd"/>
+</g>
+</svg>

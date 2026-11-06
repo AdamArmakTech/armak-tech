@@ -1,10 +1,12 @@
 ---
 /**
  * "The Armak standard" — the five steps, each with a live demo.
- * Works like the System explorer: the tabs move on by themselves once the active step's demo has played
- * to the end (a short hold, then a crossfade to the next step); one stage shows the active step and plays
- * its demo. Using a tab, or a control inside a demo, hands control to the visitor. Without JS every
- * step + demo is shown stacked.
+ * From 900px it works like the System explorer: the tabs move on by themselves once the active step's demo
+ * has played to the end (a short hold, then a crossfade to the next step); one stage shows the active step
+ * and plays its demo. Using a tab, or a control inside a demo, hands control to the visitor.
+ * Under 900px there are no tabs (owner, 2026-11-06: nothing scrolls sideways on a phone, "gracefully stack"):
+ * the five steps stack as rows in the owner's preferred style (small red label, bold title, body, a hairline
+ * between rows) and each demo plays once when it scrolls into view. Without JS every step + demo is stacked.
  */
 import SectionHead from '../ui/SectionHead.astro';
 import Button from '../ui/Button.astro';
@@ -65,7 +67,8 @@ const demos: Record<string, any> = {
               data-step-panel
             >
               <div class="steps__intro">
-                <h3 class="visually-hidden">{s.title}</h3>
+                <p class="steps__eyebrow">Step {i + 1} of {steps.length}</p>
+                <h3 class="steps__title">{s.title}</h3>
                 <p class="steps__intro-body">{s.body}</p>
               </div>
               {s.code === '04' ? <CableTest variant="full" id="cable-test" /> : Demo && <Demo />}
@@ -105,6 +108,8 @@ const demos: Record<string, any> = {
   const FALLBACK_MS = 22000;
   /** Touching one of these inside a demo hands control to the visitor. A scroll or a tap on the drawing does not. */
   const CONTROL = 'button, a, input, select, textarea, summary, [role="slider"], [role="button"]';
+  /** From 900px the steps are tabs with one stage; under that they stack and each demo plays on scroll. */
+  const desktop = window.matchMedia('(min-width: 900px)');
 
   document.querySelectorAll<HTMLElement>('[data-steps]').forEach((root) => {
     const tabs = [...root.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
@@ -125,7 +130,7 @@ const demos: Record<string, any> = {
     let doneSeen = false; // the active step's demo has played to the end
     const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-    const autoOn = () => !prefersReducedMotion() && !userTookOver && inView && !hovering && !focused;
+    const autoOn = () => desktop.matches && !prefersReducedMotion() && !userTookOver && inView && !hovering && !focused;
 
     /** Restart the active step's demo from the beginning */
     const playDemo = (panel: HTMLElement) => {
@@ -188,13 +193,6 @@ const demos: Record<string, any> = {
       }, 480);
     };
 
-    /** Scroll the phone tab strip so the active tab is in view (on desktop the strip does not scroll). */
-    const showTab = (tab: HTMLElement) => {
-      if (!tabsEl || tabsEl.scrollWidth <= tabsEl.clientWidth + 1) return;
-      const left = tab.offsetLeft - (tabsEl.clientWidth - tab.offsetWidth) / 2;
-      tabsEl.scrollTo({ left: Math.max(0, left), behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
-    };
-
     function select(i: number, { focus = false, play = false } = {}) {
       const next = (i + tabs.length) % tabs.length;
       const from = panels[index];
@@ -208,7 +206,6 @@ const demos: Record<string, any> = {
       });
       if (from !== to) swapPanels(from, to);
       moveSlider();
-      showTab(tabs[index]);
       if (focus) tabs[index].focus();
       if (play) playDemo(to);
     }
@@ -299,6 +296,10 @@ const demos: Record<string, any> = {
     const certify = panels.findIndex((p) => p.querySelector('#cable-test'));
     const openCertify = () => {
       if (certify < 0) return;
+      if (!desktop.matches) {
+        playDemo(panels[certify]); // stacked: the panel is already on the page and the link scrolls to it
+        return;
+      }
       takeOver();
       select(certify, { play: true });
     };
@@ -316,15 +317,20 @@ const demos: Record<string, any> = {
     const trace = panels.findIndex((p) => p.querySelector('[data-demo="trace"]'));
     document.addEventListener('armak:trace', () => {
       if (trace < 0) return;
+      if (!desktop.matches) {
+        playDemo(panels[trace]);
+        return;
+      }
       takeOver();
       select(trace, { play: true });
     });
 
-    // Run only while the section is on screen: play the current demo on arrival, stop when it leaves
+    // Desktop: run only while the section is on screen: play the current demo on arrival, stop when it leaves
     new IntersectionObserver(
       ([entry]) => {
         const wasInView = inView;
         inView = entry.isIntersecting;
+        if (!desktop.matches) return;
         if (inView && !wasInView) {
           if (!userTookOver) {
             doneSeen = false;
@@ -337,6 +343,35 @@ const demos: Record<string, any> = {
       },
       { threshold: 0.3 },
     ).observe(root);
+
+    // Stacked (under 900px): each demo plays once when about a third of its row is on screen, so the page
+    // reveals itself as the visitor scrolls (owner, 2026-11-06). onFirstView in demo.ts stays out of the
+    // stepper on purpose, so the stepper starts them here.
+    const played = new WeakSet<HTMLElement>();
+    const stacked = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting || desktop.matches) continue;
+          const panel = entry.target as HTMLElement;
+          if (played.has(panel)) continue;
+          played.add(panel);
+          stacked.unobserve(panel);
+          playDemo(panel);
+        }
+      },
+      { threshold: 0.35 },
+    );
+    panels.forEach((p) => stacked.observe(p));
+
+    // Crossing 900px either way (a tablet turning, a window resized): keep the two modes from fighting.
+    desktop.addEventListener('change', (e) => {
+      if (e.matches) {
+        moveSlider();
+        if (inView) resume();
+      } else {
+        stopAuto();
+      }
+    });
   });
 </script>
 
@@ -372,28 +407,22 @@ const demos: Record<string, any> = {
     gap: var(--space-block);
   }
 
-  .steps.is-enhanced .steps__panel:not(.is-active) {
+  @media (min-width: 900px) {
+    .steps.is-enhanced .steps__panel:not(.is-active) {
+      display: none;
+    }
+  }
+
+  /* Tabs: a vertical list from 900px only. Under that there are no tabs (owner, 2026-11-06: nothing scrolls
+     sideways on a phone); the steps stack as rows instead, see the stage rules below. */
+  .steps__tabs-wrap {
     display: none;
   }
 
-  /* Tabs: horizontal scroller on phones, vertical list on desktop (same as the System explorer) */
   .steps__tabs {
     display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    scrollbar-width: none;
-    margin-inline: calc(var(--gutter) * -1);
-    padding-inline: var(--gutter);
-    /* A scrolling strip clips anything outside its padding box, which cut the focus ring (3px gap plus a
-       2px line) down to two side bars. 6px of room above and below, pulled back by an equal negative
-       margin, shows the whole ring and moves nothing (the bottom keeps its old 2px). From 900px the strip
-       is a column and the rule further down resets both. */
-    padding-block: 6px 8px;
-    margin-block: -6px;
-  }
-
-  .steps__tabs::-webkit-scrollbar {
-    display: none;
+    flex-direction: column;
+    gap: var(--sp-2);
   }
 
   .steps__tab {
@@ -480,51 +509,53 @@ const demos: Record<string, any> = {
     align-self: start;
   }
 
-  /* Switching steps (owner, 2026-11-06: "it should look seamless"): the two panels share one cell, the old one
-     fades out as the new one fades in, and the stage eases from the old height to the new one so the page never
-     jumps (grid-template-rows, the same way the FAQ answers unfold). Under reduced motion it is an instant swap. */
-  .steps__stage.is-switching {
-    grid-template-rows: var(--stage-h);
-    overflow: clip;
-    transition: grid-template-rows 420ms var(--ease-out);
-  }
-
-  .steps__stage.is-switching > .steps__panel {
-    grid-area: 1 / 1;
-  }
-
-  .steps.is-enhanced .steps__panel.is-leaving {
-    display: grid;
-    pointer-events: none;
-    animation: steps-out 240ms var(--ease-out) forwards;
-  }
-
-  .steps.is-enhanced .steps__panel.is-active {
-    animation: steps-in 420ms var(--ease-out);
-  }
-
-  @keyframes steps-in {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-  }
-
-  @keyframes steps-out {
-    to {
-      opacity: 0;
-      transform: translateY(-6px);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
+  @media (min-width: 900px) {
+    /* Switching steps (owner, 2026-11-06: "it should look seamless"): the two panels share one cell, the old one
+       fades out as the new one fades in, and the stage eases from the old height to the new one so the page never
+       jumps (grid-template-rows, the same way the FAQ answers unfold). Under reduced motion it is an instant swap. */
     .steps__stage.is-switching {
-      transition: none;
+      grid-template-rows: var(--stage-h);
+      overflow: clip;
+      transition: grid-template-rows 420ms var(--ease-out);
     }
 
-    .steps.is-enhanced .steps__panel.is-active,
+    .steps__stage.is-switching > .steps__panel {
+      grid-area: 1 / 1;
+    }
+
     .steps.is-enhanced .steps__panel.is-leaving {
-      animation: none;
+      display: grid;
+      pointer-events: none;
+      animation: steps-out 240ms var(--ease-out) forwards;
+    }
+
+    .steps.is-enhanced .steps__panel.is-active {
+      animation: steps-in 420ms var(--ease-out);
+    }
+
+    @keyframes steps-in {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+    }
+
+    @keyframes steps-out {
+      to {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .steps__stage.is-switching {
+        transition: none;
+      }
+
+      .steps.is-enhanced .steps__panel.is-active,
+      .steps.is-enhanced .steps__panel.is-leaving {
+        animation: none;
+      }
     }
   }
 
@@ -541,6 +572,52 @@ const demos: Record<string, any> = {
     text-wrap: pretty;
   }
 
+  /* The row label and title show only while the steps stack (under 900px). The red label is the owner's
+     "old way" (2026-11-06): small red label, bold title, body, a hairline between rows (rule 5). */
+  .steps__eyebrow {
+    margin: 0;
+    font-size: var(--fs-label);
+    font-weight: 500;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--signal);
+  }
+
+  .steps__title {
+    margin: 0;
+    font-size: var(--fs-h3);
+    line-height: var(--lh-heading);
+    letter-spacing: var(--tracking-heading);
+    color: var(--ink);
+  }
+
+  @media (max-width: 899.98px) {
+    .steps__panel {
+      padding-block: var(--sp-6);
+      border-top: 1px solid var(--hairline);
+    }
+
+    .steps__panel:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .steps__eyebrow {
+      display: none;
+    }
+
+    .steps__title {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
   @media (min-width: 900px) {
     .steps {
       grid-template-columns: 4fr 8fr;
@@ -548,6 +625,7 @@ const demos: Record<string, any> = {
     }
 
     .steps__tabs-wrap {
+      display: block;
       position: sticky;
       top: calc(var(--header-h) + 2rem);
     }
@@ -601,6 +679,23 @@ const demos: Record<string, any> = {
   .pillar__body {
     color: var(--text);
     max-width: 30em;
+  }
+
+  /* Phones: the four pillars stack as hairline rows (owner, 2026-11-06: "gracefully stack"; rule 5) */
+  @media (max-width: 639.98px) {
+    .pillars__grid {
+      gap: 0;
+    }
+
+    .pillar {
+      padding-block: var(--sp-4);
+      border-top: 1px solid var(--hairline);
+    }
+
+    .pillar:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
   }
 
   @media (min-width: 640px) {

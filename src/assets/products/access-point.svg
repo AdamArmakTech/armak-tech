@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" role="img">
+<title>Wireless access point</title>
+<ellipse cx="120" cy="152" rx="68" ry="6" fill="#0b0d10" fill-opacity="0.07"/>
+<ellipse cx="120" cy="152" rx="48" ry="4" fill="#0b0d10" fill-opacity="0.05"/>
+<g stroke="#0b0d10" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+<path d="M40 104C40 118 44.7 128.4 51.1 133.2A76 26.6 0 0 0 188.9 133.2C195.3 128.4 200 118 200 104Z" fill="#ebe9e3"/>
+<ellipse cx="120" cy="104" rx="80" ry="28" fill="#ffffff"/>
+</g>
+<ellipse cx="120" cy="104" rx="73" ry="25.6" stroke="#565e6b" stroke-width="1.25" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M89 104a31 10.9 0 1 0 62 0a31 10.9 0 1 0-62 0zM94 104a26 9.1 0 1 0 52 0a26 9.1 0 1 0-52 0z" fill="#1d3f8f" fill-rule="evenodd"/>
+</svg>

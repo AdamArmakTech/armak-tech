@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" role="img">
+<title>Firewall</title>
+<ellipse cx="120" cy="152" rx="71" ry="6" fill="#0b0d10" fill-opacity="0.07"/>
+<ellipse cx="120" cy="152" rx="50.1" ry="4" fill="#0b0d10" fill-opacity="0.05"/>
+<g stroke="#0b0d10" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+<path d="M177 115L203.7 99.6V133.6L177 149Z" fill="#ebe9e3"/>
+<path d="M37 115L63.7 99.6H203.7L177 115Z" fill="#ffffff"/>
+<path d="M37 115H177V149H37Z" fill="#ffffff"/>
+</g>
+<path d="M78 110.4h9m4 0h9m4 0h9m4 0h9m4 0h9m4 0h9M83.4 107.3h9m4 0h9m4 0h9m4 0h9m4 0h9m4 0h9M88.7 104.2h9m4 0h9m4 0h9m4 0h9m4 0h9m4 0h9" stroke="#565e6b" stroke-width="1.25" stroke-linejoin="round" stroke-linecap="round"/>
+<g fill="#565e6b">
+<circle cx="52.5" cy="132" r="1.6"/>
+<circle cx="58" cy="132" r="1.6"/>
+<rect x="66" y="130.3" width="8" height="3.4" rx="0.6"/>
+</g>
+<circle cx="47" cy="132" r="1.6" fill="#1d3f8f"/>
+<path d="M113.4 128.2h8v6h-2.2v1.5h-3.6v-1.5h-2.2zm15.4 0h8v6h-2.2v1.5h-3.6v-1.5h-2.2zm10.4 0h8v6h-2.2v1.5h-3.6v-1.5h-2.2zm10.4 0h8v6h-2.2v1.5h-3.6v-1.5h-2.2zm10.4 0h8v6h-2.2v1.5h-3.6v-1.5h-2.2z" fill="#0b0d10"/>
+</svg>

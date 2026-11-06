@@ -5,6 +5,10 @@
  * 3-step timeline (pre-staged → after-hours install → cutover).
  * Teaches: a clean, labeled install is traceable and easy to change; work is planned around the
  * business. The slider works without JS animation; the script auto-sweeps it once, then hands over.
+ *
+ * Cable colours: cable jacket colours in this drawing code a drop's purpose (owner, 2026-11-06).
+ * They are not status colours, so DESIGN.md rule 7 (red = next action, green = PASS only) does not
+ * apply to them. Meanings follow the TIA-606 termination-field colours (see the legend).
  */
 import DemoFrame from './DemoFrame.astro';
 import TraceDemo from './TraceDemo.astro';
@@ -29,8 +33,22 @@ const rand = () => {
   return (seed - 1) / 2147483646;
 };
 const pick = <T,>(a: T[]) => a[Math.floor(rand() * a.length)];
-// Ink and steel tones only (rules 6 and 7): messy by shape and crossing, not by colour
-const messColors = ['var(--ink)', 'var(--steel)', 'var(--steel-light)', 'var(--ink)', 'var(--steel)', 'var(--steel-light)'];
+// Tangled version: a random-looking mix of cable colours with no system to it (shapes stay the same
+// because pick() uses one rand() call whatever the list length).
+const messColors = [
+  'var(--cable-blue)', 'var(--cable-orange)', 'var(--ink)', 'var(--cable-green)', 'var(--cable-white)',
+  'var(--steel)', 'var(--cable-orange)', 'var(--cable-blue)', 'var(--steel-light)', 'var(--cable-green)',
+  'var(--cable-white)', 'var(--ink)',
+];
+const isWhite = (c: string) => c === 'var(--cable-white)';
+
+// Old, abandoned cables that go nowhere: solid run, then a dashed dead end (or a coil / taped end)
+const oldWires = [
+  { d: 'M104 0 C 104 50, 150 80, 140 132', tail: 'M140 132 C 137 142, 147 150, 142 162' }, // loose end hanging past the switch
+  { d: 'M62 0 C 72 36, 110 66, 121 92 C 100 80, 96 108, 118 108 C 134 108, 130 90, 112 92', tail: '' }, // coil hooked on the rail
+  { d: 'M82 0 C 84 56, 60 96, 70 138', tail: 'M70 138 C 69 142, 70 144, 70 147', tape: { x1: 65, y1: 136, x2: 75, y2: 139 } }, // taped off
+  { d: 'M240 0 C 252 56, 214 94, 232 136', tail: 'M232 136 C 236 146, 228 152, 233 164' }, // another loose end
+];
 
 const messyFeeds = Array.from({ length: 14 }, () => {
   const x0 = 110 + rand() * 180;
@@ -52,7 +70,27 @@ const bundles = [0, 1, 2, 3].map((k) => ({
   label: `A-${String(k * 6 + 1).padStart(2, '0')}–${String(k * 6 + 6).padStart(2, '0')}`,
   x: 147 + k * 33,
 }));
-const cords = Array.from({ length: 12 }, (_, i) => ({ x: portX(i) + 4, uplink: i >= 10 }));
+type Cable = 'blue' | 'green' | 'orange' | 'white';
+// Colour by purpose, grouped so the order looks intentional: blue horizontal drops first, then
+// green equipment links, then the orange carrier hand-off and white backbone together.
+const feedColors: Cable[][] = [
+  ['blue', 'blue', 'blue', 'blue', 'blue', 'blue'],
+  ['blue', 'blue', 'blue', 'blue', 'blue', 'blue'],
+  ['blue', 'blue', 'blue', 'blue', 'green', 'green'],
+  ['orange', 'orange', 'white', 'white', 'green', 'green'],
+];
+const cordColor = (i: number): Cable => (i < 7 ? 'blue' : i < 9 ? 'green' : i === 9 ? 'orange' : 'white');
+const cords = Array.from({ length: 12 }, (_, i) => ({ x: portX(i) + 4, color: cordColor(i) }));
+
+// TIA-606 termination-field colour meanings (plain words, one row per colour)
+const legend: { color: Cable; text: string }[] = [
+  { color: 'blue', text: 'Horizontal drops' },
+  { color: 'green', text: 'Network gear' },
+  { color: 'orange', text: 'Carrier hand-off' },
+  { color: 'white', text: 'Backbone' },
+];
+const H = 258; // drawing height: the rack plus the legend under the label column
+const legendY = (i: number) => 207 + i * 14;
 
 const steps = installPhases;
 ---
@@ -65,10 +103,10 @@ const steps = installPhases;
 >
   <div class="in">
     <div class="in__compare">
-      <svg class="in__rack" viewBox="0 0 400 215" role="img" data-fit-text aria-label="A network rack shown two ways: on the left, tangled unlabeled cables; on the right, neatly bundled, labeled cables with short patch cords">
+      <svg class="in__rack" viewBox={`0 0 400 ${H}`} role="img" data-fit-text aria-label="A network rack shown two ways: on the left, tangled unlabeled cables in mixed colors plus old unused cables; on the right, neatly bundled, labeled, color-coded cables with short patch cords and a color key: blue horizontal drops, green network equipment, orange carrier hand-off, white backbone">
         <defs>
-          <clipPath id={`${uid}-before`}><rect x="0" y="0" width="200" height="215" data-in-clip-before /></clipPath>
-          <clipPath id={`${uid}-after`}><rect x="200" y="0" width="200" height="215" data-in-clip-after /></clipPath>
+          <clipPath id={`${uid}-before`}><rect x="0" y="0" width="200" height={H} data-in-clip-before /></clipPath>
+          <clipPath id={`${uid}-after`}><rect x="200" y="0" width="200" height={H} data-in-clip-after /></clipPath>
         </defs>
 
         <!-- rack + equipment (shared by both versions) -->
@@ -93,8 +131,19 @@ const steps = installPhases;
 
         <!-- BEFORE: tangled, unlabeled -->
         <g clip-path={`url(#${uid}-before)`} class="in__before">
-          {messyFeeds.map((c) => <path d={c.d} style={`stroke:${c.c}`} />)}
-          {messyCords.map((c) => <path d={c.d} style={`stroke:${c.c}`} />)}
+          {oldWires.map((w) => (
+            <g class="in__oldwire">
+              <path d={w.d} />
+              {w.tail && <path d={w.tail} class="in__old-tail" />}
+              {w.tape && <line x1={w.tape.x1} y1={w.tape.y1} x2={w.tape.x2} y2={w.tape.y2} class="in__tape" />}
+            </g>
+          ))}
+          {[...messyFeeds, ...messyCords].map((c) => (
+            <>
+              {isWhite(c.c) && <path d={c.d} class="in__under" />}
+              <path d={c.d} style={`stroke:${c.c}`} />
+            </>
+          ))}
           <text x="10" y="160" class="in__tag in__tag--bad">Before</text>
           <text x="10" y="160" class="in__words">
             <tspan x="10" dy="1.3em">No labels,</tspan>
@@ -105,15 +154,23 @@ const steps = installPhases;
 
         <!-- AFTER: dressed bundles, labels, short cords -->
         <g clip-path={`url(#${uid}-after)`} class="in__after">
-          {bundles.map((b) => (
+          {bundles.map((b, k) => (
             <g>
-              {b.lines.map((x) => <line x1={x} y1="0" x2={x} y2={PANEL_TOP} class="in__feed" />)}
+              {b.lines.map((x, j) => (
+                <>
+                  {feedColors[k][j] === 'white' && <line x1={x} y1="0" x2={x} y2={PANEL_TOP} class="in__feed in__under" />}
+                  <line x1={x} y1="0" x2={x} y2={PANEL_TOP} class={`in__feed in__c--${feedColors[k][j]}`} />
+                </>
+              ))}
               <rect x={b.tie} y="11" width="24" height="3" class="in__tie" />
               <rect x={b.tie} y="21" width="24" height="3" class="in__tie" />
             </g>
           ))}
           {cords.map((c) => (
-            <line x1={c.x} y1="39" x2={c.x} y2={SWITCH_TOP} class:list={['in__cord', { 'in__cord--uplink': c.uplink }]} />
+            <>
+              {c.color === 'white' && <line x1={c.x} y1="39" x2={c.x} y2={SWITCH_TOP} class="in__cord in__under" />}
+              <line x1={c.x} y1="39" x2={c.x} y2={SWITCH_TOP} class={`in__cord in__c--${c.color}`} />
+            </>
           ))}
           <!-- labels sit outside the rails, level with what they name (room for phone-size text) -->
           <text x="116" y={PANEL_TOP + 2.5} dy="0.35em" class="in__label" text-anchor="end">A-01</text>
@@ -122,10 +179,20 @@ const steps = installPhases;
           <text x={LABEL_X} y={SWITCH_TOP + 3.5} dy="0.35em" class="in__label">SW-1<tspan x={LABEL_X} dy="1.2em" class="in__note">ports 1–12</tspan></text>
           <text x={LABEL_X} y="160" class="in__tag in__tag--good">After</text>
           <text x={LABEL_X} y="160" class="in__words">
-            <tspan x={LABEL_X} dy="1.3em">Dressed,</tspan>
-            <tspan x={LABEL_X} dy="1.2em">labeled,</tspan>
+            <tspan x={LABEL_X} dy="1.3em">Dressed, labeled,</tspan>
             <tspan x={LABEL_X} dy="1.2em">tested</tspan>
           </text>
+
+          <!-- colour key: TIA-606 termination-field colours, one row per colour -->
+          <g class="in__legend">
+            {legend.map((r, i) => (
+              <g class="in__lg" style={`--i:${i}`}>
+                {r.color === 'white' && <line x1={LABEL_X} y1={legendY(i)} x2={LABEL_X + 14} y2={legendY(i)} class="in__sw in__under" />}
+                <line x1={LABEL_X} y1={legendY(i)} x2={LABEL_X + 14} y2={legendY(i)} class={`in__sw in__c--${r.color}`} />
+                <text x={LABEL_X + 20} y={legendY(i)} dy="0.35em" class="in__lgtext">{r.text}</text>
+              </g>
+            ))}
+          </g>
 
           {showHeadroom && (
             <g>
@@ -156,7 +223,7 @@ const steps = installPhases;
 
         <!-- divider -->
         <g class="in__divider" data-in-divider transform="translate(200 0)">
-          <line x1="0" y1="0" x2="0" y2="215" />
+          <line x1="0" y1="0" x2="0" y2={H} />
           <circle cx="0" cy="107" r="11" />
           <path d="M-4 103 L-7 107 L-4 111 M4 103 L7 107 L4 111" />
         </g>
@@ -258,12 +325,17 @@ const steps = installPhases;
     // Decided once per demo: reset() hides the parts for the animation, so a setting changed later must not leave it blank.
     const reduced = prefersReducedMotion();
 
+    // The colour key rises in row by row once the sweep reaches the dressed side
+    const inEl = root.querySelector<HTMLElement>('.in')!;
+
     const reset = () => {
       root.classList.add('in--instant');
+      inEl.classList.add('in--quick', 'in--lg-off');
       setSplit(100);
       steps.forEach((s) => s.classList.remove('is-on'));
       void root.offsetWidth;
       root.classList.remove('in--instant');
+      inEl.classList.remove('in--quick');
     };
 
     const run = createRun(async (alive) => {
@@ -276,6 +348,7 @@ const steps = installPhases;
       await tween(100, 0, 1700, alive);
       if (!alive()) return;
       announce(root, 'After: dressed and labeled');
+      inEl.classList.remove('in--lg-off');
       await sleep(400);
       if (!alive()) return; // a replay has taken over; don't touch its sweep
       await tween(0, 50, 650, alive);
@@ -358,8 +431,100 @@ const steps = installPhases;
   }
 
   .in__feed {
-    stroke: var(--armak-blue);
     stroke-width: 1.75;
+  }
+
+  /* Cable jacket colours code a drop's purpose (TIA-606), not status */
+  .in__c--blue {
+    stroke: var(--cable-blue);
+  }
+
+  .in__c--green {
+    stroke: var(--cable-green);
+  }
+
+  .in__c--orange {
+    stroke: var(--cable-orange);
+  }
+
+  .in__c--white {
+    stroke: var(--cable-white);
+  }
+
+  /* White needs an edge to show on the white sheet: a wider steel stroke sits underneath */
+  .in__under {
+    stroke: var(--steel);
+    stroke-width: 2.75;
+  }
+
+  .in__cord.in__under {
+    stroke-width: 3.25;
+  }
+
+  .in__sw {
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+
+  .in__sw.in__under {
+    stroke-width: 4;
+  }
+
+  .in__before path.in__under {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    opacity: 0.85;
+  }
+
+  /* Old, abandoned cables: thinner, faded, dashed dead ends */
+  .in__before .in__oldwire path {
+    stroke: var(--cable-old);
+    stroke-width: 1.5;
+    opacity: 1;
+  }
+
+  .in__before .in__oldwire .in__old-tail {
+    stroke-dasharray: 3 3;
+  }
+
+  .in__tape {
+    stroke: var(--steel);
+    stroke-width: 4;
+    stroke-linecap: butt;
+  }
+
+  /* Colour key: rows rise in one after another (transform + opacity only) */
+  .in__lg {
+    transition: opacity 0.3s ease, transform 0.35s var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 60ms);
+  }
+
+  .in--lg-off .in__lg {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  .in--quick .in__lg {
+    transition: none;
+    transition-delay: 0s;
+  }
+
+  .in__lgtext {
+    font-family: var(--font-sans);
+    font-size: clamp(9px, calc(var(--u, 1) * 9.5px), 11.5px);
+    fill: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .in__lg {
+      transition: none;
+    }
+
+    .in--lg-off .in__lg {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   .in__tie {
@@ -367,13 +532,8 @@ const steps = installPhases;
   }
 
   .in__cord {
-    stroke: var(--armak-blue);
     stroke-width: 2.25;
     stroke-linecap: round;
-  }
-
-  .in__cord--uplink {
-    stroke: var(--ink);
   }
 
   .in__room {

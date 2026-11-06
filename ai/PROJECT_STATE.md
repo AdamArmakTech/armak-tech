@@ -32,6 +32,38 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **The owner's phone round — 2026-11-06 afternoon.** Seven messages from his phone, each a decision (all quoted in
+  DESIGN.md, "Owner decisions 2026-11-06, afternoon"). Done in this session:
+  - No sideways scrolling on phones ("people dont do that and its weird... gracefully stack"): a sweep of all 21
+    pages at 320, 360 and 390 px found one sideways scroller, the five-step tab strip. Under 900px the steps now
+    stack as rows in the owner's "old way" (small red label "Step n of 5", bold title, body, the demo, a hairline
+    between rows); each demo plays once when a third of its row is on screen; from 900px the tabs + stage stepper is
+    unchanged. The four pillars stack as hairline rows under 640px. The contact form's captcha box no longer has a
+    sideways scroller. Measured on the dev server at 390 px: tabs hidden, five rows, no element scrolls sideways,
+    page not wider than the screen; at 1440 px: tabs + one stage, slider highlight, as before.
+  - Install drawing, colour-coded drops ("its not orange white blue green its just one color"): new tokens
+    `--cable-blue/orange/green/white/old` in tokens.css (same hues as the T568B pairs); BEFORE is messy by colour too,
+    with four old abandoned wires (loose ends, a coil, one taped off); AFTER has 36 cables colour-coded and grouped
+    (23 blue, 7 green, 3 orange, 4 white, white with a steel edge) and a legend with the TIA-606 meanings:
+    Horizontal drops / Network gear / Carrier hand-off / Backbone; the legend rows rise in after the sweep. The
+    drawing is about 20% taller (viewBox 258). Worker (Sonnet) built it; checked in the browser at 1440 and 390 px.
+    NOTE for the owner: the legend uses the TIA-606 meanings; if Armak codes colours differently, the words change.
+  - 10-years view of the building (BuildingSvg/BuildingExplorer), built by an Opus agent ("extremely basic and very boring"): flipping to "10 years from now" now plays a 1.4 s story: a dashed ghost where a desk stood and two desks sliding into a group of three with their drops; the office access point, the conference display and an outside camera fade and new ones drop in ("new access point", "same drop, new display", "new camera"); the riser, trays and untouched drops trace once in a soft blue band ("same cable") and the patch panels light up; then seven numbered callouts appear 80 ms apart, matching a numbered list under the drawing (01 Cat 6A, 02 two cables per access point, 03 spare fiber, 04 empty conduit, 05 zone cabling, 06 ceiling jacks, 07 labels and drawings; only owner-confirmed items). Back to Today in 0.6 s; instant under reduced motion. Checked at 320, 375, 640, 800 and 1440 px, nothing sideways.
+  - Product pictures: the owner chose generic devices with no logos ("white label products of the same product
+    without logos. for whichever products", then "PUT THE ... PICTURES IN THERE AND STOP ASKING ME TWICE"). The rights
+    questions in `ai/PRODUCT-PHOTOS-SHORTLIST-2026-11-06.md` are therefore closed. Computer-rendered pictures through
+    the Figma image tool were tried first and BLOCKED by the app's permission check (`mcp__figma__create_new_file`
+    denied: "Unrequested Commit in a Connected App"), so three Opus agents drew 24 generic product illustrations
+    (SVG, viewBox 240x180, ink lines, flat fills, one blue accent, soft shadow) in `src/assets/products/`: patch
+    panel, cable box, keystone jack, patch cord; switch, access point, firewall, rack; dome, bullet and PTZ cameras,
+    recorder; card reader, door controller, intercom, maglock; desk phone, conference phone, headset, video bar;
+    touch panel, ceiling speaker, wall display, AV encoder. The service-sheets session places them (below).
+  - Sessions started at the owner's request ("make new sessions for the other 5 tasks i gave you"): site-reveals
+    (scroll reveals everywhere, own branch), demo-motion (every demo richer, own branch), about-page (facts once,
+    no dead space, the red-label rows, own branch), service-sheets (product sheet replaces the photo band and the
+    floating test card; works in this folder, commits nothing). Each writes its record to
+    `ai/notes/2026-11-06-<name>.md`. The three branches must be merged into intent-redesign when done.
+  - Checks: astro check 0 errors; build 19 pages. Nothing pushed; the owner has not said "publish".
 - **Product photo shortlist — 2026-11-06 morning (research only).** Owner, from his phone: "For video surveillance /
   Access control / Voice and unified comms / Audio & Video: I want you to pull photos from products or items that we
   would be installing and vectorize them how this website has it https://ui.com/". A 9-agent run (4 Sonnet researchers,

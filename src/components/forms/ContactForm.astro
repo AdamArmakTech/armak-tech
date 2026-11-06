@@ -316,14 +316,19 @@ const f = (name: string) => `${id}-${name}`;
   }
 
   /* The hCaptcha box is 303px wide (164px in its compact size, used when there is less room, see
-     ensureCaptcha). If it still does not fit, it scrolls sideways instead of clipping. */
+     ensureCaptcha). The box is as wide as the column and centres whatever hCaptcha draws; it never scrolls sideways. */
   .cform__captcha {
     display: grid;
     gap: 0.5rem;
     min-width: 0;
     min-height: 78px;
     margin-block: var(--sp-2);
-    overflow-x: auto;
+    justify-items: center;
+    max-width: 100%;
+  }
+
+  .cform__captcha > .cform__error {
+    justify-self: start;
   }
 
   .cform__captcha:focus {

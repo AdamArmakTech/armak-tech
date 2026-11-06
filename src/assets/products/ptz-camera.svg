@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" role="img">
+<title>PTZ camera</title>
+<ellipse cx="120" cy="152" rx="44.2" ry="6" fill="#0b0d10" fill-opacity="0.07"/>
+<ellipse cx="120" cy="152" rx="31.2" ry="3.5" fill="#0b0d10" fill-opacity="0.05"/>
+<g stroke="#0b0d10" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="120" cy="114" r="34" fill="#ffffff" stroke="none"/>
+<path d="M120 80A34 34 0 0 1 120 148A21.8 34 0 0 0 120 80Z" fill="#ebe9e3" stroke="none"/>
+<circle cx="120" cy="114" r="34"/>
+<g transform="rotate(12 113 129)">
+<rect x="98" y="119.5" width="30" height="19" rx="8" fill="#0b0d10"/>
+<circle cx="107" cy="129" r="6.5" fill="#0b0d10" stroke="#565e6b" stroke-width="1.25"/>
+<circle cx="104.8" cy="126.8" r="1.6" fill="#ffffff" stroke="none"/>
+<circle cx="120" cy="129" r="2.2" fill="#565e6b" stroke="none"/>
+</g>
+<path d="M68 62A52 14.6 0 0 1 172 62V98A52 14.6 0 0 1 68 98Z" fill="#ffffff" stroke="none"/>
+<path d="M150 73.9A52 14.6 0 0 0 172 62V98A52 14.6 0 0 1 150 109.9Z" fill="#ebe9e3" stroke="none"/>
+<path d="M68 62A52 14.6 0 0 1 172 62V98A52 14.6 0 0 1 68 98Z"/>
+<ellipse cx="120" cy="62" rx="52" ry="14.6" fill="#ffffff"/>
+<path d="M68 88A52 14.6 0 0 0 172 88" stroke-width="1.25"/>
+<path d="M100 48L88 62A32 9 0 0 0 152 62L140 48A20 5.6 0 0 0 100 48Z" fill="#ffffff" stroke="none"/>
+<path d="M134 52L144 67.9A32 9 0 0 0 152 62L140 48A20 5.6 0 0 1 134 52Z" fill="#ebe9e3" stroke="none"/>
+<path d="M100 48L88 62A32 9 0 0 0 152 62L140 48A20 5.6 0 0 0 100 48Z"/>
+<ellipse cx="120" cy="48" rx="20" ry="5.6" fill="#ffffff"/>
+<path d="M111 28V48A9 2.5 0 0 0 129 48V28Z" fill="#ffffff" stroke="none"/>
+<path d="M124.5 28V50.2A9 2.5 0 0 0 129 48V28Z" fill="#ebe9e3" stroke="none"/>
+<path d="M111 28V48A9 2.5 0 0 0 129 48V28"/>
+<ellipse cx="120" cy="28" rx="9" ry="2.5" fill="#ffffff"/>
+<ellipse cx="120" cy="28" rx="5" ry="1.4" fill="#565e6b" stroke="none"/>
+<circle cx="142" cy="88.2" r="2.2" fill="#1d3f8f" stroke="none"/>
+</g>
+</svg>

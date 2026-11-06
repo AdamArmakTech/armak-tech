@@ -10,7 +10,7 @@ import { ArrowRight } from '@lucide/astro';
 import SectionHead from '../ui/SectionHead.astro';
 import BuildingSvg from './BuildingSvg.astro';
 import { services } from '../../data/site';
-import { industries, lifespans, cablingSourced, shownSignature } from '../../data/content';
+import { industries, lifespans, cablingSourced, shownSignature, type SignatureKey } from '../../data/content';
 import { contactHref } from '../../lib/cta';
 
 const industryRows = industries.map((ind) => {
@@ -22,7 +22,19 @@ const industryRows = industries.map((ind) => {
 const tenYears = cablingSourced && (lifespans.cabling.years ?? 0) >= 10;
 const laterLabel = tenYears ? '10 years from now' : 'Years from now';
 const laterTitle = `${laterLabel}: cabling stays`;
-const laterItems = shownSignature(['cat6aDefault', 'twoDropsPerAp', 'spareFiberStrands', 'emptyConduit', 'zoneCabling', 'ceilingGridJacks']);
+// "Put in on day one for later", in this order. Only items the owner confirmed are shown (shownSignature).
+// Each item BuildingSvg has a spot for (its keyMarks) gets a number, 01 up, and the drawing puts the same number
+// on that spot; an item with no sensible spot would be listed without a number.
+const laterKeys: SignatureKey[] = ['cat6aDefault', 'twoDropsPerAp', 'spareFiberStrands', 'emptyConduit', 'zoneCabling', 'ceilingGridJacks', 'labelsAndAsBuilts'];
+const drawnKeys = new Set<SignatureKey>(['cat6aDefault', 'twoDropsPerAp', 'spareFiberStrands', 'emptyConduit', 'zoneCabling', 'ceilingGridJacks', 'labelsAndAsBuilts']);
+let laterCount = 0;
+const laterItems = shownSignature(laterKeys).map((it) => ({
+  ...it,
+  num: drawnKeys.has(it.key) ? String(++laterCount).padStart(2, '0') : null,
+}));
+const laterNums: Partial<Record<SignatureKey, string>> = Object.fromEntries(
+  laterItems.flatMap((it) => (it.num ? [[it.key, it.num]] : [])),
+);
 // B1: the rooms that have a route (ids match the rooms in BuildingSvg).
 const roomButtons = [
   { id: 'offices', label: 'Offices' },
@@ -79,12 +91,29 @@ const roomButtons = [
               <label><input type="radio" name="bx-when" value="later" data-bx-when-input /><span>{laterLabel}</span></label>
             </fieldset>
           </div>
-          <BuildingSvg />
+          <BuildingSvg laterNums={laterNums} />
           </div>
           <p class="visually-hidden" role="status" data-bx-when-live></p>
 
           <div class="bx-later-info" data-bx-later-info hidden>
-            <p class="bx-later-caption">Desks move and devices get replaced. The cabling in the walls and ceilings stays.</p>
+            <!-- The caption doubles as the drawing's key: a dashed outline then ink for what moved or is new, blue for what stays -->
+            <p class="bx-later-caption">
+              <span class="bx-key">
+                <svg class="bx-key-sw" viewBox="0 0 40 16" aria-hidden="true" focusable="false">
+                  <rect class="bx-key-ghost" x="1.5" y="4.5" width="12" height="7" />
+                  <path class="bx-key-arrow" d="M17 8 H23 M20.5 5.5 L23 8 L20.5 10.5" />
+                  <rect class="bx-key-new" x="26.5" y="4.5" width="12" height="7" />
+                </svg>
+                <span>Desks move and devices get replaced.</span>
+              </span>{' '}
+              <span class="bx-key">
+                <svg class="bx-key-sw" viewBox="0 0 40 16" aria-hidden="true" focusable="false">
+                  <path class="bx-key-glow" d="M5 8 H35" />
+                  <path class="bx-key-cable" d="M5 8 H35" />
+                </svg>
+                <span>The cabling in the walls and ceilings stays.</span>
+              </span>
+            </p>
             {tenYears && lifespans.cabling.footnote && lifespans.cabling.sourceUrl && (
               <p class="bx-later-note">
                 {lifespans.cabling.footnote} Source: <a href={lifespans.cabling.sourceUrl}>BICSI 005-2016 (PDF)</a>
@@ -96,9 +125,14 @@ const roomButtons = [
                 <ul role="list" class="bx-later-list" aria-labelledby="bx-later-head">
                   {laterItems.map((it) => (
                     <li>
-                      <strong>{it.label}.</strong>{' '}
-                      {it.detail}
-                      {it.confirmed === 'sometimes' ? ' On some jobs.' : ''}
+                      <span class:list={['bx-later-num', { 'is-none': !it.num }]} aria-hidden="true">{it.num}</span>
+                      <span class="bx-later-text">
+                        <strong class="bx-later-title">{it.label}<span class="visually-hidden">.</span></strong>
+                        <span class="bx-later-body">
+                          {it.detail}
+                          {it.confirmed === 'sometimes' ? ' On some jobs.' : ''}
+                        </span>
+                      </span>
                     </li>
                   ))}
                 </ul>
@@ -288,6 +322,31 @@ const roomButtons = [
 
     /* ───────── B7: today / years from now ───────── */
 
+    // The text under the drawing comes in with it: the key at once, the heading as the drawing's numbered marks
+    // begin, then each list row with its number (the same 640 ms + 80 ms steps as BuildingSvg's CSS). Opacity and
+    // a 6 px rise only; cancelled when the switch goes back, skipped under reduced motion.
+    let laterAnims: Animation[] = [];
+    const stopLater = () => {
+      laterAnims.forEach((a) => a.cancel());
+      laterAnims = [];
+    };
+    const revealLater = () => {
+      stopLater();
+      if (!whenInfo || prefersReducedMotion()) return;
+      const enter = (el: Element, delay: number, rise = false) =>
+        laterAnims.push(
+          el.animate(rise ? [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }] : [{ opacity: 0 }, { opacity: 1 }], {
+            duration: rise ? 280 : 220,
+            delay,
+            easing: rise ? EASE_OUT : 'ease',
+            fill: 'backwards',
+          }),
+        );
+      whenInfo.querySelectorAll('.bx-later-caption, .bx-later-note').forEach((el) => enter(el, 0));
+      whenInfo.querySelectorAll('.bx-later-head').forEach((el) => enter(el, 560));
+      whenInfo.querySelectorAll('.bx-later-list > li').forEach((el, i) => enter(el, 640 + i * 80, true));
+    };
+
     const setWhen = (next: 'today' | 'later', { paintBase = true } = {}) => {
       if (next === when) return;
       when = next;
@@ -301,8 +360,11 @@ const roomButtons = [
         if (paintBase) paint(base.slugs, base.label);
       }
       if (whenInfo) whenInfo.hidden = next !== 'later';
+      if (next === 'later') revealLater();
+      else stopLater();
       if (whenLive) {
-        whenLive.textContent = next === 'later' ? `${whenBox?.dataset.laterLabel ?? 'Years from now'}: the cabling stays.` : 'Today.';
+        whenLive.textContent =
+          next === 'later' ? `${whenBox?.dataset.laterLabel ?? 'Years from now'}: desks moved and devices replaced, but the cabling stays.` : 'Today.';
       }
     };
 
@@ -786,9 +848,60 @@ const roomButtons = [
     display: none;
   }
 
+  /* The caption is also the drawing's key: each sentence starts with the mark it explains */
   .bx-later-caption {
+    display: grid;
+    gap: 0.375rem;
     font-weight: 500;
     color: var(--text);
+  }
+
+  .bx-key {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+  }
+
+  .bx-key-sw {
+    flex: none;
+    width: 2.5rem;
+    height: 1rem;
+    margin-top: 0.3em;
+    overflow: visible;
+  }
+
+  .bx-key-ghost {
+    fill: none;
+    stroke: var(--field-line);
+    stroke-width: 1.25;
+    stroke-dasharray: 2.5 2;
+  }
+
+  .bx-key-arrow {
+    fill: none;
+    stroke: var(--steel);
+    stroke-width: 1.25;
+  }
+
+  .bx-key-new {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+  }
+
+  .bx-key-glow,
+  .bx-key-cable {
+    fill: none;
+    stroke: var(--armak-blue);
+  }
+
+  .bx-key-glow {
+    stroke-width: 8;
+    stroke-opacity: 0.2;
+  }
+
+  .bx-key-cable {
+    stroke-width: 2;
   }
 
   .bx-later-note,
@@ -808,11 +921,61 @@ const roomButtons = [
     margin-top: 0.25rem;
   }
 
+  /* Rows in the owner's "old way" (DESIGN.md, 2026-11-06): label, bold title, short body, a hairline between rows
+     (rule 5). The label is the item's number, drawn like the matching number on the building so the two read as one. */
   .bx-later-list {
     display: grid;
-    gap: 0.5rem;
     padding: 0;
     list-style: none;
+  }
+
+  .bx-later-list > li {
+    display: grid;
+    grid-template-columns: 1.75rem minmax(0, 1fr);
+    column-gap: 0.75rem;
+    padding-block: 0.75rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .bx-later-list > li:first-child {
+    padding-top: 0.25rem;
+    border-top: 0;
+  }
+
+  .bx-later-list > li:last-child {
+    padding-bottom: 0;
+  }
+
+  /* Rule 4: the numbers are codes read off the drawing, so mono; blue like the numbers on the building */
+  .bx-later-num {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1.25px solid var(--armak-blue);
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--armak-blue);
+    font-family: var(--font-mono);
+    font-size: var(--fs-label);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .bx-later-num.is-none {
+    visibility: hidden;
+  }
+
+  .bx-later-text {
+    display: grid;
+    gap: 0.125rem;
+    padding-top: 0.125rem;
+  }
+
+  .bx-later-title {
+    font-weight: 600;
+    color: var(--ink);
   }
 
   /* ── Room buttons: pin a route ── */

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" role="img">
+<title>Headset</title>
+<ellipse cx="120" cy="152" rx="63" ry="6" fill="#0b0d10" fill-opacity="0.07"/>
+<ellipse cx="120" cy="152" rx="44" ry="3.5" fill="#0b0d10" fill-opacity="0.05"/>
+<g stroke="#0b0d10" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+<path d="M87 128.8 98.4 122.2A6 6 0 0 1 101.4 121.4H149.4A6 6 0 0 1 153.6 123.2L142.2 129.8Z" fill="#fff" stroke="none"/>
+<path d="M142.2 129.8 153.6 123.2A6 6 0 0 1 155.4 127.4V137.4A6 6 0 0 1 152.4 142.6L141 149.2 136 144V134Z" fill="#ebe9e3" stroke="none"/>
+<path d="M87 128.8 98.4 122.2A6 6 0 0 1 101.4 121.4H149.4A6 6 0 0 1 155.4 127.4V137.4A6 6 0 0 1 152.4 142.6L141 149.2"/>
+<path d="M142.2 129.8 153.6 123.2" stroke-width="1.25"/>
+<path d="M110 80C102 12 194 10 190 88L182 88C186 20 112 22 118 80Z" fill="#fff"/>
+<rect x="180" y="84" width="14" height="32" rx="7" fill="#565e6b"/>
+<path d="M101 85.5 109.7 80.5A26 26 0 0 1 135.7 125.5L127 130.5Z" fill="#565e6b"/>
+<circle cx="114" cy="108" r="26" fill="#fff"/>
+<circle cx="114" cy="108" r="17.5" stroke="#565e6b" stroke-width="1.25"/>
+<rect x="107.5" y="76" width="13" height="11" rx="3" fill="#fff"/>
+<rect x="84" y="128" width="60" height="22" rx="6" fill="#fff"/>
+<rect x="107" y="138.4" width="14" height="2.2" rx="1.1" fill="#1d3f8f" stroke="none"/>
+<path d="M112.9 104.4 65.3 119.6 66.8 124.8 115.1 111.6Z" fill="#fff"/>
+<path d="M64.8 118.1 50.5 122.4A4.3 4.3 0 0 0 52.9 130.6L67.3 126.3A4.3 4.3 0 0 0 64.8 118.1Z" fill="#565e6b"/>
+<circle cx="114" cy="108" r="7.5" fill="#fff" stroke-width="1.25"/>
+</g>
+</svg>

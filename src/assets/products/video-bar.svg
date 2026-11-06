@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" role="img">
+<title>Video bar</title>
+<ellipse cx="120" cy="152" rx="77" ry="6" fill="#0b0d10" fill-opacity="0.07"/>
+<ellipse cx="120" cy="152" rx="54" ry="3.5" fill="#0b0d10" fill-opacity="0.05"/>
+<g stroke="#0b0d10" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+<rect x="105" y="118" width="42" height="28" rx="2" fill="#ebe9e3"/>
+<circle cx="114" cy="141" r="1.5" fill="#565e6b" stroke="none"/>
+<circle cx="138" cy="141" r="1.5" fill="#565e6b" stroke="none"/>
+<path d="M134 129 142.7 124V130L134 135Z" fill="#ebe9e3"/>
+<rect x="100" y="129" width="34" height="6" rx="1.5" fill="#fff"/>
+<path d="M35 95.3 45.4 89.3A10 10 0 0 1 50.4 88H200.4A10 10 0 0 1 207.5 90.9L197.1 96.9Z" fill="#fff" stroke="none"/>
+<path d="M197.1 96.9 207.5 90.9A10 10 0 0 1 210.4 98V114A10 10 0 0 1 205.4 122.7L195 128.7 190 120V104Z" fill="#ebe9e3" stroke="none"/>
+<path d="M35 95.3 45.4 89.3A10 10 0 0 1 50.4 88H200.4A10 10 0 0 1 210.4 98V114A10 10 0 0 1 205.4 122.7L195 128.7"/>
+<path d="M197.1 96.9 207.5 90.9" stroke-width="1.25"/>
+<rect x="30" y="94" width="170" height="36" rx="10" fill="#fff" stroke="none"/>
+<path d="M36 105L40 101M36 109L44 101M36 113L48 101M36 117L52 101M36 121L56 101M38 123L60 101M42 123L64 101M46 123L68 101M50 123L72 101M54 123L76 101M58 123L80 101M62 123L84 101M66 123L88 101M70 123L92 101M74 123L96 101M78 123L100 101M82 123L102 103M86 123L102 107M90 123L102 111M94 123L102 115M98 123L102 119M128 105L132 101M128 109L136 101M128 113L140 101M128 117L144 101M128 121L148 101M130 123L152 101M134 123L156 101M138 123L160 101M142 123L164 101M146 123L168 101M150 123L172 101M154 123L176 101M158 123L180 101M162 123L184 101M166 123L188 101M170 123L192 101M174 123L194 103M178 123L194 107M182 123L194 111M186 123L194 115M190 123L194 119" stroke="#565e6b" stroke-width="1.25"/>
+<path d="M40 95h150a9 9 0 0 1 9 9v16a9 9 0 0 1-9 9H40a9 9 0 0 1-9-9v-16a9 9 0 0 1 9-9zM44 101h50a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H44a6 6 0 0 1-6-6v-10a6 6 0 0 1 6-6zM136 101h50a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6h-50a6 6 0 0 1-6-6v-10a6 6 0 0 1 6-6z" fill="#fff" fill-rule="evenodd" stroke="none"/>
+<rect x="30" y="94" width="170" height="36" rx="10"/>
+<g stroke-width="1.25">
+<rect x="38" y="101" width="62" height="22" rx="6"/>
+<rect x="130" y="101" width="62" height="22" rx="6"/>
+</g>
+<rect x="103" y="100" width="24" height="24" rx="6" fill="#0b0d10"/>
+<circle cx="115" cy="112" r="7.5" fill="#565e6b" stroke="none"/>
+<circle cx="115" cy="112" r="4.5" fill="#0b0d10" stroke="none"/>
+<circle cx="113.3" cy="110.3" r="1.2" fill="#fff" stroke="none"/>
+<circle cx="115" cy="97" r="1.4" fill="#1d3f8f" stroke="none"/>
+</g>
+</svg>

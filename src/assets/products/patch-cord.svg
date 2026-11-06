@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" role="img">
+<title>Patch cord</title>
+<ellipse cx="120" cy="152" rx="68" ry="6" fill="#0b0d10" fill-opacity="0.07"/>
+<ellipse cx="120" cy="152" rx="48" ry="4" fill="#0b0d10" fill-opacity="0.05"/>
+<path d="M84 138.5H89.8A16.5 16.5 0 0 0 101.5 133.7L141.6 93.6A30.5 30.5 0 0 0 120 41.5V34.5A37.5 37.5 0 0 1 146.5 98.5L106.4 138.6A23.5 23.5 0 0 1 89.8 145.5H84Z" fill="#1d3f8f"/>
+<path d="M84 138.5H89.8A16.5 16.5 0 0 0 101.5 133.7L141.6 93.6A30.5 30.5 0 0 0 120 41.5M84 145.5H89.8A23.5 23.5 0 0 0 106.4 138.6L146.5 98.5A37.5 37.5 0 0 0 120 34.5" stroke="#0b0d10" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M123.2 41.7A30.5 30.5 0 0 0 98.4 93.6L138.5 133.6A16.5 16.5 0 0 0 150.2 138.5H156V145.5H150.2A23.5 23.5 0 0 1 133.5 138.6L93.5 98.5A37.5 37.5 0 0 1 123.9 34.7Z" fill="#1d3f8f"/>
+<path d="M123.2 41.7A30.5 30.5 0 0 0 98.4 93.6L138.5 133.6A16.5 16.5 0 0 0 150.2 138.5H156M123.9 34.7A37.5 37.5 0 0 0 93.5 98.5L133.5 138.6A23.5 23.5 0 0 0 150.2 145.5H156" stroke="#0b0d10" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+<g stroke="#0b0d10" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+<path d="M47 137L61 132.6M193 137L179 132.6"/>
+<rect x="41" y="137" width="25" height="10" rx="1.5" fill="#ffffff"/>
+<rect x="174" y="137" width="25" height="10" rx="1.5" fill="#ffffff"/>
+<path d="M62 147V133.8Q62 132 63.8 132.2L86 136.6Q88 137 88 139V145Q88 147 86 147Z" fill="#1d3f8f"/>
+<path d="M178 147V133.8Q178 132 176.2 132.2L154 136.6Q152 137 152 139V145Q152 147 154 147Z" fill="#1d3f8f"/>
+</g>
+<path d="M43.5 143.5h9v1.8h-9zM187.5 143.5h9v1.8h-9z" fill="#565e6b"/>
+<path d="M78 137.2v8M81.5 137.7v7.5M85 138.3v7M162 137.2v8M158.5 137.7v7.5M155 138.3v7" stroke="#0b0d10" stroke-width="1.25" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>

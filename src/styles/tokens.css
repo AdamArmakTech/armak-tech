@@ -32,6 +32,14 @@
   --t568-blue: #2c5fd4;
   --t568-brown: #7a4a26;
 
+  /* ── Cable jacket colours: install drawings only, where a colour codes a drop's purpose (owner, 2026-11-06).
+     Same hues as the T568B pairs so the site has one blue, one orange and one green. ── */
+  --cable-blue: #2c5fd4;
+  --cable-orange: #e8731a;
+  --cable-green: #2e9e4f;
+  --cable-white: #ffffff;
+  --cable-old: #a8a398;      /* old or abandoned cable, faded */
+
   /* ── Type ─────────────────────────────────────────────── */
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;

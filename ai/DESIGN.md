@@ -136,4 +136,36 @@ tabs).
   progress line under the active tab are gone. This is one new approved motion: the step crossfade with eased height.
   Scrolling or tapping the drawing on a phone no longer stops the stepper.
 - Product photos (rule 2): the owner wants product images "how ui.com has it" for video surveillance, access control,
-  voice and unified comms, and audio & video. Shortlist and the rights questions: `ai/PRODUCT-PHOTOS-SHORTLIST-2026-11-06.md`.
+  voice and unified comms, and audio & video. Shortlist and the rights questions: `ai/PRODUCT-PHOTOS-SHORTLIST-2026-11-06.md`
+  (closed the same afternoon, see below).
+
+## Owner decisions 2026-11-06, afternoon (from his phone): the stacked "old way", no sideways scroll, more motion
+- "I LIKE THIS OLD way more than the new way" (screenshot of the About page's story rows: small red uppercase label,
+  bold title, short body, a hairline between rows). That row is now the pattern for lists and for anything that must
+  stack on a phone. It overrides rule 7 for these eyebrow labels (red there means "a label", not "the next action")
+  and leans on rule 5 (hairlines separate rows).
+- "on the phone dont have anything that you need to scroll to the right or left to, people dont do that and its weird.
+  instead, gracefully stack or figure out a way to impliment a system of UI that looks less sloppy": nothing scrolls
+  sideways under 900px. The five steps stack as rows (above); tabs exist only from 900px.
+- "this looks boring now the new way you made it and its random as fuck" (a service page: stock photo with the live
+  cable-test card floating over it): no floating or overlapping cards; layouts must read as intentional. The photo
+  band is replaced by a white product sheet (four generic product drawings, captions, red label), with the test card
+  in its own column or row (service-sheets session).
+- Product pictures: "white label products of the same product without logos. for whichever products" and "PUT THE
+  ... PICTURES IN THERE AND STOP ASKING ME TWICE". Rule 2 amended: generic product illustrations (no brand, no logo)
+  are allowed in the photo slots until real Armak photos exist; they must be consistent (one drawing style) and
+  captioned by device type only.
+- Install drawing: "missing colored wires and old wires and the new one is color coded but its not orange white blue
+  green its just one color. im trying to show that we are building robust systems and we usually color code the wires
+  for different reasons and different drops". Cable jacket colours in drawings code a drop's purpose (tokens
+  `--cable-*`); they are not status colours, so rules 6 and 7 do not apply to them.
+- "the diagrams for 10 years later are extremely basic and very boring and not intentional or informational": the
+  later view must tell a story (what changed, what stayed, numbered callouts tied to the day-one list).
+- "how could we beef up EVERY single animation whilst keeping it as smooth as possible? i want people to feel as
+  though the site is gracefully revealing itself as they look at it and scroll down on it BOTH ON DESKTOP AND ON
+  PHONE": rule 10 now reads "motion is generous but smooth": every section reveals as it enters view on both sizes,
+  every demo richer and more informative, transform/opacity/clip-path/stroke-dashoffset only, reduced motion
+  respected (site-reveals and demo-motion sessions).
+- About page: "we have the same information repeated 4 times on the same page, and the rest of that page is dead
+  space... use this information once, and keep the rest of the page alive... make it more intentional" (about-page
+  session).

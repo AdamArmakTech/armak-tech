@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" fill="none" role="img">
+<title>Ceiling speaker</title>
+<ellipse cx="120" cy="152" rx="61" ry="6" fill="#0b0d10" fill-opacity="0.07"/>
+<ellipse cx="120" cy="152" rx="43" ry="3.5" fill="#0b0d10" fill-opacity="0.05"/>
+<g stroke="#0b0d10" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+<path d="M74 96V57.7A46 34.5 0 0 1 166 57.7V96Z" fill="#ebe9e3"/>
+<path d="M74 61.7A46 34.5 0 0 1 166 61.7" stroke="#565e6b" stroke-width="1.25"/>
+<path d="M48 96A72 54 0 0 1 192 96V91.5A72 54 0 0 0 48 91.5Z" fill="#ebe9e3"/>
+<ellipse cx="120" cy="96" rx="72" ry="54" fill="#fff"/>
+<ellipse cx="120" cy="96" rx="64" ry="48" stroke-width="1.25"/>
+<path d="M104 54h32M94 57h52M88 60h64M82 63h76M80 66h80M74 69h92M72 72h96M70 75h100M68 78h104M66 81h108M64 84h112M66 87h108M64 90h112M62 93h116M64 96h112M62 99h116M64 102h112M66 105h108M64 108h112M66 111h108M68 114h104M70 117h100M72 120h96M74 123h92M80 126h80M82 129h76M88 132h64M94 135h52M104 138h32" stroke="#565e6b" stroke-width="1.25" stroke-dasharray="0 4"/>
+<circle cx="120" cy="147" r="1.6" fill="#1d3f8f" stroke="none"/>
+</g>
+</svg>
