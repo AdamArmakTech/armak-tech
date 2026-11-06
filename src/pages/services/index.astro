@@ -11,7 +11,7 @@ import ServiceCta from '../../components/services/ServiceCta.astro';
 import { services, site, FOUNDED, yearsInBusiness } from '../../data/site';
 import { credentials } from '../../data/content';
 // TODO(photo): replace with a real Armak install photo
-import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
+import heroPhoto from '../../assets/photos/camera-ceiling.jpg';
 
 const description = `Structured cabling, networking, video surveillance, access control, VoIP and AV, designed, installed and supported across Southern California since ${FOUNDED}.`;
 
@@ -47,7 +47,7 @@ const jsonLd = {
     <figure class="svc-index-hero__media">
       <Image
         src={heroPhoto}
-        alt="A technician in a hi-vis vest working at a network rack"
+        alt="A white bullet-style security camera on a mounting plate fixed to a ceiling, with a dome camera housing beside it"
         widths={[560, 840, 1120]}
         sizes="(min-width: 1000px) 40vw, 100vw"
         loading="eager"
@@ -138,6 +138,8 @@ const jsonLd = {
     width: 100%;
     aspect-ratio: 3 / 2;
     object-fit: cover;
+    /* The camera sits low in this tall photo; keep it in frame when the crop is wide */
+    object-position: center 72%;
     border-radius: var(--radius);
     background: var(--paper-sunken);
   }

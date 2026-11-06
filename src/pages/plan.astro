@@ -72,8 +72,10 @@ const upgradeQuestions = [
       <a href="#estimator">Estimator</a>
       <a href="#upgrade">Cabling check</a>
       <a href="#which-cable">Which cable?</a>
-      <a href="#sample-report">Sample report</a>
     </nav>
+    <div slot="aside" class="plan__report">
+      <CableTest variant="full" />
+    </div>
   </PageHero>
 
   <div class="plan container">
@@ -101,7 +103,7 @@ const upgradeQuestions = [
     </section>
 
     <!-- ── Estimator ── -->
-    <section class="plan__section" id="estimator" aria-labelledby="estimator-title">
+    <section class="plan__section plan__section--est" id="estimator" aria-labelledby="estimator-title">
       <div class="plan__head">
         <h2 id="estimator-title" class="t-h2">Estimate quantities for your office.</h2>
         <p class="t-lead">Planning numbers from typical office layouts. Walls, ceiling height and how you use the space change them; the real count comes from the site walk.</p>
@@ -186,17 +188,6 @@ const upgradeQuestions = [
         <p class="t-lead">Four common choices, what each one can do, and when it makes sense.</p>
       </div>
       <CableCompare />
-    </section>
-
-    <!-- ── Sample report ── -->
-    <section class="plan__section" id="sample-report" aria-labelledby="report-title">
-      <div class="plan__head">
-        <h2 id="report-title" class="t-h2">A sample certification report.</h2>
-        <p class="t-lead">Every cable we install is tested like this. This is the kind of report that comes with the job, one per cable.</p>
-      </div>
-      <div class="plan__report">
-        <CableTest variant="full" />
-      </div>
     </section>
 
     <section class="plan__section plan__next" aria-labelledby="plan-next-title" data-dock-hide>
@@ -372,9 +363,21 @@ const upgradeQuestions = [
   .checklist {
     display: grid;
     gap: var(--sp-5);
-    max-width: 52rem;
     padding-left: 1.75rem;
     list-style: decimal;
+  }
+
+  @media (min-width: 900px) {
+    .checklist {
+      display: block;
+      columns: 2;
+      column-gap: var(--col-gap);
+    }
+
+    .checklist__item {
+      break-inside: avoid;
+      margin-bottom: var(--sp-5);
+    }
   }
 
   .checklist__item {
@@ -439,14 +442,12 @@ const upgradeQuestions = [
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
     gap: 1.5rem var(--col-gap);
-    max-width: 52rem;
   }
 
   .est__out {
     margin: 0;
     display: grid;
     gap: var(--sp-5);
-    max-width: 52rem;
   }
 
   .est__row {
@@ -493,6 +494,45 @@ const upgradeQuestions = [
     pointer-events: none;
   }
 
+  /* Wide screens: inputs and note on the left (5 of 12), results and button on the right */
+  @media (min-width: 900px) {
+    .plan__section--est {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: start;
+    }
+
+    .plan__section--est > .plan__head {
+      grid-column: 1 / -1;
+    }
+
+    .plan__section--est .est,
+    .plan__section--est .est__send {
+      display: contents;
+    }
+
+    .plan__section--est .est__inputs {
+      grid-column: 1 / span 5;
+      grid-row: 2;
+    }
+
+    .plan__section--est .est__out {
+      grid-column: 6 / -1;
+      grid-row: 2;
+    }
+
+    .plan__section--est .est__plan {
+      grid-column: 1 / span 5;
+      grid-row: 3;
+    }
+
+    .plan__section--est .est__send > :global(.btn) {
+      grid-column: 6 / -1;
+      grid-row: 3;
+      justify-self: start;
+    }
+  }
+
   .est__term {
     display: inline-block;
     /* 44px tap area, no visual change: padding grows the box, negative margin cancels it */
@@ -516,7 +556,18 @@ const upgradeQuestions = [
   .quiz {
     display: grid;
     gap: 1.75rem;
-    max-width: 52rem;
+  }
+
+  @media (min-width: 900px) {
+    .quiz {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: var(--col-gap);
+      align-items: start;
+    }
+
+    .quiz__result {
+      grid-column: 1 / -1;
+    }
   }
 
   .quiz__q {
@@ -584,10 +635,19 @@ const upgradeQuestions = [
     line-height: 1.55;
   }
 
-  /* Sample report */
+  /* Sample report in the first screen: 5 of 12 columns on this page (the hero default is 4) */
   .plan__report {
-    max-width: 52rem;
     container-type: inline-size;
+  }
+
+  @media (min-width: 1024px) {
+    :global(.page-hero__grid--aside:has(.plan__report)) {
+      align-items: start;
+    }
+
+    :global(.page-hero__grid--aside .page-hero__aside:has(.plan__report)) {
+      grid-column: 8 / -1;
+    }
   }
 
   .plan__section--wide {

@@ -8,7 +8,7 @@ import Base from '../../layouts/Base.astro';
 import ServiceHero from '../../components/services/ServiceHero.astro';
 import PhotoBand from '../../components/services/PhotoBand.astro';
 import Capabilities from '../../components/services/Capabilities.astro';
-import DeliverySteps from '../../components/services/DeliverySteps.astro';
+import SectionHead from '../../components/ui/SectionHead.astro';
 import PartnerLogos from '../../components/services/PartnerLogos.astro';
 import FaqList from '../../components/services/FaqList.astro';
 import OtherServices from '../../components/services/OtherServices.astro';
@@ -92,7 +92,16 @@ const jsonLd = {
 
   <Capabilities serviceName={service.name} items={detail.capabilities} />
 
-  <DeliverySteps cta about={service.slug} />
+  <section class="section section--tight how-we-run">
+    <div class="container">
+      <SectionHead
+        title="Five steps, every job."
+        intro="The same process from a single-rack retrofit to a multi-site rollout. Nothing is signed off until it has been tested and documented."
+      >
+        <a class="how-we-run__link" href="/#process">See how every job runs</a>
+      </SectionHead>
+    </div>
+  </section>
 
   {hasPartners && <PartnerLogos categories={detail.partnerCategories} />}
 
@@ -108,3 +117,21 @@ const jsonLd = {
 
   <OtherServices current={service.slug} />
 </Base>
+
+<style>
+  .how-we-run__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-top: var(--sp-4);
+    font-weight: 600;
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+
+  .how-we-run__link:hover {
+    color: var(--signal);
+  }
+</style>

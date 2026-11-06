@@ -1,7 +1,7 @@
 ---
 /**
- * About — story since 1998 (original site's copy, tightened), principles, credentials,
- * numbers, manufacturer partners, team slot (placeholder until Armak supplies it), service area.
+ * About — facts card in the hero, story since 1998 (original site's copy, tightened),
+ * team slot (placeholder until Armak supplies it).
  */
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
@@ -11,12 +11,8 @@ import PlaceholderNote from '../components/pages/PlaceholderNote.astro';
 import SectionHead from '../components/ui/SectionHead.astro';
 import Button from '../components/ui/Button.astro';
 import CablePlant from '../components/pages/CablePlant.astro';
-import Numbers from '../components/home/Numbers.astro';
-import PartnerStrip from '../components/home/PartnerStrip.astro';
-import ServiceArea from '../components/home/ServiceArea.astro';
 import { site, FOUNDED, yearsInBusiness, serviceArea, counties } from '../data/site';
 import { contactHref, CTA_LABEL } from '../lib/cta';
-import { pillars, credentials } from '../data/content';
 // TODO(photo): interim stock (see assets/photos/CREDITS.md), replace with a real Armak photo
 import storyPhoto from '../assets/photos/cabling-bundles-white.jpg';
 
@@ -50,11 +46,32 @@ const SHOW_PLACEHOLDERS = false;
 
 <Base title={`About Us · SoCal Low-Voltage Since ${FOUNDED}`} description={description} footerCta={false}>
   <PageHero
-    title={`Low-voltage and network installs since ${FOUNDED}.`}
+    title={`Low-voltage installs since ${FOUNDED}.`}
     lead={`For ${yearsInBusiness} years, organizations across Southern California have relied on Armak Technologies to design, install and support the cabling, networks and security systems they run on.`}
     crumbs={[{ label: 'About' }]}
     spec={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`]}
-  />
+  >
+    <div slot="aside">
+      <dl class="facts" aria-label="Armak at a glance">
+        <div class="facts__row">
+          <dt>Founded</dt>
+          <dd>{FOUNDED}</dd>
+        </div>
+        <div class="facts__row">
+          <dt>Headquarters</dt>
+          <dd>{site.hq.city}, California</dd>
+        </div>
+        <div class="facts__row">
+          <dt>Cities served</dt>
+          <dd>{serviceArea.length}</dd>
+        </div>
+        <div class="facts__row">
+          <dt>Counties</dt>
+          <dd>{counties.length}</dd>
+        </div>
+      </dl>
+    </div>
+  </PageHero>
 
   <!-- Story -->
   <section class="section story">
@@ -83,25 +100,6 @@ const SHOW_PLACEHOLDERS = false;
               </li>
             ))}
           </ol>
-
-          <dl class="story__facts" aria-label="Armak at a glance">
-            <div class="story__fact">
-              <dt>Founded</dt>
-              <dd>{FOUNDED}</dd>
-            </div>
-            <div class="story__fact">
-              <dt>Headquarters</dt>
-              <dd>{site.hq.city}, California</dd>
-            </div>
-            <div class="story__fact">
-              <dt>Cities served</dt>
-              <dd>{serviceArea.length}</dd>
-            </div>
-            <div class="story__fact">
-              <dt>Counties</dt>
-              <dd>{counties.length}</dd>
-            </div>
-          </dl>
         </div>
       </div>
 
@@ -137,55 +135,6 @@ const SHOW_PLACEHOLDERS = false;
     </div>
   </section>
 
-  <!-- Principles -->
-  <section class="section section--flush-top principles">
-    <div class="container">
-      <SectionHead title="How we work on every job." />
-      <ul role="list" class="principles__grid">
-        {pillars.map((p) => (
-          <li class="principle">
-            <h3 class="t-h4">{p.title}</h3>
-            <p class="t-small">{p.body}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
-  </section>
-
-  <!-- Credentials -->
-  <section class="section section--flush-top creds">
-    <div class="container">
-      <SectionHead title="Written plans, test reports and support." />
-      <ul role="list" class="creds__grid">
-        {credentials.map((c) => (
-          <li class="cred">
-            <span class="cred__text">{c}</span>
-          </li>
-        ))}
-        {(site.license || SHOW_PLACEHOLDERS) && (
-          <li class="cred">
-            <span class="cred__text">Contractor license</span>
-            {site.license ? (
-              <span class="t-meta cred__value">{site.license}</span>
-            ) : (
-              <span class="t-meta cred__flag">Placeholder: license number to confirm</span>
-            )}
-          </li>
-        )}
-        {SHOW_PLACEHOLDERS && (
-          <li class="cred">
-            <span class="cred__text">Manufacturer certifications</span>
-            <span class="t-meta cred__flag">Placeholder: list to supply</span>
-          </li>
-        )}
-      </ul>
-    </div>
-  </section>
-
-  <Numbers />
-
-  <PartnerStrip />
-
   <!-- Team (slot until Armak supplies people, photos and permission) -->
   {SHOW_PLACEHOLDERS && (
   <section class="section team">
@@ -214,8 +163,6 @@ const SHOW_PLACEHOLDERS = false;
   </section>
   )}
 
-  <ServiceArea />
-
   <PageCta
     code="about"
     title="Walk your building with us."
@@ -224,10 +171,6 @@ const SHOW_PLACEHOLDERS = false;
 </Base>
 
 <style>
-  .section--flush-top {
-    padding-top: 0;
-  }
-
   /* ── Story ── */
   .story__body {
     display: grid;
@@ -268,15 +211,16 @@ const SHOW_PLACEHOLDERS = false;
     max-width: 34em;
   }
 
-  /* At a glance: a white sheet, no border */
-  .story__facts {
+  /* At a glance: a white sheet, no border (sits in the hero aside) */
+  .facts {
     max-width: 28rem;
+    margin: 0;
     padding: var(--sp-3) var(--sp-5);
     background: var(--white);
     border-radius: var(--radius);
   }
 
-  .story__fact {
+  .facts__row {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
@@ -285,11 +229,11 @@ const SHOW_PLACEHOLDERS = false;
     font-size: var(--fs-small);
   }
 
-  .story__fact dt {
+  .facts__row dt {
     color: var(--steel);
   }
 
-  .story__fact dd {
+  .facts__row dd {
     margin: 0;
     color: var(--ink);
     font-weight: 600;
@@ -329,49 +273,6 @@ const SHOW_PLACEHOLDERS = false;
 
   .timeline__row--slot .timeline__year {
     color: var(--steel);
-  }
-
-  /* ── Principles ── */
-  .principles__grid {
-    display: grid;
-    gap: var(--sp-6) var(--col-gap);
-  }
-
-  .principle {
-    display: grid;
-    gap: 0.75rem;
-    align-content: start;
-  }
-
-  .principle p {
-    max-width: 30em;
-  }
-
-  /* ── Credentials: white sheets, no outlines ── */
-  .creds__grid {
-    display: grid;
-    gap: var(--sp-4);
-  }
-
-  .cred {
-    display: grid;
-    gap: 0.75rem;
-    align-content: start;
-    justify-items: start;
-    padding: 1.5rem 1.25rem 1.75rem;
-    background: var(--white);
-    border-radius: var(--radius);
-  }
-
-  .cred__text {
-    font-size: var(--fs-h4);
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    line-height: 1.3;
-  }
-
-  .cred .cred__flag {
-    white-space: normal;
   }
 
   /* ── Team ── */
@@ -424,19 +325,6 @@ const SHOW_PLACEHOLDERS = false;
   }
 
   @media (min-width: 640px) {
-    .principles__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .creds__grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    /* An odd one out in the last row spans the full width */
-    .cred:last-child:nth-child(odd) {
-      grid-column: 1 / -1;
-    }
-
     .timeline__row {
       grid-template-columns: 7rem minmax(0, 1fr);
     }
@@ -476,20 +364,7 @@ const SHOW_PLACEHOLDERS = false;
       grid-column: 4 / -1;
     }
 
-    /* The three credentials sit side by side on one row */
-    .creds__grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
-    .cred:last-child:nth-child(odd) {
-      grid-column: auto;
-    }
-
     .team__grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .principles__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
