@@ -32,6 +32,20 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **Redesign round 3 ("Start round 3"), colour, detail, motion — 2026-11-05 night (one code commit after 7a9f2ea,
+  NOT pushed). Done by the main session directly (small edits).** Red now only on the action button, FAIL, the HQ
+  marker, required marks, errors and link hover: "Next" links and arrows, the "+" on the project count, "See how we
+  test" and "More in the glossary" links are ink. The red status dots before "Cable test: live demo" and the demo
+  titles are gone; "Sample" marks are plain text (CableTest, DemoFrame, TraceDemo). Glossary letters and category
+  chips wrap instead of scrolling sideways, and the glossary toolbar is sticky only from 1024px (wrapped, it covered
+  most of a phone screen). Services index credentials row in three columns from 640px. Motion decision: no new motion
+  types; the approved heading line reveal (`data-split`) now also runs on the services rows, industry names and Plan
+  section headings; inner pages otherwise stay quiet by design. DESIGN.md gained the round 2 and round 3 notes.
+  Measured: services 7→6 (2→1 hard), industries 7→7 (3→2), glossary 9→8 (5→5), home/plan/structured cabling
+  unchanged. Site total now 61 findings, 21 hard (home 9/2, services 6/1, structured cabling 7/4, about 6/1,
+  industries 7/2, plan 8/3, glossary 8/5, contact 4/1, privacy 6/2), from 157/99 before round 1. What remains is
+  photographs (owner), allowed lines, mono readouts in the sample report, the glossary letter column, the sliding-tab
+  measurement quirk, and the sticky header over large text at a few phone scroll positions.
 - **Redesign round 2 ("Start round 2"), composition — 2026-11-05 night (one code commit after 13a3756, NOT pushed).**
   Four Sonnet workers (About, Plan, Glossary, service pages) under the main session's compositions, then the main
   session's fixes. About: facts card in the hero aside; principles, credentials, numbers, partner grid and service-area

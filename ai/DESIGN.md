@@ -112,3 +112,17 @@ labels above headings and no boxed tags: `Label` renders quiet text, `SectionHea
 `label`, `code` and `spec`. The footer keeps its wire stripe (owner, ART_DIRECTION "keeps"). Measured result (taste-skill
 inspector, nine pages, 1440/768/390): findings 157 → 67, hard faults 99 → 29; what remains is real photographs (owner),
 the motion decision (round 3), composition holes on About, Plan and Glossary (round 2), and allowed lines.
+
+**Round 2 (same night, composition):** first screens hold the page's own content through the PageHero `aside` slot (About:
+the facts card; Plan: the sample certification report; Glossary: the search box); blocks that repeat the homepage are
+gone from About (principles, credentials, numbers, logo grid, service area) and the service pages carry only a pointer
+to the five-step process; the Plan tools use the full width.
+
+**Round 3 (same night, colour, detail, motion):** rule 7 restated: red appears only on the one action per screen, on
+FAIL, on the HQ marker (the one detail that means "here"), on required marks and errors, and as a hover colour on
+links. Not red: "Next" links and their arrows, the "+" on the project count, the "See how we test" and "More in the
+glossary" links, status dots (removed; a decorative dot is a tell). "Sample" marks are plain text, not chips. Motion
+decision: no new motion types; the approved heading line reveal (`data-split`) is the one signature and now runs on
+the index pages' headings too (services rows, industry names, Plan sections); demos move on press; inner pages are
+otherwise still by design. Phone rows wrap instead of scrolling sideways (glossary letters and categories, explorer
+tabs).
