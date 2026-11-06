@@ -1,9 +1,7 @@
 ---
 /** Services overview — every service as a full-width row, linking to its detail page. */
-import { ArrowRight } from '@lucide/astro';
 import { Image } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
-import Label from '../../components/ui/Label.astro';
 import Button from '../../components/ui/Button.astro';
 import SpecStrip from '../../components/ui/SpecStrip.astro';
 import JsonLd from '../../components/ui/JsonLd.astro';
@@ -35,8 +33,7 @@ const jsonLd = {
 
   <section class="svc-index-hero container" aria-labelledby="services-title">
     <div class="svc-index-hero__copy">
-      <Label>Services</Label>
-      <h1 id="services-title" class="t-h1 svc-index-hero__title">Every low-voltage system, from one team.</h1>
+      <h1 id="services-title" class="t-h1 svc-index-hero__title">Six systems, one team.</h1>
       <p class="t-lead" data-reveal>
         Cabling, networks, cameras, doors, voice and AV, designed, installed, tested and supported by one
         Southern California team for {yearsInBusiness} years. You get one point of contact from the first
@@ -67,22 +64,12 @@ const jsonLd = {
       {services.map((s) => (
         <li class="svc-row">
           <a class="svc-row__link" href={`/services/${s.slug}/`}>
-            <span class="svc-row__code">{s.code}</span>
-            <div class="svc-row__main">
-              <span class="t-mono svc-row__layer">{s.layer}</span>
-              <h2 class="svc-row__name">{s.name}</h2>
-              <p class="svc-row__short t-muted">{s.short}</p>
-            </div>
-            <div class="svc-row__includes">
-              <p class="visually-hidden">Includes:</p>
-              <ul role="list" class="t-mono">
-                {s.includes.map((item) => <li>{item}</li>)}
-              </ul>
-            </div>
-            <span class="svc-row__go" aria-hidden="true">
-              <span class="t-mono svc-row__go-label">See service</span>
-              <span class="svc-row__go-icon"><ArrowRight size={20} stroke-width={1.75} /></span>
-            </span>
+            <h2 class="svc-row__name">{s.name}</h2>
+            <p class="svc-row__short">{s.short}</p>
+            <ul role="list" class="t-meta svc-row__includes" aria-label="Includes">
+              {s.includes.map((item) => <li>{item}</li>)}
+            </ul>
+            <span class="svc-row__go">See service</span>
           </a>
         </li>
       ))}
@@ -186,42 +173,17 @@ const jsonLd = {
     gap: 0.75rem;
   }
 
-  /* ── Service rows ── */
+  /* Service rows: separated by space, no lines */
   .svc-list__rows {
-    border-top: 1px solid var(--ink);
-  }
-
-  .svc-row {
-    border-bottom: 1px solid var(--hairline);
+    display: grid;
+    gap: var(--sp-8);
   }
 
   .svc-row__link {
-    position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.25rem;
-    padding-block: 2rem 2.25rem;
-    transition: background var(--dur) ease;
-  }
-
-  .svc-row__code {
-    font-family: var(--font-mono);
-    font-size: clamp(1.5rem, 1rem + 2vw, 3rem);
-    font-weight: 400;
-    letter-spacing: -0.05em;
-    line-height: 1;
-    color: var(--steel);
-    transition: color var(--dur) ease;
-  }
-
-  .svc-row__main {
-    display: grid;
-    gap: 0.75rem;
+    gap: var(--sp-3);
+    max-width: 44rem;
     align-content: start;
-  }
-
-  .svc-row__layer {
-    color: var(--signal);
   }
 
   .svc-row__name {
@@ -233,72 +195,20 @@ const jsonLd = {
 
   .svc-row__short {
     max-width: 34em;
-  }
-
-  .svc-row__includes ul {
-    display: grid;
-    font-size: 0.8125rem;
-    letter-spacing: 0.06em;
-    color: var(--steel);
-  }
-
-  .svc-row__includes li {
-    display: flex;
-    align-items: baseline;
-    gap: 0.625rem;
-    padding-block: 0.5rem;
-    border-top: 1px solid var(--hairline);
-  }
-
-  .svc-row__includes li::before {
-    content: "";
-    flex: none;
-    width: 5px;
-    height: 5px;
-    border: 1px solid var(--hairline-strong);
-    transform: translateY(-1px);
-    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease;
+    color: var(--text);
   }
 
   .svc-row__go {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    font-weight: 500;
-  }
-
-  .svc-row__go-label {
-    color: var(--steel);
-  }
-
-  .svc-row__go-icon {
-    display: grid;
-    place-items: center;
-    flex: none;
-    width: 48px;
-    height: 48px;
-    border: 1px solid var(--hairline-strong);
-    border-radius: var(--radius);
-    transition: background var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+    min-height: 44px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
   }
 
   @media (hover: hover) and (pointer: fine) {
-    .svc-row__link:hover .svc-row__code {
-      color: var(--ink);
-    }
-
-    .svc-row__link:hover .svc-row__go-icon {
-      background: var(--signal);
-      border-color: var(--signal);
-      color: var(--white);
-    }
-
-    .svc-row__link:hover .svc-row__includes li::before {
-      background: var(--ink);
-      border-color: var(--ink);
-    }
-
     .svc-row__link:hover .svc-row__name {
       text-decoration: underline;
       text-decoration-thickness: 1px;
@@ -306,72 +216,25 @@ const jsonLd = {
     }
   }
 
-  @media (min-width: 760px) {
-    .svc-row__link {
-      grid-template-columns: 5.5rem minmax(0, 1fr) minmax(0, 0.8fr);
-      column-gap: var(--col-gap);
-      align-items: start;
-    }
-
-    .svc-row__code {
-      grid-row: span 2;
-    }
-
-    .svc-row__go {
-      grid-column: 2 / -1;
+  @media (min-width: 900px) {
+    .svc-list__rows {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--sp-8) var(--sp-9);
     }
   }
 
-  @media (min-width: 1100px) {
-    .svc-row__link {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-      padding-block: 2.75rem;
-    }
-
-    .svc-row__code {
-      grid-column: 1 / span 2;
-      grid-row: auto;
-    }
-
-    .svc-row__main {
-      grid-column: 3 / span 5;
-    }
-
-    .svc-row__includes {
-      grid-column: 8 / span 4;
-    }
-
-    .svc-row__go {
-      grid-column: 12 / -1;
-      justify-content: flex-end;
-      align-self: start;
-    }
-
-    .svc-row__go-label {
-      display: none;
-    }
-  }
-
-  /* ── Credentials ── */
+  /* Credentials: plain statements, no borders */
   .creds {
     padding-block: var(--space-block);
   }
 
   .creds__list {
     display: grid;
-    border-top: 1px solid var(--hairline);
-  }
-
-  .creds__item {
-    display: flex;
-    align-items: baseline;
-    gap: 1rem;
-    padding-block: 1.25rem;
-    border-bottom: 1px solid var(--hairline);
+    gap: var(--sp-4);
   }
 
   .creds__text {
-    font-size: var(--fs-h4);
+    font-size: var(--fs-h3);
     font-weight: 500;
     letter-spacing: -0.01em;
   }
@@ -379,18 +242,12 @@ const jsonLd = {
   @media (min-width: 900px) {
     .creds__list {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      border-bottom: 1px solid var(--hairline);
+      gap: var(--sp-6);
     }
-
-    .creds__item {
-      padding: 1.5rem 1.5rem;
-      border-bottom: 0;
-      border-left: 1px solid var(--hairline);
-    }
-
-    .creds__item:first-child {
-      padding-left: 0;
-      border-left: 0;
-    }
+  }
+  .svc-row__includes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
   }
 </style>

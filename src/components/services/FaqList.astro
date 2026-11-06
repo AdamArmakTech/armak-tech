@@ -19,17 +19,17 @@ const linker = createPageLinker();
 
 <section class="section faq">
   <div class="container">
-    <SectionHead label="FAQ" title={title} />
+    <SectionHead title={title} />
 
     <div class="faq__list">
       {faqs.map((f) => (
         <details class="faq__item">
           <summary class="faq__q">
-            <span class="t-h4">{f.q}</span>
+            <span class="faq__qt">{f.q}</span>
             <Plus class="faq__icon" size={22} stroke-width={1.5} aria-hidden="true" />
           </summary>
           <div class="faq__panel">
-            <p class="faq__a t-muted" set:html={linker.link(f.a, { exclude: serviceName ? [serviceName] : [] })} />
+            <p class="faq__a" set:html={linker.link(f.a, { exclude: serviceName ? [serviceName] : [] })} />
           </div>
         </details>
       ))}
@@ -46,8 +46,11 @@ const linker = createPageLinker();
     border-top: 1px solid var(--hairline);
   }
 
-  .faq__item:first-child {
-    border-top-color: var(--ink);
+  .faq__qt {
+    font-family: var(--font-sans);
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    line-height: 1.3;
   }
 
   .faq__q {
@@ -112,6 +115,7 @@ const linker = createPageLinker();
 
   .faq__a {
     max-width: 44em;
+    color: var(--text);
     padding-bottom: 1.75rem;
     padding-right: 2.5rem;
   }

@@ -1,9 +1,8 @@
 ---
 /**
- * Service page opener: breadcrumb, TIA-style label, h1 (service name + headline), intro, CTAs,
- * and a "scope sheet" card summarising what's included and the standards involved.
+ * Service page opener: breadcrumb, h1 (headline), intro, CTAs,
+ * and a white scope sheet summarising what is included and the standards involved.
  */
-import Label from '../ui/Label.astro';
 import Button from '../ui/Button.astro';
 import { contactHref, CTA_LABEL } from '../../lib/cta';
 import { site, type Service } from '../../data/site';
@@ -18,7 +17,7 @@ const { service, detail } = Astro.props;
 ---
 
 <section class="svc-hero container" aria-labelledby="svc-hero-title">
-  <nav class="svc-hero__crumbs t-mono" aria-label="Breadcrumb">
+  <nav class="svc-hero__crumbs t-meta" aria-label="Breadcrumb">
     <ol role="list">
       <li><a href="/">Home</a></li>
       <li><a href="/services/">Services</a></li>
@@ -28,12 +27,9 @@ const { service, detail } = Astro.props;
 
   <div class="svc-hero__grid">
     <div class="svc-hero__copy">
-      <Label code={service.code}>{service.layer}</Label>
-      <h1 id="svc-hero-title" class="svc-hero__title">
-        <span class="svc-hero__name">{service.name}</span>
-        <span class="t-h1 svc-hero__headline">{detail.headline}</span>
-      </h1>
-      <p class="t-lead" data-reveal>{detail.intro}</p>
+      <h1 id="svc-hero-title" class="t-h1 svc-hero__headline">{service.name}</h1>
+      <p class="t-lead" data-reveal>{detail.headline}</p>
+      <p class="svc-hero__intro" data-reveal>{detail.intro}</p>
       <div class="svc-hero__ctas" data-dock-start>
         <Button href={contactHref({ about: service.slug })} size="lg">{CTA_LABEL}</Button>
         <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
@@ -41,29 +37,19 @@ const { service, detail } = Astro.props;
     </div>
 
     <aside class="sheet" aria-label={`${service.name} scope summary`}>
-      <header class="sheet__head t-mono">
-        <span>Scope sheet</span>
-        <span class="sheet__id">{service.code}</span>
-      </header>
-
       <div class="sheet__block">
-        <p class="t-mono sheet__heading">Includes</p>
-        <ul role="list" class="sheet__list sheet__list--includes">
+        <p class="t-meta sheet__heading">Includes</p>
+        <ul role="list" class="sheet__list">
           {service.includes.map((item) => <li>{item}</li>)}
         </ul>
       </div>
 
       <div class="sheet__block">
-        <p class="t-mono sheet__heading">Standards &amp; technology</p>
-        <ul role="list" class="sheet__list sheet__list--specs t-mono">
-          {detail.standards.map((s) => typeof s === 'string' ? <li>{s}</li> : <li class="spec-plain">{s.text}</li>)}
+        <p class="t-meta sheet__heading">Standards and technology</p>
+        <ul role="list" class="sheet__list">
+          {detail.standards.map((s) => <li>{typeof s === 'string' ? s : s.text}</li>)}
         </ul>
       </div>
-
-      <footer class="sheet__foot t-mono">
-        <span>{service.layer}</span>
-        <span>Southern California</span>
-      </footer>
     </aside>
   </div>
 </section>
@@ -102,10 +88,9 @@ const { service, detail } = Astro.props;
     padding-bottom: var(--space-block);
   }
 
-  /* ── Breadcrumb ── */
+  /* Breadcrumb */
   .svc-hero__crumbs {
     margin-bottom: clamp(2rem, 1.4rem + 2.6vw, 4rem);
-    color: var(--steel);
   }
 
   .svc-hero__crumbs ol {
@@ -122,7 +107,6 @@ const { service, detail } = Astro.props;
   .svc-hero__crumbs li:not(:last-child)::after {
     content: "/";
     margin-inline: 0.625rem;
-    color: var(--hairline-strong);
   }
 
   .svc-hero__crumbs a {
@@ -140,7 +124,7 @@ const { service, detail } = Astro.props;
     color: var(--ink);
   }
 
-  /* ── Layout ── */
+  /* Layout */
   .svc-hero__grid {
     display: grid;
     gap: var(--space-block) var(--col-gap);
@@ -153,22 +137,13 @@ const { service, detail } = Astro.props;
     justify-items: start;
   }
 
-  .svc-hero__title {
-    display: grid;
-    gap: 1rem;
-  }
-
-  .svc-hero__name {
-    font-size: var(--fs-h4);
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    line-height: 1.3;
-    color: var(--steel);
-  }
-
   .svc-hero__headline {
-    display: block;
-    max-width: 14ch;
+    max-width: 20ch;
+  }
+
+  .svc-hero__intro {
+    max-width: 38em;
+    color: var(--text);
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -194,97 +169,32 @@ const { service, detail } = Astro.props;
     gap: 0.75rem;
   }
 
-  /* ── Scope sheet ── */
+  /* Scope sheet: a raised white sheet, no border */
   .sheet {
     display: grid;
     align-content: start;
+    gap: var(--sp-6);
+    padding: var(--sp-6);
     background: var(--white);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius-lg);
     font-size: var(--fs-small);
   }
 
-  .sheet__head,
-  .sheet__foot {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.875rem 1.25rem;
-    color: var(--steel);
-  }
-
-  .sheet__head {
-    border-bottom: 1px solid var(--ink);
-  }
-
-  .sheet__id {
-    color: var(--signal);
-  }
-
   .sheet__block {
     display: grid;
-    gap: 0.75rem;
-    padding: 1.25rem;
-    border-bottom: 1px solid var(--hairline);
+    gap: var(--sp-3);
   }
 
-  .sheet__heading {
-    color: var(--steel);
+  .sheet__list {
+    display: grid;
+    gap: var(--sp-3);
   }
 
   .sheet__list li {
-    display: flex;
-    align-items: baseline;
-    gap: 0.75rem;
-    padding-block: 0.55rem;
-    border-top: 1px solid var(--hairline);
+    color: var(--text);
   }
 
-  .sheet__list li:first-child {
-    border-top: 0;
-    padding-top: 0;
-  }
-
-  .sheet__list--includes li {
-    font-weight: 500;
-  }
-
-  .sheet__list--includes li::before {
-    content: "";
-    flex: none;
-    width: 6px;
-    height: 6px;
-    background: var(--ink);
-    transform: translateY(-2px);
-  }
-
-  .sheet__list--specs {
-    color: var(--ink);
-  }
-
-  .sheet__list--specs li::before {
-    content: "";
-    flex: none;
-    width: 6px;
-    height: 6px;
-    border: 1px solid var(--hairline-strong);
-    transform: translateY(-1px);
-  }
-
-  /* Plain phrases (not standard names or codes) read as ordinary sentence-case text */
-  .sheet__list--specs .spec-plain {
-    font-family: var(--font-sans);
-    font-size: var(--fs-small);
-    font-weight: 400;
-    letter-spacing: normal;
-    text-transform: none;
-  }
-
-  .sheet__foot {
-    font-size: var(--fs-label);
-  }
-
-  /* Rows rise 6px and fade in, 50ms apart. Header and footer stay static. */
+  /* Rows rise 6px and fade in, 50ms apart. */
   .sheet[data-rows] .sheet__list li {
     transition:
       opacity var(--dur) var(--ease-out) calc(var(--i, 0) * 50ms),
