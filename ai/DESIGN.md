@@ -126,3 +126,14 @@ decision: no new motion types; the approved heading line reveal (`data-split`) i
 the index pages' headings too (services rows, industry names, Plan sections); demos move on press; inner pages are
 otherwise still by design. Phone rows wrap instead of scrolling sideways (glossary letters and categories, explorer
 tabs).
+
+## Owner decisions 2026-11-06 (from his phone): the five steps
+- The job-timeline drawing above the five steps (B6: white blocks, hatch, stair, arrow, "Not to scale.", legend) is
+  gone: "Get rid of these bullshit things". Rule 10's "job timeline hatch wiping in once" no longer exists.
+- "When each animation is done it should move onto the next topic and it should look seamless": the stepper moves on
+  1.6 s after the active demo finishes (each demo reports its end), the switch is a crossfade with the stage height
+  easing (420 ms, grid-template-rows like the FAQ unfolds; instant under reduced motion), and the fixed dwell and the
+  progress line under the active tab are gone. This is one new approved motion: the step crossfade with eased height.
+  Scrolling or tapping the drawing on a phone no longer stops the stepper.
+- Product photos (rule 2): the owner wants product images "how ui.com has it" for video surveillance, access control,
+  voice and unified comms, and audio & video. Shortlist and the rights questions: `ai/PRODUCT-PHOTOS-SHORTLIST-2026-11-06.md`.

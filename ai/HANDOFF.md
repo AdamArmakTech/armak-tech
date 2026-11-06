@@ -62,6 +62,10 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
   the site until he confirms them; when "Licensed" returns, the CSLB number goes with it).
 - Turn on hCaptcha for the form in the Web3Forms dashboard (app.web3forms.com): the site shows the box, Web3Forms
   only requires it once that setting is on.
+- Product photos (asked 2026-11-06): answer the yes/no list at the end of `ai/PRODUCT-PHOTOS-SHORTLIST-2026-11-06.md`
+  (is Armak a partner/dealer of Ubiquiti, Axis, Cisco, Crestron with access to their partner photo libraries; which
+  products). Every maker's terms need permission or partner status, so nothing is downloaded or placed until then.
+- Approve deleting the unused `src/components/process/JobTimeline.astro` (taken off the page 2026-11-06, 1734eeb).
 - Answered 2026-11-05: keep 946+; Hikvision removed; all five building types are real work; clients get the test
   reports; every job gets a written proposal after a site walk; 24/7 is for contracted clients (2026-10-30).
   Still open: Cat 8 as a headline offering?

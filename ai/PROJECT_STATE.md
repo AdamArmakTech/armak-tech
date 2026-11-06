@@ -32,6 +32,33 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **Product photo shortlist — 2026-11-06 morning (research only).** Owner, from his phone: "For video surveillance /
+  Access control / Voice and unified comms / Audio & Video: I want you to pull photos from products or items that we
+  would be installing and vectorize them how this website has it https://ui.com/". A 9-agent run (4 Sonnet researchers,
+  4 Sonnet checkers, 1 Opus proofreader; 844k tokens, 10 min; NOTHING downloaded, nothing on the site) wrote
+  `ai/PRODUCT-PHOTOS-SHORTLIST-2026-11-06.md`: 24 official product images (23 confirmed by a second agent: the file
+  answers 200, size, source page, terms quote) from the site's own partner brands only: Ubiquiti (store.ui.com
+  transparent PNGs, 1500 px, the same files ui.com shows), Axis, Cisco, Crestron. Every maker's terms need permission
+  or partner status (Ubiquiti: written permission; Axis: Partner Pages only, otherwise link to axis.com; Cisco: Brand
+  Exchange for partners; Crestron: authorized dealers, service providers and partners). Review PDF with every picture
+  (pulled straight from the makers' pages for review): `ai/exports/product-photos-shortlist-2026-11-06.pdf`, sent to
+  the owner's phone. "Vectorize": the Ubiquiti files are already cut-outs on transparent backgrounds, so the plan is
+  cut-outs on the paper surface with a soft shadow and a quiet caption, the way ui.com shows gear, no tracing. WAITING
+  on the owner: the yes/no list at the end of the shortlist (partner status per brand, which products).
+- **Five steps — 2026-11-06 morning (1734eeb).** Owner, from his phone, looking at the Vercel preview: "Get rid of these
+  bullshit things" (screenshot of the job-timeline drawing above the five steps: white blocks, hatch, stair, arrow,
+  "Not to scale.") and "When each animation is done it should move onto the next topic and it should look seamless."
+  Done: JobTimeline is no longer rendered (`src/components/process/JobTimeline.astro` stays on disk until the owner
+  approves deleting it); each demo (Assess, Design, Install, Support, cable test) now reports its end with
+  `finished()` from `src/scripts/demo.ts`, and the stepper holds 1.6 s, then moves on (22 s fallback if a demo never
+  reports; the fixed 6.5/8.5 s dwell and the progress line under the tab are gone); the switch is a crossfade with
+  the stage height easing between the panels (grid-template-rows, 420 ms, instant under reduced motion); on phones the
+  strip of step names scrolls to the active one; scrolling or tapping the drawing no longer stops the stepper (only a
+  tab or a control inside a demo hands over control; the hover pause applies only to devices with a real pointer).
+  Checked: astro check 0 errors, build OK; measured in the browser at 375, 872 and 1440 px: a full loop
+  Assess→Design→Install→Certify→Support→Assess in 29 s, each switch 1.6 s after its demo's done signal, the height
+  easing on every switch. Before/after PDF: `ai/exports/steps-before-after-2026-11-06.pdf`. Not on the preview or
+  live yet (the owner has not said "publish" today; the publish question from 2026-11-05 is still open).
 - **Publish check — 2026-11-05 night.** Owner asked for the pre-publish check. GitHub `main` is still 9d6993e (Carlitos
   pushed nothing since our branch split), so there was nothing to merge; our branch is 70 commits ahead. The working
   branch was pushed as a preview (origin/intent-redesign 11afcf0 → b47565f; `main` untouched; gh account switched to
