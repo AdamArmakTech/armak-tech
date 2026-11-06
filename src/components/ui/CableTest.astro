@@ -486,11 +486,13 @@ const barPos = (b: Bar) =>
         ([entry]) => {
           if (!entry.isIntersecting) return;
           io.disconnect();
+          if (runId > 0) return; // the visitor already pressed Run or the switch: never restart their run
           const wait = performance.now() - born < 2500 ? startDelay : 0;
           if (wait > 0) setTimeout(() => runId === 0 && run(), wait);
           else run();
         },
-        { threshold: full ? 0.35 : 0.5 },
+        // By screen position (the card's top past 75% of the viewport), so a tall card on a short phone still starts
+        { threshold: 0, rootMargin: '0px 0px -25% 0px' },
       );
       io.observe(root);
     }

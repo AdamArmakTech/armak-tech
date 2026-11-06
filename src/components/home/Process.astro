@@ -3,9 +3,10 @@
  * "The Armak standard" — the five steps, each with a live demo.
  * From 900px the steps are tabs with one stage, and they follow the site's rule (autoPlay in demo.ts; owner,
  * 2026-11-06 night): as the strip scrolls into view the active step's demo plays, and once it has played to the
- * end there is a short hold and a crossfade to the next step; pressing a tab or a control inside a demo stops
- * that, because the visitor is in charge; once the strip has scrolled away and comes back, it runs again from
- * the step that is showing. A resting mouse pointer changes nothing.
+ * end there is a short hold and a crossfade to the next step, until the last step has played: the strip rests
+ * there (nothing loops forever); pressing a tab or a control inside a demo stops the run, because the visitor is
+ * in charge; once the strip has scrolled away and comes back, it runs again (from the step that is showing, or a
+ * fresh lap from step 01 after a finished one). A resting mouse pointer changes nothing.
  * Under 900px there are no tabs (owner, 2026-11-06: nothing scrolls sideways on a phone, "gracefully stack"):
  * the five steps stack as rows in the owner's preferred style (small red label, bold title, body, a hairline
  * between rows) and each demo plays once when it scrolls into view. Without JS every step + demo is stacked.
@@ -138,6 +139,10 @@ const demos: Record<string, any> = {
       timer = undefined;
     };
 
+    /** The lap has reached its last step and finished: the strip rests there (nothing loops forever, DESIGN.md
+     *  rule 10). Scrolling away and back starts a fresh lap from step 01. */
+    let lapDone = false;
+
     /** Move on to the next step after `ms`, as long as the stepper is still running by itself. */
     const armAdvance = (ms: number) => {
       window.clearTimeout(timer);
@@ -146,6 +151,16 @@ const demos: Record<string, any> = {
       timer = window.setTimeout(() => {
         timer = undefined;
         if (!autoOn()) return;
+        // Only move on while the stage's top edge is on screen: a switch while the visitor is reading deep in a
+        // tall step (03 holds two drawings) would pull the page up under them. Look again shortly.
+        if (stage.getBoundingClientRect().top < 0) {
+          armAdvance(400);
+          return;
+        }
+        if (index === tabs.length - 1) {
+          lapDone = true;
+          return;
+        }
         select(index + 1, { play: true });
         armAdvance(FALLBACK_MS);
       }, ms);
@@ -167,8 +182,13 @@ const demos: Record<string, any> = {
     const auto = autoPlay(root, {
       start: () => {
         if (!desktop.matches) return;
-        doneSeen = false;
-        playDemo(panels[index]);
+        if (lapDone) {
+          lapDone = false;
+          select(0, { play: true });
+        } else {
+          doneSeen = false;
+          playDemo(panels[index]);
+        }
         resume();
       },
       stop: stopAuto,
@@ -203,6 +223,7 @@ const demos: Record<string, any> = {
     };
 
     function select(i: number, { focus = false, play = false } = {}) {
+      lapDone = false;
       const next = (i + tabs.length) % tabs.length;
       const from = panels[index];
       const to = panels[next];

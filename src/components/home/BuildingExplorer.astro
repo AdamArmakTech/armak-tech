@@ -535,12 +535,13 @@ const roomButtons = [
 
     /* ───────── The site's rule (autoPlay in demo.ts; owner, 2026-11-06 night) ─────────
        As the explorer scrolls into view the systems show themselves one after another, each lit in the drawing
-       with its text, then the "years from now" view closes the lap and it starts over. A press on a tab, a chip,
-       a room button or the switch stops that; once the explorer has scrolled away and comes back it runs again
-       from whatever is showing. Hovering a room changes nothing about the lap. */
+       with its text, then the "years from now" view closes the lap and the explorer rests there (nothing loops
+       forever). A press on a tab, a chip, a room button or the switch stops the lap; once the explorer has scrolled
+       away and comes back it runs again, from whatever is showing, or as a fresh lap after a finished one.
+       Hovering a room changes nothing about the lap. */
     const HOLD_MS = 2400; // each system stays lit this long
-    const LATER_MS = 4200; // the "years from now" view, with its list, at the end of a lap
     let lap: number | undefined;
+    let lapDone = false; // the lap reached the "years from now" view: it rests there (nothing loops forever)
     const stopLap = () => {
       window.clearTimeout(lap);
       lap = undefined;
@@ -548,15 +549,22 @@ const roomButtons = [
     const nextBeat = () => {
       lap = undefined;
       if (!auto.on) return;
-      if (when === 'later') select(0); // the lap is over: back to the first system (select() puts the building back to today)
-      else if (index === tabs.length - 1 && tabs.some((t) => t.getAttribute('aria-selected') === 'true')) setWhen('later');
-      else select(index + 1);
-      lap = window.setTimeout(nextBeat, when === 'later' ? LATER_MS : HOLD_MS);
+      if (index === tabs.length - 1 && tabs.some((t) => t.getAttribute('aria-selected') === 'true')) {
+        setWhen('later'); // the lap's last beat; it stays until the visitor presses something or scrolls away and back
+        lapDone = true;
+        return;
+      }
+      select(index + 1);
+      lap = window.setTimeout(nextBeat, HOLD_MS);
     };
     const auto = autoPlay(root, {
       start: () => {
         stopLap();
-        lap = window.setTimeout(nextBeat, when === 'later' ? LATER_MS : HOLD_MS);
+        if (lapDone || when === 'later') {
+          lapDone = false;
+          select(0); // a fresh lap (select() puts the building back to today)
+        }
+        lap = window.setTimeout(nextBeat, HOLD_MS);
       },
       stop: stopLap,
     });

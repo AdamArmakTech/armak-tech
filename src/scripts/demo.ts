@@ -37,19 +37,26 @@ export function createRun(play: (alive: () => boolean) => Promise<void> | void) 
 }
 
 /**
- * Calls `cb` once, the first time `el` is at least `threshold` visible.
+ * Calls `cb` once, the first time `el` reaches the screen: when its top passes 75% of the way down the
+ * viewport (or it is already there). Not a share of the element's own height: a piece taller than the screen
+ * (a table of cards on a phone held sideways) could never reach 35% visible and stayed hidden or unstarted.
+ * `threshold` is kept for the callers' sake and no longer changes the start point.
  * Inside the Process stepper ([data-steps]) the stepper starts demos itself, so this does nothing
  * there — otherwise a demo would start twice and visibly restart.
  */
-export function onFirstView(el: Element, cb: () => void, threshold = 0.35) {
+export function onFirstView(el: Element, cb: () => void, _threshold = 0.35) {
   if (el.closest('[data-steps]')) return;
+  if (typeof IntersectionObserver === 'undefined') {
+    cb();
+    return;
+  }
   const io = new IntersectionObserver(
     ([entry]) => {
       if (!entry.isIntersecting) return;
       io.disconnect();
       cb();
     },
-    { threshold },
+    { threshold: 0, rootMargin: '0px 0px -25% 0px' },
   );
   io.observe(el);
 }
@@ -212,8 +219,9 @@ export function evenTimes(n: number, ms: number, start = 0): number[] {
  * hovering never stops it. Under reduced motion it never runs by itself.
  */
 
-/** The controls whose press hands a piece over to the visitor. A scroll, or a tap on a drawing, does not. */
-export const CONTROLS = 'button, a, input, select, textarea, summary, [role="slider"], [role="button"], [role="tab"]';
+/** The controls whose press hands a piece over to the visitor. A scroll, or a tap on a drawing, does not.
+ *  A drawing that is itself dragged (the install closet's split) carries data-demo-control. */
+export const CONTROLS = 'button, a, input, select, textarea, summary, [role="slider"], [role="button"], [role="tab"], [data-demo-control]';
 
 export interface AutoPlay {
   /** True while the piece should run by itself: on screen, not handed over, motion allowed */
@@ -239,7 +247,7 @@ export function autoPlay(
 ): AutoPlay {
   let inView = false;
   let manual = false;
-  const on = () => inView && !manual && !prefersReducedMotion();
+  const on = () => inView && !manual && !document.hidden && !prefersReducedMotion();
 
   const takeOver = () => {
     if (manual) return;
@@ -274,6 +282,15 @@ export function autoPlay(
       { threshold: 0, rootMargin },
     ).observe(root);
   }
+
+  // A hidden tab draws no frames while timers run on: stop, and start again where it is when the tab returns
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (inView) stop();
+    } else if (on()) {
+      start();
+    }
+  });
 
   return {
     get on() {
