@@ -55,7 +55,8 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
   his phone. Owner 2026-11-05: form emails are kept as business records and NOT deleted on request (he first said
   yes, then "keep them"), so "ask us to delete it" came off /privacy/; copies and corrections can still be asked for.
   The sharing section names kinds of services, not companies (owner, after research into the law and other
-  contractors' policies, 2026-11-05); the real names are in the file's header comment.
+  contractors' policies, 2026-11-05); the real names are in the file's header comment. The page was then condensed
+  to five sections, 273 words (owner: "you can't condense this?").
 - Check the CSLB licence, bond, insurance and BICSI status (owner NOT SURE on 2026-11-05, so those claims are off
   the site until he confirms them; when "Licensed" returns, the CSLB number goes with it).
 - Turn on hCaptcha for the form in the Web3Forms dashboard (app.web3forms.com): the site shows the box, Web3Forms

@@ -64,7 +64,9 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   the law (CalOPPA, Bus. & Prof. Code 22575(b)(1)) asks for categories of third parties, and three contractors'
   policies plus Termly's template name kinds only, so "Who else handles it" now lists kinds of services (hosting,
   form delivery, email and spam filter, human check, map) with a "when the law requires it" line; the company
-  names stay in the file's header comment. Open: (1) the owner must turn on hCaptcha in
+  names stay in the file's header comment. Then "you can't condense this?": the page went from eight sections
+  (405 words) to five (273 words), same facts, same legal items (what is collected, kinds of recipients, how to
+  ask for a copy or correction, Do Not Track, children, changes, effective date). Open: (1) the owner must turn on hCaptcha in
   the Web3Forms dashboard so the check is enforced on their side; (2) hCaptcha shows "localhost detected" on the
   local preview only; tick the box once on the Vercel preview URL after the next publish.
 - **Code cleanup, Batches 3 and 4 — 2026-10-31 and 2026-11-05 (branch `intent-redesign`, commits 06ca766 and 2267b24, NOT pushed).**
