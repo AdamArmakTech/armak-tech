@@ -23,14 +23,15 @@ const tenYears = cablingSourced && (lifespans.cabling.years ?? 0) >= 10;
 const laterLabel = tenYears ? '10 years from now' : 'Years from now';
 const laterTitle = `${laterLabel}: cabling stays`;
 // "Put in on day one for later", in this order. Only items the owner confirmed are shown (shownSignature).
-// Each item BuildingSvg has a spot for (its keyMarks) gets a number, 01 up, and the drawing puts the same number
-// on that spot; an item with no sensible spot would be listed without a number.
+// Each item BuildingSvg has a spot for (its keyMarks) gets a number, 1 up (plain, the way a drawing numbers its
+// callouts), and the drawing puts the same number on that spot; an item with no sensible spot would be listed
+// without a number.
 const laterKeys: SignatureKey[] = ['cat6aDefault', 'twoDropsPerAp', 'spareFiberStrands', 'emptyConduit', 'zoneCabling', 'ceilingGridJacks', 'labelsAndAsBuilts'];
 const drawnKeys = new Set<SignatureKey>(['cat6aDefault', 'twoDropsPerAp', 'spareFiberStrands', 'emptyConduit', 'zoneCabling', 'ceilingGridJacks', 'labelsAndAsBuilts']);
 let laterCount = 0;
 const laterItems = shownSignature(laterKeys).map((it) => ({
   ...it,
-  num: drawnKeys.has(it.key) ? String(++laterCount).padStart(2, '0') : null,
+  num: drawnKeys.has(it.key) ? String(++laterCount) : null,
 }));
 const laterNums: Partial<Record<SignatureKey, string>> = Object.fromEntries(
   laterItems.flatMap((it) => (it.num ? [[it.key, it.num]] : [])),
@@ -154,7 +155,7 @@ const roomButtons = [
         {industryRows.map((ind) => (
           <div class="explorer__detail" data-industry-detail={ind.slug} hidden>
             <p class="explorer__summary">{ind.summary}</p>
-            <p class="t-muted">{ind.need}</p>
+            <p class="explorer__text">{ind.need}</p>
             <div class="explorer__actions">
               <a class="explorer__ask" href={contactHref({ about: ind.name })}>
                 Ask about {ind.name.toLowerCase()}
@@ -169,7 +170,7 @@ const roomButtons = [
             <div class="explorer__detail-head">
               <h3 class="t-h3">{s.name}</h3>
             </div>
-            <p class="t-muted">{s.short}</p>
+            <p class="explorer__text">{s.short}</p>
             <ul role="list" class="explorer__includes t-meta">
               {s.includes.map((inc) => <li>{inc}</li>)}
             </ul>
@@ -586,42 +587,52 @@ const roomButtons = [
   .explorer__summary {
     font-weight: 500;
     color: var(--text);
+    max-width: 60ch;
+  }
+
+  /* Running text in the full text colour (rule 9), held to a readable line length */
+  .explorer__text {
+    color: var(--text);
+    max-width: 60ch;
   }
 
   .explorer__hint {
     margin-bottom: 0.75rem;
   }
 
-  /* Tabs: a wrapped row on phones and tablets (a sideways scroller reads as cut off), a vertical list on desktop */
+  /* Tabs: the six systems as one ordered list at every width, never a wrapped heap of boxes or a sideways scroller
+     (owner, 2026-11-06): one column on phones, two from 640px, one again in the sidebar from 1000px. No fill at
+     rest, a tone step on hover, the ink highlight behind the selected one. */
   .explorer__tabs {
     position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px var(--sp-2);
   }
 
-  .explorer__tabs::-webkit-scrollbar {
-    display: none;
+  @media (min-width: 640px) and (max-width: 999.98px) {
+    .explorer__tabs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   .explorer__tab {
     position: relative;
-    display: inline-flex;
+    display: flex;
     align-items: baseline;
-    gap: 0.625rem;
-    flex-shrink: 0;
     min-height: 44px;
     padding: 0.75rem 1rem;
     border: 0;
     border-radius: var(--radius);
-    background: var(--paper-sunken);
+    background: transparent;
+    color: var(--ink);
     text-align: left;
     transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
   @media (hover: hover) and (pointer: fine) {
     .explorer__tab[aria-selected='false']:hover {
-      background: var(--white);
+      background: var(--paper-sunken);
     }
   }
 
@@ -743,21 +754,12 @@ const roomButtons = [
       top: calc(var(--header-h) + 2rem);
     }
 
-    .explorer__tabs {
-      flex-direction: column;
-      gap: var(--sp-2);
-      overflow: visible;
-      margin: 0;
-      padding: 0;
-    }
-
     .explorer__tab {
-      display: flex;
-      padding: 1.125rem 1rem;
+      padding: 0.875rem 1rem;
     }
 
     .explorer__name {
-      font-size: 1.0625rem;
+      font-size: var(--fs-body);
     }
 
     .explorer__stage {
@@ -800,8 +802,10 @@ const roomButtons = [
     }
   }
 
+  /* Each half fills its grid cell, so the two halves stay the same height even if a label wraps (320px) */
   .bx-when label {
     position: relative;
+    display: grid;
   }
 
   .bx-when input {
@@ -822,8 +826,16 @@ const roomButtons = [
     font-family: var(--font-sans);
     font-size: var(--fs-small);
     font-weight: 500;
+    text-align: center;
     color: var(--ink);
     transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
+  }
+
+  /* Small phones: less side padding, so "10 years from now" stays on one line from 360px */
+  @media (max-width: 419.98px) {
+    .bx-when label > span {
+      padding-inline: 0.5rem;
+    }
   }
 
   .bx-when input:checked + span {
@@ -946,7 +958,8 @@ const roomButtons = [
     padding-bottom: 0;
   }
 
-  /* Rule 4: the numbers are codes read off the drawing, so mono; blue like the numbers on the building */
+  /* The callout number, drawn like the matching balloon on the building (blue ring, plain figure in the text face)
+     so the two read as one */
   .bx-later-num {
     display: grid;
     place-items: center;
@@ -956,7 +969,7 @@ const roomButtons = [
     border-radius: 50%;
     background: var(--white);
     color: var(--armak-blue);
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: var(--fs-label);
     font-weight: 600;
     font-variant-numeric: tabular-nums;
@@ -999,6 +1012,14 @@ const roomButtons = [
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+  }
+
+  /* Phones: the four rooms two by two, so no button is left alone on a second row */
+  @media (max-width: 639.98px) {
+    .bx-rooms-group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 
   .bx-room-btn {
@@ -1051,14 +1072,30 @@ const roomButtons = [
     transition: transform var(--dur) var(--ease-out), opacity var(--dur-fast) ease;
   }
 
-  .explorer__tabs.has-hl .explorer__tab[aria-selected='true'],
-  .explorer__tabs.has-hl .explorer__tab[aria-selected='true']:hover {
-    background: transparent;
+  /* The background switches at once; the highlight does the moving. While it slides in, the selected tab stays
+     clear so the highlight shows through; once it has arrived the tab takes its own ink. So the name never rests
+     on a see-through box, and it still reads if the highlight is missing. */
+  .explorer__tabs.has-hl .explorer__tab {
+    transition: color var(--dur-fast) ease;
+  }
+
+  .explorer__tabs.has-hl .explorer__tab[aria-selected='true'] {
+    animation: explorer-tab-settle var(--dur) step-end;
+  }
+
+  @keyframes explorer-tab-settle {
+    from {
+      background-color: transparent;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .explorer__tabs :global(.explorer__hl) {
       transition: none;
+    }
+
+    .explorer__tabs.has-hl .explorer__tab[aria-selected='true'] {
+      animation: none;
     }
   }
 </style>

@@ -79,14 +79,15 @@ type Box = [number, number, number, number];
  * Bounds: [x, y, w, h] in viewBox units, matching the walls above.
  * `routed` rooms draw their cables back to `closet` (B1); the closets themselves and the break room do not.
  */
+// Names in sentence case, as drawn on the plan; the two closets keep their codes.
 const rooms: { id: string; name: string; box: Box; systems: ServiceSlug[]; routed: boolean; closet: 'IDF-2' | 'MDF' }[] = [
-  { id: 'offices', name: 'OFFICES', box: [140, 130, 330, 136], systems: ['structured-cabling', 'networking', 'voip-unified-comms'], routed: true, closet: 'IDF-2' },
-  { id: 'conference', name: 'CONFERENCE', box: [470, 130, 270, 136], systems: ['structured-cabling', 'networking', 'access-control', 'voip-unified-comms', 'audio-video'], routed: true, closet: 'IDF-2' },
+  { id: 'offices', name: 'Offices', box: [140, 130, 330, 136], systems: ['structured-cabling', 'networking', 'voip-unified-comms'], routed: true, closet: 'IDF-2' },
+  { id: 'conference', name: 'Conference', box: [470, 130, 270, 136], systems: ['structured-cabling', 'networking', 'access-control', 'voip-unified-comms', 'audio-video'], routed: true, closet: 'IDF-2' },
   { id: 'idf-2', name: 'IDF-2', box: [140, 274, 85, 137], systems: ['structured-cabling', 'networking'], routed: false, closet: 'IDF-2' },
-  { id: 'open-office', name: 'OPEN OFFICE', box: [225, 274, 515, 137], systems: ['structured-cabling', 'networking', 'video-surveillance', 'voip-unified-comms'], routed: true, closet: 'IDF-2' },
+  { id: 'open-office', name: 'Open office', box: [225, 274, 515, 137], systems: ['structured-cabling', 'networking', 'video-surveillance', 'voip-unified-comms'], routed: true, closet: 'IDF-2' },
   { id: 'mdf', name: 'MDF', box: [140, 419, 110, 141], systems: ['structured-cabling', 'networking', 'video-surveillance'], routed: false, closet: 'MDF' },
-  { id: 'lobby', name: 'LOBBY', box: [250, 419, 320, 141], systems: ['structured-cabling', 'networking', 'video-surveillance', 'access-control', 'voip-unified-comms', 'audio-video'], routed: true, closet: 'MDF' },
-  { id: 'break-room', name: 'BREAK ROOM', box: [570, 419, 170, 141], systems: ['structured-cabling', 'access-control', 'voip-unified-comms', 'audio-video'], routed: false, closet: 'MDF' },
+  { id: 'lobby', name: 'Lobby', box: [250, 419, 320, 141], systems: ['structured-cabling', 'networking', 'video-surveillance', 'access-control', 'voip-unified-comms', 'audio-video'], routed: true, closet: 'MDF' },
+  { id: 'break-room', name: 'Break room', box: [570, 419, 170, 141], systems: ['structured-cabling', 'access-control', 'voip-unified-comms', 'audio-video'], routed: false, closet: 'MDF' },
 ];
 const codes = (slugs: ServiceSlug[]) => slugs.map((sl) => services.find((x) => x.slug === sl)!.code).sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
@@ -147,15 +148,11 @@ const keyed = keyMarks
     <pattern id="bx-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
       <line x1="0" y1="0" x2="0" y2="8" class="bx-hatch-line" />
     </pattern>
-    <pattern id="bx-grid" width="20" height="20" patternUnits="userSpaceOnUse">
-      <path d="M20 0H0V20" class="bx-grid-line" />
-    </pattern>
   </defs>
 
-  <!-- Drawing sheet -->
-  <rect x="0" y="0" width="880" height="620" fill="url(#bx-grid)" />
-  <text x="40" y="52" class="bx-sheet t-readout">Typical commercial building</text>
-  <text x="840" y="52" class="bx-sheet bx-end t-readout" data-bx-layer-name>All systems</text>
+  <!-- Drawing sheet: title on the left, the system on view on the right (no background grid: it named nothing) -->
+  <text x="40" y="52" class="bx-sheet">Typical commercial building</text>
+  <text x="840" y="52" class="bx-sheet bx-end" data-bx-layer-name>All systems</text>
 
   <!-- ───────────── Structure (always visible) ───────────── -->
   <g class="bx-structure">
@@ -186,17 +183,6 @@ const keyed = keyMarks
       <line x1="124" y1="198" x2="134" y2="198" />
       <line x1="124" y1="342" x2="134" y2="342" />
       <line x1="124" y1="489" x2="134" y2="489" />
-    </g>
-
-    <!-- room labels -->
-    <g class="bx-label">
-      <text x="150" y="168">OFFICES</text>
-      <text x="482" y="168">CONFERENCE</text>
-      <text x="150" y="306">IDF-2</text>
-      <text x="237" y="306">OPEN OFFICE</text>
-      <text x="150" y="451">MDF</text>
-      <text x="262" y="451">LOBBY</text>
-      <text x="582" y="451">BREAK ROOM</text>
     </g>
 
     <!-- furniture (the two desks in deskMoves slide in the "years from now" view) -->
@@ -371,6 +357,18 @@ const keyed = keyMarks
     <rect x="652" y="466" width="50" height="30" class="bx-outline bx-screen" />
   </g>
 
+  <!-- Room names: drawn over the system layers with a white halo, so a cable passes behind a name instead of
+       through it (the way text breaks a line on a drawing). Sentence case in the text face; the closet codes in mono. -->
+  <g class="bx-label">
+    <text x="150" y="168">Offices</text>
+    <text x="482" y="168">Conference</text>
+    <text x="150" y="306" class="bx-mono">IDF-2</text>
+    <text x="237" y="306">Open office</text>
+    <text x="150" y="451" class="bx-mono">MDF</text>
+    <text x="262" y="451">Lobby</text>
+    <text x="582" y="451">Break room</text>
+  </g>
+
   <!-- ───────────── B1 room routes: one per routed room, outside every layer so the layer draw-in never touches them.
        Hidden until the explorer script shows one. Numbers come from the drops and aps arrays above. ───────────── -->
   <g class="bx-routes">
@@ -488,22 +486,17 @@ const keyed = keyMarks
     --bs: clamp(1, calc(var(--u, 1) * 0.82), 2.3);
   }
 
-  .bx-grid-line {
-    fill: none;
-    stroke: var(--hairline);
-    stroke-width: 0.5;
-    opacity: 0.6;
-  }
-
   .bx-hatch-line {
     stroke: var(--hairline-strong);
     stroke-width: 1;
   }
 
+  /* Rule 4: words on the drawing are set in the text face; mono is kept for codes (L1 to L3, IDF-2, MDF) */
   .bx-sheet {
-    font-family: var(--font-mono);
-    /* SVG units: the drawing scales to ~0.65-1x, so 14 here is ~9-14px on screen */
-    font-size: 14px;
+    font-family: var(--font-sans);
+    /* SVG units: the drawing scales to ~0.75-0.9x where this shows (640px and up), so 16 here is ~12-14px on screen */
+    font-size: 16px;
+    font-weight: 500;
     letter-spacing: 0;
     fill: var(--steel);
   }
@@ -555,15 +548,25 @@ const keyed = keyMarks
 
   .bx-label,
   .bx-callout {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: 18px;
-    letter-spacing: 0.04em;
+    font-weight: 500;
+    letter-spacing: 0;
     fill: var(--steel);
+  }
+
+  /* The white halo knocks the lines out around each letter, so names stay readable over the cabling */
+  .bx-label {
+    paint-order: stroke;
+    stroke: var(--white);
+    stroke-width: 5px;
+    stroke-linejoin: round;
+    pointer-events: none;
   }
 
   /* Callout sits outside the wall, so it stays smaller than the room labels */
   .bx-callout {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   /* ── System layers ── */
@@ -869,10 +872,10 @@ const keyed = keyMarks
     stroke-width: 1.25;
   }
 
-  /* Rule 4: the item numbers are codes a technician reads off a drawing, so they are mono */
+  /* Callout numbers are plain figures in the text face (1, 2, 3), the way a drawing numbers its balloons */
   .bx-num {
-    font-family: var(--font-mono);
-    font-size: 11.5px;
+    font-family: var(--font-sans);
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0;
     font-variant-numeric: tabular-nums;
@@ -1127,7 +1130,7 @@ const keyed = keyMarks
       const SPREAD = 340; // ms between the top and bottom lines starting (560 + 340 = 900)
       const EASE = 'cubic-bezier(0.16, 1, 0.3, 1)'; // --ease-out
       const targets = [...svg.querySelectorAll<SVGGraphicsElement>('.bx-structure line, .bx-structure rect, .bx-structure path')];
-      const fades = [...svg.querySelectorAll<SVGGraphicsElement>(':scope > rect, :scope > text, .bx-structure text')];
+      const fades = [...svg.querySelectorAll<SVGGraphicsElement>(':scope > text, .bx-structure text, .bx-label text')];
       const all = [...targets, ...fades];
       if (!all.length || typeof IntersectionObserver === 'undefined') return;
 

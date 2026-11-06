@@ -565,22 +565,24 @@ const steps = installPhases;
   }
 
   /* SVG text is sized in screen pixels via --u (see fitSvgText), capped to fit the drawing:
-     the label column right of the rack and the corner notes leave room for the largest sizes */
+     the label column right of the rack and the corner notes leave room for the largest sizes.
+     Rule 4: only the port and switch codes (A-01, SW-1) are mono; words (UPS, "ports 1–12", Before, After) are sans. */
   .in__label,
   .in__note,
   .in__unit {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: clamp(9px, calc(var(--u, 1) * 10px), 12.5px);
     letter-spacing: normal;
     fill: var(--steel);
   }
 
   .in__label {
+    font-family: var(--font-mono);
     fill: var(--ink);
   }
 
   .in__tag {
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: clamp(9px, calc(var(--u, 1) * 11px), 14px);
     font-weight: 600;
     letter-spacing: normal;
@@ -684,7 +686,7 @@ const steps = installPhases;
 
   .in__step-detail {
     color: var(--steel);
-    font-size: 0.8125rem;
+    font-size: var(--fs-label);
   }
 
   .in--instant,
@@ -727,11 +729,7 @@ const steps = installPhases;
     }
 
     .in__step-title {
-      font-size: 0.875rem;
-    }
-
-    .in__step-detail {
-      font-size: 0.8125rem;
+      font-size: var(--fs-label);
     }
   }
 </style>

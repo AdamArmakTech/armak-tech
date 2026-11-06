@@ -63,6 +63,18 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
     no dead space, the red-label rows, own branch), service-sheets (product sheet replaces the photo band and the
     floating test card; works in this folder, commits nothing). Each writes its record to
     `ai/notes/2026-11-06-<name>.md`. The three branches must be merged into intent-redesign when done.
+  - Anti-slop passes (owner: "did you tell the agents not to make it look like ai slop?"): the taste-skill inspector
+    at 1440/768/390 was run on every piece. Home page (an Opus agent, in this folder): 1440 2 FAIL/6 WARN -> 1/6,
+    768 4/5 -> 3/5, 390 4/3 -> 4/3 (the unreadable selected tab fixed everywhere; one new 390 finding is a heading under
+    the fixed bottom bar at one scroll stop, not a layout overlap). Changes: the five step names are one plain list
+    with the sliding ink highlight (no grey boxes), the pillars line up with the steps' columns, the explorer's six
+    systems are one list at every width with 1-7 callouts and 2x2 room buttons on phones, the building drawing lost
+    its decorative grid and room names are plain type, the closet's Before/After/UPS are plain type at 14px. Its
+    two open questions for the owner: keep "Step 1 of 5"? drop the Principles block (it repeats Install, Certify and
+    Support)? Service pages (service-sheets session, committed here as bbac2d4): 19/31 -> 13/25, the rest being the
+    owner's own rules. About page (about-page session, f9d557f on claude/about-page-1c7980): 1/5 -> 0/4. Site
+    reveals (site-reveals session, a77120b on claude/site-reveals-9929c9): 25/51 -> 25/48 on 12 pages, the 25 left
+    are pre-existing and listed in its notes. Demo motion (claude/demo-motion-eec65d): pass still running.
   - Checks: astro check 0 errors; build 19 pages. Nothing pushed; the owner has not said "publish".
 - **Product photo shortlist — 2026-11-06 morning (research only).** Owner, from his phone: "For video surveillance /
   Access control / Voice and unified comms / Audio & Video: I want you to pull photos from products or items that we

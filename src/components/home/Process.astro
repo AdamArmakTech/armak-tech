@@ -419,41 +419,36 @@ const demos: Record<string, any> = {
     display: none;
   }
 
+  /* The five steps read as one list of names, not five grey boxes: the rows have no fill, a hover shows a tone step,
+     and the ink highlight slides behind the selected row (rule 10). */
   .steps__tabs {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: var(--sp-2);
+    gap: 2px;
   }
 
   .steps__tab {
     position: relative;
-    display: inline-flex;
+    display: flex;
     align-items: baseline;
-    gap: 0.625rem;
-    flex-shrink: 0;
     min-height: 44px;
-    padding: 0.75rem 1rem;
+    padding: 0.875rem 1rem;
     border: 0;
     border-radius: var(--radius);
-    background: var(--paper-sunken);
+    background: transparent;
+    color: var(--ink);
     text-align: left;
-    overflow: hidden;
-    transition:
-      background var(--dur) var(--ease-out),
-      color var(--dur) var(--ease-out);
+    transition: color var(--dur-fast) ease;
   }
 
   @media (hover: hover) and (pointer: fine) {
     .steps__tab[aria-selected='false']:hover {
-      background: var(--white);
+      background: var(--paper-sunken);
     }
   }
 
-  /* Sliding highlight: one element behind the tabs. The selected tab itself goes clear and shows it. */
-  .steps__tabs {
-    position: relative;
-  }
-
+  /* Sliding highlight: one element behind the tabs */
   .steps :global(.steps__slider) {
     position: absolute;
     left: 0;
@@ -469,31 +464,40 @@ const demos: Record<string, any> = {
     transition: transform var(--dur) var(--ease-out);
   }
 
-  .steps.has-slider .steps__tab[aria-selected='true'],
-  .steps.has-slider .steps__tab[aria-selected='true']:hover {
-    background: transparent;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .steps :global(.steps__slider).is-ready {
-      transition: none;
-    }
-  }
-
   .steps__tab[aria-selected='true'] {
     background: var(--ink);
     color: var(--paper);
   }
 
+  /* While the highlight slides in, the selected row stays clear so the highlight shows through; once it has
+     arrived the row takes its own ink. So the name never rests on a see-through box, and it still reads if the
+     highlight is missing. */
+  .steps.has-slider .steps__tab[aria-selected='true'] {
+    animation: steps-tab-settle var(--dur) step-end;
+  }
+
+  @keyframes steps-tab-settle {
+    from {
+      background-color: transparent;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
+    .steps :global(.steps__slider).is-ready,
     .steps__tab {
       transition: none;
+    }
+
+    .steps.has-slider .steps__tab[aria-selected='true'] {
+      animation: none;
     }
   }
 
   .steps__name {
-    font-weight: 500;
-    font-size: var(--fs-small);
+    font-size: var(--fs-h3);
+    font-weight: 600;
+    line-height: var(--lh-heading);
+    letter-spacing: -0.01em;
   }
 
   /* Stage */
@@ -631,24 +635,8 @@ const demos: Record<string, any> = {
     }
 
     .steps__tabs {
-      flex-direction: column;
-      gap: var(--sp-2);
-      overflow: visible;
       margin: 0;
       padding: 0;
-    }
-
-    .steps__tab {
-      display: flex;
-      padding: 1.375rem 1rem;
-    }
-
-    .steps__tab[aria-selected='true']:hover {
-      background: var(--ink);
-    }
-
-    .steps__name {
-      font-size: var(--fs-h4);
     }
 
     .steps__stage {
@@ -702,13 +690,16 @@ const demos: Record<string, any> = {
     .pillars__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
   }
 
-  @media (min-width: 1024px) {
-    .pillars__grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* From 900px the principles sit on the stepper's own grid (4fr / 8fr): the heading in the tab column, the four
+     principles two by two in the stage column, so the section keeps one set of edges instead of a separate
+     four-column strip. */
+  @media (min-width: 900px) {
+    .pillars {
+      grid-template-columns: 4fr 8fr;
+      column-gap: var(--col-gap);
+      align-items: start;
     }
-
   }
 </style>
