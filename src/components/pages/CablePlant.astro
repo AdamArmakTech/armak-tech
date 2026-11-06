@@ -1,99 +1,75 @@
 ---
 /**
- * One cable plant, several device generations. A year-axis chart, 2013 to this year.
- * Every date and figure comes from src/data/content.ts, where each carries a source.
- * Bar positions are computed from the years, never typed in. Plain HTML, not SVG, so text stays readable.
- * Rule 9 (real labels, text you can read), rule 4 (mono only for the years on the chart axis).
+ * Four Wi-Fi releases on the same cable: a section drawing, made the way the install drawings are.
+ * One blue cable runs across the whole width (2013 to this year) above the ceiling, and an access point
+ * hangs from it at each Wi-Fi release: the gear changed four times, the cable stayed. (Owner, 2026-11-06:
+ * the bar chart this replaces looked "sloppy and ugly", not "intentional or clever".)
+ * Every date and figure comes from src/data/content.ts, where each carries a source. The columns are
+ * proportional to the years from 640px (six years, then two, three and two) and equal on phones; the year
+ * is written under each device either way, so nothing depends on the spacing.
+ * Rule 9 (real labels, text you can read: the drawing is CSS and a small inline SVG, the words are HTML),
+ * rule 4 (mono only for the years), rule 2 (the devices are drawn in the product style, no brand),
+ * rule 10 (the cable draws itself once on first view, then each drop and device arrives in year order).
  */
 import { lifespans, cablingSourced, wifiBasis, wifiGenerations, deviceSupport, cablingWarranty, shownSignature } from '../../data/content';
 
 const START = wifiGenerations[0].year;
 const END = new Date().getFullYear();
-const span = END - START;
-const pct = (y: number) => ((y - START) / span) * 100;
+
+/** Each release runs from its year to the next one's (the newest runs to this year and is the one in service). */
+const gens = wifiGenerations.map((g, i) => {
+  const next = wifiGenerations[i + 1];
+  return { ...g, span: (next ? next.year : END) - g.year, current: !next, delay: 300 + i * 150 };
+});
+/** Column widths proportional to the years, used from 640px. minmax(0, …) so a device never widens its column. */
+const cols = gens.map((g) => `minmax(0, ${g.span}fr)`).join(' ');
 
 const cabYears = lifespans.cabling.years ?? 0;
-const cabSolid = Math.min(100, pct(START + cabYears));
-
-const segs = wifiGenerations.map((g, i) => {
-  const next = wifiGenerations[i + 1];
-  const left = pct(g.year);
-  const right = next ? pct(next.year) : 100;
-  return { ...g, left, width: right - left, open: !next, delay: 300 + i * 80 };
-});
-
-const ticks = [...new Set([...wifiGenerations.map((g) => g.year), END])].map((y) => ({
-  year: y,
-  left: pct(y),
-  edge: y === START ? 'start' : y === END ? 'end' : y === wifiGenerations[wifiGenerations.length - 1].year ? 'last' : 'mid',
-}));
-
 const signature = shownSignature(['cat6aDefault', 'spareFiberStrands', 'emptyConduit']);
-
+/** The three run on in one sentence: the first keeps its capital (Cat 6A), the rest start lower case. */
+const dayOne = signature.map((s, i) => (i === 0 ? s.label : s.label.charAt(0).toLowerCase() + s.label.slice(1))).join(', ');
 const cisco = deviceSupport.find((d) => d.maker === 'Cisco');
 const axis = deviceSupport.find((d) => d.maker === 'Axis');
+
+const sceneLabel = `One cable from ${START} to ${END}, with an access point hanging from it at each Wi-Fi release: ${gens
+  .map((g) => `${g.name} in ${g.year}`)
+  .join(', ')}.`;
 ---
 
 {cablingSourced && (
 <div class="plant" data-plant>
-  <h3 class="t-h3 plant__title">One cable plant, several Wi-Fi releases</h3>
+  <h3 class="t-h3 plant__title">Four Wi-Fi releases on the same cable</h3>
 
-  <div class="plant__chart">
-    <div class="plant__row">
-      <p class="t-meta plant__label">Cabling in the walls and ceilings</p>
-      <div class="plant__track">
-        <div class="plant__cable" data-bar style="--d: 0ms; --t: 600ms">
-          <span class="plant__solid" style={`width: ${cabSolid}%`}></span>
-          <span class="plant__open" style={`left: ${cabSolid}%`}></span>
-        </div>
-        <p class="plant__over">
-          Designed for {cabYears}+ years<sup><a href="#plant-note-1" aria-label="Note 1">1</a></sup>
-        </p>
-      </div>
-      {signature.length > 0 && (
-        <p class="plant__sig">Put in on day one: {signature.map((s) => s.label).join(', ')}</p>
-      )}
-    </div>
-
-    <div class="plant__row">
-      <p class="t-meta plant__label">
-        Wi-Fi releases
-        <span class="plant__basis">Dates are {wifiBasis}<sup><a href="#plant-note-2" aria-label="Note 2">2</a></sup></span>
-      </p>
-      <div class="plant__track">
-        {segs.map((s) => (
-          <span
-            class:list={['plant__seg', { 'plant__seg--open': s.open }]}
-            data-bar
-            style={`left: ${s.left}%; width: ${s.width}%; --d: ${s.delay}ms; --t: 240ms`}
-          ></span>
-        ))}
-      </div>
-      <ul role="list" class="plant__names plant__names--wide" aria-hidden="true">
-        {segs.map((s) => (
-          <li style={`left: ${s.left}%; width: ${s.width}%`}>
-            <span class="plant__name">{s.name}</span>
-          </li>
-        ))}
-      </ul>
-      <ul role="list" class="plant__names plant__names--list">
-        {segs.map((s) => (
-          <li>
-            <span class="plant__name">{s.name}</span>
-            <span class="t-meta plant__yr">{s.year}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-
-    <div class="plant__axis" aria-hidden="true">
-      {ticks.map((t) => (
-        <span class={`plant__tick plant__tick--${t.edge} t-meta`} style={`left: ${t.left}%`}>{t.year}</span>
+  <div class="plant__scene" role="img" aria-label={sceneLabel}>
+    <ol class="plant__gens" style={`--cols: ${cols}`}>
+      {gens.map((g) => (
+        <li class:list={['plant__gen', { 'is-old': !g.current }]} style={`--d: ${g.delay}ms`}>
+          <span class="plant__drop"></span>
+          <span class="plant__ap">
+            <svg viewBox="0 0 88 38" aria-hidden="true" focusable="false">
+              <path class="ap__side" d="M9 2 5 24a39 11 0 0 0 78 0L79 2Z" />
+              <ellipse class="ap__face" cx="44" cy="24" rx="39" ry="11" />
+              <ellipse class="ap__trim" cx="44" cy="24" rx="34.5" ry="9.5" />
+              <path class="ap__ring" d="M29 24a15 4.4 0 1 0 30 0a15 4.4 0 1 0-30 0ZM31.5 24a12.5 3.7 0 1 0 25 0a12.5 3.7 0 1 0-25 0Z" />
+            </svg>
+          </span>
+          <span class="plant__name">{g.name}</span>
+          <span class="t-meta plant__yr">{g.year}</span>
+        </li>
       ))}
-    </div>
+    </ol>
+    <span class="t-meta plant__end">{END}</span>
   </div>
 
-  <p class="plant__caption">Example: cabling put in when Wi-Fi 5 certification launched in {START}. The chart shows timing only, not cable speeds.</p>
+  <p class="plant__caption">
+    An example: cabling put in when Wi-Fi 5 certification launched in {START}, with the access point replaced at each release since. Dates are {wifiBasis}<sup><a href="#plant-note-2" aria-label="Note 2">2</a></sup>. The drawing shows timing only, not cable speeds.
+  </p>
+
+  {signature.length > 0 && (
+    <p class="plant__sig">
+      Cabling is designed for {cabYears}+ years of service<sup><a href="#plant-note-1" aria-label="Note 1">1</a></sup>, so we put in on day one: {dayOne}.
+    </p>
+  )}
 
   {cisco && axis && (
     <p class="plant__notes">
@@ -111,7 +87,7 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
     </li>
     <li id="plant-note-2">
       Wi-Fi Alliance announcements:
-      {segs.map((s, i) => (<>{i > 0 && ','} <a href={s.sourceUrl}>{s.name}</a></>))}.
+      {gens.map((g, i) => (<>{i > 0 && ','} <a href={g.sourceUrl}>{g.name}</a></>))}.
     </li>
     {cisco && <li id="plant-note-3"><a href={cisco.sourceUrl}>{cisco.sourceLabel}</a>.</li>}
     {axis && <li id="plant-note-4"><a href={axis.sourceUrl}>{axis.sourceLabel}</a>.</li>}
@@ -123,19 +99,20 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
 )}
 
 <script>
-  // Bars grow from the left the first time the chart is seen. Armed here only, so with no script or under
-  // reduced motion the bars are full from the start.
+  // The drawing draws itself the first time it is seen: the cable across, then each drop and its device in
+  // year order. Armed here only, so with no script or under reduced motion the finished drawing is there
+  // from the start.
   import { onFirstView, prefersReducedMotion } from '../../scripts/demo';
 
   document.querySelectorAll<HTMLElement>('[data-plant]').forEach((root) => {
     if (prefersReducedMotion()) return;
     root.classList.add('is-armed');
-    onFirstView(root.querySelector(".plant__chart") ?? root, () => root.classList.add("is-drawn"), 0.35);
+    onFirstView(root.querySelector('.plant__scene') ?? root, () => root.classList.add('is-drawn'), 0.35);
   });
 </script>
 
 <style>
-  /* A white sheet: no border, site radius */
+  /* A white sheet: no border, site radius (the one surface in this block) */
   .plant {
     margin-top: var(--space-block);
     padding: var(--sp-5);
@@ -156,112 +133,129 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
     max-width: 24ch;
   }
 
-  .plant__chart {
-    display: grid;
-    gap: var(--sp-6);
-    min-width: 0;
-  }
-
-  .plant__row {
-    display: grid;
-    gap: var(--sp-2);
-    min-width: 0;
-  }
-
-  .plant__label {
-    display: grid;
-    gap: 2px;
-  }
-
-  .plant__basis {
-    font-size: var(--fs-label);
-    font-weight: 400;
-    color: var(--text);
-  }
-
-  .plant__track {
+  /* ── The scene: the cable on top, the ceiling, a drop and a device per release, its name and year ── */
+  .plant__scene {
+    --cable: 3px; /* the cable's thickness */
+    --drop: 28px; /* from the cable down through the ceiling to the device */
+    --ap: 60px; /* the device's width (an 88 × 38 drawing) */
     position: relative;
-    height: 2.25rem;
+    padding-top: var(--cable);
+    margin-top: var(--sp-2);
+    min-width: 0;
   }
 
-  /* Cabling: dark for the design years, then a light fill to show "at least" */
-  .plant__cable {
-    position: absolute;
-    inset: 0;
-    transform-origin: left center;
-  }
-
-  .plant__solid {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    background: var(--ink);
-  }
-
-  .plant__open {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background: var(--hairline-strong);
-  }
-
-  .plant__over {
-    position: absolute;
-    left: var(--sp-3);
-    top: 50%;
-    transform: translateY(-50%);
-    margin: 0;
-    font-size: var(--fs-label);
-    color: var(--paper);
-    white-space: nowrap;
-  }
-
-  .plant__sig {
-    font-size: var(--fs-label);
-    color: var(--text);
-  }
-
-  .plant__seg {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    border: 1.5px solid var(--steel);
-    background: none;
-    transform-origin: left center;
-  }
-
-  .plant__seg--open {
-    border-right: 0;
-  }
-
-  /* Wi-Fi names: under each segment from 640px, a plain list under it on phones */
-  .plant__names {
+  .plant__gens {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .plant__names--wide {
-    display: none;
+  /* The cable: one blue line across the whole width, the first year to this one (--cable-blue: a
+     horizontal drop, as in the install drawing's legend) */
+  .plant__gens::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(-1 * var(--cable));
+    height: var(--cable);
+    border-radius: 2px;
+    background: var(--cable-blue);
+    transform-origin: left center;
   }
 
-  .plant__names--list {
+  /* The ceiling the devices hang from */
+  .plant__gens::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: var(--drop);
+    height: 1.5px;
+    background: var(--steel);
+  }
+
+  .plant__gen {
+    position: relative;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--sp-1) var(--sp-4);
+    justify-items: start;
+    min-width: 0;
   }
 
-  .plant__names li {
-    display: flex;
-    align-items: baseline;
-    gap: var(--sp-2);
-    font-size: var(--fs-label);
+  /* The drop from the cable down through the ceiling, at the device's centre */
+  .plant__drop {
+    display: block;
+    width: 2px;
+    height: var(--drop);
+    margin-left: calc(var(--ap) / 2 - 1px);
+    background: var(--cable-blue);
+    transform-origin: top center;
+  }
+
+  .plant__ap {
+    display: block;
+    width: var(--ap);
+    margin-top: -1px;
+  }
+
+  .plant__ap svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  /* The device, in the product drawings' style: ink lines, flat fills, one blue accent */
+  .ap__side {
+    fill: var(--paper-sunken);
+    stroke: var(--ink);
+    stroke-width: 2;
+    stroke-linejoin: round;
+  }
+
+  .ap__face {
+    fill: var(--white);
+    stroke: var(--ink);
+    stroke-width: 2;
+  }
+
+  .ap__trim {
+    fill: none;
+    stroke: var(--steel);
+    stroke-width: 1.25;
+  }
+
+  .ap__ring {
+    fill: #1d3f8f;
+    fill-rule: evenodd;
+  }
+
+  /* Replaced devices fade like old cable (--cable-old); the one in service is in full ink */
+  .is-old .ap__side,
+  .is-old .ap__face {
+    stroke: var(--cable-old);
+  }
+
+  .is-old .ap__side {
+    fill: var(--paper);
+  }
+
+  .is-old .ap__trim {
+    stroke: var(--hairline);
+  }
+
+  .is-old .ap__ring {
+    fill: var(--cable-old);
   }
 
   .plant__name {
+    margin-top: var(--sp-2);
+    font-size: var(--fs-label);
     font-weight: 500;
+    line-height: 1.3;
     color: var(--ink);
   }
 
@@ -269,33 +263,23 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
     color: var(--steel);
   }
 
-  /* Year axis */
-  .plant__axis {
-    display: none;
-    position: relative;
-    height: 1.75rem;
-  }
-
-  .plant__tick {
+  /* This year, at the cable's far end */
+  .plant__end {
     position: absolute;
-    top: var(--sp-1);
+    right: 0;
+    bottom: 0;
     color: var(--steel);
-    transform: translateX(-50%);
   }
 
-  .plant__tick--start {
-    transform: none;
+  /* On phones the last column is too narrow for both "2024" and this year, so the far end stays unlabelled */
+  @media (max-width: 639.98px) {
+    .plant__end {
+      display: none;
+    }
   }
 
-  .plant__tick--last {
-    transform: translateX(-75%);
-  }
-
-  .plant__tick--end {
-    transform: translateX(-100%);
-  }
-
-  .plant__caption {
+  .plant__caption,
+  .plant__sig {
     font-size: var(--fs-label);
     color: var(--text);
   }
@@ -317,10 +301,6 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
     text-decoration: underline;
   }
 
-  .plant__over sup a {
-    color: var(--paper);
-  }
-
   .plant__foot {
     display: grid;
     gap: var(--sp-2);
@@ -337,58 +317,71 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
     text-decoration: underline;
   }
 
-
-
-  /* Draw once on first view; armed only by the script */
-  .plant.is-armed [data-bar] {
+  /* Draw once on first view, armed by the script only: the cable across (700 ms), then each drop down and
+     its device settling in, in year order (--d per release) */
+  .plant.is-armed .plant__gens::before {
     transform: scaleX(0.001);
   }
 
-  .plant.is-armed.is-drawn [data-bar] {
+  .plant.is-armed.is-drawn .plant__gens::before {
     transform: scaleX(1);
-    transition: transform var(--t) var(--ease-out) var(--d);
+    transition: transform 700ms var(--ease-out);
   }
 
-  .plant.is-armed .plant__over {
+  .plant.is-armed .plant__drop {
+    transform: scaleY(0.001);
+  }
+
+  .plant.is-armed.is-drawn .plant__drop {
+    transform: scaleY(1);
+    transition: transform 260ms var(--ease-out) var(--d);
+  }
+
+  .plant.is-armed .plant__ap,
+  .plant.is-armed .plant__name,
+  .plant.is-armed .plant__yr,
+  .plant.is-armed .plant__end {
     opacity: 0;
   }
 
-  .plant.is-armed.is-drawn .plant__over {
+  .plant.is-armed .plant__ap {
+    transform: translateY(-6px);
+  }
+
+  .plant.is-armed.is-drawn .plant__ap {
     opacity: 1;
-    transition: opacity var(--dur) ease 300ms;
+    transform: none;
+    transition:
+      opacity 320ms ease calc(var(--d) + 200ms),
+      transform 420ms var(--ease-out) calc(var(--d) + 200ms);
+  }
+
+  .plant.is-armed.is-drawn .plant__name,
+  .plant.is-armed.is-drawn .plant__yr {
+    opacity: 1;
+    transition: opacity 320ms ease calc(var(--d) + 320ms);
+  }
+
+  .plant.is-armed.is-drawn .plant__end {
+    opacity: 1;
+    transition: opacity 320ms ease 700ms;
   }
 
   @media (min-width: 640px) {
-    .plant__axis {
-      display: block;
+    .plant__scene {
+      --drop: 32px;
+      --ap: 76px;
     }
 
-    .plant__tick--last {
-      transform: translateX(-50%);
-    }
-
-    .plant__names--wide {
-      display: block;
-      position: relative;
-      height: 1.5rem;
-    }
-
-    .plant__names--wide li {
-      position: absolute;
-      top: 0;
-      flex-direction: column;
-      gap: 0;
-      padding-left: var(--sp-1);
-    }
-
-    .plant__names--list {
-      display: none;
+    .plant__gens {
+      grid-template-columns: var(--cols);
     }
   }
 
   @media (min-width: 900px) {
-    .plant__track {
-      height: 1.5rem;
+    .plant__scene {
+      --drop: 36px;
+      --ap: 88px;
     }
   }
 </style>

@@ -66,8 +66,11 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
   owner wants computer-rendered pictures instead, the Figma image tool needs a permission rule in the app for
   `mcp__figma__create_new_file` and `mcp__figma__generate_image` (the auto-mode check blocked it). Nothing else is
   needed from the makers now.
-- Merge the session branches (site-reveals, demo-motion, about-page) into `intent-redesign` once their notes in
-  `ai/notes/` say done, then re-run astro check, the build and the 320/360/390 sideways-scroll sweep.
+- Merge the demo-motion branch (`refs/heads/claude/demo-motion-eec65d`, 47d9005) into `intent-redesign` when the
+  owner says so (about-page and site-reveals were merged 2026-11-06 evening on his "Yes, merge both"); then re-run
+  astro check, the build and the 320/360/390 sideways-scroll sweep.
+- Approve deleting `src/components/services/PhotoBand.astro` and the `servicePhotos` block in
+  `src/data/services-detail.ts` (no page uses either since the About page switched to the drawings, 2026-11-06).
 - The install drawing's legend uses the TIA-606 colour meanings (blue horizontal drops, green network gear, orange
   carrier hand-off, white backbone). Confirm these match how Armak codes its cables; otherwise say the right words.
 - Approve deleting the unused `src/components/process/JobTimeline.astro` (taken off the page 2026-11-06, 1734eeb).

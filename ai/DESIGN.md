@@ -169,3 +169,12 @@ tabs).
 - About page: "we have the same information repeated 4 times on the same page, and the rest of that page is dead
   space... use this information once, and keep the rest of the page alive... make it more intentional" (about-page
   session).
+
+## Owner decisions 2026-11-06, evening: the About page's chart, and drawings wherever a photo slot is empty
+- "this whole thing is very sloppy and ugly and it doesnt feel intentional or clever at all" (screenshot of the About
+  page's Wi-Fi chart: a black bar, outlined boxes, a year axis, a list of notes). A chart made of bars and boxes
+  reads as a template. Charts on this site are drawn the way the install drawings are: a scene with real objects
+  (the cable, the ceiling, the devices), the site's drawing style (ink lines, flat fills, one blue accent, the cable
+  colours), labels in real type, and one motion that plays once. Rules 5 and 9 apply to charts too.
+- The About page's six systems use the product drawings, not the interim stock photos: his "random" verdict on the
+  service pages' photo band applies to every photo slot (rule 2 as amended that afternoon).

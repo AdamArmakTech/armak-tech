@@ -6,14 +6,15 @@
  *   the headquarters and the city and county counts live in "Where we work" only, above the real lists.
  * No lines between items and no labels above headings (owner, 2026-11-06, in the session that built this
  * page: "lists with lines" and "red caps labels" read as AI slop). Things are separated by space, links are
- * words in sentences, and the only surface is the chart's white sheet (DESIGN.md rule 5, round 1).
+ * words in sentences, and the only surfaces are the white band the drawings sit on and the chart's white
+ * sheet (DESIGN.md rule 5, round 1; the band is the service pages' product sheet).
  * Then, so nothing is dead space: who we are (three short pieces), what we install (the six systems, each
- * with the equipment photo its service page uses), where (every city by county), how a job runs (the five
- * steps) and the cable-plant chart. Neighbouring blocks differ in composition: heading beside the content,
- * then a full-width picture grid, then heading beside the content, then a full-width row of steps.
+ * with one of the drawn devices its service page shows, on a white band across the page), where (every city
+ * by county), how a job runs (the five steps) and the cable-plant chart. Neighbouring blocks differ in
+ * composition: heading beside the content, then the white band, then heading beside the content, then a
+ * full-width row of steps.
  * Hidden placeholder slots (milestones, licence, team) render nothing at all, so the layout closes up.
  */
-import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
@@ -22,8 +23,10 @@ import CablePlant from '../components/pages/CablePlant.astro';
 import Button from '../components/ui/Button.astro';
 import { site, FOUNDED, services, serviceArea, counties } from '../data/site';
 import { process as steps } from '../data/content';
-// Interim stock equipment photos, the same ones the service pages use (rule 2: the product image, or nothing)
-import { servicePhotos } from '../data/services-detail';
+// One drawn device per system, the first on its service page's product sheet (rule 2 as amended 2026-11-06:
+// generic drawings, no brand or logo, one style; the owner called the stock photos random that afternoon)
+import { servicesDetail } from '../data/services-detail';
+import { productDrawing } from '../lib/drawings';
 import { contactHref, CTA_LABEL } from '../lib/cta';
 
 const description = `Armak Technologies has designed and installed low-voltage, networking and security systems across Southern California since ${FOUNDED}. ${site.hq.city} HQ.`;
@@ -50,6 +53,20 @@ const areaRows = counties.map((county) => ({
   cities: serviceArea.filter((c) => c.county === county),
 }));
 const isHq = (name: string) => name === site.hq.city;
+
+/**
+ * The six systems, each with one drawing from its service page's sheet: the first on the sheet, except where
+ * that one is a long thin device (the patch panel, the switch) that turns into a dash at phone size; there it
+ * is the piece a client would recognise instead. A missing drawing leaves a gap and a build warning, never a
+ * broken page.
+ */
+const pick: Record<string, string | undefined> = { 'structured-cabling': 'keystone-jack', networking: 'access-point' };
+const systems = services.map((s) => {
+  const file = pick[s.slug] ?? servicesDetail[s.slug].products[0]?.file;
+  const svg = file ? productDrawing(file, `about-${file}`) : undefined;
+  if (file && !svg) console.warn(`[about] no drawing at src/assets/products/${file}.svg; "${s.name}" shows no picture`);
+  return { ...s, svg };
+});
 
 const thisYear = new Date().getFullYear();
 
@@ -110,40 +127,29 @@ const SHOW_PLACEHOLDERS = false;
       </div>
     </section>
 
-    <!-- What we install: the six systems with their equipment photos, full width -->
-    <section class="band container" aria-labelledby="install-title">
-      <div class="band__head">
-        <h2 id="install-title" class="t-h2 block__title" data-split>What we install.</h2>
-        <p class="block__intro" data-reveal>
-          Six systems, from one team. <a href="/services/">See all services.</a>
-        </p>
-      </div>
-      <ul role="list" class="systems">
-        {services.map((s, i) => {
-          const photo = servicePhotos[s.slug];
-          const wide = i < 2;
-          return (
-            <li class:list={['system', { 'system--wide': wide }]} data-reveal style={`--reveal-delay: ${i * 50}ms`}>
-              <a class="system__link" href={`/services/${s.slug}/`}>
-                {photo && (
-                  <span class="system__media">
-                    {/* The visible name says what it is; the photo is the service page's interim product shot */}
-                    <Image
-                      src={photo.src}
-                      alt=""
-                      widths={[480, 800, 1200]}
-                      sizes={wide ? '(min-width: 1024px) 50vw, 100vw' : '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw'}
-                      loading="lazy"
-                    />
-                  </span>
-                )}
-                <h3 class="t-h3 system__name">{s.name}</h3>
-              </a>
-              <p class="system__short">{s.short}</p>
+    <!-- What we install: the six systems, one drawn device each, on a white band across the whole page
+         (the service pages' product sheet; owner 2026-11-06: generic devices, no logos, nothing floating) -->
+    <section class="sheet" aria-labelledby="install-title">
+      <div class="band container">
+        <div class="band__head">
+          <h2 id="install-title" class="t-h2 block__title" data-split>What we install.</h2>
+          <p class="block__intro" data-reveal>
+            Six systems, from one team. <a href="/services/">See all services.</a>
+          </p>
+        </div>
+        <ul role="list" class="systems">
+          {systems.map((s, i) => (
+            <li class="system" data-reveal style={`--reveal-delay: ${i * 60}ms`}>
+              {/* The name says what the system is; the drawing is one device from it, so it is decorative here */}
+              {s.svg && <span class="system__art" aria-hidden="true" set:html={s.svg} />}
+              <div class="system__text">
+                <h3 class="t-h3 system__name"><a class="system__link" href={`/services/${s.slug}/`}>{s.name}</a></h3>
+                <p class="system__short">{s.short}</p>
+              </div>
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+      </div>
     </section>
 
     <!-- Where we work: the headquarters and the counts live here, above the real lists -->
@@ -327,38 +333,48 @@ const SHOW_PLACEHOLDERS = false;
     color: var(--text);
   }
 
-  /* ── What we install: a photo, the name, one line each ── */
+  /* ── What we install: a white band across the page (the service pages' product sheet), one drawn device,
+     the name and one line per system. Phones: the drawing beside the text, so the six systems take a screen
+     or two; from 640px the drawing sits above the text, two across, three across from 1024px. ── */
+  .sheet {
+    background: var(--white);
+    padding-block: var(--space-block);
+  }
+
   .systems {
     display: grid;
-    gap: var(--sp-7) var(--col-gap);
+    gap: var(--sp-6) var(--col-gap);
   }
 
   .system {
     display: grid;
-    gap: var(--sp-3);
-    align-content: start;
+    grid-template-columns: minmax(7rem, 38%) minmax(0, 1fr);
+    gap: var(--sp-4);
+    align-items: center;
+    min-width: 0;
+  }
+
+  /* Every drawing shares one 240 × 180 frame; it never grows past its drawn size */
+  .system__art {
+    display: block;
+    width: 100%;
+    max-width: 240px;
+  }
+
+  .system__art :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .system__text {
+    display: grid;
+    gap: var(--sp-2);
     min-width: 0;
   }
 
   .system__link {
-    display: grid;
-    gap: var(--sp-3);
-    min-width: 0;
-  }
-
-  .system__media {
-    display: block;
-    overflow: hidden;
-    border-radius: var(--radius);
-    background: var(--paper-sunken);
-  }
-
-  .system__media img {
-    display: block;
-    width: 100%;
-    aspect-ratio: 3 / 2;
-    object-fit: cover;
-    transition: transform var(--dur-slow) var(--ease-out);
+    text-decoration: none;
   }
 
   .system__short {
@@ -502,11 +518,7 @@ const SHOW_PLACEHOLDERS = false;
       color: var(--signal);
     }
 
-    .system__link:hover .system__media img {
-      transform: scale(1.04);
-    }
-
-    .system__link:hover .system__name {
+    .system__link:hover {
       text-decoration: underline;
       text-underline-offset: 4px;
       text-decoration-thickness: 1px;
@@ -516,6 +528,14 @@ const SHOW_PLACEHOLDERS = false;
   @media (min-width: 640px) {
     .systems {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--sp-7) var(--col-gap);
+    }
+
+    /* The drawing above the text */
+    .system {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--sp-3);
+      align-items: start;
     }
 
     .steps {
@@ -562,21 +582,9 @@ const SHOW_PLACEHOLDERS = false;
       gap: var(--sp-7);
     }
 
-    /* The two biggest systems wide, the other four across */
+    /* Six systems, three across, two rows */
     .systems {
-      grid-template-columns: repeat(12, minmax(0, 1fr));
-    }
-
-    .system {
-      grid-column: span 3;
-    }
-
-    .system--wide {
-      grid-column: span 6;
-    }
-
-    .system--wide .system__media img {
-      aspect-ratio: 16 / 9;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .steps {

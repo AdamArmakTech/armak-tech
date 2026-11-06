@@ -32,6 +32,29 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **Merge round — 2026-11-06 evening.** The owner answered "Yes, merge both": `claude/about-page-1c7980` (f9d557f) and
+  `claude/site-reveals-9929c9` (a77120b) are merged into intent-redesign (b9459cf, d1486f0; no conflicts, no file
+  touched by two sides). `claude/demo-motion-eec65d` (47d9005) is still unmerged, waiting on his word. Then, in this
+  folder:
+  - About page: the six systems no longer show the six interim stock photos (the owner called that look "random" on
+    the service pages the same afternoon); each carries one of the drawn devices from its service page's sheet, on a
+    white band across the page (the product-sheet pattern): keystone jack, access point, dome camera, card reader,
+    desk phone, touch panel (the first two are not the sheet's first item, a patch panel and a switch, because those
+    turn into dashes at phone size). Phones: drawing beside the text, one system per row; 640px: two across, drawing
+    above; 1024px: three across. The drawing helper moved to `src/lib/drawings.ts` (shared with ProductBand.astro).
+    `servicePhotos` and `PhotoBand.astro` now have no user at all; deleting them still needs the owner's yes.
+  - The Wi-Fi chart on the About page (CablePlant.astro), after the owner's message with a screenshot of it: "this
+    whole thing is very sloppy and ugly and it doesnt feel intentional or clever at all". The bar-and-boxes chart is
+    replaced by a section drawing: one blue cable (`--cable-blue`) across 2013 to this year above a ceiling line, an
+    access point hanging from it at each Wi-Fi release (2013, 2019, 2021, 2024), the three replaced ones faded in
+    `--cable-old`, Wi-Fi 7 in ink; columns proportional to the years from 640px, equal on phones, the year written
+    under each device; the cable draws itself on first view, then each drop and device in year order (reduced
+    motion: the finished drawing from the start). Every date, figure, sentence and footnote is unchanged and still
+    comes from content.ts (BICSI 10 years, Wi-Fi Alliance dates, Cisco 5 / Axis 6 years, CommScope and Panduit
+    25-year warranties).
+  - Checks: astro check 0 errors (90 files); build 19 pages; 19 pages measured in the browser at 320, 360 and 390 px:
+    document width = viewport, no element scrolls sideways, nothing past the right edge. Screenshots at 375 and 1440
+    in `ai/exports/merge-2026-11-06.pdf` (sent to the owner's phone). Nothing pushed; the owner has not said "publish".
 - **The owner's phone round — 2026-11-06 afternoon.** Seven messages from his phone, each a decision (all quoted in
   DESIGN.md, "Owner decisions 2026-11-06, afternoon"). Done in this session:
   - No sideways scrolling on phones ("people dont do that and its weird... gracefully stack"): a sweep of all 21

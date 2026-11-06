@@ -6,12 +6,13 @@
  *
  * The sheet is a full-width white band, not another rounded box under the hero's scope sheet (anti-slop
  * pass 2026-11-06: three stacked white boxes on a phone read as a kit). The drawings are the SVG files in
- * src/assets/products/ inlined as text, so they stay crisp at any size and keep their own role="img" and
- * <title>. Structured cabling also shows the compact live cable-test card as a paper panel on the band:
+ * src/assets/products/ inlined as text (src/lib/drawings.ts, shared with the About page), so they stay crisp
+ * at any size and keep their own role="img" and <title>. Structured cabling also shows the compact live cable-test card as a paper panel on the band:
  * below the drawings on phones, the last 4 of 12 columns from 1024px, never floating over anything.
  */
 import CableTest from '../ui/CableTest.astro';
 import type { ServiceProduct } from '../../data/services-detail';
+import { productDrawing } from '../../lib/drawings';
 
 interface Props {
   products: ServiceProduct[];
@@ -20,45 +21,14 @@ interface Props {
 
 const { products, testCard = false } = Astro.props;
 
-// Every drawing as text, keyed by path. A glob rather than static imports, so a drawing that is
-// not there yet leaves a gap and a build warning instead of breaking the whole site.
-const drawings = import.meta.glob<string>('../../assets/products/*.svg', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-});
-
-/** Prefix every id (and each url(#…) / href="#…" that uses it): four inline drawings share one page. */
-function scopeIds(svg: string, prefix: string): string {
-  const ids = [...svg.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]);
-  let out = svg;
-  for (const id of ids) {
-    const esc = id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    out = out
-      .replace(new RegExp(`\\sid="${esc}"`, 'g'), ` id="${prefix}-${id}"`)
-      .replace(new RegExp(`url\\(#${esc}\\)`, 'g'), `url(#${prefix}-${id})`)
-      .replace(new RegExp(`href="#${esc}"`, 'g'), `href="#${prefix}-${id}"`);
-  }
-  return out;
-}
-
-/** Drop the XML prolog and comments (not valid inside an HTML page), then scope the ids. */
-function inlineSvg(raw: string, prefix: string): string {
-  const clean = raw
-    .replace(/<\?xml[^>]*\?>/g, '')
-    .replace(/<!DOCTYPE[^>]*>/gi, '')
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .trim();
-  return scopeIds(clean, prefix);
-}
-
+// A drawing that is not there yet leaves a gap and a build warning instead of breaking the whole site.
 const items = products.flatMap((p) => {
-  const key = Object.keys(drawings).find((k) => k.endsWith(`/${p.file}.svg`));
-  if (!key) {
+  const svg = productDrawing(p.file);
+  if (!svg) {
     console.warn(`[ProductBand] no drawing at src/assets/products/${p.file}.svg; "${p.caption}" left off the sheet`);
     return [];
   }
-  return [{ ...p, svg: inlineSvg(drawings[key], p.file) }];
+  return [{ ...p, svg }];
 });
 
 // The sheet rises in first; the drawings then appear on it one after another.
