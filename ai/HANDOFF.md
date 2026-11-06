@@ -50,7 +50,8 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
 ## Owner actions still open (only Aram/Armak can do these)
 - ~~Vercel → Settings → Domains → add `www.armak.tech` as a redirect to `armak.tech`.~~ Done: www.armak.tech
   redirects to armak.tech (308), checked 2026-11-05 by the audit session and again with curl.
-- Review/approve the draft privacy page (/privacy/). Owner said "not yet" on 2026-11-05; that day it gained the
+- ~~Review/approve the draft privacy page (/privacy/).~~ APPROVED by the owner on 2026-11-05 (evening) as it reads at
+  commit ad9466b. How it got there: he said "not yet" earlier that day, when it gained the
   hCaptcha, Proofpoint and Microsoft 365 lines (see PROJECT_STATE "Owner answers 2026-11-05"); a PDF of it went to
   his phone. Owner 2026-11-05: form emails are kept as business records and NOT deleted on request (he first said
   yes, then "keep them"), so "ask us to delete it" came off /privacy/; copies and corrections can still be asked for.

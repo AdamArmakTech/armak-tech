@@ -22,13 +22,14 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
 - Email: the sales@ inbox is Microsoft 365 bought through GoDaddy. The domain's MX records point to Proofpoint's
   filter (`mx1/2/3-usg2.ppe-hosted.com`, nslookup 2026-11-05), so incoming mail passes through Proofpoint first.
 - /styleguide/ comes off the live site (dev server only). Street address: no, city only. Vercel Speed Insights: no.
-  Lawyer review of /terms/ and vendor agreements: dropped from the list. Privacy page: owner has NOT read it yet.
+  Lawyer review of /terms/ and vendor agreements: dropped from the list. Privacy page: approved that evening as it
+  reads at ad9466b (after three rounds of changes, see the top "Done" bullet).
 - Batch 6: keep the live map (F35); keep GSAP and Lenis (F28); `?start=` (F11) was already gone, nothing to do.
 - Three small fixes approved: readable dimmed rows in the homepage site-walk demo, a 15-second limit on the form's
   Send, an "Open-source notices" page.
 - Still for the owner: (1) check the CSLB licence, bond, insurance and BICSI status and say which claims may go
   back; (2) turn on hCaptcha for the form in the Web3Forms dashboard (app.web3forms.com) so the check is enforced
-  on their side too (the site shows the box either way); (3) read /privacy/ and say yes or what to change.
+  on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
 - **Owner answers applied — 2026-11-05 (branch `intent-redesign`, commits 59c7773, 084e0dc, 7c3a448, dc768b8, NOT pushed).**
@@ -48,8 +49,8 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   forwarded, noscript line with the phone); 15-second send limit via `AbortSignal.timeout` (older browsers send
   without a limit); privacy page names hCaptcha, the Proofpoint filter and the Microsoft 365 mailbox (GoDaddy),
   says form emails are kept as business records, states the one browser-storage exception, effective 5 November
-  2026 (owner has NOT read it; a PDF went to his phone from `ai/exports/privacy-page-2026-11-05.pdf`, folder
-  ignored by git). dc768b8: `/open-source/` notices page (copyright lines and licence texts imported from
+  2026 (APPROVED by the owner that evening as it reads at ad9466b, after the changes noted below; PDFs went to his
+  phone from `ai/exports/privacy-page-2026-11-05.pdf`, folder ignored by git). dc768b8: `/open-source/` notices page (copyright lines and licence texts imported from
   node_modules with `?raw`; the GSAP entry says its licence is not open source), footer link; AssessDemo rows the
   demo has not reached are set in steel (5.9:1 on paper) instead of 55% opacity (2.3:1). Checks: astro check 0
   errors; build 18 pages (styleguide: "file not created, response body was empty"); every page compared with a
