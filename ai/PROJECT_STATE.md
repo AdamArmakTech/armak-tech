@@ -8,6 +8,25 @@
 - Plan / design rationale: `ai/plans/redesign.md` ("Precision Infrastructure", light editorial, Astro).
 
 ## Done
+- **Code cleanup, Batches 3 and 4 — 2026-10-31 and 2026-11-05 (branch `intent-redesign`, commits 06ca766 and 2267b24, NOT pushed).**
+  Batch 3 (F38): the two unused old logo files are gone; `vercel.json` redirects their old addresses to `/logo.png`
+  (the redirect only runs on Vercel, so check it after the next publish). Batch 4, owner answered two questions
+  on 2026-11-05 (red buttons land on the form: yes; package updates: yes): `seo.ts` reads the hours with
+  `parseHours()` and exports `businessProvider` for the service pages; `JsonLd.astro` replaces the four hand-written
+  structured-data lines; `mountOpenStatus()` in `hours.ts` is the one "Open now" timer (header + hero);
+  `prefersReducedMotion()` in `demo.ts` replaces 16 hand-written checks (the four process demos decide once per
+  demo so a mid-page setting change never leaves one blank); `CTA_LABEL` + `contactHref()` on every button, and
+  the header, footer, phone bar, services index, About and style-guide buttons now open `/contact/#form` like the
+  rest (plain "Contact" links unchanged); `site.supportHours/supportScope`, service page titles in
+  `services-detail.ts`, About uses `site.hq.city`; stable ids in CableTest/InstallDemo; form phone link from
+  `site.phoneHref`; map colours from the CSS tokens; packages updated within their majors (astro 7.4.7,
+  maplibre-gl 6.16.0, @lucide/astro 1.69.0, @astrojs/check 0.9.12, gsap 3.15.1, lenis 1.3.27), sharp listed as a
+  dev dependency, `.env.example` added (name only). Not needed after all: F23 (one print helper left since
+  1b3fd7b) and the contact@ part of F45 (already gone). Run as 8 Sonnet workers in two groups + Opus proofreader
+  (go; its 7 notes applied). Checks: astro check 0 errors, build 18 pages, every page compared before and after
+  (same words, same JSON-LD, only the approved links changed), browser checks incl. the reduced-motion setting,
+  0 console errors. Left from the review: Batch 6 (owner decisions: live map vs drawn map, GSAP/Lenis,
+  `/styleguide/` public or not, the `?start=` option) and Batch 5 (with the redesign).
 - **Code cleanup, Batches 1 and 2 — 2026-10-31 (branch `intent-redesign`, commits 216ab1a and cebf891, NOT pushed).**
   From the plan in `ai/CODE_REVIEW_2026-10-31.md`; owner approved each path list. Batch 1: dead code removed
   (F1-F7, F9, F10, F31, F32), no visible change. Batch 2: `legacy/` (29 files), tracked `.vite` cache and
