@@ -47,11 +47,17 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
 ## Owner actions still open (only Aram/Armak can do these)
 - ~~Vercel → Settings → Domains → add `www.armak.tech` as a redirect to `armak.tech`.~~ Done: www.armak.tech
   redirects to armak.tech (308), checked 2026-11-05 by the audit session and again with curl.
-- Review/approve the draft privacy page (/privacy/).
-- Answer: 946+ vs 1,000+ projects; 24/7 for everyone or contracted clients only; keep Hikvision (FCC Covered List)
-  and Cat 8 as headline offerings?; which industries are really served; confirm BICSI, licensed/bonded/insured.
-- Supply: street address + ZIP, license number, certifications, 3 real projects, testimonials, team, real photos,
-  vector logo, social profiles.
+- Review/approve the draft privacy page (/privacy/). Owner said "not yet" on 2026-11-05; that day it gained the
+  hCaptcha, Proofpoint and Microsoft 365 lines (see PROJECT_STATE "Owner answers 2026-11-05").
+- Check the CSLB licence, bond, insurance and BICSI status (owner NOT SURE on 2026-11-05, so those claims are off
+  the site until he confirms them; when "Licensed" returns, the CSLB number goes with it).
+- Turn on hCaptcha for the form in the Web3Forms dashboard (app.web3forms.com): the site shows the box, Web3Forms
+  only requires it once that setting is on.
+- Answered 2026-11-05: keep 946+; Hikvision removed; all five building types are real work; clients get the test
+  reports; every job gets a written proposal after a site walk; 24/7 is for contracted clients (2026-10-30).
+  Still open: Cat 8 as a headline offering?
+- Supply: license number (if any), certifications, 3 real projects, testimonials, team, real photos, vector logo,
+  social profiles. Street address: owner said no, city only (2026-11-05).
 
 ## The next job he asked for (not started — he stopped it to secure context first)
 Run the "vibe-coded site safety" checklist with **25 agents**: 4 groups × (4 worker agents + 1 group manager) = 20,

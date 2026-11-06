@@ -7,6 +7,29 @@
   is also still in the dashboard for one-click rollback.
 - Plan / design rationale: `ai/plans/redesign.md` ("Precision Infrastructure", light editorial, Astro).
 
+## Owner answers 2026-11-05 (audit questions 1-21 and the Batch 6 decisions)
+Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The work they trigger runs on branch
+`intent-redesign` (not pushed); see the top "Done" bullet once it lands.
+- Licence (CSLB), bonded, insured, BICSI-certified: NOT SURE (all four). "Licensed · Bonded · Insured" and
+  "BICSI-certified technicians" come off the site until the owner confirms them. When "Licensed" returns, the CSLB
+  number must be shown with it.
+- Keep "946+ projects delivered": yes. All five building types (healthcare, education, apartments, public sector,
+  industrial) are real past work: yes. Clients get the cable test reports: yes. Every job is priced in a written
+  proposal after a site walk: yes.
+- Brands: keep all except Hikvision (off the partner strip; the logo file stays until the owner approves deleting it).
+- Contact form: phone stays required; add the free hCaptcha checkbox (not Web3Forms Pro). Web3Forms is on the free
+  plan and someone reads the account email. Form emails are kept as business records (no deletion period).
+- Email: the sales@ inbox is Microsoft 365 bought through GoDaddy. The domain's MX records point to Proofpoint's
+  filter (`mx1/2/3-usg2.ppe-hosted.com`, nslookup 2026-11-05), so incoming mail passes through Proofpoint first.
+- /styleguide/ comes off the live site (dev server only). Street address: no, city only. Vercel Speed Insights: no.
+  Lawyer review of /terms/ and vendor agreements: dropped from the list. Privacy page: owner has NOT read it yet.
+- Batch 6: keep the live map (F35); keep GSAP and Lenis (F28); `?start=` (F11) was already gone, nothing to do.
+- Three small fixes approved: readable dimmed rows in the homepage site-walk demo, a 15-second limit on the form's
+  Send, an "Open-source notices" page.
+- Still for the owner: (1) check the CSLB licence, bond, insurance and BICSI status and say which claims may go
+  back; (2) turn on hCaptcha for the form in the Web3Forms dashboard (app.web3forms.com) so the check is enforced
+  on their side too (the site shows the box either way); (3) read /privacy/ and say yes or what to change.
+
 ## Done
 - **Code cleanup, Batches 3 and 4 — 2026-10-31 and 2026-11-05 (branch `intent-redesign`, commits 06ca766 and 2267b24, NOT pushed).**
   Batch 3 (F38): the two unused old logo files are gone; `vercel.json` redirects their old addresses to `/logo.png`
@@ -113,8 +136,8 @@
 
 ## Still to do (see ai/plans/site-audit.md for exact fixes)
 - [x] MUST 1 — done 2026-10-30: www.armak.tech added to the Vercel project as a 308 permanent redirect to armak.tech (owner said yes in chat); certificate issued, https://www.armak.tech/ now lands on https://armak.tech/ (HTTP 200).
-- [ ] License number on the site (CSLB). Parked by owner 2026-10-30. Public CSLB search for "Armak" found no license; owner to say which name it is under, or confirm none. Site still says "Licensed · Bonded · Insured".
-- [ ] REVISIT (owner, 2026-10-30): BICSI-certified techs and bonded/insured kept as "yes" for now; owner will supply details.
+- [ ] License number on the site (CSLB). Owner "not sure" 2026-11-05 (parked 2026-10-30; a public CSLB search for "Armak" found no license). "Licensed · Bonded · Insured" is off the site since 2026-11-05 until confirmed.
+- [ ] BICSI-certified techs and bonded/insured: owner "not sure" 2026-11-05; the claims are off the site until he confirms them.
 - [x] MUST 2 — confirmed by owner 2026-10-30: 24/7 support is for contracted clients only (matches the site).
 - [ ] SHOULD (left): real /projects/ redirect in vercel.json; Hero quick links (add Services)
 - [ ] Finish speed pass (measure LCP/bytes, font subsets, cache headers) and verify nothing changed visually
@@ -124,29 +147,29 @@
 "We engineer with the future in mind" — see the user's memory note; needs real examples from Armak first.
 
 ## Needed from Armak (blocking some hidden sections)
-- Street address + ZIP, social profiles (for Google business data)
+- Social profiles (for Google business data). Street address: owner said no, city only (2026-11-05).
 - License number + classification (`site.license` in `src/data/site.ts`) → unhides the license row on About
-- Certifications list (BICSI is claimed on the old site — confirm)
+- Certifications list (BICSI: owner not sure 2026-11-05; the claim is hidden until confirmed)
 - 3 real projects with scope numbers (`projects` in `src/data/content.ts`, `placeholder: false`) → unhides Projects
 - 2–3 testimonials with permission, client-logo permissions
-- Which industries they actually serve, milestones since 1998, team names/roles/photos
+- Milestones since 1998, team names/roles/photos (industries answered 2026-11-05: all five building types are real work)
 - Real job-site photos (all photos are interim stock; never caption them as Armak work)
 - Vector (SVG) logo if one exists
 - Confirm service-page capabilities "Racks, patching & cable management" and "Firewalls / site-to-site VPN";
   TIA-606 labeling; cable tester brand; any voice/UC vendor partners
 
 ## Owner questions from the 2026-10-29 safety run (yes/no where possible)
-1. CSLB license number? California generally requires it in advertising; `site.license` is still null.
-2. Are the technicians BICSI-certified today? Is the business licensed, bonded and insured?
-3. Healthcare, education, multifamily, public sector, industrial: real past work, or only "planned for"?
+1. CSLB license number? California generally requires it in advertising; `site.license` is still null. → 2026-11-05: not sure; claim hidden.
+2. Are the technicians BICSI-certified today? Is the business licensed, bonded and insured? → 2026-11-05: not sure on all four; claims hidden.
+3. Healthcare, education, multifamily, public sector, industrial: real past work, or only "planned for"? → 2026-11-05: real past work in all five.
 4. Card/mobile access, conference rooms, signage, distributed audio: offered?
-5. Show 946+ projects, 1,000+ (old site), or an exact count?
-6. Do clients get the cable test reports? Is pricing always a written proposal after a site walk?
-7. All 14 partner brands really installed/supported? (Hikvision is restricted for some government work.)
-8. Keep phone as a required form field?
-9. Web3Forms: restrict the access key to armak.tech in their dashboard; how long do they keep submissions?
-10. Lawyer: review terms "as is"/liability wording; venue clause yes/no and which county.
-11. Which email provider hosts the sales inbox (it handles form data too)?
+5. Show 946+ projects, 1,000+ (old site), or an exact count? → 2026-11-05: keep 946+.
+6. Do clients get the cable test reports? Is pricing always a written proposal after a site walk? → 2026-11-05: yes and yes.
+7. All 14 partner brands really installed/supported? (Hikvision is restricted for some government work.) → 2026-11-05: all except Hikvision.
+8. Keep phone as a required form field? → 2026-11-05: yes.
+9. Web3Forms: restrict the access key to armak.tech in their dashboard; how long do they keep submissions? → 2026-11-05: free plan (key restriction is a Pro feature; owner chose the hCaptcha box instead); retention still unknown.
+10. Lawyer: review terms "as is"/liability wording; venue clause yes/no and which county. → 2026-11-05: owner dropped this item.
+11. Which email provider hosts the sales inbox (it handles form data too)? → 2026-11-05: Microsoft 365 via GoDaddy, Proofpoint filter in front.
 
 ## Backlog
 - [ ] Automated verification/linting beyond `astro check`
