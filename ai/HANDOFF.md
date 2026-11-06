@@ -21,6 +21,9 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
   Never submit the contact form in testing — it emails sales@armak.tech.
 - **Dev servers** (`.claude/launch.json`): `armak-dev` (port 4321) and `armak-preview` (4322, production build).
   Node ≥ 22.12 required (Astro 7). `npx astro check` → 0 errors and `npm run build` must pass before any push.
+  The app starts these servers from `C:\Users\Aram\Documents\all-sites\armak-tech` (the link to E:) while Node
+  resolves files to `E:\`, so anything in Astro that compares the two paths breaks (an `injectRoute` dev-only page
+  crashed `astro dev` on 2026-11-05; the style guide now answers 204 in production instead, see its frontmatter).
 
 ## What the owner (Aram) wants — standing instructions
 1. **Plain language.** He isn't a developer. No jargon ("branch", "commit", "merge", "CSP") without saying what it means.
@@ -48,7 +51,9 @@ Then read `ai/PROJECT_STATE.md` (status + to-dos), `ai/plans/site-audit.md` (aud
 - ~~Vercel → Settings → Domains → add `www.armak.tech` as a redirect to `armak.tech`.~~ Done: www.armak.tech
   redirects to armak.tech (308), checked 2026-11-05 by the audit session and again with curl.
 - Review/approve the draft privacy page (/privacy/). Owner said "not yet" on 2026-11-05; that day it gained the
-  hCaptcha, Proofpoint and Microsoft 365 lines (see PROJECT_STATE "Owner answers 2026-11-05").
+  hCaptcha, Proofpoint and Microsoft 365 lines (see PROJECT_STATE "Owner answers 2026-11-05"); a PDF of it went to
+  his phone. One question is open: does "ask us to delete it" still stand now that form emails are kept as
+  business records? (yes/no)
 - Check the CSLB licence, bond, insurance and BICSI status (owner NOT SURE on 2026-11-05, so those claims are off
   the site until he confirms them; when "Licensed" returns, the CSLB number goes with it).
 - Turn on hCaptcha for the form in the Web3Forms dashboard (app.web3forms.com): the site shows the box, Web3Forms

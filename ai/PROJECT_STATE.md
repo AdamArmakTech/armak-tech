@@ -8,8 +8,8 @@
 - Plan / design rationale: `ai/plans/redesign.md` ("Precision Infrastructure", light editorial, Astro).
 
 ## Owner answers 2026-11-05 (audit questions 1-21 and the Batch 6 decisions)
-Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The work they trigger runs on branch
-`intent-redesign` (not pushed); see the top "Done" bullet once it lands.
+Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The work landed the same day on branch
+`intent-redesign` (commits 59c7773, 084e0dc, 7c3a448, dc768b8, NOT pushed); see the top "Done" bullet.
 - Licence (CSLB), bonded, insured, BICSI-certified: NOT SURE (all four). "Licensed · Bonded · Insured" and
   "BICSI-certified technicians" come off the site until the owner confirms them. When "Licensed" returns, the CSLB
   number must be shown with it.
@@ -31,6 +31,37 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) read /privacy/ and say yes or what to change.
 
 ## Done
+- **Owner answers applied — 2026-11-05 (branch `intent-redesign`, commits 59c7773, 084e0dc, 7c3a448, dc768b8, NOT pushed).**
+  Run as 5 Sonnet workers (own files each) + Opus proofreader (verdict FIX: one "must", applied; the "should" notes
+  applied too). 59c7773: "Licensed · Bonded · Insured" and "BICSI-certified technicians" are off the homepage, About
+  and Services (owner not sure); the three-item list now reads "A written plan and price for every job · Cable test
+  reports delivered to you · 24/7 support for contracted clients"; About heading "Written plans, test reports and
+  support."; Hikvision off the partner strip (13 logos, the last one spans the leftover cells;
+  `src/assets/partners/hikvision.png` is still on disk, unused, until the owner approves deleting it); a service page
+  with four logos shows a 2 x 2 block on tablets. 084e0dc: `/styleguide/` answers "204 No Content" in a production
+  build, so no file is written (the dev server still serves it); sitemap filter kept, robots line removed; the CSP
+  allows hcaptcha.com and *.hcaptcha.com (script, frame, style, connect). An `injectRoute` dev-only route was tried
+  first and crashed `astro dev`: the app starts servers from `C:\Users\Aram\Documents\all-sites\armak-tech` (the
+  link) while Node resolves files to `E:\`, so Astro built a cross-drive path. 7c3a448: contact form hCaptcha
+  checkbox (Web3Forms' published free-plan site key, loaded only when step 2 shows, compact size when the box has
+  under 303px of room, refuses to send until ticked, resets after a failed send, `g-recaptcha-response` not
+  forwarded, noscript line with the phone); 15-second send limit via `AbortSignal.timeout` (older browsers send
+  without a limit); privacy page names hCaptcha, the Proofpoint filter and the Microsoft 365 mailbox (GoDaddy),
+  says form emails are kept as business records, states the one browser-storage exception, effective 5 November
+  2026 (owner has NOT read it; a PDF went to his phone from `ai/exports/privacy-page-2026-11-05.pdf`, folder
+  ignored by git). dc768b8: `/open-source/` notices page (copyright lines and licence texts imported from
+  node_modules with `?raw`; the GSAP entry says its licence is not open source), footer link; AssessDemo rows the
+  demo has not reached are set in steel (5.9:1 on paper) instead of 55% opacity (2.3:1). Checks: astro check 0
+  errors; build 18 pages (styleguide: "file not created, response body was empty"); every page compared with a
+  clean build of f8e75fa (only the intended words, links and the new page differ); production preview in the
+  browser: hCaptcha renders with no console or CSP errors at desktop and 320px, the empty-box guard blocks sending
+  (tested with the form pointed at a dead address; no request left the page), the dev server serves /styleguide/,
+  the preview returns the 404 page for it. Not testable by Claude: a real send with a ticked box (Claude may not
+  complete captchas) and the 15-second timeout path; both reviewed in code by the proofreader. Open: (1) the
+  proofreader asks whether "ask us to delete it" on /privacy/ still stands now that form emails are kept as
+  business records (owner yes/no); (2) the owner must turn on hCaptcha in the Web3Forms dashboard so the check is
+  enforced on their side; (3) hCaptcha shows "localhost detected" on the local preview only; tick the box once on
+  the Vercel preview URL after the next publish.
 - **Code cleanup, Batches 3 and 4 — 2026-10-31 and 2026-11-05 (branch `intent-redesign`, commits 06ca766 and 2267b24, NOT pushed).**
   Batch 3 (F38): the two unused old logo files are gone; `vercel.json` redirects their old addresses to `/logo.png`
   (the redirect only runs on Vercel, so check it after the next publish). Batch 4, owner answered two questions
@@ -49,7 +80,7 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   (go; its 7 notes applied). Checks: astro check 0 errors, build 18 pages, every page compared before and after
   (same words, same JSON-LD, only the approved links changed), browser checks incl. the reduced-motion setting,
   0 console errors. Left from the review: Batch 6 (owner decisions: live map vs drawn map, GSAP/Lenis,
-  `/styleguide/` public or not, the `?start=` option) and Batch 5 (with the redesign).
+  `/styleguide/` public or not, the `?start=` option; all decided 2026-11-05, see the bullet above) and Batch 5 (with the redesign).
 - **Code cleanup, Batches 1 and 2 — 2026-10-31 (branch `intent-redesign`, commits 216ab1a and cebf891, NOT pushed).**
   From the plan in `ai/CODE_REVIEW_2026-10-31.md`; owner approved each path list. Batch 1: dead code removed
   (F1-F7, F9, F10, F31, F32), no visible change. Batch 2: `legacy/` (29 files), tracked `.vite` cache and
