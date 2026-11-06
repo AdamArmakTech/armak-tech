@@ -109,8 +109,24 @@ const titleLower = title.charAt(0).toLowerCase() + title.slice(1);
     transform: scale(0.97);
   }
 
+  /* The arrow winds back a quarter turn while pressed, then springs forward as the demo restarts */
+  .demo__replay :global(svg) {
+    transition: transform 420ms var(--ease-out);
+  }
+
+  .demo__replay:active :global(svg) {
+    transform: rotate(-90deg);
+    transition-duration: 120ms;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .demo__replay:active {
+      transform: none;
+    }
+
+    .demo__replay :global(svg),
+    .demo__replay:active :global(svg) {
+      transition: none;
       transform: none;
     }
   }

@@ -57,7 +57,7 @@ const cables = [
 ];
 ---
 
-<div class="cc">
+<div class="cc" data-cc>
   <table class="cc__table">
     <caption class="visually-hidden">Cat 6, Cat 6A, OM4 multimode fiber and OS2 single-mode fiber compared</caption>
     <thead>
@@ -71,8 +71,8 @@ const cables = [
       </tr>
     </thead>
     <tbody>
-      {cables.map((c) => (
-        <tr>
+      {cables.map((c, i) => (
+        <tr style={`--i: ${i}`}>
           <th scope="row" class="cc__name"><a href={`/glossary/#${c.slug}`}>{c.name}</a></th>
           <td data-label="Top speed at 100 m">
             <span class="cc__val">{c.speed}</span>
@@ -106,11 +106,47 @@ const cables = [
   </p>
 </div>
 
+<script>
+  // The four cables arrive one after another the first time the table is seen (armed here only, so
+  // without JS or under reduced motion the table is simply there).
+  import { onFirstView, prefersReducedMotion } from '../../scripts/demo';
+
+  document.querySelectorAll<HTMLElement>('[data-cc]').forEach((root) => {
+    if (prefersReducedMotion()) return;
+    root.classList.add('is-armed');
+    onFirstView(root, () => root.classList.add('is-shown'), 0.2);
+  });
+</script>
+
 <style>
   .cc {
     display: grid;
     gap: var(--sp-4);
     min-width: 0;
+  }
+
+  /* Arrival, once: each cable's row 80 ms after the one before (cards rise on phones; rows only fade in
+     the desktop table, where a transform on a table row is not reliable) */
+  .cc.is-armed tbody tr {
+    opacity: 0;
+  }
+
+  .cc.is-armed.is-shown tbody tr {
+    opacity: 1;
+    transition: opacity 520ms ease calc(var(--i) * 80ms);
+  }
+
+  @media (max-width: 899px) {
+    .cc.is-armed tbody tr {
+      transform: translate3d(0, 12px, 0);
+    }
+
+    .cc.is-armed.is-shown tbody tr {
+      transform: none;
+      transition:
+        opacity 520ms ease calc(var(--i) * 80ms),
+        transform 760ms var(--ease-out) calc(var(--i) * 80ms);
+    }
   }
 
   /* Desktop: a white sheet with row lines; phone: each cable is its own white card */

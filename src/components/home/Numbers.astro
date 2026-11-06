@@ -1,4 +1,10 @@
 ---
+/**
+ * "Armak in numbers": four figures. The numbers count up once on first view (motion.ts, [data-count]);
+ * this file adds the rest of the arrival: each figure rises in turn, its unit and note are written in as
+ * it counts, and the "+" lands as the count settles. Armed only by the script, so without JS or under
+ * reduced motion everything is simply there.
+ */
 import Stat from '../ui/Stat.astro';
 import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../data/site';
 ---
@@ -11,22 +17,33 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
       </h2>
     </div>
 
-    <div class="numbers__grid">
-      <div>
+    <div class="numbers__grid" data-numbers>
+      <div class="numbers__cell" style="--i: 0">
         <Stat value={yearsInBusiness} label="Years in business" />
       </div>
-      <div>
+      <div class="numbers__cell" style="--i: 1">
         <Stat value={site.projectsDelivered} suffix="+" label="Projects delivered" />
       </div>
-      <div>
+      <div class="numbers__cell" style="--i: 2">
         <Stat value={site.supportHours} label="Support" detail={`For ${site.supportScope}.`} />
       </div>
-      <div>
+      <div class="numbers__cell" style="--i: 3">
         <Stat value={serviceArea.length} label="Cities served" detail={`Across ${counties.length} counties.`} />
       </div>
     </div>
   </div>
 </section>
+
+<script>
+  import { onFirstView, prefersReducedMotion } from '../../scripts/demo';
+
+  // The same moment motion.ts starts the counts (60% of the figures on screen), the words arrive with them
+  document.querySelectorAll<HTMLElement>('[data-numbers]').forEach((grid) => {
+    if (prefersReducedMotion()) return;
+    grid.classList.add('is-armed');
+    onFirstView(grid, () => grid.classList.add('is-live'), 0.6);
+  });
+</script>
 
 <style>
   .numbers__head {
@@ -44,6 +61,10 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 3rem var(--col-gap);
+  }
+
+  .numbers__cell {
+    min-width: 0;
   }
 
   /* No rule above each stat; caption in the text face, sentence case */
@@ -64,6 +85,47 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
   /* Keep the big mono numerals inside narrow phone columns */
   .numbers__grid :global(.stat__value) {
     font-size: clamp(2.5rem, 1.6rem + 4.2vw, 6rem);
+  }
+
+  /* ── Arrival (armed by the script) ──
+     Each figure rises in turn (90 ms apart); its unit is written in from the left as it counts, the note
+     just after; the "+" lands as the 1.6 s count comes to rest. Transform, opacity and clip-path only. */
+  .numbers__grid.is-armed :global(.stat__value) {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+    transition:
+      opacity 600ms ease calc(var(--i) * 90ms),
+      transform 900ms var(--ease-out) calc(var(--i) * 90ms);
+  }
+
+  .numbers__grid.is-armed :global(.stat__label),
+  .numbers__grid.is-armed :global(.stat__detail) {
+    clip-path: inset(-6% 100% -6% 0);
+    transition: clip-path 560ms var(--ease-out) calc(var(--i) * 90ms + 220ms);
+  }
+
+  .numbers__grid.is-armed :global(.stat__detail) {
+    transition-delay: calc(var(--i) * 90ms + 420ms);
+  }
+
+  .numbers__grid.is-armed :global(.stat__suffix) {
+    display: inline-block;
+    opacity: 0;
+    transform: translate3d(0, 0.12em, 0);
+    transition:
+      opacity 320ms ease calc(var(--i) * 90ms + 1250ms),
+      transform 480ms var(--ease-out) calc(var(--i) * 90ms + 1250ms);
+  }
+
+  .numbers__grid.is-armed.is-live :global(.stat__value),
+  .numbers__grid.is-armed.is-live :global(.stat__suffix) {
+    opacity: 1;
+    transform: none;
+  }
+
+  .numbers__grid.is-armed.is-live :global(.stat__label),
+  .numbers__grid.is-armed.is-live :global(.stat__detail) {
+    clip-path: inset(-6% 0 -6% 0);
   }
 
   @media (min-width: 900px) {

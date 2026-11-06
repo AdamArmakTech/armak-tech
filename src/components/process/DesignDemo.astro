@@ -1,8 +1,10 @@
 ---
 /**
  * Design — "Site plan".
- * The same office as the Assess demo; the plan is drawn as you watch — walls, data drops, Wi-Fi
- * coverage, cameras, then every cable route back to the closet — while a parts list counts up.
+ * The same office as the Assess demo; the plan is drawn as you watch — walls, then the data drops snap
+ * in one by one, each access point lands and its coverage spreads, each camera's view opens, and the
+ * cable routes draw the way they get pulled: the trunk out from the closet along the ceiling, then one
+ * branch down to each device in order. The bill of materials counts every piece as it lands.
  * Four jacks then show their codes; tapping one opens the same jack in the Trace demo.
  * Teaches: the price comes from a real drawing, not a guess. After it plays, the legend chips
  * highlight one layer at a time. Server-renders the finished plan with the codes (no-JS / reduced motion).
@@ -13,6 +15,8 @@ import OfficePlan from './OfficePlan.astro';
 
 const TRUNK_Y = 128;
 const RACK = { x: 73, y: 62 };
+const TRUNK_END = 386; // the trunk runs along the ceiling to the far wall
+const TRUNK_SPUR = 16; // and a short spur the other way, for the corner camera
 
 // Sample layout for this floor
 const drops = [
@@ -39,10 +43,13 @@ const linked = [
   { id: '2A-07', x: 206, y: 166 },
 ];
 
-// Every device gets a branch down/up to the ceiling trunk; the trunk runs back to the rack
+// Every device gets a branch from the ceiling trunk down (or up) to it; the trunk runs out from the rack.
+// Branches are drawn in the order the trunk reaches them (left to right), so each has a rank.
 const devices = [...drops.map(([x, y]) => ({ x, y })), ...aps, ...cams];
-const branches = devices.map((d) => `M${d.x} ${d.y} V${TRUNK_Y}`);
-const trunk = `M${RACK.x} ${RACK.y} V${TRUNK_Y} H386`;
+const rankOf = (i: number) => devices.filter((e, j) => e.x < devices[i].x || (e.x === devices[i].x && j < i)).length;
+const branches = devices.map((d, i) => ({ d: `M${d.x} ${TRUNK_Y} V${d.y}`, rank: rankOf(i) }));
+const trunk = `M${RACK.x} ${RACK.y} V${TRUNK_Y} H${TRUNK_END}`;
+const spur = `M${RACK.x} ${TRUNK_Y} H${TRUNK_SPUR}`;
 
 const layers = [
   { id: 'drops', label: 'Data drops', count: drops.length },
@@ -62,19 +69,20 @@ const layers = [
       <svg class="ds__plan" viewBox="0 0 400 262" role="img" data-fit-text aria-label="Office floor plan with planned data drops, Wi-Fi coverage, camera views and cable routes back to the telecom closet">
         <!-- Wi-Fi coverage (under everything) -->
         <g class="ds__layer is-on" data-ds-layer="wifi">
-          {aps.map((a) => <circle class="ds__cover" cx={a.x} cy={a.y} r={a.r} />)}
+          {aps.map((a, i) => <circle class="ds__cover" style={`--i:${i}`} cx={a.x} cy={a.y} r={a.r} />)}
         </g>
-        <!-- camera views -->
+        <!-- camera views, each opening from its camera -->
         <g class="ds__layer is-on" data-ds-layer="cams">
-          {cams.map((c) => <polygon class="ds__cone" points={c.cone} />)}
+          {cams.map((c, i) => <polygon class="ds__cone" style={`--i:${i}; transform-origin: ${c.x}px ${c.y}px`} points={c.cone} />)}
         </g>
 
         <OfficePlan />
 
-        <!-- cable routes: branches + trunk back to the rack -->
+        <!-- cable routes: the trunk out from the rack, then a branch to each device in trunk order -->
         <g class="ds__layer is-on" data-ds-layer="routes">
-          {branches.map((d) => <path class="ds__route" d={d} pathLength="1" />)}
           <path class="ds__route ds__route--trunk" d={trunk} pathLength="1" />
+          <path class="ds__route ds__route--trunk" d={spur} pathLength="1" />
+          {branches.map((b) => <path class="ds__route ds__route--branch" style={`--i:${b.rank}`} d={b.d} pathLength="1" />)}
         </g>
 
         <!-- devices on top -->
@@ -82,15 +90,17 @@ const layers = [
           {drops.map(([x, y], i) => <rect class="ds__drop" style={`--i:${i}`} x={x - 4} y={y - 4} width="8" height="8" rx="1" />)}
         </g>
         <g class="ds__layer is-on" data-ds-layer="wifi-dev">
-          {aps.map((a) => (
-            <g class="ds__ap" transform={`translate(${a.x} ${a.y})`}>
-              <circle r="5.5" />
-              <path d="M-7 -6 Q0 -12 7 -6 M-4 -3 Q0 -7 4 -3" />
+          {aps.map((a, i) => (
+            <g transform={`translate(${a.x} ${a.y})`}>
+              <g class="ds__ap" style={`--i:${i}`}>
+                <circle r="5.5" />
+                <path d="M-7 -6 Q0 -12 7 -6 M-4 -3 Q0 -7 4 -3" />
+              </g>
             </g>
           ))}
         </g>
         <g class="ds__layer is-on" data-ds-layer="cams-dev">
-          {cams.map((c) => <circle class="ds__cam" cx={c.x} cy={c.y} r="4.5" />)}
+          {cams.map((c, i) => <circle class="ds__cam" style={`--i:${i}`} cx={c.x} cy={c.y} r="4.5" />)}
         </g>
       </svg>
 
@@ -136,7 +146,15 @@ const layers = [
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText, at } from '../../scripts/demo';
+
+  // Beat timing (ms). The CSS delays below use the same steps, so the counts tick as each piece lands.
+  const DROP_STEP = 25;
+  const AP_STEP = 140;
+  const CAM_STEP = 120;
+  const TRUNK_MS = 420;
+  const BRANCH_STEP = 40;
+  const BRANCH_MS = 200;
 
   document.querySelectorAll<HTMLElement>('[data-demo="design"]').forEach((root) => {
     const box = root.querySelector<HTMLElement>('.ds')!;
@@ -157,15 +175,11 @@ const layers = [
 
     const chipFor = (id: string) => chips.find((c) => c.dataset.dsChip === id)!;
 
-    const countUp = (el: HTMLElement, ms: number) => {
-      const target = Number(el.dataset.dsCount);
-      const start = performance.now();
-      const tick = (now: number) => {
-        const t = Math.min(1, (now - start) / ms);
-        el.textContent = String(Math.round(target * t));
-        if (t < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
+    /** The count on a chip ticks up one at a time, `step` ms apart, starting after `offset` ms. */
+    const tick = (chip: HTMLElement, step: number, offset: number, alive: () => boolean) => {
+      const el = chip.querySelector<HTMLElement>('[data-ds-count]')!;
+      const n = Number(el.dataset.dsCount);
+      for (let k = 1; k <= n; k++) at(offset + (k - 1) * step, alive, () => (el.textContent = String(k)));
     };
 
     const setFocus = (id: string) => {
@@ -225,11 +239,12 @@ const layers = [
       });
     };
 
-    const show = async (ids: string[], chip: string, ms: number, message: string, alive: () => boolean) => {
+    /** One beat: turn the layers on, light the chip, tick its count as the pieces land, wait `ms`. */
+    const beat = async (ids: string[], chip: string, step: number, offset: number, ms: number, message: string, alive: () => boolean) => {
       ids.forEach((g) => layer(g).classList.add('is-on'));
       const c = chipFor(chip);
       c.classList.add('is-on');
-      countUp(c.querySelector<HTMLElement>('[data-ds-count]')!, ms * 0.9);
+      tick(c, step, offset, alive);
       announce(root, message);
       await sleep(ms);
       return alive();
@@ -244,11 +259,17 @@ const layers = [
       announce(root, 'Walls drawn');
       await sleep(780);
       if (!alive()) return;
-      if (!(await show(['drops'], 'drops', 520, 'Data drops placed', alive))) return; // 12 × 30 ms + 160 ms
-      if (!(await show(['wifi', 'wifi-dev'], 'wifi', 600, 'Wi-Fi coverage placed', alive))) return;
-      if (!(await show(['cams', 'cams-dev'], 'cams', 320, 'Cameras placed', alive))) return;
+      // 12 drops snap in 25 ms apart; the count ticks with them
+      if (!(await beat(['drops'], 'drops', DROP_STEP, 90, 12 * DROP_STEP + 180, 'Data drops placed', alive))) return;
+      // each access point lands, then its coverage spreads out
+      if (!(await beat(['wifi', 'wifi-dev'], 'wifi', AP_STEP, 120, 3 * AP_STEP + 340, 'Wi-Fi coverage placed', alive))) return;
+      // each camera lands and its view opens
+      if (!(await beat(['cams', 'cams-dev'], 'cams', CAM_STEP, 100, 3 * CAM_STEP + 280, 'Cameras placed', alive))) return;
       staticChip.classList.add('is-on');
-      if (!(await show(['routes'], 'routes', 900, 'Cable routes drawn back to the closet', alive))) return;
+      // the trunk out from the rack, then one branch per device in the order the trunk reaches them
+      const n = Number(chipFor('routes').querySelector<HTMLElement>('[data-ds-count]')!.dataset.dsCount);
+      const routesMs = TRUNK_MS + (n - 1) * BRANCH_STEP + BRANCH_MS + 120;
+      if (!(await beat(['routes'], 'routes', BRANCH_STEP, TRUNK_MS + BRANCH_MS - 40, routesMs, 'Cable routes drawn back to the closet', alive))) return;
       done.classList.add('is-on');
       hint.classList.add('is-on');
       box.classList.add('ds--linked'); // jack codes, 160 ms each, 40 ms apart
@@ -302,7 +323,7 @@ const layers = [
     border-radius: var(--radius);
   }
 
-  /* Layers fade in */
+  /* Layers fade in; the Wi-Fi, camera and route layers switch at once and let their pieces land one by one */
   .ds__layer {
     opacity: 0;
     transition: opacity var(--dur) ease;
@@ -312,15 +333,20 @@ const layers = [
     opacity: 1;
   }
 
-  .ds__layer[data-ds-layer='wifi'] {
-    transition-duration: 600ms;
-    transition-timing-function: var(--ease-out);
-  }
-
   .ds__layer[data-ds-layer='drops'] {
     transition-duration: var(--dur-fast);
   }
 
+  /* These layers are always on as a group; their pieces hide and land one by one (rules below) */
+  .ds__layer[data-ds-layer='wifi'],
+  .ds__layer[data-ds-layer='wifi-dev'],
+  .ds__layer[data-ds-layer='cams'],
+  .ds__layer[data-ds-layer='cams-dev'],
+  .ds__layer[data-ds-layer='routes'] {
+    opacity: 1;
+  }
+
+  /* Wi-Fi coverage spreads out from each access point, one after another */
   .ds__cover {
     fill: color-mix(in srgb, var(--c-wifi) 13%, transparent);
     stroke: color-mix(in srgb, var(--c-wifi) 45%, transparent);
@@ -328,33 +354,80 @@ const layers = [
     stroke-dasharray: 3 3;
     transform-box: fill-box;
     transform-origin: center;
-    transition: transform 600ms var(--ease-out);
+    transition:
+      transform 700ms var(--ease-out) calc(var(--i) * 140ms + 60ms),
+      opacity 300ms ease calc(var(--i) * 140ms + 60ms);
   }
 
-  .ds--armed .ds__cover {
-    transform: scale(0.9);
+  .ds--armed .ds__layer:not(.is-on) .ds__cover {
+    transform: scale(0.45);
+    opacity: 0;
   }
 
-  .ds__layer.is-on .ds__cover {
-    transform: none;
+  /* The access point itself lands first */
+  .ds__ap {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      transform 360ms var(--ease-out) calc(var(--i) * 140ms),
+      opacity 200ms ease calc(var(--i) * 140ms);
   }
 
+  .ds--armed .ds__layer:not(.is-on) .ds__ap {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  /* Each camera lands, then its view opens out from the camera */
   .ds__cone {
     fill: color-mix(in srgb, var(--c-cams) 10%, transparent);
     stroke: none;
+    transform-box: view-box;
+    transition:
+      transform 520ms var(--ease-out) calc(var(--i) * 120ms + 80ms),
+      opacity 240ms ease calc(var(--i) * 120ms + 80ms);
   }
 
+  .ds--armed .ds__layer:not(.is-on) .ds__cone {
+    transform: scale(0.25);
+    opacity: 0;
+  }
+
+  .ds__cam {
+    fill: var(--c-cams);
+    stroke: var(--white);
+    stroke-width: 1.5;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      transform 360ms var(--ease-out) calc(var(--i) * 120ms),
+      opacity 200ms ease calc(var(--i) * 120ms);
+  }
+
+  .ds--armed .ds__layer:not(.is-on) .ds__cam {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+
+  /* Routes: the trunk draws out from the rack along the ceiling, then each branch drops to its device
+     in the order the trunk reaches it (the --i rank). Same steps as the script's count ticks. */
   .ds__route {
     fill: none;
     stroke: var(--c-routes);
     stroke-width: 1.25;
     stroke-dasharray: 1 1;
     stroke-dashoffset: 1;
-    transition: stroke-dashoffset var(--dur-slow) var(--ease-in-out);
+    stroke-linecap: round;
   }
 
   .ds__route--trunk {
     stroke-width: 3;
+    stroke-linecap: butt;
+    transition: stroke-dashoffset 420ms var(--ease-in-out);
+  }
+
+  .ds__route--branch {
+    transition: stroke-dashoffset 200ms var(--ease-out) calc(420ms + var(--i) * 40ms);
   }
 
   .ds__layer.is-on .ds__route {
@@ -380,17 +453,11 @@ const layers = [
     stroke-linecap: round;
   }
 
-  .ds__cam {
-    fill: var(--c-cams);
-    stroke: var(--white);
-    stroke-width: 1.5;
-  }
-
-  /* Drops snap into place: a 3-unit slide plus fade, 160 ms, 30 ms apart */
+  /* Drops snap into place: a 3-unit slide plus fade, 160 ms, 25 ms apart */
   @media (prefers-reduced-motion: no-preference) {
     .ds--armed .ds__layer.is-on .ds__drop {
       animation: ds-snap var(--dur-fast) var(--ease-out) backwards;
-      animation-delay: calc(var(--i) * 30ms);
+      animation-delay: calc(var(--i) * 25ms);
     }
   }
 
@@ -462,10 +529,15 @@ const layers = [
     color: var(--paper);
   }
 
-  /* Armed by the script: codes hidden until the plan is ready */
+  /* Armed by the script: codes hidden until the plan is ready, then each slips up into place */
   .ds--armed .ds__jacks > li {
     opacity: 0;
     visibility: hidden;
+  }
+
+  .ds--armed .ds__code {
+    transform: translate(-50%, 4px);
+    transition: transform 260ms var(--ease-out) calc(var(--i) * 40ms);
   }
 
   .ds--armed.ds--linked .ds__jacks > li {
@@ -474,6 +546,10 @@ const layers = [
     transition:
       opacity var(--dur-fast) ease calc(var(--i) * 40ms),
       visibility 0s linear calc(var(--i) * 40ms);
+  }
+
+  .ds--armed.ds--linked .ds__code {
+    transform: translateX(-50%);
   }
 
   /* Legend / bill of materials */
@@ -575,6 +651,17 @@ const layers = [
   .ds__done.is-on {
     opacity: 1;
     transform: none;
+  }
+
+  /* The check draws itself once the line is in place */
+  .ds--armed .ds__done :global(svg path) {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    transition: stroke-dashoffset 380ms var(--ease-out) 160ms;
+  }
+
+  .ds--armed .ds__done.is-on :global(svg path) {
+    stroke-dashoffset: 0;
   }
 
   .ds--instant,

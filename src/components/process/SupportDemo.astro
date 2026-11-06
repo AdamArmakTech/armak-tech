@@ -1,9 +1,10 @@
 ---
 /**
  * Support — "A move request" (MAC: move, add, change).
- * A ticket comes in → the as-built record says which panel ports are involved → the patch cord
- * is moved from A-14 to A-22 → the link is tested and the record updated → ticket done.
- * Teaches: support is quick and tidy because the install was labeled and documented.
+ * Four beats: the ticket comes in; the as-built record is looked up and the two ports it names light on
+ * the panel; the patch cord is unplugged from A-14, carried across and plugged into A-22 (one cord, really
+ * moving); the link is tested (a pulse runs down the new cord and back), the record row is updated and
+ * the ticket closes. Teaches: support is quick and tidy because the install was labeled and documented.
  * Server-renders the finished state (no-JS / reduced motion).
  */
 import DemoFrame from './DemoFrame.astro';
@@ -18,9 +19,11 @@ const PANEL_Y = 15; // patch panel box top
 const SWITCH_Y = 82; // switch box top
 const CORD_TOP = PANEL_Y + 32; // just below the panel's bottom-row port
 const CORD_END = SWITCH_Y + 5; // top of the switch's top-row port
-const oldCord = `M${cx(OLD)} ${CORD_TOP} V${CORD_END}`;
-const newCord = `M${cx(NEW)} ${CORD_TOP} C ${cx(NEW)} ${CORD_TOP + 23}, ${cx(OLD)} ${CORD_END - 23}, ${cx(OLD)} ${CORD_END}`;
+const BEND = 23; // how far the cord hangs before it turns
+/** The one cord that moves: from a panel port (its top end) down to the switch port it stays on. */
+const cord = (tx: number, ty: number) => `M${tx} ${ty} C ${tx} ${ty + BEND}, ${cx(OLD)} ${CORD_END - BEND}, ${cx(OLD)} ${CORD_END}`;
 const otherCords = [0, 2, 3, 4, 5].map((i) => `M${cx(i)} ${CORD_TOP} V${CORD_END}`);
+const geom = { xOld: cx(OLD), xNew: cx(NEW), top: CORD_TOP, end: CORD_END, bend: BEND };
 
 const records = [
   { jack: '2B-13', port: 'A-13', key: '' },
@@ -61,9 +64,9 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
           </thead>
           <tbody>
             {records.map((r) => (
-              <tr class:list={['sp__row', { 'is-hit': r.key }]} data-sp-row={r.key || undefined}>
+              <tr class:list={['sp__row', { 'is-hit': r.key }]} data-sp-row={r.key || undefined} data-sp-scan>
                 <td class="t-readout">{r.jack}</td>
-                <td class="t-readout">{r.port}{r.key === 'to' && <span class="sp__updated" data-sp-updated>, in use</span>}</td>
+                <td class="t-readout">{r.port}{r.key === 'to' && <span class="sp__updated is-on" data-sp-updated>, in use</span>}</td>
               </tr>
             ))}
           </tbody>
@@ -94,16 +97,18 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
           <!-- cords already in place -->
           {otherCords.map((d) => <path d={d} class="sp__cord sp__cord--static" />)}
 
-          <!-- the move: old cord out, new cord in -->
-          <path d={oldCord} class="sp__cord sp__cord--old is-gone" pathLength="1" data-sp-old />
-          <path d={newCord} class="sp__cord sp__cord--new is-on" pathLength="1" data-sp-new />
+          <!-- the move: one cord, its top end carried from A-14 to A-22 (the plug rides on the end) -->
+          <path d={cord(cx(NEW), CORD_TOP)} class="sp__cord sp__cord--move" data-sp-cord data-geom={JSON.stringify(geom)} />
+          <rect class="sp__plug" x="-4" y="-5" width="8" height="6" rx="1" style={`transform: translate(${cx(NEW)}px, ${CORD_TOP}px)`} data-sp-plug />
+          <!-- the test pulse that runs the new cord after the move -->
+          <circle class="sp__pulse" r="3.5" cx="0" cy="0" data-sp-pulse />
 
           <!-- port highlights + labels -->
-          <g class="sp__mark sp__mark--from is-on" data-sp-mark="from">
+          <g class="sp__mark sp__mark--from is-on is-free" data-sp-mark="from">
             <rect x={px(OLD) - 3} y={PANEL_Y + 17} width="18" height="16" rx="2" />
             <text x={cx(OLD)} y={PANEL_Y + 50} text-anchor="middle">A-14</text>
           </g>
-          <g class="sp__mark sp__mark--to is-on" data-sp-mark="to">
+          <g class="sp__mark sp__mark--to is-on is-live" data-sp-mark="to">
             <rect x={px(NEW) - 3} y={PANEL_Y + 17} width="18" height="16" rx="2" />
             <text x={cx(NEW) + 7} y={PANEL_Y + 50} text-anchor="middle">A-22</text>
           </g>
@@ -119,7 +124,11 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText, frames, easeOut, easeInOut, moveAlong, bezierPoints, evenTimes, at } from '../../scripts/demo';
+
+  const MOVE_MS = 900; // unplug, carry across, plug in
+  const LIFT = 12; // how far the plug is pulled down out of the port before it is carried across
+  const PULSE_MS = 560; // test pulse: down the cord and back
 
   document.querySelectorAll<HTMLElement>('[data-demo="support"]').forEach((root) => {
     fitSvgText(root);
@@ -127,14 +136,24 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     const stages = [...root.querySelectorAll<HTMLElement>('[data-sp-stage]')];
     const ticket = root.querySelector<HTMLElement>('[data-sp-ticket]')!;
     const status = root.querySelector<HTMLElement>('[data-sp-status]')!;
+    const rows = [...root.querySelectorAll<HTMLElement>('[data-sp-scan]')];
     const rowFrom = root.querySelector<HTMLElement>('[data-sp-row="from"]')!;
     const rowTo = root.querySelector<HTMLElement>('[data-sp-row="to"]')!;
     const updated = root.querySelector<HTMLElement>('[data-sp-updated]')!;
-    const oldCord = root.querySelector<SVGPathElement>('[data-sp-old]')!;
-    const newCord = root.querySelector<SVGPathElement>('[data-sp-new]')!;
+    const cordEl = root.querySelector<SVGPathElement>('[data-sp-cord]')!;
+    const plug = root.querySelector<SVGRectElement>('[data-sp-plug]')!;
+    const pulse = root.querySelector<SVGCircleElement>('[data-sp-pulse]')!;
     const markFrom = root.querySelector<SVGGElement>('[data-sp-mark="from"]')!;
     const markTo = root.querySelector<SVGGElement>('[data-sp-mark="to"]')!;
     const checks = [...root.querySelectorAll<HTMLElement>('[data-sp-check]')];
+    const g = JSON.parse(cordEl.dataset.geom || '{}') as { xOld: number; xNew: number; top: number; end: number; bend: number };
+    let anims: Animation[] = [];
+
+    const cord = (tx: number, ty: number) => `M${tx} ${ty} C ${tx} ${ty + g.bend}, ${g.xOld} ${g.end - g.bend}, ${g.xOld} ${g.end}`;
+    const placeCord = (tx: number, ty: number) => {
+      cordEl.setAttribute('d', cord(tx, ty));
+      plug.style.transform = `translate(${tx}px, ${ty}px)`;
+    };
 
     const setStage = (n: number) =>
       stages.forEach((s, i) => {
@@ -151,15 +170,18 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     const reduced = prefersReducedMotion();
 
     const reset = () => {
-      box.classList.add('sp--instant');
+      anims.forEach((a) => a.cancel());
+      anims = [];
+      box.classList.add('sp--instant', 'sp--armed');
       setStage(-1);
       ticket.classList.remove('is-on');
       setStatus('open');
-      [rowFrom, rowTo].forEach((r) => r.classList.remove('is-hit'));
+      rows.forEach((r) => r.classList.remove('is-hit', 'is-scan'));
       updated.classList.remove('is-on');
-      oldCord.classList.remove('is-gone');
-      newCord.classList.remove('is-on');
-      [markFrom, markTo].forEach((m) => m.classList.remove('is-on'));
+      placeCord(g.xOld, g.top);
+      pulse.classList.remove('is-on');
+      markFrom.classList.remove('is-on', 'is-free');
+      markTo.classList.remove('is-on', 'is-live');
       checks.forEach((c) => c.classList.remove('is-on'));
       void box.offsetWidth;
       box.classList.remove('sp--instant');
@@ -171,45 +193,66 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       await sleep(250);
       if (!alive()) return;
 
-      // 1 · Request
+      // 1 · Request: the ticket comes in
       setStage(0);
       ticket.classList.add('is-on');
       announce(root, 'Request: move desk 2B-14 to 3A-02');
-      await sleep(800);
+      await sleep(850);
       if (!alive()) return;
 
-      // 2 · Look up the as-built record
+      // 2 · Look up: a finger runs down the as-built record; each port it names lights on the panel
       setStage(1);
       setStatus('progress');
-      rowFrom.classList.add('is-hit');
-      await sleep(550);
-      if (!alive()) return;
-      rowTo.classList.add('is-hit');
-      announce(root, 'Record: 2B-14 is panel port A-14, 3A-02 is A-22');
-      await sleep(650);
+      rows.forEach((r, i) => {
+        at(i * 130, alive, () => r.classList.add('is-scan'));
+        at(i * 130 + 150, alive, () => r.classList.remove('is-scan'));
+      });
+      at(130, alive, () => {
+        rowFrom.classList.add('is-hit');
+        markFrom.classList.add('is-on');
+      });
+      at(390, alive, () => {
+        rowTo.classList.add('is-hit');
+        markTo.classList.add('is-on');
+        announce(root, 'Record: 2B-14 is panel port A-14, 3A-02 is A-22');
+      });
+      await sleep(1150);
       if (!alive()) return;
 
-      // 3 · Re-patch: unplug A-14, plug into A-22
+      // 3 · Re-patch: unplug from A-14, carry the cord across, plug into A-22. One cord, redrawn each frame.
       setStage(2);
-      markFrom.classList.add('is-on');
-      await sleep(300);
-      oldCord.classList.add('is-gone');
-      await sleep(650);
+      await frames(
+        MOVE_MS,
+        (t) => {
+          const lift = t < 0.22 ? easeOut(t / 0.22) : t < 0.78 ? 1 : 1 - easeOut((t - 0.78) / 0.22);
+          const carry = t < 0.22 ? 0 : t < 0.78 ? easeInOut((t - 0.22) / 0.56) : 1;
+          placeCord(g.xOld + (g.xNew - g.xOld) * carry, g.top + LIFT * lift);
+        },
+        alive,
+      );
       if (!alive()) return;
-      markTo.classList.add('is-on');
-      newCord.classList.add('is-on');
+      placeCord(g.xNew, g.top);
+      markFrom.classList.add('is-free');
+      markTo.classList.add('is-live');
       announce(root, 'Patch cord moved to A-22');
-      await sleep(900);
+      await sleep(350);
       if (!alive()) return;
 
-      // 4 · Test & update the record
+      // 4 · Test & update: a pulse runs the new cord and back, then the record is updated
       setStage(3);
-      checks[0].classList.add('is-on');
-      await sleep(400);
+      const out = bezierPoints([g.xNew, g.top], [g.xNew, g.top + g.bend], [g.xOld, g.end - g.bend], [g.xOld, g.end], 12);
+      const back = [...out].reverse();
+      pulse.classList.add('is-on');
+      anims.push(moveAlong(pulse, [...out, ...back], [...evenTimes(13, PULSE_MS / 2, 0), ...evenTimes(13, PULSE_MS / 2, PULSE_MS / 2)], 'ease-in-out'));
+      await sleep(PULSE_MS);
       if (!alive()) return;
-      checks[1].classList.add('is-on');
+      pulse.classList.remove('is-on');
+      checks[0].classList.add('is-on');
+      await sleep(420);
+      if (!alive()) return;
       updated.classList.add('is-on');
-      await sleep(350);
+      checks[1].classList.add('is-on');
+      await sleep(420);
       if (!alive()) return;
       setStatus('done');
       setStage(4);
@@ -263,6 +306,17 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     background: var(--signal);
   }
 
+  /* The dot of the stage that just started gives a small pop */
+  .sp--armed .sp__stage.is-active .sp__stage-dot {
+    animation: sp-pop 320ms var(--ease-out);
+  }
+
+  @keyframes sp-pop {
+    from {
+      transform: scale(1.6);
+    }
+  }
+
   .sp__stage.is-done {
     color: var(--ink);
   }
@@ -293,8 +347,8 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     border-radius: var(--radius);
     background: var(--paper-sunken);
     opacity: 0;
-    transform: translateY(-8px);
-    transition: opacity 0.35s ease, transform 0.4s var(--ease-out);
+    transform: translateY(-10px);
+    transition: opacity 0.35s ease, transform 0.45s var(--ease-out);
   }
 
   .sp__ticket.is-on {
@@ -319,6 +373,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     border-radius: var(--radius);
     background: var(--paper-sunken);
     color: var(--steel);
+    transition: background 0.25s ease, color 0.25s ease;
   }
 
   .sp__status[data-state='progress'] {
@@ -329,6 +384,17 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
   .sp__status[data-state='done'] {
     background: color-mix(in srgb, var(--pass) 12%, var(--white));
     color: var(--pass);
+  }
+
+  /* "Done" lands with a small settle, like a stamp */
+  .sp--armed .sp__status[data-state='done'] {
+    animation: sp-settle 360ms var(--ease-out);
+  }
+
+  @keyframes sp-settle {
+    from {
+      transform: scale(1.18);
+    }
   }
 
   /* Records table */
@@ -355,11 +421,16 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
   .sp__records td {
     padding: 0.4rem 0.5rem;
     border-bottom: 1px solid var(--hairline);
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background 0.22s ease, color 0.3s ease;
   }
 
   .sp__row td {
     color: var(--steel);
+  }
+
+  /* The finger running down the record */
+  .sp__row.is-scan td {
+    background: var(--paper-sunken);
   }
 
   .sp__row.is-hit td {
@@ -370,12 +441,17 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
 
   .sp__updated {
     color: var(--pass);
-    opacity: 0;
-    transition: opacity 0.3s ease;
   }
 
-  .sp__updated.is-on {
-    opacity: 1;
+  /* Armed by the script: the update is written in from the left */
+  .sp--armed .sp__updated {
+    display: inline-block;
+    clip-path: inset(-10% 100% -10% 0);
+    transition: clip-path 320ms var(--ease-out);
+  }
+
+  .sp--armed .sp__updated.is-on {
+    clip-path: inset(-10% 0 -10% 0);
   }
 
   /* Panel + switch */
@@ -416,28 +492,26 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     stroke: var(--hairline-strong);
   }
 
-  .sp__cord--old,
-  .sp__cord--new {
+  .sp__cord--move {
     stroke: var(--t568-blue);
-    stroke-dasharray: 1 1;
-    transition: stroke-dashoffset 0.7s var(--ease-in-out), opacity 0.3s ease;
   }
 
-  .sp__cord--old {
-    stroke-dashoffset: 0;
+  .sp__plug {
+    fill: var(--t568-blue);
+    stroke: var(--white);
+    stroke-width: 1;
   }
 
-  .sp__cord--old.is-gone {
-    stroke-dashoffset: -1;
-    opacity: 0.2;
+  .sp__pulse {
+    fill: var(--white);
+    stroke: var(--pass);
+    stroke-width: 2;
+    opacity: 0;
+    transition: opacity 120ms ease;
   }
 
-  .sp__cord--new {
-    stroke-dashoffset: 1;
-  }
-
-  .sp__cord--new.is-on {
-    stroke-dashoffset: 0;
+  .sp__pulse.is-on {
+    opacity: 1;
   }
 
   .sp__mark {
@@ -452,6 +526,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
   .sp__mark rect {
     fill: none;
     stroke-width: 2;
+    transition: stroke 0.3s ease;
   }
 
   /* Port labels sit over the cords, so they get a paper-coloured halo */
@@ -463,8 +538,10 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     stroke: var(--paper-sunken);
     stroke-width: 3px;
     stroke-linejoin: round;
+    transition: fill 0.3s ease;
   }
 
+  /* A-14: red while the cord is still in it, steel once it is free */
   .sp__mark--from rect {
     stroke: var(--signal);
   }
@@ -473,11 +550,29 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     fill: var(--signal);
   }
 
+  .sp__mark--from.is-free rect {
+    stroke: var(--steel);
+    stroke-dasharray: 3 2;
+  }
+
+  .sp__mark--from.is-free text {
+    fill: var(--steel);
+  }
+
+  /* A-22: steel when the record names it, green once the cord is plugged in */
   .sp__mark--to rect {
-    stroke: var(--pass);
+    stroke: var(--steel);
   }
 
   .sp__mark--to text {
+    fill: var(--steel);
+  }
+
+  .sp__mark--to.is-live rect {
+    stroke: var(--pass);
+  }
+
+  .sp__mark--to.is-live text {
     fill: var(--pass);
   }
 
@@ -488,15 +583,12 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
   }
 
   .sp__checks li {
-    color: var(--ink);
-    opacity: 0.55;
-    transition: opacity 0.3s ease;
-  }
-
-  .sp__checks li {
     display: flex;
     align-items: center;
     gap: 0.375rem;
+    color: var(--ink);
+    opacity: 0.55;
+    transition: opacity 0.3s ease;
   }
 
   .sp__checks li span {
@@ -506,6 +598,17 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
 
   .sp__checks li.is-on {
     opacity: 1;
+  }
+
+  /* Each check draws itself when its line comes on */
+  .sp--armed .sp__checks li :global(svg path) {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    transition: stroke-dashoffset 360ms var(--ease-out) 80ms;
+  }
+
+  .sp--armed .sp__checks li.is-on :global(svg path) {
+    stroke-dashoffset: 0;
   }
 
   .sp--instant,

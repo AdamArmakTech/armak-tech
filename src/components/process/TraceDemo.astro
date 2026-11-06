@@ -7,8 +7,9 @@
  * record row fills in. One route is lit at a time.
  * Same four jacks, same spots and same trunk line as the Design demo (TRUNK_Y 128, rack x 73).
  * Teaches: matching labels on both ends make a connection easy to find. SAMPLE data, no test date.
- * Motion (WAAPI, script only): branch 0-120 ms, trunk 120-560 ms, closet 560-700 ms; the port lights
- * at 700 ms; the record row wipes in 700-900 ms. Reduced motion: everything at once.
+ * Motion (WAAPI, script only): branch 0-120 ms, trunk 120-560 ms, closet 560-700 ms, with a tracer dot
+ * running the route ahead of the line; the port lights at 700 ms with a ring that spreads out once; the
+ * record row wipes in 700-900 ms. Reduced motion: everything at once.
  * No JavaScript: jack 2B-15 is server-rendered already traced; the script clears it on start.
  * Listens for `armak:trace` (sent by the Design demo): scrolls here, lights that jack, focuses its button.
  */
@@ -58,6 +59,8 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
               ))}
             </g>
           ))}
+          <!-- the tracer: runs the route ahead of the line while it draws -->
+          <circle class="tr__head" r="4.5" cx="0" cy="0" data-tr-head />
           {jacks.map((j) => (
             <circle cx={j.x} cy={j.y} r="4" class:list={['tr__dot', { 'is-lit': j.id === first.id }]} data-tr-dot={j.id} />
           ))}
@@ -72,6 +75,8 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
               aria-label={`Trace jack ${j.id}`}
               data-tr-jack={j.id}
               data-port={j.port}
+              data-x={j.x}
+              data-y={j.y}
             >
               <span class="t-readout tr__jack-label">{j.id}</span>
             </button>
@@ -124,7 +129,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
 </DemoFrame>
 
 <script>
-  import { bindReplay, announce, fitSvgText, prefersReducedMotion } from '../../scripts/demo';
+  import { bindReplay, announce, fitSvgText, prefersReducedMotion, moveAlong } from '../../scripts/demo';
 
   const EASE_OUT = 'cubic-bezier(0.16, 1, 0.3, 1)';
   const HINT = 'Choose a jack to trace its cable.';
@@ -136,12 +141,17 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     [560, 700],
   ];
   const ARRIVE = 700;
+  // Where the legs turn (same plan as the Design demo): the ceiling trunk and the rack in the closet
+  const TRUNK_Y = 128;
+  const RACK_X = 73;
+  const CLOSET_Y = 62;
 
   document.querySelectorAll<HTMLElement>('[data-demo="trace"]').forEach((root) => {
     const tr = root.querySelector<HTMLElement>('#trace')!;
     const jacks = [...root.querySelectorAll<HTMLButtonElement>('[data-tr-jack]')];
     const routes = [...root.querySelectorAll<SVGGElement>('[data-tr-route]')];
     const dots = [...root.querySelectorAll<SVGCircleElement>('[data-tr-dot]')];
+    const head = root.querySelector<SVGCircleElement>('[data-tr-head]')!;
     const ports = [...root.querySelectorAll<HTMLElement>('[data-tr-port]')];
     const words = [...root.querySelectorAll<HTMLElement>('[data-tr-word]')];
     const line = root.querySelector<HTMLElement>('[data-tr-line]')!;
@@ -212,6 +222,16 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
       const route = routes.find((r) => r.dataset.trRoute === id)!;
       const segs = [...route.querySelectorAll<SVGPathElement>('.tr__seg')];
       const next: Animation[] = [];
+      // The tracer runs the whole route (jack → ceiling → rack → closet) on the legs' timing, then fades out
+      const x = Number(btn.dataset.x);
+      const y = Number(btn.dataset.y);
+      next.push(moveAlong(head, [[x, y], [x, TRUNK_Y], [RACK_X, TRUNK_Y], [RACK_X, CLOSET_Y]], [0, LEGS[0][1], LEGS[1][1], LEGS[2][1]], EASE_OUT));
+      next.push(
+        head.animate(
+          [{ opacity: 0, offset: 0 }, { opacity: 1, offset: 0.06 }, { opacity: 1, offset: 0.92 }, { opacity: 0, offset: 1 }],
+          { duration: ARRIVE + 80, fill: 'both' },
+        ),
+      );
       segs.forEach((seg, i) => {
         const [from, to] = LEGS[i];
         next.push(
@@ -226,10 +246,10 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
         );
         // The word for this leg lights as the leg starts
         const w = words[i];
-        const a = w.animate([{ opacity: 0.65 }, { opacity: 1 }], {
+        const a = w.animate([{ opacity: 0.65, transform: 'translateY(3px)' }, { opacity: 1, transform: 'none' }], {
           delay: from,
-          duration: 160,
-          easing: 'ease',
+          duration: 220,
+          easing: EASE_OUT,
           fill: 'backwards',
         });
         next.push(a);
@@ -355,6 +375,29 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     fill: var(--ink);
   }
 
+  /* The chosen jack gives a small pop as the trace starts */
+  @media (prefers-reduced-motion: no-preference) {
+    .tr__dot.is-lit {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: tr-dot 360ms var(--ease-out);
+    }
+  }
+
+  @keyframes tr-dot {
+    from {
+      transform: scale(1.7);
+    }
+  }
+
+  /* The tracer dot: placed by the script's transform, invisible until a trace runs */
+  .tr__head {
+    fill: var(--white);
+    stroke: var(--ink);
+    stroke-width: 2;
+    opacity: 0;
+  }
+
   /* Real buttons laid over the plan; the 44px box is the touch target, the dot is drawn in the svg */
   .tr__jacks {
     position: absolute;
@@ -446,6 +489,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
   }
 
   .tr__port {
+    position: relative;
     aspect-ratio: 1 / 1;
     background: var(--white);
     border: 1px solid var(--ink);
@@ -457,6 +501,30 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     border-color: var(--ink);
     outline: 2px solid var(--ink);
     outline-offset: 1px;
+  }
+
+  /* When the route arrives, a ring spreads out from the port once (transform and opacity only) */
+  @media (prefers-reduced-motion: no-preference) {
+    .tr__port.is-lit::after {
+      content: "";
+      position: absolute;
+      inset: -3px;
+      border: 1.5px solid var(--ink);
+      border-radius: 2px;
+      pointer-events: none;
+      animation: tr-ring 560ms var(--ease-out) forwards;
+    }
+  }
+
+  @keyframes tr-ring {
+    from {
+      transform: scale(1);
+      opacity: 0.9;
+    }
+    to {
+      transform: scale(2.4);
+      opacity: 0;
+    }
   }
 
   /* Record: one sample row, a line between header and row */

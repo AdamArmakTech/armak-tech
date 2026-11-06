@@ -51,7 +51,7 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
         </p>
       </div>
       {signature.length > 0 && (
-        <p class="plant__sig">Put in on day one: {signature.map((s) => s.label).join(', ')}</p>
+        <p class="plant__sig" style="--d: 760ms">Put in on day one: {signature.map((s) => s.label).join(', ')}</p>
       )}
     </div>
 
@@ -71,14 +71,14 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
       </div>
       <ul role="list" class="plant__names plant__names--wide" aria-hidden="true">
         {segs.map((s) => (
-          <li style={`left: ${s.left}%; width: ${s.width}%`}>
+          <li style={`left: ${s.left}%; width: ${s.width}%; --d: ${s.delay + 160}ms`}>
             <span class="plant__name">{s.name}</span>
           </li>
         ))}
       </ul>
       <ul role="list" class="plant__names plant__names--list">
         {segs.map((s) => (
-          <li>
+          <li style={`--d: ${s.delay + 160}ms`}>
             <span class="plant__name">{s.name}</span>
             <span class="t-meta plant__yr">{s.year}</span>
           </li>
@@ -87,8 +87,8 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
     </div>
 
     <div class="plant__axis" aria-hidden="true">
-      {ticks.map((t) => (
-        <span class={`plant__tick plant__tick--${t.edge} t-meta`} style={`left: ${t.left}%`}>{t.year}</span>
+      {ticks.map((t, i) => (
+        <span class={`plant__tick plant__tick--${t.edge} t-meta`} style={`left: ${t.left}%; --d: ${220 + i * 80}ms`}>{t.year}</span>
       ))}
     </div>
   </div>
@@ -356,6 +356,20 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
   .plant.is-armed.is-drawn .plant__over {
     opacity: 1;
     transition: opacity var(--dur) ease 300ms;
+  }
+
+  /* The years on the axis, each Wi-Fi name and the day-one line arrive as their bars land (--d per item) */
+  .plant.is-armed .plant__tick,
+  .plant.is-armed .plant__names li,
+  .plant.is-armed .plant__sig {
+    opacity: 0;
+  }
+
+  .plant.is-armed.is-drawn .plant__tick,
+  .plant.is-armed.is-drawn .plant__names li,
+  .plant.is-armed.is-drawn .plant__sig {
+    opacity: 1;
+    transition: opacity var(--dur) ease var(--d, 300ms);
   }
 
   @media (min-width: 640px) {
