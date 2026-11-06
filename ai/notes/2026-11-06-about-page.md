@@ -3,6 +3,19 @@
 Session: about-page (worktree `about-page-1c7980`, branch `claude/about-page-1c7980`, cut from `intent-redesign` e2e67f2).
 File changed: `src/pages/about.astro` only (plus this note).
 
+## Correction from the owner, same day (in this session, after the first version efae44a)
+"You are still doing the same AI slop UI that I asked Claude not to do before." Asked which parts, he picked two:
+**lists with lines** (the stacked rows with a hairline between each, and the small arrow links) and **red caps labels**
+(LEGACY / OUR STANDARD / SCOPE). He did not pick the fade-in on scroll or the text-only page.
+So: the red-label story rows recorded in the brief as an owner decision are NOT wanted; the round-1 decisions stand
+(no labels above headings, no tracked capitals) and rule 5 stands (lines only in the cable-test table, form fields and
+real rows such as FAQ and glossary). Second version: no lines anywhere on the page, no labels, no arrow links; items are
+short pieces (title and a sentence or two) separated by space; the six systems in two columns from 640px; the counties
+in two balanced text columns; the five steps as five short paragraphs with the step name run in; the three promises
+("On every job") are one closing sentence under the steps instead of a three-row list in the hero; links are words in
+the sentences ("See all services.", "See the map.", "Watch each step run on the home page."). The hero is title and
+lead only. The sections below describe the first version where they talk about rows and labels.
+
 ## What the owner said (from his phone, 2026-11-06)
 "We have the same information repeated 4 times on the same page, and the rest of that page is dead space."
 His four screenshots: the story heading "Since 1998"; the hero line "Est. 1998, Glendale HQ"; the stat
