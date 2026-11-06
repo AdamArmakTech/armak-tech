@@ -8,8 +8,8 @@
  * Same four jacks, same spots and same trunk line as the Design demo (TRUNK_Y 128, rack x 73).
  * Teaches: matching labels on both ends make a connection easy to find. SAMPLE data, no test date.
  * Motion (WAAPI, script only): branch 0-120 ms, trunk 120-560 ms, closet 560-700 ms, with a tracer dot
- * running the route ahead of the line; the port lights at 700 ms with a ring that spreads out once; the
- * record row wipes in 700-900 ms. Reduced motion: everything at once.
+ * running the route ahead of the line; the port lights at 700 ms (fills in one quick step); the record
+ * row wipes in 700-900 ms. Reduced motion: everything at once.
  * No JavaScript: jack 2B-15 is server-rendered already traced; the script clears it on start.
  * Listens for `armak:trace` (sent by the Design demo): scrolls here, lights that jack, focuses its button.
  */
@@ -503,27 +503,16 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     outline-offset: 1px;
   }
 
-  /* When the route arrives, a ring spreads out from the port once (transform and opacity only) */
+  /* When the route arrives the port fills in one quick step, the way a port light comes on */
   @media (prefers-reduced-motion: no-preference) {
-    .tr__port.is-lit::after {
-      content: "";
-      position: absolute;
-      inset: -3px;
-      border: 1.5px solid var(--ink);
-      border-radius: 2px;
-      pointer-events: none;
-      animation: tr-ring 560ms var(--ease-out) forwards;
+    .tr__port.is-lit {
+      animation: tr-light 240ms var(--ease-out);
     }
   }
 
-  @keyframes tr-ring {
+  @keyframes tr-light {
     from {
-      transform: scale(1);
-      opacity: 0.9;
-    }
-    to {
-      transform: scale(2.4);
-      opacity: 0;
+      transform: scale(0.6);
     }
   }
 

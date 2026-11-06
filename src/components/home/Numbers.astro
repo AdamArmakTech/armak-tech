@@ -35,13 +35,23 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
 </section>
 
 <script>
-  import { onFirstView, prefersReducedMotion } from '../../scripts/demo';
+  import { prefersReducedMotion } from '../../scripts/demo';
 
-  // The same moment motion.ts starts the counts (60% of the figures on screen), the words arrive with them
+  // Each figure's words arrive the moment motion.ts starts its count: the same element, the same 60% threshold.
   document.querySelectorAll<HTMLElement>('[data-numbers]').forEach((grid) => {
     if (prefersReducedMotion()) return;
     grid.classList.add('is-armed');
-    onFirstView(grid, () => grid.classList.add('is-live'), 0.6);
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          io.unobserve(entry.target);
+          entry.target.closest('.numbers__cell')?.classList.add('is-live');
+        }
+      },
+      { threshold: 0.6 },
+    );
+    grid.querySelectorAll<HTMLElement>('.numbers__cell').forEach((cell) => io.observe(cell.querySelector('[data-count]') ?? cell));
   });
 </script>
 
@@ -117,14 +127,14 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
       transform 480ms var(--ease-out) calc(var(--i) * 90ms + 1250ms);
   }
 
-  .numbers__grid.is-armed.is-live :global(.stat__value),
-  .numbers__grid.is-armed.is-live :global(.stat__suffix) {
+  .numbers__grid.is-armed .numbers__cell.is-live :global(.stat__value),
+  .numbers__grid.is-armed .numbers__cell.is-live :global(.stat__suffix) {
     opacity: 1;
     transform: none;
   }
 
-  .numbers__grid.is-armed.is-live :global(.stat__label),
-  .numbers__grid.is-armed.is-live :global(.stat__detail) {
+  .numbers__grid.is-armed .numbers__cell.is-live :global(.stat__label),
+  .numbers__grid.is-armed .numbers__cell.is-live :global(.stat__detail) {
     clip-path: inset(-6% 0 -6% 0);
   }
 

@@ -98,6 +98,59 @@ Timings measured at 390 px in Chromium from the tab click to the demo's `finishe
 - Before/after PDF for the owner: `ai/exports/demo-motion-2026-11-06.pdf` (gitignored), made with Edge headless from
   Playwright screenshots at 2x.
 
+## Anti-slop pass (taste-skill inspector, same day, asked for by the main session)
+Run on the production build (`astro preview`, port 4333) at 1440, 768 and 390 px, on the four pages that hold a
+demo this session changed: `/`, `/about/`, `/plan/`, `/services/structured-cabling/`. Raw counts, no `--allow`:
+
+| Page | Before | After |
+| --- | --- | --- |
+| Home | 2 FAIL, 7 WARN | 2 FAIL, 7 WARN |
+| About | 1 FAIL, 4 WARN | 1 FAIL, 4 WARN |
+| Plan | 3 FAIL, 5 WARN | 3 FAIL, 4 WARN |
+| Structured cabling | 4 FAIL, 3 WARN | 4 FAIL, 3 WARN |
+| **All four** | **10 FAIL, 19 WARN** | **10 FAIL, 18 WARN** |
+
+What changed in this pass (commit after 621ed84):
+- Trace demo: the ring that spread out from the lit port was the one move that showed off instead of teaching
+  (a "ping"); gone. The port now fills in one quick step (scale 0.6 → 1, 240 ms).
+- Hero: "a dozen separately timed hero entrances" is a named tell. The chooser (label, tiles, call line) now arrives
+  as one block, the three tiles landing row by row inside it; the three credentials arrive as one block. Timed
+  parts: title, lead, button, photo, card, chooser, three tiles, credentials.
+- Numbers: each figure's unit now keys off its own counter element at the same 60% threshold motion.ts uses, so a
+  reveal keyed to a whole grid can never fail to fire on a short screen, and the unit writes in exactly as the
+  number counts.
+- Measure: long lines capped at a readable width in my files: demo captions (64ch), the Plan page's cable-table
+  footnote and the "Not sure?" line (62ch), the cable-plant chart's caption, label and day-one line (65ch).
+  This is the Plan WARN that went away. The 160-character line on Home and About is the footer's service-area
+  sentence (Footer, not this session's file).
+- Checked against the skill's motion tells: no bounce or overshoot (every curve is ease-out or ease-in-out, linear
+  only for the fading signal), no blur, no particles, no glow, no infinite loop (the only loop is the running
+  check's spinner, which means "running"), no content that stays hidden if a script fails (arrivals are armed
+  by the same script that fires them; without scripts everything is there). Each demo beat shows a real step of
+  the job (the walk's findings, the plan's pulls, the cord move, the tester's four measurements).
+
+The 10 remaining FAILs, and why they stay (none can be fixed in this session's files without breaking an owner rule):
+- few-pictures on all four pages (4): the photographs are the owner's decision (DESIGN.md rule 2; product photo
+  rights pending, `ai/PRODUCT-PHOTOS-SHORTLIST-2026-11-06.md`).
+- Home contrast "Assess" 1:1 and "Structured Cabling & Fiber" 1:1 (1): the inspector reads the tab text against the
+  tab's own transparent background; the ink highlight behind it is a separate element (Process.astro, the step
+  slider) and the header's Services menu is closed (Header.astro). Both outside this session's files; both read
+  fine on screen.
+- Plan mono (1) and hairline (1): the cable test's readouts ("IDF2-A-024", "47.2 m", "limit 90 m") and the lines
+  between its five check rows. DESIGN.md rule 4 (mono only for instrument readouts) and the round-1 lines rule
+  ("lines only in the cable-test table, form fields and real list rows") allow exactly these. Kept.
+- Structured cabling hairline (1, FAQ rows, allowed by the same rule; FaqList.astro), eyebrow (1, the word "optics"
+  wrapping onto its own line above the closing heading at 768: a false reading in the page's CTA block) and
+  headline-lines (1, a nine-word FAQ question wrapping to three lines at 390: FaqList.astro). Outside this
+  session's files.
+- The 18 WARNs: the brand's paper colour and type scale (owner's), no footage, the footer line's measure, the
+  right-hand margin at 1440 (the inspector's scrollbar gutter, same on every page), the contact section at 768
+  (not mine), the step strip scrolling sideways at 390 (Process.astro; the owner's chosen phone behaviour, the
+  strip scrolls to the active step), and the Plan page's grey secondary labels at 768 (6.5:1, `--steel` on white,
+  metadata by rule 9).
+- `lint.mjs` on this session's 14 files: 12 flags, all of the same owner-approved kinds (mono readouts in the
+  drawings, the cable-test table lines, the limit bar's two-tone fill) and none introduced by this work.
+
 ## Left out, on purpose
 - InstallDemo, Process, BuildingSvg and BuildingExplorer: the main session's files.
 - The route layer in the site plan no longer fades in as a group (its pieces land one by one), so the legend chip's

@@ -69,12 +69,12 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
       <!-- The test report settles onto the photo after it, then its wires draw (startDelay) -->
       <CableTest variant="compact" class="hero__card" startDelay={800} />
     </div>
-    <!-- The chooser arrives in order: the label, then the three tiles one after another, then the call line -->
-    <div class="hero__choose" data-dock-start>
-      <p class="t-meta hero__choose-label hero-in" id="hero-paths-label" style="--reveal-delay: 120ms">Pick the closest fit</p>
+    <!-- The chooser arrives as one block; inside it the three tiles land one after another (a list, row by row) -->
+    <div class="hero__choose hero-in" data-dock-start style="--reveal-delay: 140ms">
+      <p class="t-meta hero__choose-label" id="hero-paths-label">Pick the closest fit</p>
       <ul role="list" class="hero__paths" aria-labelledby="hero-paths-label">
         {paths.map((p, i) => (
-          <li class="hero-in" style={`--reveal-delay: ${170 + i * 60}ms`}>
+          <li class="hero-in" style={`--reveal-delay: ${200 + i * 70}ms`}>
             <a class:list={['path', { 'path--primary': p.primary }]} href={p.href}>
               <span class="path__title">{p.title}</span>
               <span class="path__detail">{p.detail}</span>
@@ -83,10 +83,10 @@ import heroPhoto from '../../assets/photos/hero-tech-rack.jpg';
           </li>
         ))}
       </ul>
-      <p class="t-small hero__phone hero-in" style="--reveal-delay: 370ms">Or call <a class="tel" href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}<span data-hero-status data-hours={site.hours} hidden></span></p>
+      <p class="t-small hero__phone">Or call <a class="tel" href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}<span data-hero-status data-hours={site.hours} hidden></span></p>
     </div>
-    <ul role="list" class="hero__creds t-meta">
-      {credentials.map((c, i) => <li class="hero-in" style={`--reveal-delay: ${340 + i * 50}ms`}>{c}</li>)}
+    <ul role="list" class="hero__creds t-meta hero-in" style="--reveal-delay: 300ms">
+      {credentials.map((c) => <li>{c}</li>)}
     </ul>
   </div>
 </section>
