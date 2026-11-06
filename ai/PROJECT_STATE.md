@@ -32,6 +32,19 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **Design critique ("critique first") — 2026-11-05 evening (commit 93f8609, `ai/CRITIQUE_2026-11-05.md`).** The owner
+  asked what makes the site look AI-made before listing his own design changes. Method: taste-skill critique
+  (fourteen passes, juror scores with caps) on inspector screenshots of eight pages at 1440/768/390 plus the copy of all
+  18 pages; judge = main session (Fable 5.1), grunt work = Sonnet/Haiku workers (captures, copy extraction, tables).
+  Verdict: a well-made 2025 "technical editorial" template (cream, ink, red, mono labels, hairline grids, index
+  numbers, eyebrow tags) hiding unusually specific content; every page capped at 6.0 by measured tells. Ranked tells:
+  hairlines/outlined boxes, mono micro-labels, eyebrows (77), index numbers, three-line sentence headlines and the
+  slogan title, too few real photos (3/1/1/1/0/0/0/0), empty halves and screens, the same kit sections on every page,
+  10–12 type sizes with 15px grey body, red spent everywhere, then shadows/gradient/✓/map chrome/tablet rows. Order of
+  work in the report (round 1 = retitle the homepage and strip tells 1–4 through the shared components). Screenshots,
+  report.json files and the owner's PDF are in `ai/exports/critique-2026-11-05/` (ignored by git). Owner inventory of
+  design tools (skills, plugins, connectors, asset libraries) given in chat the same evening. Still open: the owner's
+  own list of design changes; the tunnel/preview-link request is on hold (nothing downloaded or pushed).
 - **Owner answers applied — 2026-11-05 (branch `intent-redesign`, commits 59c7773, 084e0dc, 7c3a448, dc768b8, NOT pushed).**
   Run as 5 Sonnet workers (own files each) + Opus proofreader (verdict FIX: one "must", applied; the "should" notes
   applied too). 59c7773: "Licensed · Bonded · Insured" and "BICSI-certified technicians" are off the homepage, About
