@@ -1,0 +1,181 @@
+---
+/**
+ * Open-source notices. One entry per browser-side library or font used by the site.
+ * License texts are read straight from node_modules at build time, so they are copied exactly.
+ * Geist: only the copyright lines are shown, with a link to the full SIL Open Font License.
+ * GSAP ships no license file, so its entry uses its package.json license field and README copyright line.
+ */
+import Base from '../layouts/Base.astro';
+import PageHero from '../components/pages/PageHero.astro';
+import { site } from '../data/site';
+import maplibreLicense from '../../node_modules/maplibre-gl/LICENSE.txt?raw';
+import lenisLicense from '../../node_modules/lenis/LICENSE?raw';
+import lucideLicense from '../../node_modules/@lucide/astro/LICENSE?raw';
+import astroLicense from '../../node_modules/astro/LICENSE?raw';
+
+const description = `Notices for the free software and fonts used to build the ${site.name} website.`;
+
+const geistNotice =
+  'Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font)';
+const geistMonoNotice =
+  'Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)';
+
+interface Entry {
+  name: string;
+  use: string;
+  copyright: string;
+  license: string;
+  href: string;
+  text?: string;
+}
+
+const entries: Entry[] = [
+  {
+    name: 'maplibre-gl',
+    use: 'the service-area map',
+    copyright: 'Copyright (c) 2023, MapLibre contributors',
+    license: 'BSD-3-Clause',
+    href: 'https://github.com/maplibre/maplibre-gl-js',
+    text: maplibreLicense,
+  },
+  {
+    name: 'gsap',
+    use: 'the heading reveal animation',
+    copyright: 'Copyright (c) 2008-2026, GreenSock. All rights reserved.',
+    license: 'GreenSock standard "no charge" license',
+    href: 'https://github.com/greensock/GSAP',
+  },
+  {
+    name: 'lenis',
+    use: 'smooth scrolling',
+    copyright: 'Copyright (c) 2024 darkroom.engineering',
+    license: 'MIT',
+    href: 'https://github.com/darkroomengineering/lenis',
+    text: lenisLicense,
+  },
+  {
+    name: '@lucide/astro',
+    use: 'icons',
+    copyright: 'Copyright (c) 2026 Lucide Icons and Contributors',
+    license: 'ISC (some icons derived from Feather, MIT)',
+    href: 'https://github.com/lucide-icons/lucide',
+    text: lucideLicense,
+  },
+  {
+    name: 'Geist (@fontsource-variable/geist)',
+    use: 'the main typeface',
+    copyright: geistNotice,
+    license: 'SIL Open Font License, Version 1.1',
+    href: 'https://github.com/vercel/geist-font',
+  },
+  {
+    name: 'Geist Mono (@fontsource-variable/geist-mono)',
+    use: 'the monospace typeface',
+    copyright: geistMonoNotice,
+    license: 'SIL Open Font License, Version 1.1',
+    href: 'https://github.com/vercel/geist-font',
+  },
+  {
+    name: 'astro',
+    use: 'building the site',
+    copyright: 'Copyright (c) 2021 Fred K. Schott',
+    license: 'MIT',
+    href: 'https://github.com/withastro/astro',
+    text: astroLicense,
+  },
+];
+---
+
+<Base title="Open-source notices" description={description}>
+  <PageHero
+    label="Notices"
+    title="Open-source notices."
+    lead="This website uses free software and fonts made by others. Their licenses ask us to show these notices."
+    crumbs={[{ label: 'Open-source notices' }]}
+  />
+
+  <article class="notices container">
+    {
+      entries.map((e) => (
+        <section>
+          <h2 class="t-h3">{e.name}</h2>
+          <p>Used for {e.use}.</p>
+          <p class="notices__copy">{e.copyright}</p>
+          <p>
+            License: {e.license}. <a href={e.href}>Project page</a>
+          </p>
+          {e.text && (
+            <details>
+              <summary>License text</summary>
+              <pre>{e.text}</pre>
+            </details>
+          )}
+          {e.license.startsWith('SIL') && (
+            <p>
+              Read the full license at <a href="https://openfontlicense.org/">openfontlicense.org</a>.
+            </p>
+          )}
+          {e.name === 'gsap' && (
+            <p>
+              GSAP is free to use under GreenSock's own license rather than an open-source license. Read it at{' '}
+              <a href="https://gsap.com/standard-license">gsap.com/standard-license</a>.
+            </p>
+          )}
+        </section>
+      ))
+    }
+  </article>
+</Base>
+
+<style>
+  .notices {
+    display: grid;
+    gap: 2.5rem;
+    max-width: 46rem;
+    padding-block: 1rem var(--space-section);
+  }
+
+  .notices section {
+    display: grid;
+    gap: 0.875rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--hairline);
+  }
+
+  .notices p,
+  .notices li {
+    color: var(--steel);
+    line-height: 1.65;
+  }
+
+  .notices__copy {
+    color: var(--ink);
+  }
+
+  .notices summary {
+    color: var(--ink);
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .notices pre {
+    margin-top: 0.875rem;
+    padding: 1rem;
+    border: 1px solid var(--hairline);
+    color: var(--steel);
+    font-size: 0.8125rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .notices a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .notices a:hover {
+    color: var(--signal);
+  }
+</style>

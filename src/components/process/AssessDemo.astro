@@ -301,13 +301,11 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     align-items: start;
     padding-block: 0.5rem;
     border-bottom: 1px solid var(--hairline);
-    opacity: 0.55;
-    transition: opacity 0.3s ease, background 0.3s ease;
+    transition: background 0.3s ease;
   }
 
-  .as__item.is-on {
-    opacity: 1;
-  }
+  /* Not-yet-reached rows are quieter through colour, not opacity: opacity 0.55 gave the
+     detail text 2.4:1. Now steel on paper = 5.9:1 (title and detail), white on steel badge = 6.5:1. */
 
   .as__num {
     display: grid;
@@ -315,10 +313,15 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: var(--ink);
+    background: var(--steel);
     color: var(--white);
     font-size: 0.8125rem;
     letter-spacing: 0;
+    transition: background 0.3s ease;
+  }
+
+  .as__item.is-on .as__num {
+    background: var(--ink);
   }
 
   .as__text {
@@ -329,6 +332,11 @@ const at = segs.map((_, i) => segs.slice(0, i + 1).reduce((a, b) => a + b, 0) / 
 
   .as__item-title {
     font-weight: 600;
+    color: var(--steel);
+    transition: color 0.3s ease;
+  }
+
+  .as__item.is-on .as__item-title {
     color: var(--ink);
   }
 

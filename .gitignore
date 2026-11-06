@@ -33,3 +33,6 @@ yarn-error.log*
 
 # taste-skill dealt sheets (local working files)
 .taste-skill/
+
+# Owner exports (PDFs made for reading on the phone), not part of the site
+ai/exports/
