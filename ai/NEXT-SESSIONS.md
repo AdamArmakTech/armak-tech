@@ -1,6 +1,11 @@
 # Next sessions (written 2026-10-31)
 
-Where things stand: branch `intent-redesign` (latest commits 794120f old look + new features, 1b3fd7b owner fixes). Preview link: https://armak-tech-git-intent-redesign-adamarmaktechs-projects.vercel.app (last pushed at 11afcf0, so it does NOT show the old-look revert yet). Nothing is live; armak.tech still runs GitHub main 9d6993e. Direction A is saved as git tag `direction-a-final`.
+Where things stand (updated 2026-11-05 night): branch `intent-redesign` is at b47565f (cleanup batches 1-4, the owner's
+24 answers, redesign rounds 1-3) and was pushed to GitHub as a preview on 2026-11-05 (the live `main` is untouched at
+9d6993e). Preview link: https://armak-tech-git-intent-redesign-adamarmaktechs-projects.vercel.app, but Vercel's
+Deployment Protection sends anonymous visitors to a Vercel login, so only the owner (logged into Vercel) can open it;
+curl and PageSpeed get a 302. Direction A is saved as git tag `direction-a-final`. The "design session" prompt below is
+superseded: the owner chose "critique first" and three rounds were built from `ai/CRITIQUE_2026-11-05.md`.
 
 The approved plan for the redesign is `ai/plans/REDESIGN-PLAN-2026-10-31.md` (copy of the approved plan). Read it first in the design session.
 

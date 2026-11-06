@@ -32,6 +32,15 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **Publish check — 2026-11-05 night.** Owner asked for the pre-publish check. GitHub `main` is still 9d6993e (Carlitos
+  pushed nothing since our branch split), so there was nothing to merge; our branch is 70 commits ahead. The working
+  branch was pushed as a preview (origin/intent-redesign 11afcf0 → b47565f; `main` untouched; gh account switched to
+  AdamArmakTech, which stays active). Vercel's Deployment Protection sends anonymous visitors to a Vercel login, so
+  the preview could not be checked from here (curl 302 to vercel.com/sso-api; PageSpeed would get the same). Everything
+  checkable locally passed earlier (astro check, build, hCaptcha under the CSP, redirects by config). Still to verify
+  on a real host: the hCaptcha box without the localhost warning, the two old-logo redirects, the vercel.json headers,
+  and the speed test (last live result 100/100 on 2026-11-05, same assets). Options put to the owner: open the preview
+  logged into Vercel, turn off Vercel Authentication for previews, or publish and verify on armak.tech right after.
 - **Redesign round 3 ("Start round 3"), colour, detail, motion — 2026-11-05 night (one code commit after 7a9f2ea,
   NOT pushed). Done by the main session directly (small edits).** Red now only on the action button, FAIL, the HQ
   marker, required marks, errors and link hover: "Next" links and arrows, the "+" on the project count, "See how we
