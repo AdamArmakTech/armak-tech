@@ -82,7 +82,7 @@ const upgradeQuestions = [
     <!-- ── Checklist ── -->
     <section class="plan__section plan__checklist" id="checklist" aria-labelledby="checklist-title">
       <div class="plan__head">
-        <h2 id="checklist-title" class="t-h2">The site-walk checklist.</h2>
+        <h2 id="checklist-title" class="t-h2" data-split>The site-walk checklist.</h2>
         <p class="t-lead">Have these ready and the first visit does the work of two.</p>
       </div>
       <ol class="checklist">
@@ -105,7 +105,7 @@ const upgradeQuestions = [
     <!-- ── Estimator ── -->
     <section class="plan__section plan__section--est" id="estimator" aria-labelledby="estimator-title">
       <div class="plan__head">
-        <h2 id="estimator-title" class="t-h2">Estimate quantities for your office.</h2>
+        <h2 id="estimator-title" class="t-h2" data-split>Estimate quantities for your office.</h2>
         <p class="t-lead">Planning numbers from typical office layouts. Walls, ceiling height and how you use the space change them; the real count comes from the site walk.</p>
       </div>
 
@@ -161,7 +161,7 @@ const upgradeQuestions = [
     <!-- ── Cabling check ── -->
     <section class="plan__section" id="upgrade" aria-labelledby="upgrade-title">
       <div class="plan__head">
-        <h2 id="upgrade-title" class="t-h2">Check the age of your cabling.</h2>
+        <h2 id="upgrade-title" class="t-h2" data-split>Check the age of your cabling.</h2>
       </div>
       <form class="quiz" data-upgrade-check>
         {upgradeQuestions.map((q) => (
@@ -184,7 +184,7 @@ const upgradeQuestions = [
     <!-- ── Which cable? ── -->
     <section class="plan__section plan__section--wide" id="which-cable" aria-labelledby="which-cable-title">
       <div class="plan__head">
-        <h2 id="which-cable-title" class="t-h2">Which cable?</h2>
+        <h2 id="which-cable-title" class="t-h2" data-split>Which cable?</h2>
         <p class="t-lead">Four common choices, what each one can do, and when it makes sense.</p>
       </div>
       <CableCompare />
@@ -192,7 +192,7 @@ const upgradeQuestions = [
 
     <section class="plan__section plan__next" aria-labelledby="plan-next-title" data-dock-hide>
       <div class="plan__head">
-        <h2 id="plan-next-title" class="t-h2">When you’re ready, we’ll walk the site.</h2>
+        <h2 id="plan-next-title" class="t-h2" data-split>When you’re ready, we’ll walk the site.</h2>
         <p class="t-lead">Call or send a note about your building. We’ll walk it with you and put the scope and price in writing.</p>
       </div>
       <NextStep />

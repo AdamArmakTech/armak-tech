@@ -65,17 +65,6 @@ const titleLower = title.charAt(0).toLowerCase() + title.slice(1);
     line-height: 1.45;
   }
 
-  .demo__title::before {
-    content: "";
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    margin-right: 0.5rem;
-    border-radius: 50%;
-    background: var(--signal);
-    vertical-align: 1px;
-  }
-
   .demo__tools {
     display: inline-flex;
     flex-shrink: 0;
@@ -84,10 +73,8 @@ const titleLower = title.charAt(0).toLowerCase() + title.slice(1);
   }
 
   .demo__sample {
-    padding: 0.15rem 0.5rem;
-    border-radius: var(--radius);
-    background: var(--paper-sunken);
     font-size: var(--fs-label);
+    color: var(--steel);
   }
 
   .demo__replay {

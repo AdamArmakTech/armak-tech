@@ -453,22 +453,9 @@ const barPos = (b: Bar) =>
     color: var(--steel);
   }
 
-  .ct__head .t-meta:first-child::before {
-    content: "";
-    display: inline-block;
-    width: 7px;
-    height: 7px;
-    margin-right: 0.5rem;
-    border-radius: 50%;
-    background: var(--signal);
-    vertical-align: 1px;
-  }
-
   .ct__sample {
-    padding: 0.15rem 0.5rem;
-    border-radius: var(--radius);
-    background: var(--paper-sunken);
     font-size: var(--fs-label);
+    color: var(--steel);
   }
 
   .ct__sub {
@@ -986,7 +973,9 @@ const barPos = (b: Bar) =>
     gap: 0.3rem;
     margin-top: 0.4rem;
     font-weight: 500;
-    color: var(--signal);
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   /* ── Result ── */
@@ -1117,7 +1106,9 @@ const barPos = (b: Bar) =>
     font-family: var(--font-sans);
     font-weight: 600;
     font-size: var(--fs-small);
-    color: var(--signal);
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   .ct__how {

@@ -64,7 +64,7 @@ const jsonLd = {
       {services.map((s) => (
         <li class="svc-row">
           <a class="svc-row__link" href={`/services/${s.slug}/`}>
-            <h2 class="svc-row__name">{s.name}</h2>
+            <h2 class="svc-row__name" data-split>{s.name}</h2>
             <p class="svc-row__short">{s.short}</p>
             <ul role="list" class="t-meta svc-row__includes" aria-label="Includes">
               {s.includes.map((item) => <li>{item}</li>)}
@@ -241,7 +241,7 @@ const jsonLd = {
     letter-spacing: -0.01em;
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 640px) {
     .creds__list {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: var(--sp-6);

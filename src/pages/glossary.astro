@@ -370,8 +370,9 @@ const jsonLd = {
     padding-bottom: var(--space-block);
   }
 
+  /* Sticky only on wide screens: wrapped letters and chips would cover most of a phone screen */
   .gl__toolbar {
-    position: sticky;
+    position: static;
     top: var(--header-h);
     z-index: 5;
     display: grid;
@@ -379,6 +380,12 @@ const jsonLd = {
     padding-block: 1rem;
     margin-bottom: 1rem;
     background: var(--paper);
+  }
+
+  @media (min-width: 1024px) {
+    .gl__toolbar {
+      position: sticky;
+    }
   }
 
   /*
@@ -397,9 +404,8 @@ const jsonLd = {
 
   .gl__az {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.125rem;
-    overflow-x: auto;
-    scrollbar-width: none;
   }
 
   .gl__az::-webkit-scrollbar {
@@ -429,9 +435,8 @@ const jsonLd = {
 
   .gl__cats {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
-    overflow-x: auto;
-    scrollbar-width: none;
     padding-bottom: 2px;
   }
 

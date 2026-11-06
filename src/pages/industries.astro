@@ -41,7 +41,7 @@ const description =
   <div class="sectors container">
     {rows.map((r) => (
       <section id={r.slug} class="sector" aria-labelledby={`${r.slug}-title`}>
-        <h2 id={`${r.slug}-title`} class="t-h2 sector__name">{r.name}</h2>
+        <h2 id={`${r.slug}-title`} class="t-h2 sector__name" data-split>{r.name}</h2>
         <div class="sector__body">
           <p class="t-lead sector__need">{r.need}</p>
           <p class="sector__systems">
