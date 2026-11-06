@@ -45,6 +45,13 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   report.json files and the owner's PDF are in `ai/exports/critique-2026-11-05/` (ignored by git). Owner inventory of
   design tools (skills, plugins, connectors, asset libraries) given in chat the same evening. Still open: the owner's
   own list of design changes; the tunnel/preview-link request is on hold (nothing downloaded or pushed).
+  **Round 1 approved ("Start round 1"), owner answers 2026-11-05 late evening:** homepage title STAYS "Built for the
+  future." (he saw three fact-based options and kept it); the first screen may be recomposed but keeps the photo, the
+  test card and the three choice boxes (title, one line, one red button first; boxes without outlines); DROP the
+  A-01..A-06 service codes and the 01..05 step numbers (real cable IDs inside the demos stay); switch OFF the mono
+  labels, thin lines and boxed section tags site-wide (lines stay only in the test table, form fields and real
+  list rows such as FAQ and glossary). These un-pause DESIGN.md rules 3 (now: no codes at all except cable IDs),
+  4, 5 and 9; rule 1's headline stands. Builder/judge: main session (Fable 5.1); mechanical edits: Sonnet workers.
 - **Owner answers applied — 2026-11-05 (branch `intent-redesign`, commits 59c7773, 084e0dc, 7c3a448, dc768b8, NOT pushed).**
   Run as 5 Sonnet workers (own files each) + Opus proofreader (verdict FIX: one "must", applied; the "should" notes
   applied too). 59c7773: "Licensed · Bonded · Insured" and "BICSI-certified technicians" are off the homepage, About
