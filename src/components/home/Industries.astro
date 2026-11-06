@@ -10,7 +10,7 @@ import { industries } from '../../data/content';
       intro="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan the install around them."
     />
 
-    <ul role="list" class="industries__grid">
+    <ul role="list" class="industries__grid" data-reveal-group>
       {industries.map((ind) => (
         <li class="industry">
           <a href={`/industries/#${ind.slug}`} class="industry__link">

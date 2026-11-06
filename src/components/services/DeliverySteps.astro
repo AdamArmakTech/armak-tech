@@ -27,7 +27,7 @@ const {
   <div class="container">
     <SectionHead title={title} intro={intro} />
 
-    <ol role="list" class="delivery__steps">
+    <ol role="list" class="delivery__steps" data-reveal-group>
       {steps.map((step) => (
         <li class="dstep">
           <h3 class="t-h3 dstep__title">{step.title}</h3>
@@ -37,7 +37,7 @@ const {
     </ol>
 
     {cta && (
-      <div class="delivery__next" data-dock-hide>
+      <div class="delivery__next" data-dock-hide data-reveal>
         <p class="t-meta">Every job starts with the assessment.</p>
         <Button href={contactHref({ about })} icon="arrow">{CTA_LABEL}</Button>
       </div>

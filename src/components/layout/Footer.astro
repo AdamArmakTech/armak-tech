@@ -20,15 +20,15 @@ const year = new Date().getFullYear();
   <div class="container">
     {cta && (
     <div class="site-footer__cta">
-      <p class="t-h1 site-footer__headline">Let’s scope your<br />next build.</p>
-      <div class="site-footer__cta-actions">
+      <p class="t-h1 site-footer__headline" data-split>Let’s scope your<br />next build.</p>
+      <div class="site-footer__cta-actions" data-reveal>
         <Button href={contactHref()} variant="primary" size="lg">{CTA_LABEL}</Button>
         <Button href={site.phoneHref} variant="outline-inverse" size="lg" icon="phone" class="tel">{site.phone}</Button>
       </div>
     </div>
     )}
 
-    <div class="site-footer__grid">
+    <div class="site-footer__grid" data-reveal-group>
       <div class="site-footer__brand">
         <Logo variant="inverse" height={44} />
         <p class="t-small t-muted">{site.description}</p>
@@ -66,9 +66,9 @@ const year = new Date().getFullYear();
       </div>
     </div>
 
-    <p class="t-small t-muted site-footer__area">Serving Southern California: {serviceArea.map((c) => c.name).join(', ')}</p>
+    <p class="t-small t-muted site-footer__area" data-reveal="fade">Serving Southern California: {serviceArea.map((c) => c.name).join(', ')}</p>
 
-    <div class="site-footer__legal t-meta">
+    <div class="site-footer__legal t-meta" data-reveal="fade">
       <span>© {year} {site.name}</span>
       <span>Est. {FOUNDED}</span>
       {site.license && <span>{site.license}</span>}

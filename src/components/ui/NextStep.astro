@@ -15,9 +15,11 @@ interface Props {
   about?: string;
   tone?: 'light' | 'inverse';
   class?: string;
+  /** Anything else (e.g. data-reveal) lands on the wrapper */
+  [key: string]: unknown;
 }
 
-const { about, tone = 'light', class: className } = Astro.props;
+const { about, tone = 'light', class: className, ...rest } = Astro.props;
 
 const routes = [
   {
@@ -38,7 +40,7 @@ const routes = [
 ];
 ---
 
-<div class:list={['next', `next--${tone}`, className]}>
+<div class:list={['next', `next--${tone}`, className]} {...rest}>
   <Button href={contactHref({ about })} size="lg" variant="primary">{CTA_LABEL}</Button>
   <ul role="list" class="next__routes">
     {routes.map(({ href, title, detail }) => (

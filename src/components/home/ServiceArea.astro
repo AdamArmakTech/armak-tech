@@ -107,7 +107,7 @@ const groups = counties.map((county) => ({
       </figure>
 
       <div class="area__list">
-        <div class="area__hq">
+        <div class="area__hq" data-reveal>
           <p class="t-meta area__hq-label">Headquarters</p>
           <p class="t-h3 area__hq-city">{hq.city}, {hq.region}</p>
         </div>
@@ -121,7 +121,7 @@ const groups = counties.map((county) => ({
         </template>
 
         <h3 class="visually-hidden">Cities we serve, by county</h3>
-        <ul role="list" class="area__counties">
+        <ul role="list" class="area__counties" data-reveal-group>
           {groups.map((g) => (
             <li class="area__county">
               <p class="area__county-head">

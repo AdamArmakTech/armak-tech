@@ -54,8 +54,8 @@ const jsonLd = {
     lead="Cabling, networks, cameras, doors, phones and AV come with a lot of jargon. Here’s what each word means, why it matters to your building, and the questions people usually ask. No background needed."
     crumbs={[{ label: 'Glossary' }]}
   >
-    <p class="gl__stats">{glossary.length} terms in {usedCategories.length} categories. Tap any term for its Q&A.</p>
-    <div slot="aside" class="gl-aside">
+    <p class="gl__stats" data-reveal>{glossary.length} terms in {usedCategories.length} categories. Tap any term for its Q&A.</p>
+    <div slot="aside" class="gl-aside" data-reveal="scale">
       <label class="gl-search" for="gl-search-input">
         <Search size={20} stroke-width={1.75} aria-hidden="true" />
         <span class="visually-hidden">Search the glossary</span>
@@ -87,8 +87,8 @@ const jsonLd = {
 
     {groups.map((g) => (
       <section class="gl__group" id={`letter-${g.letter === '#' ? 'num' : g.letter}`} data-gl-group={g.letter} aria-labelledby={`gl-h-${g.letter === '#' ? 'num' : g.letter}`}>
-        <h2 class="gl__letter" id={`gl-h-${g.letter === '#' ? 'num' : g.letter}`}>{g.letter === '#' ? '0–9' : g.letter}</h2>
-        <ul role="list" class="gl__list">
+        <h2 class="gl__letter" data-reveal id={`gl-h-${g.letter === '#' ? 'num' : g.letter}`}>{g.letter === '#' ? '0–9' : g.letter}</h2>
+        <ul role="list" class="gl__list" data-reveal-group="draw">
           {g.entries.map((e) => (
             <li data-gl-term={e.slug} data-cat={e.category} data-search={haystack(e)}>
               <details class="term" id={e.slug}>

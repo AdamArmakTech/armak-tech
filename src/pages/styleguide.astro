@@ -28,6 +28,15 @@ const typeScale = [
 ];
 
 const projectTypes = ['Structured cabling', 'Network and Wi-Fi', 'Cameras', 'Access control', 'Not sure yet'];
+/** The scroll-reveal vocabulary (src/scripts/motion.ts + the motion block in global.css). */
+const reveals = [
+  { attr: 'data-reveal', use: 'Rise, the default: fades in while lifting 24px (16px on phones). Text blocks, rows, lists.' },
+  { attr: 'data-reveal="fade"', use: 'Opacity only. Breadcrumbs, logos, quiet lines.' },
+  { attr: 'data-reveal="clip"', use: 'A masked wipe upward. Photos and figures.' },
+  { attr: 'data-reveal="scale"', use: 'Settles from 0.98 to 1. Sheets, cards, panels.' },
+  { attr: 'data-reveal="draw"', use: 'Rise, and any inline SVG strokes inside draw themselves. Rows and links with an icon.' },
+  { attr: 'data-reveal-group="scale"', use: 'On a parent: its children reveal one after another with that variant, about 70 ms apart. data-reveal-step="60" changes the gap.' },
+];
 
 // Dev-only page. The style guide is for building the site, not for visitors (owner, 2026-11-05).
 // In a production build it answers "204 No Content" (an empty answer), so Astro writes no file
@@ -46,7 +55,7 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
 
   <section class="container sg-block">
     <SectionHead title="Color" intro="Paper is the page. White is a raised sheet and paper-sunken is a recessed area; neither has a border. Red marks the one next action, plus FAIL." split={false} />
-    <ul role="list" class="swatches">
+    <ul role="list" class="swatches" data-reveal-group="fade">
       {colors.map((c) => (
         <li class="swatch">
           <span class="swatch__chip" style={`background: var(${c.token})`} />
@@ -60,7 +69,7 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
 
   <section class="container sg-block">
     <SectionHead title="Type" intro="Geist Sans for everything people read. Geist Mono only for what a technician reads off a tester or a drawing." split={false} />
-    <ul role="list" class="type-list">
+    <ul role="list" class="type-list" data-reveal-group>
       {typeScale.map((t) => (
         <li class="type-row">
           <span class="t-meta type-row__name">{t.name}</span>
@@ -70,6 +79,17 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
     </ul>
   </section>
 
+  <section class="container sg-block">
+    <SectionHead title="Reveals" intro="Blocks reveal once as they scroll into view, top to bottom, on every screen size. One attribute per block; a group on a parent makes its children follow one another. Every reveal is transform, opacity or clip-path only, and reduced motion shows everything at once." split={false} />
+    <ul role="list" class="sg-reveals" data-reveal-group="scale">
+      {reveals.map((r) => (
+        <li class="sg-panel">
+          <code class="t-small sg-code">{r.attr}</code>
+          <p class="t-small">{r.use}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
   <section class="container sg-block">
     <SectionHead title="Buttons" split={false} />
     <div class="sg-grid-2">
@@ -181,6 +201,17 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
     .sg-grid-2 {
       grid-template-columns: 1fr 1fr;
     }
+  }
+
+  .sg-reveals {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--col-gap);
+  }
+
+  .sg-code {
+    font-family: var(--font-mono);
+    font-weight: 500;
   }
 
   .sg-panel {

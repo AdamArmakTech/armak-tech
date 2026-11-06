@@ -17,7 +17,7 @@ const { service, detail } = Astro.props;
 ---
 
 <section class="svc-hero container" aria-labelledby="svc-hero-title">
-  <nav class="svc-hero__crumbs t-meta" aria-label="Breadcrumb">
+  <nav class="svc-hero__crumbs t-meta" aria-label="Breadcrumb" data-reveal="fade">
     <ol role="list">
       <li><a href="/">Home</a></li>
       <li><a href="/services/">Services</a></li>
@@ -30,13 +30,13 @@ const { service, detail } = Astro.props;
       <h1 id="svc-hero-title" class="t-h1 svc-hero__headline">{service.name}</h1>
       <p class="t-lead" data-reveal>{detail.headline}</p>
       <p class="svc-hero__intro" data-reveal>{detail.intro}</p>
-      <div class="svc-hero__ctas" data-dock-start>
+      <div class="svc-hero__ctas" data-dock-start data-reveal>
         <Button href={contactHref({ about: service.slug })} size="lg">{CTA_LABEL}</Button>
         <Button href={site.phoneHref} variant="outline" size="lg" icon="phone">{site.phone}</Button>
       </div>
     </div>
 
-    <aside class="sheet" aria-label={`${service.name} scope summary`}>
+    <aside class="sheet" aria-label={`${service.name} scope summary`} data-reveal="scale">
       <div class="sheet__block">
         <p class="t-meta sheet__heading">Includes</p>
         <ul role="list" class="sheet__list">
