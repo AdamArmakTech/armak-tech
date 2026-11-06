@@ -50,12 +50,11 @@ const jsonLd = {
   <JsonLd data={jsonLd} slot="head" />
 
   <PageHero
-    label="Glossary"
     title="Low-voltage terms, in plain English."
     lead="Cabling, networks, cameras, doors, phones and AV come with a lot of jargon. Here’s what each word means, why it matters to your building, and the questions people usually ask. No background needed."
     crumbs={[{ label: 'Glossary' }]}
-    spec={[`${glossary.length} terms`, `${usedCategories.length} categories`, 'Tap any term for Q&A']}
   >
+    <p class="gl__stats">{glossary.length} terms in {usedCategories.length} categories. Tap any term for its Q&A.</p>
     <label class="gl-search" for="gl-search-input">
       <Search size={20} stroke-width={1.75} aria-hidden="true" />
       <span class="visually-hidden">Search the glossary</span>
@@ -65,7 +64,7 @@ const jsonLd = {
 
   <section class="gl container" aria-label="Glossary terms" data-gl>
     <div class="gl__toolbar">
-      <nav class="gl__az t-mono" aria-label="Jump to letter">
+      <nav class="gl__az" aria-label="Jump to letter">
         {alphabet.map((l) =>
           lettersWithTerms.has(l) ? (
             <a href={`#letter-${l === '#' ? 'num' : l}`} data-gl-letter={l}>{l}</a>
@@ -82,7 +81,7 @@ const jsonLd = {
       </div>
     </div>
 
-    <p class="gl__status t-mono t-muted" aria-live="polite" data-gl-status></p>
+    <p class="gl__status t-meta" aria-live="polite" data-gl-status></p>
 
     {groups.map((g) => (
       <section class="gl__group" id={`letter-${g.letter === '#' ? 'num' : g.letter}`} data-gl-group={g.letter} aria-labelledby={`gl-h-${g.letter === '#' ? 'num' : g.letter}`}>
@@ -113,7 +112,7 @@ const jsonLd = {
 
   <dialog class="gl-drawer" aria-labelledby="gl-drawer-title" data-gl-drawer data-lenis-prevent>
     <div class="gl-drawer__head">
-      <p class="t-mono t-muted">Glossary</p>
+      <p class="t-meta">Glossary</p>
       <button class="gl-drawer__close" type="button" data-gl-close>
         <X size={22} stroke-width={1.5} aria-hidden="true" />
         <span class="visually-hidden">Close</span>
@@ -122,7 +121,7 @@ const jsonLd = {
     <h2 class="t-h2 gl-drawer__title" id="gl-drawer-title" data-gl-drawer-title></h2>
     <div class="gl-drawer__body" data-gl-drawer-body></div>
     <div class="gl-drawer__cta">
-      <p class="t-mono t-muted">Not sure what your building needs?</p>
+      <p class="t-meta">Not sure what your building needs?</p>
       <Button href={contactHref({ mode: 'quick' })} icon="arrow" data-gl-drawer-cta>Ask about this term</Button>
     </div>
   </dialog>
@@ -326,14 +325,17 @@ const jsonLd = {
     width: min(100%, 560px);
     padding: 0.25rem 1rem;
     background: var(--white);
-    border: 1px solid var(--field-line);
     border-radius: var(--radius);
-    transition: border-color var(--dur-fast) ease;
   }
 
   .gl-search:focus-within {
-    border-color: var(--ink);
-    box-shadow: 0 0 0 1px var(--ink);
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  .gl__stats {
+    margin-bottom: var(--sp-4);
+    color: var(--text);
   }
 
   .gl-search input {
@@ -369,7 +371,6 @@ const jsonLd = {
     padding-block: 1rem;
     margin-bottom: 1rem;
     background: var(--paper);
-    border-bottom: 1px solid var(--hairline);
   }
 
   /*
@@ -404,7 +405,8 @@ const jsonLd = {
     min-width: 2.75rem;
     min-height: 2.75rem;
     border-radius: var(--radius);
-    font-size: 0.8125rem;
+    font-size: var(--fs-small);
+    font-weight: 500;
   }
 
   .gl__az a:hover {
@@ -459,8 +461,9 @@ const jsonLd = {
   .gl__group {
     display: grid;
     gap: 1rem;
-    padding-block: 2rem;
-    scroll-margin-top: calc(var(--header-h) + 9rem);
+    padding-block: var(--sp-6);
+    /* the html scroll-padding already clears the header; this clears the pinned toolbar below it */
+    scroll-margin-top: var(--gl-toolbar-h);
   }
 
   /* display:grid above beats the browser's [hidden] rule, so letters with no matching term stayed on screen
@@ -469,16 +472,10 @@ const jsonLd = {
     display: none;
   }
 
-  /* a hairline only between letters that are shown, never above the first one (rule 5: hairlines separate rows) */
-  .gl__group:not([hidden]) ~ .gl__group {
-    border-top: 1px solid var(--hairline);
-  }
-
   .gl__letter {
-    font-family: var(--font-mono);
     font-size: clamp(2.5rem, 2rem + 2vw, 3.75rem);
-    font-weight: 400;
-    letter-spacing: -0.04em;
+    font-weight: 600;
+    letter-spacing: -0.03em;
     line-height: 1;
   }
 
@@ -503,10 +500,6 @@ const jsonLd = {
       position: static;
     }
 
-    .gl__group {
-      scroll-margin-top: 0;
-    }
-
     .gl {
       --gl-toolbar-h: 0px;
     }
@@ -516,8 +509,6 @@ const jsonLd = {
     .gl__group {
       grid-template-columns: 2fr 10fr;
       align-items: start;
-      /* clears the pinned toolbar: 185px with one row of chips, 239px with two */
-      scroll-margin-top: calc(var(--header-h) + 10.5rem);
     }
 
     .gl__list {
@@ -573,7 +564,7 @@ const jsonLd = {
 
   .term__expansion {
     grid-column: 1;
-    font-size: 0.8125rem;
+    font-size: var(--fs-small);
     color: var(--steel);
   }
 
@@ -625,7 +616,6 @@ const jsonLd = {
     background: var(--paper);
     color: var(--ink);
     border: 0;
-    border-left: 1px solid var(--hairline);
     overflow-y: auto;
     overscroll-behavior: contain;
   }
@@ -645,8 +635,6 @@ const jsonLd = {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--hairline);
   }
 
   .gl-drawer__close {
@@ -678,8 +666,6 @@ const jsonLd = {
     justify-items: start;
     gap: 1rem;
     margin-top: 0.75rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--hairline);
   }
 
   .gl-drawer__cta :global(.btn) {
@@ -717,7 +703,6 @@ const jsonLd = {
       height: auto;
       max-height: 88dvh;
       border-left: 0;
-      border-top: 1px solid var(--hairline);
       border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
 

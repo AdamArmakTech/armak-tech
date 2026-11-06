@@ -42,12 +42,11 @@ const f = (name: string) => `${id}-${name}`;
 
     <!-- Step 1 -->
     <div class="cform__step" data-step="1" role="group" aria-labelledby={f('s1-title')}>
-      <div class="cform__progress" data-js-only hidden data-focus-first tabindex="-1">
-        <p class="t-mono cform__count">Step 1 of 2</p>
-        <span class="cform__bars" aria-hidden="true"><span class="is-on"></span><span></span></span>
-      </div>
+      <H class="t-h3 cform__title" id={f('s1-title')} tabindex="-1" data-focus-first>What are you building?</H>
 
-      <H class="t-h3 cform__title" id={f('s1-title')} tabindex="-1">What are you building?</H>
+      <div class="cform__progress" data-js-only hidden>
+        <p class="t-meta cform__count">Step 1 of 2</p>
+      </div>
 
       <fieldset class="cform__chips" aria-describedby={f('type-error')}>
         <legend class="field__label">Select all that apply <span class="cform__req" aria-hidden="true">*</span><span class="visually-hidden"> (required)</span></legend>
@@ -69,14 +68,13 @@ const f = (name: string) => `${id}-${name}`;
 
     <!-- Step 2 -->
     <div class="cform__step" data-step="2" role="group" aria-labelledby={f('s2-title')}>
-      <div class="cform__progress" data-js-only hidden>
-        <p class="t-mono cform__count">Step 2 of 2</p>
-        <span class="cform__bars" aria-hidden="true"><span class="is-on"></span><span class="is-on"></span></span>
-      </div>
       <H class="t-h3 cform__title" id={f('s2-title')} tabindex="-1" data-s2-title>Where can we reach you?</H>
+      <div class="cform__progress" data-js-only hidden>
+        <p class="t-meta cform__count">Step 2 of 2</p>
+      </div>
       <!-- Filled by the script when the form was opened from a service page, glossary term, etc. -->
       <p class="cform__about" data-cform-about hidden>
-        <span class="t-mono">Asking about</span>
+        <span class="t-meta">Asking about</span>
         <strong data-about-text></strong>
         <button type="button" class="cform__about-change" data-about-change>Change</button>
       </p>
@@ -86,7 +84,7 @@ const f = (name: string) => `${id}-${name}`;
         <span>We added your estimator numbers below. Edit anything.</span>
         <button type="button" class="cform__about-change" data-prefill-clear>Clear</button>
       </p>
-      <p class="t-mono t-muted cform__req-note"><span class="cform__req" aria-hidden="true">*</span> Required</p>
+      <p class="t-meta cform__req-note"><span class="cform__req" aria-hidden="true">*</span> Required</p>
 
       <div class="cform__fields">
         <div class="field">
@@ -124,14 +122,14 @@ const f = (name: string) => `${id}-${name}`;
         <p class="cform__error" data-error-for="captcha" aria-live="polite"></p>
       </div>
       <noscript>
-        <p class="t-small t-muted">JavaScript is off in your browser, so this form cannot run its human check. Call us instead: <a class="cform__link" href={site.phoneHref}>{site.phone}</a></p>
+        <p class="t-small">JavaScript is off in your browser, so this form cannot run its human check. Call us instead: <a class="cform__link" href={site.phoneHref}>{site.phone}</a></p>
       </noscript>
 
       <div class="cform__actions">
         <Button type="button" variant="outline" size="lg" icon="none" data-back data-js-only hidden>Back</Button>
         <Button type="submit" variant="primary" size="lg" data-submit>Send my request</Button>
       </div>
-      <p class="t-small t-muted cform__privacy">
+      <p class="t-small cform__privacy">
         By sending this, you agree to our <a class="cform__link" href="/terms/">terms</a>. We only use your details to reply to you. <a class="cform__link" href="/privacy/">Privacy policy</a>
       </p>
     </div>
@@ -140,14 +138,14 @@ const f = (name: string) => `${id}-${name}`;
   </form>
 
   <div class="cform__success" data-success hidden>
-    <p class="t-mono cform__success-label"><span class="cform__success-mark" aria-hidden="true"></span>Request received</p>
+    <p class="t-meta cform__success-label"><span class="cform__success-mark" aria-hidden="true"></span>Request received</p>
     <H class="t-h3 cform__title" tabindex="-1" data-success-title>Thanks. We’ve got your project details.</H>
     <ol role="list" class="cform__next">
-      <li><span class="t-mono">01</span>We review what you’re building and where.</li>
-      <li><span class="t-mono">02</span>We reach out to schedule a site assessment.</li>
-      <li><span class="t-mono">03</span>You get a written plan and price for the work.</li>
+      <li>We review what you’re building and where.</li>
+      <li>We reach out to schedule a site assessment.</li>
+      <li>You get a written plan and price for the work.</li>
     </ol>
-    <p class="t-small t-muted">
+    <p class="t-small">
       Need us sooner? Call <a class="cform__link" href={site.phoneHref}>{site.phone}</a>, {site.hours.replace(' · ', ', ')}
     </p>
   </div>
@@ -179,6 +177,7 @@ const f = (name: string) => `${id}-${name}`;
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-top: -1rem;
   }
 
   .cform__progress[hidden] {
@@ -187,22 +186,6 @@ const f = (name: string) => `${id}-${name}`;
 
   .cform__count {
     color: var(--steel);
-  }
-
-  .cform__bars {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 4px;
-    width: 72px;
-  }
-
-  .cform__bars span {
-    height: 2px;
-    background: var(--hairline-strong);
-  }
-
-  .cform__bars span.is-on {
-    background: var(--ink);
   }
 
   .cform__title:focus,
@@ -239,14 +222,6 @@ const f = (name: string) => `${id}-${name}`;
     gap: 0.5rem;
   }
 
-  .cform__chip-list .chip span {
-    background: var(--white);
-  }
-
-  .cform__chip-list .chip input:checked + span {
-    background: var(--ink);
-  }
-
   .cform__req {
     color: var(--signal);
   }
@@ -264,9 +239,7 @@ const f = (name: string) => `${id}-${name}`;
     gap: 0.5rem 0.75rem;
     margin-top: -0.5rem;
     padding: 0.75rem 1rem;
-    background: var(--paper);
-    border: 1px solid var(--hairline);
-    border-left: 3px solid var(--signal);
+    background: var(--paper-sunken);
     border-radius: var(--radius);
   }
 
@@ -274,10 +247,6 @@ const f = (name: string) => `${id}-${name}`;
   .cform__note[hidden],
   .cform__prefill[hidden] {
     display: none;
-  }
-
-  .cform__about .t-mono {
-    color: var(--steel);
   }
 
   .cform__about-change {
@@ -391,11 +360,9 @@ const f = (name: string) => `${id}-${name}`;
 
   .cform__status.is-error {
     padding: 0.875rem 1rem;
-    border: 1px solid var(--signal);
-    border-left-width: 3px;
     border-radius: var(--radius);
     color: var(--ink);
-    background: var(--white);
+    background: var(--paper-sunken);
   }
 
   .cform__link {
@@ -430,10 +397,9 @@ const f = (name: string) => `${id}-${name}`;
     will-change: transform, opacity;
   }
 
-  /* No-JS: both steps visible — separate them with a rule */
+  /* No-JS: both steps visible, separated by space */
   .cform:not(.is-enhanced) .cform__step[data-step="2"] {
     padding-top: 2rem;
-    border-top: 1px solid var(--hairline);
   }
 
   /* Success panel */
@@ -463,15 +429,7 @@ const f = (name: string) => `${id}-${name}`;
 
   .cform__next {
     display: grid;
-    border-top: 1px solid var(--hairline);
-  }
-
-  .cform__next li {
-    display: grid;
-    grid-template-columns: 2.5rem 1fr;
-    gap: 0.75rem;
-    padding-block: 0.875rem;
-    border-bottom: 1px solid var(--hairline);
+    gap: var(--sp-3);
   }
 
   .cform__next[hidden] {
@@ -503,11 +461,6 @@ const f = (name: string) => `${id}-${name}`;
       opacity: 1;
       transform: none;
     }
-  }
-
-  .cform__next .t-mono {
-    color: var(--steel);
-    padding-top: 0.3rem;
   }
 
   @media (min-width: 640px) {

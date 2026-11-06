@@ -67,15 +67,15 @@ const sections = [
 
     <dl class="meta">
       <div>
-        <dt class="t-mono">Sector</dt>
+        <dt class="t-meta">Sector</dt>
         <dd>{p.sector}</dd>
       </div>
       <div>
-        <dt class="t-mono">Location</dt>
+        <dt class="t-meta">Location</dt>
         <dd>{p.location}</dd>
       </div>
       <div class="meta__wide">
-        <dt class="t-mono">Services</dt>
+        <dt class="t-meta">Services</dt>
         <dd>
           <ul role="list" class="meta__svcs">
             {projectServices.map((s) => <li><a href={`/services/${s.slug}/`}>{s.name}</a></li>)}
@@ -96,7 +96,7 @@ const sections = [
           loading="eager"
           fetchpriority="high"
         />
-        {p.placeholder && <figcaption class="cover__tag t-mono">Stock image · placeholder</figcaption>}
+        {p.placeholder && <figcaption class="cover__tag t-meta">Stock image · placeholder</figcaption>}
       </figure>
     </div>
   )}

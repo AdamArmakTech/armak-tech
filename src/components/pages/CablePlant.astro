@@ -3,7 +3,7 @@
  * One cable plant, several device generations. A year-axis chart, 2013 to this year.
  * Every date and figure comes from src/data/content.ts, where each carries a source.
  * Bar positions are computed from the years, never typed in. Plain HTML, not SVG, so text stays readable.
- * Rule 9 (real labels, text you can read), rule 4 (mono only for years and numbers).
+ * Rule 9 (real labels, text you can read), rule 4 (mono only for the years on the chart axis).
  */
 import { lifespans, cablingSourced, wifiBasis, wifiGenerations, deviceSupport, cablingWarranty, shownSignature } from '../../data/content';
 
@@ -40,23 +40,23 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
 
   <div class="plant__chart">
     <div class="plant__row">
-      <p class="plant__label">Cabling in the walls and ceilings</p>
+      <p class="t-meta plant__label">Cabling in the walls and ceilings</p>
       <div class="plant__track">
         <div class="plant__cable" data-bar style="--d: 0ms; --t: 600ms">
           <span class="plant__solid" style={`width: ${cabSolid}%`}></span>
           <span class="plant__open" style={`left: ${cabSolid}%`}></span>
         </div>
         <p class="plant__over">
-          Designed for <span class="t-mono">{cabYears}+</span> years<sup><a href="#plant-note-1" aria-label="Note 1">1</a></sup>
+          Designed for {cabYears}+ years<sup><a href="#plant-note-1" aria-label="Note 1">1</a></sup>
         </p>
       </div>
       {signature.length > 0 && (
-        <p class="plant__sig">Put in on day one: {signature.map((s) => s.label).join(' · ')}</p>
+        <p class="plant__sig">Put in on day one: {signature.map((s) => s.label).join(', ')}</p>
       )}
     </div>
 
     <div class="plant__row">
-      <p class="plant__label">
+      <p class="t-meta plant__label">
         Wi-Fi releases
         <span class="plant__basis">Dates are {wifiBasis}<sup><a href="#plant-note-2" aria-label="Note 2">2</a></sup></span>
       </p>
@@ -80,7 +80,7 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
         {segs.map((s) => (
           <li>
             <span class="plant__name">{s.name}</span>
-            <span class="t-mono plant__yr">{s.year}</span>
+            <span class="t-meta plant__yr">{s.year}</span>
           </li>
         ))}
       </ul>
@@ -88,16 +88,16 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
 
     <div class="plant__axis" aria-hidden="true">
       {ticks.map((t) => (
-        <span class={`plant__tick plant__tick--${t.edge} t-mono`} style={`left: ${t.left}%`}>{t.year}</span>
+        <span class={`plant__tick plant__tick--${t.edge} t-meta`} style={`left: ${t.left}%`}>{t.year}</span>
       ))}
     </div>
   </div>
 
-  <p class="plant__caption">Example: cabling put in when Wi-Fi 5 certification launched in <span class="t-mono">{START}</span>. The chart shows timing only, not cable speeds.</p>
+  <p class="plant__caption">Example: cabling put in when Wi-Fi 5 certification launched in {START}. The chart shows timing only, not cable speeds.</p>
 
   {cisco && axis && (
     <p class="plant__notes">
-      Makers support a device for a set time after they stop selling it: Cisco, <span class="t-mono">{cisco.years}</span> years of hardware support<sup><a href="#plant-note-3" aria-label="Note 3">3</a></sup>; Axis, <span class="t-mono">{axis.years}</span> years of camera hardware service<sup><a href="#plant-note-4" aria-label="Note 4">4</a></sup>.
+      Makers support a device for a set time after they stop selling it: Cisco, {cisco.years} years of hardware support<sup><a href="#plant-note-3" aria-label="Note 3">3</a></sup>; Axis, {axis.years} years of camera hardware service<sup><a href="#plant-note-4" aria-label="Note 4">4</a></sup>.
     </p>
   )}
 
@@ -135,12 +135,11 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
 </script>
 
 <style>
-  /* A plain card: white, 1px hairline edge, site radius */
+  /* A white sheet: no border, site radius */
   .plant {
     margin-top: var(--space-block);
     padding: var(--sp-5);
     background: var(--white);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius);
     display: grid;
     gap: var(--sp-5);
@@ -172,9 +171,6 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
   .plant__label {
     display: grid;
     gap: 2px;
-    font-size: var(--fs-small);
-    font-weight: 600;
-    color: var(--ink);
   }
 
   .plant__basis {
@@ -188,7 +184,7 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
     height: 2.25rem;
   }
 
-  /* Cabling: solid for the design years, then open (dashed) to show "at least" */
+  /* Cabling: dark for the design years, then a light fill to show "at least" */
   .plant__cable {
     position: absolute;
     inset: 0;
@@ -208,8 +204,7 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
     right: 0;
     top: 0;
     bottom: 0;
-    border: 1.5px dashed var(--ink);
-    border-left: 0;
+    background: var(--hairline-strong);
   }
 
   .plant__over {
@@ -238,7 +233,7 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
   }
 
   .plant__seg--open {
-    border-right-style: dashed;
+    border-right: 0;
   }
 
   /* Wi-Fi names: under each segment from 640px, a plain list under it on phones */
@@ -272,7 +267,6 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
 
   .plant__yr {
     color: var(--steel);
-    font-size: var(--fs-label);
   }
 
   /* Year axis */
@@ -280,13 +274,11 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
     display: none;
     position: relative;
     height: 1.75rem;
-    border-top: 1px solid var(--hairline-strong);
   }
 
   .plant__tick {
     position: absolute;
     top: var(--sp-1);
-    font-size: var(--fs-label);
     color: var(--steel);
     transform: translateX(-50%);
   }
@@ -301,11 +293,6 @@ const axis = deviceSupport.find((d) => d.maker === 'Axis');
 
   .plant__tick--end {
     transform: translateX(-100%);
-  }
-
-  .plant__notes :global(.t-mono),
-  .plant__caption :global(.t-mono) {
-    font-size: 0.92em;
   }
 
   .plant__caption {

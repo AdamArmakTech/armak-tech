@@ -16,8 +16,6 @@ const routes = [
 
 <Base title="Page Not Found" description="This page has moved or never existed. Browse Armak Technologies’ cabling, network, security and AV services for Southern California, or get in touch." noindex>
   <PageHero
-    label="Not found"
-    labelTone="signal"
     title="This port isn’t patched."
     lead="The page you’re looking for has moved or never existed. Pick a route below, or call us and we’ll point you in the right direction."
   >
@@ -27,14 +25,14 @@ const routes = [
     </div>
 
     <figure slot="aside" class="trace">
-      <header class="trace__head t-mono">
+      <header class="trace__head t-meta">
         <span>Link test</span>
         <span class="trace__fail">Fail</span>
       </header>
       <div class="trace__result">
         <div>
           <p class="trace__status">OPEN</p>
-          <p class="t-mono trace__std">HTTP 404 · No link detected</p>
+          <p class="t-readout trace__std">HTTP 404, no link detected</p>
         </div>
       </div>
       <nav aria-label="Suggested pages">
@@ -43,7 +41,7 @@ const routes = [
             <li>
               <a href={r.href}>
                 <span>{r.label}</span>
-                <span class="t-mono trace__ok">Connect →</span>
+                <span class="t-meta trace__ok">Connect</span>
               </a>
             </li>
           ))}
@@ -61,9 +59,7 @@ const routes = [
     max-width: 420px;
     padding: 1.25rem;
     background: var(--white);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-raise);
   }
 
   .trace__head {
@@ -73,9 +69,6 @@ const routes = [
   }
 
   .trace__fail {
-    padding: 0.15rem 0.4rem;
-    border: 1px solid var(--signal);
-    border-radius: var(--radius);
     color: var(--signal);
   }
 
@@ -83,8 +76,6 @@ const routes = [
     display: flex;
     align-items: center;
     gap: 0.875rem;
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--hairline);
   }
 
   .trace__status {
@@ -107,20 +98,15 @@ const routes = [
     gap: 0.75rem;
     min-height: 44px;
     padding: 0.75rem 0.25rem;
-    border-bottom: 1px solid var(--hairline);
     font-weight: 500;
     transition: background var(--dur-fast) ease;
   }
 
-  .trace__routes li:first-child a {
-    border-top: 1px solid var(--hairline);
-  }
-
   .trace__routes a:hover {
-    background: var(--white);
+    background: var(--paper-sunken);
   }
 
   .trace__ok {
-    color: var(--pass);
+    color: var(--ink);
   }
 </style>

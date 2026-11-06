@@ -8,7 +8,6 @@
 import { Printer } from '@lucide/astro';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
-import Label from '../components/ui/Label.astro';
 import NextStep from '../components/ui/NextStep.astro';
 import CableTest from '../components/ui/CableTest.astro';
 import CableCompare from '../components/plan/CableCompare.astro';
@@ -64,12 +63,11 @@ const upgradeQuestions = [
 
 <Base title="Plan a Project: Checklist, Estimator & Cabling Check" description={description} footerCta={false}>
   <PageHero
-    label="Plan a project"
     title="Start with the practical bits."
     lead="Three tools for the planning stage: what to have ready before anyone visits, a rough idea of quantities, and a quick check on whether your cabling is due for an upgrade."
     crumbs={[{ label: 'Plan a project' }]}
   >
-    <nav class="plan__jump t-mono" aria-label="On this page">
+    <nav class="plan__jump t-meta" aria-label="On this page">
       <a href="#checklist">Checklist</a>
       <a href="#estimator">Estimator</a>
       <a href="#upgrade">Cabling check</a>
@@ -82,18 +80,14 @@ const upgradeQuestions = [
     <!-- ── Checklist ── -->
     <section class="plan__section plan__checklist" id="checklist" aria-labelledby="checklist-title">
       <div class="plan__head">
-        <Label>Before we visit</Label>
         <h2 id="checklist-title" class="t-h2">The site-walk checklist.</h2>
         <p class="t-lead">Have these ready and the first visit does the work of two.</p>
       </div>
-      <ol role="list" class="checklist">
-        {checklist.map((item, i) => (
+      <ol class="checklist">
+        {checklist.map((item) => (
           <li class="checklist__item">
-            <span class="t-mono checklist__num">{String(i + 1).padStart(2, '0')}</span>
-            <span class="checklist__text">
-              <span class="checklist__title">{item.title}</span>
-              <span class="checklist__detail">{item.detail}</span>
-            </span>
+            <span class="checklist__title">{item.title}</span>
+            <span class="checklist__detail">{item.detail}</span>
           </li>
         ))}
       </ol>
@@ -102,14 +96,13 @@ const upgradeQuestions = [
           <Printer size={18} stroke-width={1.75} aria-hidden="true" />
           Print or save as PDF
         </button>
-        <p class="t-small t-muted plan__printnote">Printed from armak.tech/plan · {site.phone}</p>
+        <p class="t-small plan__printnote">Printed from armak.tech/plan · {site.phone}</p>
       </div>
     </section>
 
     <!-- ── Estimator ── -->
     <section class="plan__section" id="estimator" aria-labelledby="estimator-title">
       <div class="plan__head">
-        <Label>Rough quantities</Label>
         <h2 id="estimator-title" class="t-h2">Estimate quantities for your office.</h2>
         <p class="t-lead">Planning numbers from typical office layouts. Walls, ceiling height and how you use the space change them; the real count comes from the site walk.</p>
       </div>
@@ -158,7 +151,7 @@ const upgradeQuestions = [
         </dl>
       </form>
       <div class="est__send">
-        <p class="t-small t-muted est__plan">Want these numbers checked against your actual floor? <a class="plan__link" href={contactHref({ about: 'estimate' })}>Send us your plan</a> and we’ll scope it.</p>
+        <p class="t-small est__plan">Want these numbers checked against your actual floor? <a class="plan__link" href={contactHref({ about: 'estimate' })}>Send us your plan</a> and we’ll scope it.</p>
         <Button variant="ink" size="lg" href={contactHref({ about: 'structured-cabling' })} data-est-send>Send these numbers with my request</Button>
       </div>
     </section>
@@ -166,7 +159,6 @@ const upgradeQuestions = [
     <!-- ── Cabling check ── -->
     <section class="plan__section" id="upgrade" aria-labelledby="upgrade-title">
       <div class="plan__head">
-        <Label>Three questions</Label>
         <h2 id="upgrade-title" class="t-h2">Check the age of your cabling.</h2>
       </div>
       <form class="quiz" data-upgrade-check>
@@ -181,7 +173,7 @@ const upgradeQuestions = [
           </fieldset>
         ))}
         <div class="quiz__result" data-quiz-result hidden aria-live="polite">
-          <p class="t-mono quiz__verdict" data-quiz-verdict></p>
+          <p class="quiz__verdict" data-quiz-verdict></p>
           <p class="quiz__why" data-quiz-why></p>
         </div>
       </form>
@@ -190,7 +182,6 @@ const upgradeQuestions = [
     <!-- ── Which cable? ── -->
     <section class="plan__section plan__section--wide" id="which-cable" aria-labelledby="which-cable-title">
       <div class="plan__head">
-        <Label>Compare cables</Label>
         <h2 id="which-cable-title" class="t-h2">Which cable?</h2>
         <p class="t-lead">Four common choices, what each one can do, and when it makes sense.</p>
       </div>
@@ -200,7 +191,6 @@ const upgradeQuestions = [
     <!-- ── Sample report ── -->
     <section class="plan__section" id="sample-report" aria-labelledby="report-title">
       <div class="plan__head">
-        <Label>What you get at handover</Label>
         <h2 id="report-title" class="t-h2">A sample certification report.</h2>
         <p class="t-lead">Every cable we install is tested like this. This is the kind of report that comes with the job, one per cable.</p>
       </div>
@@ -211,7 +201,6 @@ const upgradeQuestions = [
 
     <section class="plan__section plan__next" aria-labelledby="plan-next-title" data-dock-hide>
       <div class="plan__head">
-        <Label>Next step</Label>
         <h2 id="plan-next-title" class="t-h2">When you’re ready, we’ll walk the site.</h2>
         <p class="t-lead">Call or send a note about your building. We’ll walk it with you and put the scope and price in writing.</p>
       </div>
@@ -336,14 +325,16 @@ const upgradeQuestions = [
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    padding-block: 0.5rem;
-    border-bottom: 1px solid var(--hairline-strong);
+    padding: 0.5rem 1rem;
+    background: var(--paper-sunken);
+    border-radius: var(--radius);
     color: var(--ink);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .plan__jump a:hover {
-      border-color: var(--signal);
+      background: var(--ink);
+      color: var(--paper);
     }
   }
 
@@ -358,8 +349,6 @@ const upgradeQuestions = [
     min-width: 0;
     display: grid;
     gap: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--hairline);
     scroll-margin-top: calc(var(--header-h) + 1.5rem);
   }
 
@@ -382,26 +371,25 @@ const upgradeQuestions = [
   /* Checklist */
   .checklist {
     display: grid;
-    border-top: 1px solid var(--ink);
+    gap: var(--sp-5);
     max-width: 52rem;
+    padding-left: 1.75rem;
+    list-style: decimal;
   }
 
   .checklist__item {
-    display: grid;
-    grid-template-columns: 3rem minmax(0, 1fr);
-    gap: 1rem;
-    padding-block: 1rem;
-    border-bottom: 1px solid var(--hairline);
+    display: list-item;
+    padding-left: 0.5rem;
   }
 
-  .checklist__num {
-    color: var(--signal);
-    padding-top: 0.2rem;
+  .checklist__item::marker {
+    font-weight: 600;
+    color: var(--steel);
   }
 
-  .checklist__text {
-    display: grid;
-    gap: 0.25rem;
+  .checklist__title,
+  .checklist__detail {
+    display: block;
   }
 
   .checklist__title {
@@ -409,6 +397,7 @@ const upgradeQuestions = [
   }
 
   .checklist__detail {
+    margin-top: 0.25rem;
     color: var(--text);
     font-size: var(--fs-small);
   }
@@ -456,7 +445,7 @@ const upgradeQuestions = [
   .est__out {
     margin: 0;
     display: grid;
-    border-top: 1px solid var(--ink);
+    gap: var(--sp-5);
     max-width: 52rem;
   }
 
@@ -464,8 +453,6 @@ const upgradeQuestions = [
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.25rem 1.5rem;
-    padding-block: 1rem;
-    border-bottom: 1px solid var(--hairline);
   }
 
   .est__row dt {
@@ -474,9 +461,8 @@ const upgradeQuestions = [
 
   .est__row dd {
     margin: 0;
-    font-family: var(--font-mono);
-    font-size: 1.75rem;
-    letter-spacing: -0.04em;
+    font-size: var(--fs-h3);
+    font-weight: 600;
     line-height: 1;
     font-variant-numeric: tabular-nums;
   }
@@ -514,7 +500,7 @@ const upgradeQuestions = [
     margin-block: -13.5px;
     margin-left: 0.5rem;
     font-weight: 400;
-    font-size: 0.8125rem;
+    font-size: var(--fs-label);
     color: var(--steel);
     text-decoration: underline;
     text-underline-offset: 3px;
@@ -558,8 +544,6 @@ const upgradeQuestions = [
     gap: 0.5rem;
     padding: 1.25rem 1.375rem;
     background: var(--white);
-    border: 1px solid var(--hairline);
-    border-left: 3px solid var(--signal);
     border-radius: var(--radius);
   }
 
@@ -592,7 +576,8 @@ const upgradeQuestions = [
   }
 
   .quiz__verdict {
-    color: var(--signal);
+    font-weight: 600;
+    color: var(--ink);
   }
 
   .quiz__why {

@@ -1,43 +1,33 @@
 ---
 import Base from '../layouts/Base.astro';
-import Label from '../components/ui/Label.astro';
-import Stripe from '../components/ui/Stripe.astro';
 import Button from '../components/ui/Button.astro';
 import SectionHead from '../components/ui/SectionHead.astro';
-import SpecStrip from '../components/ui/SpecStrip.astro';
-import ServiceTile from '../components/ui/ServiceTile.astro';
-import Stat from '../components/ui/Stat.astro';
-import CtaDock from '../components/layout/CtaDock.astro';
-import { services, site, yearsInBusiness, FOUNDED, serviceArea } from '../data/site';
-import { contactHref, CTA_LABEL } from '../lib/cta';
-
-import cableBundles from '../assets/photos/cabling-bundles-white.jpg';
-import rackRow from '../assets/photos/wifi-ap-tray.jpg';
-import patchColors from '../assets/photos/conference-room.jpg';
-import dataHall from '../assets/photos/desk-phone.jpg';
+import { site } from '../data/site';
+import { CTA_LABEL } from '../lib/cta';
 
 const colors = [
   { name: 'Paper', token: '--paper', hex: '#F4F3EF', use: 'Page background' },
-  { name: 'White', token: '--white', hex: '#FFFFFF', use: 'Raised cards' },
-  { name: 'Ink', token: '--ink', hex: '#0B0D10', use: 'Text, inverse surfaces' },
-  { name: 'Steel', token: '--steel', hex: '#565E6B', use: 'Secondary text' },
-  { name: 'Hairline', token: '--hairline', hex: '#D9D7D0', use: '1px rules' },
-  { name: 'Signal', token: '--signal', hex: '#d0101a', use: 'Primary buttons and FAIL only' },
-  { name: 'Armak Blue', token: '--armak-blue', hex: '#1D3F8F', use: 'Diagrams & map only' },
+  { name: 'Paper sunken', token: '--paper-sunken', hex: '#EBE9E3', use: 'Recessed areas, idle chips, outline buttons' },
+  { name: 'White', token: '--white', hex: '#FFFFFF', use: 'Raised sheets (no border, no shadow)' },
+  { name: 'Ink', token: '--ink', hex: '#0B0D10', use: 'Headings, selected chips, inverse surfaces' },
+  { name: 'Text', token: '--text', hex: '#2B3039', use: 'Running text and leads' },
+  { name: 'Steel', token: '--steel', hex: '#565E6B', use: 'Metadata only (t-meta)' },
+  { name: 'Signal', token: '--signal', hex: '#D0101A', use: 'Primary buttons and FAIL only' },
   { name: 'Pass', token: '--pass', hex: '#167640', use: 'PASS only' },
 ];
 
 const typeScale = [
   { cls: 't-display', name: 'Display', sample: 'Built for the future.' },
-  { cls: 't-h1', name: 'H1', sample: 'Built for the future.' },
-  { cls: 't-h2', name: 'H2', sample: 'Every run tested. Every port labeled.' },
-  { cls: 't-h3', name: 'H3', sample: 'Structured Cabling & Fiber' },
+  { cls: 't-h1', name: 'H1', sample: 'Every run tested.' },
+  { cls: 't-h2', name: 'H2', sample: 'Every port labeled.' },
+  { cls: 't-h3', name: 'H3', sample: 'Structured cabling and fiber' },
   { cls: 't-lead', name: 'Lead', sample: 'We design, install and certify the low-voltage systems Southern California’s facilities run on.' },
-  { cls: '', name: 'Body', sample: 'Every drop we install is tested end-to-end and documented, so your IT team inherits a system they can actually maintain.' },
-  { cls: 't-mono', name: 'Mono label', sample: 'IDF2-A-024 · Cat 6A · 47.2 m' },
+  { cls: '', name: 'Body', sample: 'Every drop we install is tested end to end and documented, so your IT team inherits a system they can maintain.' },
+  { cls: 't-meta', name: 'Meta (t-meta)', sample: 'Breadcrumbs, form labels, captions and quiet notes.' },
+  { cls: 't-readout', name: 'Readout (t-readout)', sample: 'IDF2-A-024  92.4 m  PASS' },
 ];
 
-const projectTypes = ['Structured cabling', 'Network & Wi-Fi', 'Cameras', 'Access control', 'Voice', 'Audio / video', 'Not sure yet'];
+const projectTypes = ['Structured cabling', 'Network and Wi-Fi', 'Cameras', 'Access control', 'Not sure yet'];
 
 // Dev-only page. The style guide is for building the site, not for visitors (owner, 2026-11-05).
 // In a production build it answers "204 No Content" (an empty answer), so Astro writes no file
@@ -47,69 +37,44 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
 ---
 
 <Base title="Style guide" noindex>
-  <!-- ─────────── Intro ─────────── -->
   <section class="container sg-intro">
-    <h1 class="t-display" data-split>Style guide.</h1>
+    <h1 class="t-h1" data-split>Style guide.</h1>
     <p class="t-lead">
       The pieces every page is built from. The rules behind them are in ai/DESIGN.md.
     </p>
   </section>
 
-  <!-- ─────────── Hero preview ─────────── -->
   <section class="container sg-block">
-    <SectionHead label="Hero preview" title="How the homepage opens." split={false} />
-    <p class="t-lead">The live homepage is the reference for the hero. Open it at <a href="/">the homepage</a> instead of a mock here.</p>
-  </section>
-
-  <!-- ─────────── Color ─────────── -->
-  <section class="container sg-block">
-    <SectionHead label="Color" title="Paper, ink, and one signal." intro="Red marks the one next action on a screen, plus FAIL. Green marks only PASS." split={false} />
+    <SectionHead title="Color" intro="Paper is the page. White is a raised sheet and paper-sunken is a recessed area; neither has a border. Red marks the one next action, plus FAIL." split={false} />
     <ul role="list" class="swatches">
       {colors.map((c) => (
         <li class="swatch">
           <span class="swatch__chip" style={`background: var(${c.token})`} />
           <span class="swatch__name">{c.name}</span>
-          <span class="t-mono t-muted">{c.hex}</span>
-          <span class="t-small t-muted">{c.use}</span>
+          <span class="t-meta">{c.hex}</span>
+          <span class="t-small">{c.use}</span>
         </li>
       ))}
     </ul>
-    <div class="sg-row">
-      <div class="sg-stripe-demo">
-        <Stripe height={10} />
-        <p class="t-mono t-muted">T568B stripe: pins 1 → 8. A demo only; the site uses it nowhere except the cable test wire map.</p>
-      </div>
-    </div>
   </section>
 
-  <!-- ─────────── Type ─────────── -->
   <section class="container sg-block">
-    <SectionHead label="Typography" title="Geist, set tight and confident." intro="Geist Sans for everything people read; Geist Mono for anything a technician would print on a label." split={false} />
+    <SectionHead title="Type" intro="Geist Sans for everything people read. Geist Mono only for what a technician reads off a tester or a drawing." split={false} />
     <ul role="list" class="type-list">
       {typeScale.map((t) => (
         <li class="type-row">
-          <span class="t-mono t-muted type-row__name">{t.name}</span>
+          <span class="t-meta type-row__name">{t.name}</span>
           <p class={t.cls}>{t.sample}</p>
         </li>
       ))}
     </ul>
   </section>
 
-  <!-- ─────────── Labels & buttons ─────────── -->
   <section class="container sg-block">
-    <SectionHead label="Labels & actions" title="Labeled like a finished rack." split={false} />
+    <SectionHead title="Buttons" split={false} />
     <div class="sg-grid-2">
       <div class="sg-panel">
-        <p class="t-mono t-muted">Labels</p>
-        <div class="sg-wrap">
-          <Label code="A-01">Structured Cabling &amp; Fiber</Label>
-          <Label code="A-02">Networking &amp; Wi-Fi</Label>
-          <Label code="01">Step number</Label>
-          <Label>No code</Label>
-        </div>
-      </div>
-      <div class="sg-panel">
-        <p class="t-mono t-muted">Buttons</p>
+        <p class="t-meta">On paper</p>
         <div class="sg-wrap">
           <Button>{CTA_LABEL}</Button>
           <Button variant="ink">Ink</Button>
@@ -119,46 +84,17 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
         </div>
       </div>
       <div class="sg-panel sg-panel--ink surface-ink">
-        <p class="t-mono t-muted">On ink</p>
+        <p class="t-meta">On ink</p>
         <div class="sg-wrap">
-          <Label code="A-01" tone="inverse">Structured Cabling &amp; Fiber</Label>
           <Button>Primary</Button>
           <Button variant="outline-inverse" icon="none">Outline</Button>
         </div>
       </div>
-      <div class="sg-panel">
-        <p class="t-mono t-muted">Spec strip</p>
-        <SpecStrip items={[`Est. ${FOUNDED}`, `${site.hq.city} HQ`, 'Test reports included', `${site.supportHours} support`]} />
-      </div>
     </div>
   </section>
 
-  <!-- ─────────── Tiles ─────────── -->
   <section class="container sg-block">
-    <SectionHead label="Service tiles" title="Everything you do, visible at once." intro="Replaces the one-card-at-a-time decks. Each tile links to its own service page." split={false} />
-    <div class="tiles">
-      <ServiceTile href={`/services/${services[0].slug}/`} code={services[0].code} title={services[0].name} description={services[0].short} image={cableBundles} size="feature" class="tiles__feature" />
-      <ServiceTile href={`/services/${services[1].slug}/`} code={services[1].code} title={services[1].name} description={services[1].short} image={rackRow} />
-      <ServiceTile href={`/services/${services[2].slug}/`} code={services[2].code} title={services[2].name} description={services[2].short} image={dataHall} />
-      <ServiceTile href={`/services/${services[3].slug}/`} code={services[3].code} title={services[3].name} description={services[3].short} />
-      <ServiceTile href={`/services/${services[4].slug}/`} code={services[4].code} title={services[4].name} description={services[4].short} image={patchColors} />
-    </div>
-  </section>
-
-  <!-- ─────────── Stats ─────────── -->
-  <section class="container sg-block">
-    <SectionHead label="Numbers" title="Measured figures in mono, labels in sans." split={false} />
-    <div class="stats">
-      <Stat value={yearsInBusiness} label="Years in business" detail={`Since ${FOUNDED}. Computed at build, so never out of date.`} />
-      <Stat value={site.projectsDelivered} suffix="+" label="Projects delivered" />
-      <Stat value={site.supportHours} label="Support" detail={`For ${site.supportScope}.`} />
-      <Stat value={serviceArea.length} label="Cities served" />
-    </div>
-  </section>
-
-  <!-- ─────────── Form ─────────── -->
-  <section class="container sg-block">
-    <SectionHead label="Form" title="Two steps, no friction." intro="Step 1 is a tap. Step 2 is contact details. Shorter forms get more site assessments." split={false} />
+    <SectionHead title="Form" intro="Chips are filled: paper-sunken idle, ink selected. Fields have an underline and a plain label above." split={false} />
     <form class="sg-form">
       <fieldset class="sg-form__chips">
         <legend class="field__label">What are you building?</legend>
@@ -170,31 +106,11 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
       </fieldset>
       <div class="sg-form__fields">
         <label class="field"><span class="field__label">Name</span><input class="field__control" placeholder="Jane Cooper" /></label>
-        <label class="field"><span class="field__label">Company</span><input class="field__control" placeholder="Company name" /></label>
         <label class="field"><span class="field__label">Email</span><input class="field__control" type="email" placeholder="jane@company.com" /></label>
-        <label class="field"><span class="field__label">Phone</span><input class="field__control" type="tel" placeholder="(818) 555-0100" /></label>
         <label class="field sg-form__full"><span class="field__label">Project details</span><textarea class="field__control" placeholder="Site location, size, timeline."></textarea></label>
       </div>
       <Button variant="primary" size="lg" type="submit">Send my request</Button>
     </form>
-  </section>
-
-  <!-- ─────────── Calls to action ─────────── -->
-  <section class="container sg-block">
-    <SectionHead label="Calls to action" title="One ask, in the right place." intro="Header, hero, at most one mid-page prompt, and a closing panel. On phones the bar stands in for the header button." split={false} />
-    <div class="sg-grid-2">
-      <div class="sg-panel">
-        <p class="t-mono t-muted">Phone bar (under 640px, after the hero CTAs)</p>
-        <CtaDock preview />
-      </div>
-      <div class="sg-panel">
-        <p class="t-mono t-muted">Mid-page prompt</p>
-        <div class="sg-wrap">
-          <p class="t-mono t-muted">Every job starts at step 01.</p>
-          <Button href={contactHref()} icon="arrow">{CTA_LABEL}</Button>
-        </div>
-      </div>
-    </div>
   </section>
 </Base>
 
@@ -217,65 +133,6 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
     padding-block: var(--space-block);
   }
 
-  /* Hero preview */
-  .hero-preview {
-    display: grid;
-    gap: var(--space-block) var(--col-gap);
-    align-items: end;
-  }
-
-  .hero-preview__copy {
-    display: grid;
-    gap: 1.75rem;
-    justify-items: start;
-  }
-
-  /* :global — these classes land on child components, outside this page's scope */
-  .hero-preview :global(.hero-preview__spec) {
-    width: 100%;
-  }
-
-  .hero-preview__title {
-    max-width: 11ch;
-  }
-
-  .hero-preview__ctas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .hero-preview__media {
-    position: relative;
-    padding-bottom: 3rem;
-  }
-
-  .hero-preview__media img {
-    width: 100%;
-    aspect-ratio: 4 / 5;
-    max-height: 72vh;
-    object-fit: cover;
-    border-radius: var(--radius);
-  }
-
-  .hero-preview__media :global(.hero-preview__card) {
-    position: absolute;
-    left: -1rem;
-    bottom: 0;
-    width: min(320px, 85%);
-  }
-
-  @media (min-width: 900px) {
-    .hero-preview {
-      grid-template-columns: 7fr 5fr;
-    }
-
-    .hero-preview__media :global(.hero-preview__card) {
-      left: -4rem;
-    }
-  }
-
-  /* Swatches */
   .swatches {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -289,7 +146,6 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
 
   .swatch__chip {
     height: 96px;
-    border: 1px solid var(--hairline);
     border-radius: var(--radius);
     margin-bottom: 0.5rem;
   }
@@ -298,26 +154,14 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
     font-weight: 600;
   }
 
-  .sg-row {
-    margin-top: 2.5rem;
-  }
-
-  .sg-stripe-demo {
-    display: grid;
-    gap: 0.75rem;
-    max-width: 520px;
-  }
-
-  /* Type */
   .type-list {
     display: grid;
+    gap: var(--sp-6);
   }
 
   .type-row {
     display: grid;
     gap: 0.5rem;
-    padding-block: 1.5rem;
-    border-bottom: 1px solid var(--hairline);
   }
 
   @media (min-width: 900px) {
@@ -328,7 +172,6 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
     }
   }
 
-  /* Panels */
   .sg-grid-2 {
     display: grid;
     gap: var(--col-gap);
@@ -346,13 +189,11 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
     align-content: start;
     padding: 1.5rem;
     background: var(--white);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius);
   }
 
   .sg-panel--ink {
     background: var(--ink);
-    border-color: var(--ink);
   }
 
   .sg-wrap {
@@ -362,41 +203,6 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
     align-items: center;
   }
 
-  /* Tiles */
-  .tiles {
-    display: grid;
-    gap: var(--col-gap);
-  }
-
-  @media (min-width: 640px) {
-    .tiles {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .tiles :global(.tiles__feature) {
-      grid-column: 1 / -1;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .tiles {
-      grid-template-columns: repeat(3, 1fr);
-    }
-
-    .tiles :global(.tiles__feature) {
-      grid-column: span 2;
-      grid-row: span 2;
-    }
-  }
-
-  /* Stats */
-  .stats {
-    display: grid;
-    gap: 2.5rem var(--col-gap);
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  }
-
-  /* Form */
   .sg-form {
     display: grid;
     gap: 2.5rem;
@@ -404,7 +210,7 @@ if (import.meta.env.PROD) return new Response(null, { status: 204 });
     max-width: 860px;
     padding: clamp(1.5rem, 1rem + 2vw, 3rem);
     background: var(--white);
-    border: 1px solid var(--hairline);
+    border-radius: var(--radius);
   }
 
   .sg-form__chips {

@@ -4,7 +4,6 @@
  * The sector → service mapping below is a general guide derived from each sector's `need`;
  * TODO(content): confirm sectors and typical systems with Armak.
  */
-import { ArrowRight } from '@lucide/astro';
 import Base from '../layouts/Base.astro';
 import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
@@ -22,7 +21,6 @@ const description =
 
 <Base title="Industries · Southern California" description={description} footerCta={false}>
   <PageHero
-    label="Industries"
     title="Buildings we plan for."
     lead="Every type of building has its own constraints, like operating hours, compliance rules and size. We plan each install around them, and the cabling behind every system goes in to ANSI/TIA standards."
     crumbs={[{ label: 'Industries' }]}
@@ -43,24 +41,17 @@ const description =
   <div class="sectors container">
     {rows.map((r) => (
       <section id={r.slug} class="sector" aria-labelledby={`${r.slug}-title`}>
-        <div class="sector__main">
-          <h2 id={`${r.slug}-title`} class="t-h2 sector__name">{r.name}</h2>
+        <h2 id={`${r.slug}-title`} class="t-h2 sector__name">{r.name}</h2>
+        <div class="sector__body">
           <p class="t-lead sector__need">{r.need}</p>
-        </div>
-
-        <div class="sector__systems">
-          <p class="t-mono sector__systems-head">Typical systems</p>
-          <ul role="list" class="sector__list">
-            {r.services.map((s) => (
-              <li>
-                <a href={`/services/${s.slug}/`} class="sector__svc">
-                  <span class="t-mono sector__svc-code">{s.code}</span>
-                  <span class="sector__svc-name">{s.name}</span>
-                  <ArrowRight class="sector__svc-arrow" size={18} stroke-width={1.75} aria-hidden="true" />
-                </a>
-              </li>
+          <p class="sector__systems">
+            Typical systems:{' '}
+            {r.services.map((s, i) => (
+              <>
+                <a href={`/services/${s.slug}/`} class="sector__svc">{s.name}</a>{i < r.services.length - 1 ? ', ' : '.'}
+              </>
             ))}
-          </ul>
+          </p>
         </div>
       </section>
     ))}
@@ -91,100 +82,63 @@ const description =
     gap: 0.625rem;
     min-height: 44px;
     padding: 0.5rem 0.875rem;
-    border: 1px solid var(--field-line);
+    background: var(--paper-sunken);
     border-radius: var(--radius);
     font-size: var(--fs-small);
-    transition: background var(--dur-fast) ease, border-color var(--dur-fast) ease, color var(--dur-fast) ease;
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
   @media (hover: hover) and (pointer: fine) {
     .jump__link:hover {
       background: var(--ink);
-      border-color: var(--ink);
       color: var(--paper);
     }
   }
 
-  /* ── Sector rows ── */
+  /* ── Sector rows: separated by space only ── */
   .sectors {
     padding-bottom: var(--space-block);
   }
 
   .sector {
     display: grid;
-    gap: 1.5rem var(--col-gap);
-    padding-block: clamp(2.5rem, 1.8rem + 3vw, 4.5rem);
-    border-top: 1px solid var(--hairline);
+    gap: 1.25rem var(--col-gap);
+    padding-block: clamp(2rem, 1.4rem + 2.5vw, 4rem);
     scroll-margin-top: calc(var(--header-h) + var(--sp-4));
-  }
-
-  .sector:first-child {
-    border-top-color: var(--ink);
-  }
-
-  .sector__main {
-    display: grid;
-    gap: 1rem;
-    align-content: start;
   }
 
   .sector__name {
     max-width: 14ch;
   }
 
+  .sector__body {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+    min-width: 0;
+  }
+
   .sector__need {
-    color: var(--steel);
+    color: var(--text);
+    max-width: 38em;
   }
 
   .sector__systems {
-    display: grid;
-    gap: 0.75rem;
-    align-content: start;
-  }
-
-  .sector__systems-head {
-    color: var(--steel);
-  }
-
-  .sector__list {
-    border-top: 1px solid var(--ink);
-  }
-
-  .sector__list li {
-    border-bottom: 1px solid var(--hairline);
+    font-size: var(--fs-body);
+    color: var(--text);
+    max-width: 38em;
   }
 
   .sector__svc {
-    display: grid;
-    grid-template-columns: 3rem minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 0.75rem;
-    min-height: 56px;
-    padding: 0.875rem 0.25rem;
-    transition: background var(--dur-fast) ease;
-  }
-
-  .sector__svc-code {
-    color: var(--steel);
-  }
-
-  .sector__svc-name {
-    font-weight: 500;
-  }
-
-  .sector__svc :global(.sector__svc-arrow) {
-    color: var(--steel);
-    transition: transform var(--dur) var(--ease-out), color var(--dur-fast) ease;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+    padding-block: 0.6rem;
   }
 
   @media (hover: hover) and (pointer: fine) {
     .sector__svc:hover {
-      background: var(--white);
-    }
-
-    .sector__svc:hover :global(.sector__svc-arrow) {
-      color: var(--ink);
-      transform: translateX(3px);
+      color: var(--signal);
     }
   }
 
@@ -206,13 +160,12 @@ const description =
       align-items: start;
     }
 
-    .sector__main {
-      grid-column: 1 / span 6;
+    .sector__name {
+      grid-column: 1 / span 4;
     }
 
-    .sector__systems {
-      grid-column: 8 / -1;
-      padding-top: 0.5rem;
+    .sector__body {
+      grid-column: 5 / -1;
     }
   }
 </style>

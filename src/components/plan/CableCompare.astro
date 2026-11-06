@@ -2,7 +2,7 @@
 /**
  * "Which cable?" table: Cat 6, Cat 6A, OM4 and OS2 side by side.
  * One table. Under 900px each row becomes a labelled card (no sideways scroll).
- * Figures come from published standards (see the footnote); mono type is only for measured values.
+ * Figures come from published standards (see the footnote); values are set in the text face.
  */
 import { contactHref } from '../../lib/cta';
 
@@ -93,7 +93,7 @@ const cables = [
     </tbody>
   </table>
 
-  <p class="cc__foot t-small t-muted">
+  <p class="cc__foot t-small">
     Figures from ANSI/TIA-568.2-D and 568.3-D (cabling), TIA TSB-155-A (10 Gb/s over Cat 6), TIA TSB-184-A
     (PoE heat in cable bundles) and IEEE 802.3 (1000BASE-T, 802.3bz for 2.5 and 5 Gb/s, 10GBASE-T,
     10GBASE-SR, 10GBASE-LR, 40GBASE-SR4, 100GBASE-SR4, 100GBASE-LR4, 802.3bt for PoE). Distances are
@@ -113,7 +113,7 @@ const cables = [
     min-width: 0;
   }
 
-  /* Desktop: a white card with a hairline border; phone: each cable is its own white card */
+  /* Desktop: a white sheet with row lines; phone: each cable is its own white card */
   .cc__table {
     display: block;
     border-collapse: collapse;
@@ -135,7 +135,7 @@ const cables = [
   }
 
   .cc__val {
-    font-family: var(--font-mono);
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
     color: var(--ink);
   }
@@ -169,13 +169,12 @@ const cables = [
     gap: var(--sp-3);
     padding: var(--sp-4);
     background: var(--white);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius);
   }
 
   .cc__name {
     font-weight: 600;
-    font-size: 1.125rem;
+    font-size: var(--fs-body);
     text-align: left;
   }
 
@@ -191,10 +190,8 @@ const cables = [
   .cc__table td::before {
     content: attr(data-label);
     grid-row: 1 / span 2;
-    font-family: var(--font-mono);
-    font-size: var(--fs-label);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
+    font-size: var(--fs-small);
+    font-weight: 500;
     color: var(--steel);
   }
 
@@ -220,7 +217,6 @@ const cables = [
   .cc__ask {
     margin: 0;
     padding-top: var(--sp-4);
-    border-top: 1px solid var(--hairline);
     color: var(--text);
   }
 
@@ -235,7 +231,6 @@ const cables = [
       display: table;
       width: 100%;
       background: var(--white);
-      border: 1px solid var(--hairline);
       border-radius: var(--radius);
     }
 
@@ -273,10 +268,7 @@ const cables = [
 
     .cc__table thead th {
       color: var(--steel);
-      font-family: var(--font-mono);
-      font-size: var(--fs-label);
-      letter-spacing: var(--tracking-label);
-      text-transform: uppercase;
+      font-size: var(--fs-small);
       font-weight: 500;
       padding-block: var(--sp-3);
       border-bottom: 1px solid var(--hairline);

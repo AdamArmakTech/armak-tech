@@ -9,7 +9,6 @@ import PageHero from '../components/pages/PageHero.astro';
 import PageCta from '../components/pages/PageCta.astro';
 import PlaceholderNote from '../components/pages/PlaceholderNote.astro';
 import SectionHead from '../components/ui/SectionHead.astro';
-import Label from '../components/ui/Label.astro';
 import Button from '../components/ui/Button.astro';
 import CablePlant from '../components/pages/CablePlant.astro';
 import Numbers from '../components/home/Numbers.astro';
@@ -26,27 +25,18 @@ const description = `Armak Technologies has designed and installed low-voltage, 
 /** The original site's three "about" cards, tightened. */
 const story = [
   {
-    tag: 'Legacy',
     title: `Since ${FOUNDED}`,
     body: 'We design and install low-voltage and networking systems for businesses across Southern California.',
   },
   {
-    tag: 'Our standard',
     title: 'Done to standard',
     body: 'Every job is built to ANSI/TIA standards, tested and documented, so it stays reliable and easy to maintain for years.',
   },
   {
-    tag: 'Scope',
     title: 'Cabling to security',
     body: 'From structured cabling to security systems, we install what a business needs to run day to day.',
   },
 ];
-
-/**
- * Tags from the original site's value cards, paired with `pillars` in order.
- * Shown as a plain label above each title, with no 01 to 04 numbers (index codes only for real things).
- */
-const pillarTags = ['Precision', 'Scale', 'Speed', 'Service'];
 
 const thisYear = new Date().getFullYear();
 
@@ -60,7 +50,6 @@ const SHOW_PLACEHOLDERS = false;
 
 <Base title={`About Us · SoCal Low-Voltage Since ${FOUNDED}`} description={description} footerCta={false}>
   <PageHero
-    label="About"
     title={`Low-voltage and network installs since ${FOUNDED}.`}
     lead={`For ${yearsInBusiness} years, organizations across Southern California have relied on Armak Technologies to design, install and support the cabling, networks and security systems they run on.`}
     crumbs={[{ label: 'About' }]}
@@ -70,7 +59,7 @@ const SHOW_PLACEHOLDERS = false;
   <!-- Story -->
   <section class="section story">
     <div class="container">
-      <SectionHead label="Our story" title={`${yearsInBusiness} years in business.`} />
+      <SectionHead title={`${yearsInBusiness} years in business.`} />
 
       <div class="story__body">
         <figure class="story__figure" data-reveal>
@@ -89,9 +78,8 @@ const SHOW_PLACEHOLDERS = false;
           <ol role="list" class="story__list">
             {story.map((s) => (
               <li class="story__item">
-                <span class="t-mono story__index">{s.tag}</span>
                 <h3 class="t-h3">{s.title}</h3>
-                <p class="t-muted">{s.body}</p>
+                <p>{s.body}</p>
               </li>
             ))}
           </ol>
@@ -123,7 +111,7 @@ const SHOW_PLACEHOLDERS = false;
            Hidden until Armak supplies real milestones (two rows alone read as an empty template). -->
       {SHOW_PLACEHOLDERS && (
       <div class="timeline">
-        <Label>Milestones</Label>
+        <h3 class="t-h3">Milestones</h3>
         <ol role="list" class="timeline__rows">
           <li class="timeline__row">
             <span class="timeline__year">{FOUNDED}</span>
@@ -152,13 +140,12 @@ const SHOW_PLACEHOLDERS = false;
   <!-- Principles -->
   <section class="section section--flush-top principles">
     <div class="container">
-      <SectionHead label="How we work" title="How we work on every job." />
+      <SectionHead title="How we work on every job." />
       <ul role="list" class="principles__grid">
-        {pillars.map((p, i) => (
+        {pillars.map((p) => (
           <li class="principle">
-            {pillarTags[i] && <span class="t-mono principle__index">{pillarTags[i]}</span>}
             <h3 class="t-h4">{p.title}</h3>
-            <p class="t-small t-muted">{p.body}</p>
+            <p class="t-small">{p.body}</p>
           </li>
         ))}
       </ul>
@@ -168,7 +155,7 @@ const SHOW_PLACEHOLDERS = false;
   <!-- Credentials -->
   <section class="section section--flush-top creds">
     <div class="container">
-      <SectionHead label="What you get" title="Written plans, test reports and support." />
+      <SectionHead title="Written plans, test reports and support." />
       <ul role="list" class="creds__grid">
         {credentials.map((c) => (
           <li class="cred">
@@ -179,16 +166,16 @@ const SHOW_PLACEHOLDERS = false;
           <li class="cred">
             <span class="cred__text">Contractor license</span>
             {site.license ? (
-              <span class="t-mono cred__value">{site.license}</span>
+              <span class="t-meta cred__value">{site.license}</span>
             ) : (
-              <Label tone="signal" class="cred__flag">Placeholder · Lic. no. to confirm</Label>
+              <span class="t-meta cred__flag">Placeholder: license number to confirm</span>
             )}
           </li>
         )}
         {SHOW_PLACEHOLDERS && (
           <li class="cred">
             <span class="cred__text">Manufacturer certifications</span>
-            <Label tone="signal" class="cred__flag">Placeholder · List to supply</Label>
+            <span class="t-meta cred__flag">Placeholder: list to supply</span>
           </li>
         )}
       </ul>
@@ -204,7 +191,6 @@ const SHOW_PLACEHOLDERS = false;
   <section class="section team">
     <div class="container">
       <SectionHead
-        label="The team"
         title="The people behind the installs."
         intro="One crew and one point of contact from the first walk-through to the final report."
       />
@@ -212,16 +198,16 @@ const SHOW_PLACEHOLDERS = false;
         {[1, 2, 3, 4].map((n) => (
           <li class="member">
             <div class="member__photo" aria-hidden="true">
-              <Label tone="signal" class="member__flag">Placeholder</Label>
+              <span class="t-meta member__flag">Placeholder</span>
             </div>
-            <p class="t-small t-muted">Team member {n}</p>
+            <p class="t-meta">Team member {n}</p>
             <p class="member__name">Name to be supplied</p>
-            <p class="t-small t-muted">Role · photo and short bio, with permission</p>
+            <p class="t-meta">Role, photo and short bio, with permission</p>
           </li>
         ))}
       </ul>
       <div class="team__foot">
-        <p class="t-small t-muted">Want to work with us?</p>
+        <p class="t-small">Want to work with us?</p>
         <Button href={contactHref()} variant="link">{CTA_LABEL}</Button>
       </div>
     </div>
@@ -269,30 +255,24 @@ const SHOW_PLACEHOLDERS = false;
   }
 
   .story__list {
-    border-top: 1px solid var(--ink);
+    display: grid;
+    gap: var(--sp-6);
   }
 
   .story__item {
     display: grid;
     gap: 0.75rem;
-    padding-block: 1.75rem;
-    border-bottom: 1px solid var(--hairline);
   }
 
   .story__item p {
     max-width: 34em;
   }
 
-  .story__index {
-    color: var(--signal);
-  }
-
-  /* At a glance: a plain hairline card, like the credentials below */
+  /* At a glance: a white sheet, no border */
   .story__facts {
     max-width: 28rem;
-    padding: var(--sp-2) var(--sp-5);
+    padding: var(--sp-3) var(--sp-5);
     background: var(--white);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius);
   }
 
@@ -303,10 +283,6 @@ const SHOW_PLACEHOLDERS = false;
     gap: var(--sp-4);
     padding-block: var(--sp-3);
     font-size: var(--fs-small);
-  }
-
-  .story__fact + .story__fact {
-    border-top: 1px solid var(--hairline);
   }
 
   .story__fact dt {
@@ -329,8 +305,9 @@ const SHOW_PLACEHOLDERS = false;
   }
 
   .timeline__rows {
+    display: grid;
+    gap: var(--sp-5);
     width: 100%;
-    border-top: 1px solid var(--hairline);
   }
 
   .timeline__row {
@@ -338,8 +315,6 @@ const SHOW_PLACEHOLDERS = false;
     grid-template-columns: 4.5rem minmax(0, 1fr);
     gap: var(--col-gap);
     align-items: baseline;
-    padding-block: 1.25rem;
-    border-bottom: 1px solid var(--hairline);
   }
 
   .timeline__row--slot {
@@ -347,43 +322,35 @@ const SHOW_PLACEHOLDERS = false;
   }
 
   .timeline__year {
-    font-family: var(--font-mono);
     font-size: 1.25rem;
-    letter-spacing: -0.03em;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
 
   .timeline__row--slot .timeline__year {
-    color: var(--hairline-strong);
+    color: var(--steel);
   }
 
   /* ── Principles ── */
   .principles__grid {
     display: grid;
-    border-top: 1px solid var(--ink);
+    gap: var(--sp-6) var(--col-gap);
   }
 
   .principle {
     display: grid;
     gap: 0.75rem;
     align-content: start;
-    padding: 1.5rem 0 2rem;
-    border-bottom: 1px solid var(--hairline);
   }
 
   .principle p {
     max-width: 30em;
   }
 
-  .principle__index {
-    color: var(--signal);
-  }
-
-  /* ── Credentials ── */
+  /* ── Credentials: white sheets, no outlines ── */
   .creds__grid {
     display: grid;
-    border-top: 1px solid var(--hairline);
-    border-left: 1px solid var(--hairline);
+    gap: var(--sp-4);
   }
 
   .cred {
@@ -392,9 +359,8 @@ const SHOW_PLACEHOLDERS = false;
     align-content: start;
     justify-items: start;
     padding: 1.5rem 1.25rem 1.75rem;
-    border-right: 1px solid var(--hairline);
-    border-bottom: 1px solid var(--hairline);
     background: var(--white);
+    border-radius: var(--radius);
   }
 
   .cred__text {
@@ -404,7 +370,7 @@ const SHOW_PLACEHOLDERS = false;
     line-height: 1.3;
   }
 
-  .cred :global(.cred__flag) {
+  .cred .cred__flag {
     white-space: normal;
   }
 
@@ -427,17 +393,14 @@ const SHOW_PLACEHOLDERS = false;
     place-items: center;
     aspect-ratio: 1 / 1;
     margin-bottom: 0.5rem;
-    border: 1px dashed var(--hairline-strong);
     border-radius: var(--radius);
     background: var(--paper-sunken);
-    color: var(--hairline-strong);
   }
 
-  .member__photo :global(.member__flag) {
+  .member__photo .member__flag {
     position: absolute;
     top: 0.75rem;
     left: 0.75rem;
-    background: var(--paper);
   }
 
   .member__name {
@@ -451,12 +414,10 @@ const SHOW_PLACEHOLDERS = false;
     align-items: center;
     gap: 0.5rem 1.25rem;
     margin-top: var(--space-block);
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--hairline);
   }
 
   @media (max-width: 420px) {
-    .member__photo :global(.member__flag) {
+    .member__photo .member__flag {
       top: 0.5rem;
       left: 0.5rem;
     }
@@ -465,18 +426,6 @@ const SHOW_PLACEHOLDERS = false;
   @media (min-width: 640px) {
     .principles__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .principle {
-      padding: 1.5rem 1.5rem 2rem;
-    }
-
-    .principle:nth-child(odd) {
-      padding-left: 0;
-    }
-
-    .principle:nth-child(even) {
-      border-left: 1px solid var(--hairline);
     }
 
     .creds__grid {
@@ -519,7 +468,7 @@ const SHOW_PLACEHOLDERS = false;
       align-items: start;
     }
 
-    .timeline > :global(.label) {
+    .timeline > h3 {
       grid-column: 1 / span 3;
     }
 
@@ -542,18 +491,6 @@ const SHOW_PLACEHOLDERS = false;
 
     .principles__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-
-    .principle,
-    .principle:nth-child(odd) {
-      padding: 1.5rem 1.5rem 0.5rem;
-      border-bottom: 0;
-      border-left: 1px solid var(--hairline);
-    }
-
-    .principle:first-child {
-      padding-left: 0;
-      border-left: 0;
     }
   }
 </style>

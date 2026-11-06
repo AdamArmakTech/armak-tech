@@ -3,7 +3,6 @@
  * Full explanation of one glossary term: definition, analogy, why it matters, Q&A, related terms.
  * Rendered inside each term's <details> (works without JS) and cloned into the drawer by the page script.
  */
-import { ArrowRight } from '@lucide/astro';
 import { bySlug, categoryLabels, type GlossaryEntry } from '../../data/glossary';
 import { services } from '../../data/site';
 
@@ -17,7 +16,7 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
 ---
 
 <div class="term-detail">
-  <div class="term-detail__meta t-mono">
+  <div class="term-detail__meta t-meta">
     <span class="term-detail__cat">{categoryLabels[entry.category]}</span>
     {entry.stands_for && <span>{entry.stands_for}</span>}
   </div>
@@ -25,21 +24,21 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
   <p class="term-detail__def">{entry.definition}</p>
 
   {entry.aka && entry.aka.length > 0 && (
-    <p class="t-small t-muted">Also called: {entry.aka.join(', ')}</p>
+    <p class="t-meta">Also called: {entry.aka.join(', ')}</p>
   )}
 
   {entry.analogy && (
-    <p class="term-detail__analogy"><span class="t-mono">Analogy</span>{entry.analogy}</p>
+    <p class="term-detail__analogy"><span class="t-meta">Analogy</span>{entry.analogy}</p>
   )}
 
   <div class="term-detail__why">
-    <p class="t-mono">Why it matters</p>
+    <p class="t-meta">Why it matters</p>
     <p>{entry.why_it_matters}</p>
   </div>
 
   {entry.qa.length > 0 && (
     <div class="term-detail__qa">
-      <p class="t-mono">Questions people ask</p>
+      <p class="t-meta">Questions people ask</p>
       <dl>
         {entry.qa.map((item) => (
           <div class="term-detail__qa-item">
@@ -53,7 +52,7 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
 
   {related.length > 0 && (
     <div class="term-detail__related">
-      <p class="t-mono">Related terms</p>
+      <p class="t-meta">Related terms</p>
       <ul role="list">
         {related.map((r) => (
           <li><a href={`#${r.slug}`} data-term-link={r.slug}>{r.term}</a></li>
@@ -64,9 +63,7 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
 
   {service && (
     <a class="term-detail__service" href={`/services/${service.slug}/`}>
-      <span class="t-mono">{service.code}</span>
       {service.name}
-      <ArrowRight size={16} stroke-width={1.75} aria-hidden="true" />
     </a>
   )}
 </div>
@@ -82,11 +79,6 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem 1rem;
-    color: var(--steel);
-  }
-
-  .term-detail__cat {
-    color: var(--signal);
   }
 
   .term-detail__def {
@@ -100,14 +92,7 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
     gap: 0.35rem;
     padding: 1rem 1.125rem;
     background: var(--paper-sunken);
-    border-left: 2px solid var(--ink);
-  }
-
-  .term-detail__analogy .t-mono,
-  .term-detail__why .t-mono,
-  .term-detail__qa > .t-mono,
-  .term-detail__related .t-mono {
-    color: var(--steel);
+    border-radius: var(--radius);
   }
 
   .term-detail__why {
@@ -122,14 +107,16 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
 
   .term-detail__qa dl {
     display: grid;
-    border-top: 1px solid var(--hairline);
   }
 
   .term-detail__qa-item {
     display: grid;
     gap: 0.35rem;
     padding-block: 0.875rem;
-    border-bottom: 1px solid var(--hairline);
+  }
+
+  .term-detail__qa-item + .term-detail__qa-item {
+    border-top: 1px solid var(--hairline);
   }
 
   .term-detail__qa dt {
@@ -139,7 +126,7 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
 
   .term-detail__qa dd {
     margin: 0;
-    color: var(--steel);
+    color: var(--text);
     font-size: var(--fs-small);
     line-height: 1.55;
   }
@@ -158,15 +145,15 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
   .term-detail__related a {
     display: inline-block;
     padding: 0.4rem 0.7rem;
-    border: 1px solid var(--field-line);
+    background: var(--paper-sunken);
     border-radius: var(--radius);
     font-size: var(--fs-small);
-    transition: border-color var(--dur-fast) ease, background var(--dur-fast) ease;
+    transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
   }
 
   .term-detail__related a:hover {
-    border-color: var(--ink);
-    background: var(--white);
+    background: var(--ink);
+    color: var(--paper);
   }
 
   .term-detail__service {
@@ -180,10 +167,6 @@ const related = (entry.related ?? []).map((s) => bySlug.get(s)).filter((e): e is
     border-radius: var(--radius);
     font-weight: 500;
     font-size: var(--fs-small);
-  }
-
-  .term-detail__service .t-mono {
-    color: var(--steel-light);
   }
 
   .term-detail__service:hover {

@@ -19,7 +19,6 @@ const next = steps.slice(0, 2);
 
 <Base title="Contact Us & Request a Site Assessment" description={description} footerCta={false} ctaDock={false}>
   <PageHero
-    label="Contact"
     title="Start with a site assessment."
     lead="Tell us what you’re building. We’ll walk the site, scope the work and send you a clear written estimate."
     crumbs={[{ label: 'Contact' }]}
@@ -32,36 +31,33 @@ const next = steps.slice(0, 2);
 
     <aside class="contact__info" aria-label="Contact details">
       <div class="contact__direct">
-        <p class="t-mono t-muted">Prefer to talk?</p>
+        <p class="t-meta">Prefer to talk?</p>
         <a class="contact__phone tel" href={site.phoneHref}>{site.phone}</a>
         <a class="contact__email" href={site.emailHref}>{site.email}</a>
       </div>
 
       <ul role="list" class="contact__rows">
         <li>
-          <span class="t-mono contact__key">Hours</span>
+          <span class="t-meta contact__key">Hours</span>
           <span>{site.hours}</span>
         </li>
         <li>
-          <span class="t-mono contact__key">Support</span>
+          <span class="t-meta contact__key">Support</span>
           <span>{site.support}</span>
         </li>
         <li>
-          <span class="t-mono contact__key">Headquarters</span>
-          <span>{site.hq.city}, California<br /><span class="t-muted">Serving all of Southern California</span></span>
+          <span class="t-meta contact__key">Headquarters</span>
+          <span>{site.hq.city}, California<br />Serving all of Southern California</span>
         </li>
       </ul>
 
       <div class="contact__next">
-        <p class="t-mono t-muted">What happens next</p>
+        <p class="t-meta">What happens next</p>
         <ol role="list">
           {next.map((s) => (
             <li>
-              <span class="t-mono contact__step">{s.code}</span>
-              <div>
-                <p class="contact__step-title">{s.title}</p>
-                <p class="t-small t-muted">{s.body}</p>
-              </div>
+              <p class="contact__step-title">{s.title}</p>
+              <p class="t-small">{s.body}</p>
             </li>
           ))}
         </ol>
@@ -82,7 +78,6 @@ const next = steps.slice(0, 2);
   .contact__panel {
     padding: clamp(1.25rem, 0.8rem + 2vw, 2.5rem);
     background: var(--white);
-    border: 1px solid var(--hairline);
     border-radius: var(--radius);
     min-width: 0;
   }
@@ -118,20 +113,22 @@ const next = steps.slice(0, 2);
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    background: linear-gradient(currentColor, currentColor) left bottom / 0% 1px no-repeat;
-    transition: background-size var(--dur) var(--ease-out);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color var(--dur) var(--ease-out);
   }
 
   @media (hover: hover) and (pointer: fine) {
     .contact__phone:hover,
     .contact__email:hover {
-      background-size: 100% 1px;
+      text-decoration-color: currentColor;
     }
   }
 
   .contact__rows {
     display: grid;
-    border-top: 1px solid var(--hairline);
+    gap: var(--sp-4);
   }
 
   .contact__rows li {
@@ -139,15 +136,12 @@ const next = steps.slice(0, 2);
     grid-template-columns: 7.5rem minmax(0, 1fr);
     gap: 0.25rem 0.875rem;
     align-items: start;
-    padding-block: 0.875rem;
-    border-bottom: 1px solid var(--hairline);
     font-size: var(--fs-small);
     overflow-wrap: anywhere;
   }
 
   .contact__key {
-    padding-top: 0.2rem;
-    color: var(--steel);
+    padding-top: 0;
   }
 
   .contact__next {
@@ -157,25 +151,16 @@ const next = steps.slice(0, 2);
 
   .contact__next ol {
     display: grid;
-    border-top: 1px solid var(--ink);
+    gap: var(--sp-5);
   }
 
   .contact__next li {
     display: grid;
-    grid-template-columns: 2.5rem minmax(0, 1fr);
-    gap: 0.75rem;
-    padding-block: 1rem;
-    border-bottom: 1px solid var(--hairline);
-  }
-
-  .contact__step {
-    padding-top: 0.2rem;
-    color: var(--signal);
+    gap: 0.25rem;
   }
 
   .contact__step-title {
     font-weight: 500;
-    margin-bottom: 0.25rem;
   }
 
   @media (max-width: 420px) {

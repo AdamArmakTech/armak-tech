@@ -33,7 +33,7 @@ const Heading = headingLevel;
   </div>
 
   <div class="pcard__body">
-    <p class="t-mono t-muted">{p.sector} · {p.location}</p>
+    <p class="t-meta">{p.sector} · {p.location}</p>
     <Heading class="t-h3 pcard__title">
       <a href={`/projects/${p.slug}/`} class="pcard__link">{p.title}</a>
     </Heading>
@@ -41,7 +41,7 @@ const Heading = headingLevel;
     <dl class="pcard__scope">
       {p.scope.map((s) => (
         <div>
-          <dt class="t-mono">{s.label}</dt>
+          <dt class="t-meta">{s.label}</dt>
           <dd>{s.value}</dd>
         </div>
       ))}
@@ -49,7 +49,7 @@ const Heading = headingLevel;
 
     <p class="t-small t-muted pcard__summary">{p.summary}</p>
 
-    <span class="t-mono pcard__more" aria-hidden="true">
+    <span class="t-meta pcard__more" aria-hidden="true">
       View project <ArrowUpRight size={16} stroke-width={1.75} />
     </span>
   </div>
