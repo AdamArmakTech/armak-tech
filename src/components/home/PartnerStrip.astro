@@ -43,7 +43,18 @@ const heightFor = (w: number, h: number) => {
   document.querySelectorAll<HTMLElement>('[data-partners]').forEach((row) => {
     if (prefersReducedMotion()) return;
     row.classList.add('is-armed');
-    onFirstView(row, () => row.classList.add('is-shown'), 0.3);
+    // The 45 ms stagger starts only once the wordmarks have decoded (capped at 600 ms so a slow image never holds the row)
+    onFirstView(
+      row,
+      () => {
+        const decoded = Promise.all(
+          Array.from(row.querySelectorAll('img')).map((img) => (img.decode ? img.decode().catch(() => undefined) : undefined)),
+        );
+        const cap = new Promise((resolve) => window.setTimeout(resolve, 600));
+        Promise.race([decoded, cap]).then(() => row.classList.add('is-shown'));
+      },
+      0.3,
+    );
   });
 </script>
 

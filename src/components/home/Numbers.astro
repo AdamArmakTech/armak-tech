@@ -37,21 +37,49 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
 <script>
   import { prefersReducedMotion } from '../../scripts/demo';
 
-  // Each figure's words arrive the moment motion.ts starts its count: the same element, the same 60% threshold.
+  /* One trigger, not two: motion.ts starts each count and announces it with a bubbling event on the counter
+     ('armak:count-start' when it begins, 'armak:count-end' when it settles). A cell goes live (unit and note
+     written in) on the start and gets its "+" on the end. A cell with no counter (the non-numeric figure)
+     has nothing to announce, so it alone keeps a small observer of its own. */
   document.querySelectorAll<HTMLElement>('[data-numbers]').forEach((grid) => {
     if (prefersReducedMotion()) return;
     grid.classList.add('is-armed');
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          io.unobserve(entry.target);
-          entry.target.closest('.numbers__cell')?.classList.add('is-live');
-        }
-      },
-      { threshold: 0.6 },
-    );
-    grid.querySelectorAll<HTMLElement>('.numbers__cell').forEach((cell) => io.observe(cell.querySelector('[data-count]') ?? cell));
+
+    const cellOf = (target: EventTarget | null) => (target instanceof Element ? target.closest<HTMLElement>('.numbers__cell') : null);
+    grid.addEventListener('armak:count-start', (e) => cellOf(e.target)?.classList.add('is-live'));
+    grid.addEventListener('armak:count-end', (e) => cellOf(e.target)?.classList.add('is-done'));
+
+    const loose: HTMLElement[] = [];
+    grid.querySelectorAll<HTMLElement>('.numbers__cell').forEach((cell) => {
+      const counter = cell.querySelector<HTMLElement>('[data-count]');
+      if (!counter) {
+        loose.push(cell);
+        return;
+      }
+      // A count that began before this listener attached
+      if (counter.dataset.countState) cell.classList.add('is-live');
+      if (counter.dataset.countState === 'done') cell.classList.add('is-done');
+    });
+
+    if (loose.length) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            io.unobserve(entry.target);
+            entry.target.classList.add('is-live', 'is-done');
+          }
+        },
+        { threshold: 0.6 },
+      );
+      loose.forEach((cell) => io.observe(cell));
+    }
+
+    // If motion.ts never booted, nothing would announce a count: show the figures rather than leave them hidden
+    window.setTimeout(() => {
+      if (document.documentElement.classList.contains('motion-ready')) return;
+      grid.querySelectorAll('.numbers__cell').forEach((cell) => cell.classList.add('is-live', 'is-done'));
+    }, 4000);
   });
 </script>
 
@@ -99,7 +127,8 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
 
   /* ── Arrival (armed by the script) ──
      Each figure rises in turn (90 ms apart); its unit is written in from the left as it counts, the note
-     just after; the "+" lands as the 1.6 s count comes to rest. Transform, opacity and clip-path only. */
+     just after; the "+" lands when the 1.6 s count comes to rest (motion.ts announces both moments).
+     Transform, opacity and clip-path only. */
   .numbers__grid.is-armed :global(.stat__value) {
     opacity: 0;
     transform: translate3d(0, 10px, 0);
@@ -123,12 +152,12 @@ import { site, yearsInBusiness, FOUNDED, serviceArea, counties } from '../../dat
     opacity: 0;
     transform: translate3d(0, 0.12em, 0);
     transition:
-      opacity 320ms ease calc(var(--i) * 90ms + 1250ms),
-      transform 480ms var(--ease-out) calc(var(--i) * 90ms + 1250ms);
+      opacity 320ms ease,
+      transform 480ms var(--ease-out);
   }
 
   .numbers__grid.is-armed .numbers__cell.is-live :global(.stat__value),
-  .numbers__grid.is-armed .numbers__cell.is-live :global(.stat__suffix) {
+  .numbers__grid.is-armed .numbers__cell.is-done :global(.stat__suffix) {
     opacity: 1;
     transform: none;
   }

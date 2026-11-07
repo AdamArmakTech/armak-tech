@@ -58,9 +58,12 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
     reversed": the failing cable reads "Pins 3 & 6 reversed" (and the screen-reader lines say reversed). "Network
     connections": the install legend's green is relabelled (the TIA-606 meaning of green; purple would be
     equipment), in the key, the drawing's description and the code comment.
-  - Not done: the About chart redraw (waits on his answer about the old drawing) and the small motion robustness
-    fixes (reveal failsafe marking, split-heading watchdog, Numbers keyed to its counts, partner images decoded
-    first): one Sonnet worker, later.
+  - The four small robustness fixes followed (one Sonnet worker, checked in the browser): a block the 2.5 s reveal
+    failsafe has already shown is marked revealed without motion when the script boots late (no hide-and-replay
+    flash); a split heading that has not played 1200 ms after it is on screen shows plain; the numbers' words and
+    "+" are keyed to the counter's own start and end events (one observer, not two); the partner row waits for its
+    images to decode (600 ms cap) before the stagger. Not done: the About chart redraw (waits on the owner's answer
+    about the old drawing).
   - Checks: astro check 0 errors; build 19 pages; 19 pages at 320/360/390 with no sideways scroll; at 375 every
     stacked demo plays and nothing crosses the edge; reduced motion shows the finished picture of every demo
     (Playwright); the desktop strip and the explorer lap unchanged. Screenshots in

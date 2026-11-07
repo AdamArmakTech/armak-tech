@@ -39,6 +39,33 @@ const REVEAL_SELECTOR = '[data-reveal], [data-reveal-group] > *';
 const phone = matchMedia('(max-width: 640px)').matches;
 const CAP = phone ? 4 : 5; // full steps up to here (350 ms / 200 ms); after it a list only keeps a faint rhythm
 const STROKE_STEP = 90; // ms between strokes inside one "draw" element
+const FAILSAFE_MS = 2500; // when the CSS failsafe in global.css shows anything still waiting (keep in step with it)
+const SPLIT_WATCHDOG_MS = 1200; // a split heading on screen that has not played by now is shown plain
+
+/**
+ * Blocks and split headings the CSS failsafe has already shown by the time this script boots. Read BEFORE
+ * motion-ready is added (that class switches the failsafe off, which would hide them again for a frame and
+ * then animate them in a second time). Past the failsafe time everything waiting counts as shown; just
+ * before it, an element whose computed opacity (or, for headings, visibility) is already open counts too.
+ * A "clip" block is always opacity 1 (its mask hides it), so it is only judged by the clock.
+ */
+function snapshotFailsafeShown(): Set<Element> {
+  const shown = new Set<Element>();
+  const now = performance.now();
+  if (now < FAILSAFE_MS - 700) return shown; // far too early for the failsafe to have started
+  const late = now >= FAILSAFE_MS;
+  document.querySelectorAll<HTMLElement>(`${REVEAL_SELECTOR}, [data-split]`).forEach((el) => {
+    if (el.matches('[data-split]')) {
+      if (el.classList.contains('is-split')) return;
+      if (late || getComputedStyle(el).visibility === 'visible') shown.add(el);
+      return;
+    }
+    if (el.classList.contains('is-revealed')) return;
+    const clip = el.dataset.reveal === 'clip' || el.parentElement?.dataset.revealGroup === 'clip';
+    if (late || (!clip && getComputedStyle(el).opacity === '1')) shown.add(el);
+  });
+  return shown;
+}
 
 function showEverything() {
   document.querySelectorAll(REVEAL_SELECTOR).forEach((el) => el.classList.add('is-revealed'));
@@ -96,7 +123,7 @@ function cleanStrokes(el: HTMLElement) {
   });
 }
 
-function initReveals() {
+function initReveals(shown: Set<Element>) {
   // Children of a group inherit its variant unless they carry their own data-reveal
   document.querySelectorAll<HTMLElement>('[data-reveal-group]').forEach((group) => {
     const variant = group.dataset.revealGroup || 'rise';
@@ -105,7 +132,13 @@ function initReveals() {
     }
   });
 
-  const targets = Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'));
+  /* Blocks the CSS failsafe has already shown are marked revealed without motion (no is-revealing), so
+     they neither flash hidden nor animate in a second time */
+  const targets: HTMLElement[] = [];
+  for (const el of Array.from(document.querySelectorAll<HTMLElement>('[data-reveal]'))) {
+    if (shown.has(el)) el.classList.add('is-revealed');
+    else targets.push(el);
+  }
   if (!targets.length) return;
 
   const dur = cssMs('--reveal-dur', 900);
@@ -216,11 +249,22 @@ function initCounters() {
         const target = Number(el.dataset.count);
         const duration = 1600;
         const start = performance.now();
+        /* One source of truth for "this figure has arrived": other components (Numbers.astro) listen for
+           these two bubbling events instead of running an observer of their own. countState lets a
+           listener that attached late catch up. */
+        const emit = (name: string) => el.dispatchEvent(new CustomEvent(name, { bubbles: true }));
         const tick = (now: number) => {
           const p = Math.min(1, (now - start) / duration);
           el.textContent = Math.round(target * easeOutExpo(p)).toLocaleString('en-US');
-          if (p < 1) requestAnimationFrame(tick);
+          if (p < 1) {
+            requestAnimationFrame(tick);
+          } else {
+            el.dataset.countState = 'done';
+            emit('armak:count-end');
+          }
         };
+        el.dataset.countState = 'running';
+        emit('armak:count-start');
         requestAnimationFrame(tick);
       }
     },
@@ -236,7 +280,7 @@ function initCounters() {
  * off the critical path when every split heading starts below the fold (e.g. the homepage),
  * while headings near the top still load it straight away.
  */
-function whenSplitNeeded(headings: NodeListOf<HTMLElement>) {
+function whenSplitNeeded(headings: HTMLElement[]) {
   return new Promise<void>((resolve) => {
     let done = false;
     const io = new IntersectionObserver(
@@ -260,9 +304,43 @@ function whenSplitNeeded(headings: NodeListOf<HTMLElement>) {
   });
 }
 
-async function initSplitHeadings(lenis: Lenis) {
-  const headings = document.querySelectorAll<HTMLElement>('[data-split]');
+async function initSplitHeadings(lenis: Lenis, shown: Set<Element>) {
+  /* Headings the CSS failsafe has already shown stay as they are: plain, no split */
+  const headings = Array.from(document.querySelectorAll<HTMLElement>('[data-split]')).filter((el) => {
+    if (!shown.has(el)) return true;
+    el.classList.add('is-split');
+    return false;
+  });
   if (!headings.length) return;
+
+  /* Watchdog, started now so it also covers a slow GSAP download or a font that never settles: a heading
+     on screen (inside the same top-88% line its scroll trigger uses) whose split has not played
+     SPLIT_WATCHDOG_MS later is shown plain, so no heading can stay invisible. */
+  const played = new Set<HTMLElement>();
+  const plain = new Set<HTMLElement>();
+  const splits = new Map<HTMLElement, { revert: () => unknown }>();
+  const showPlain = (el: HTMLElement) => {
+    if (played.has(el) || plain.has(el)) return;
+    plain.add(el);
+    try {
+      splits.get(el)?.revert();
+    } catch {
+      /* nothing to undo */
+    }
+    el.classList.add('is-split');
+  };
+  const watch = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        watch.unobserve(entry.target);
+        const el = entry.target as HTMLElement;
+        window.setTimeout(() => showPlain(el), SPLIT_WATCHDOG_MS);
+      }
+    },
+    { rootMargin: '0px 0px -12% 0px' },
+  );
+  headings.forEach((el) => watch.observe(el));
 
   await whenSplitNeeded(headings);
 
@@ -279,7 +357,8 @@ async function initSplitHeadings(lenis: Lenis) {
     await document.fonts.ready;
 
     headings.forEach((el) => {
-      SplitText.create(el, {
+      if (plain.has(el)) return; // the watchdog already showed it
+      const split = SplitText.create(el, {
         type: 'lines',
         mask: 'lines',
         autoSplit: true,
@@ -291,10 +370,12 @@ async function initSplitHeadings(lenis: Lenis) {
             duration: 1.1,
             ease: 'expo.out',
             stagger: 0.08,
+            onStart: () => played.add(el),
             scrollTrigger: { trigger: el, start: 'top 88%', once: true },
           });
         },
       });
+      splits.set(el, split);
     });
   } catch (err) {
     console.error('[armak] split headings failed', err);
@@ -303,6 +384,8 @@ async function initSplitHeadings(lenis: Lenis) {
 }
 
 function boot() {
+  // Read what the CSS failsafe has already shown BEFORE motion-ready switches the failsafe off
+  const shown = snapshotFailsafeShown();
   root.classList.add('motion-ready');
 
   if (prefersReducedMotion()) {
@@ -312,9 +395,9 @@ function boot() {
 
   const lenis = new Lenis({ autoRaf: true, anchors: { offset: -80 }, lerp: 0.11 });
   window.armakLenis = lenis;
-  initReveals();
+  initReveals(shown);
   initCounters();
-  initSplitHeadings(lenis);
+  initSplitHeadings(lenis, shown);
 }
 
 boot();
