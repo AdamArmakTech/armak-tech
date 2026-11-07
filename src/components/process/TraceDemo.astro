@@ -7,11 +7,18 @@
  * record row fills in. One route is lit at a time.
  * Same four jacks, same spots and same trunk line as the Design demo (TRUNK_Y 128, rack x 73).
  * Teaches: matching labels on both ends make a connection easy to find. SAMPLE data, no test date.
- * Motion (WAAPI, script only): branch 0-120 ms, trunk 120-560 ms, closet 560-700 ms, with a tracer dot
- * running the route ahead of the line; the port lights at 700 ms (fills in one quick step); the record
- * row wipes in 700-900 ms. Reduced motion: everything at once.
- * No JavaScript: jack 2B-15 is server-rendered already traced; the script clears it on start.
+ * Motion (WAAPI, script only): branch 0-120 ms, trunk 120-560 ms, closet 560-760 ms (into the closet, up
+ * the rack's side and into the panel row at the top of the rack, where horizontal cable lands), with a
+ * tracer dot running the route ahead of the line; on the closet leg the line and the dot share one set of
+ * eased samples, so they turn each corner together. The port lights at 760 ms (fills in one quick step);
+ * the record row wipes in 760-960 ms. Reduced motion: everything at once.
+ * No JavaScript: jack 2A-A15 is server-rendered already traced; the script clears it on start. Under
+ * reduced motion it stays traced: that is the finished picture of the install demo above, whose last
+ * beat traces it.
  * Listens for `armak:trace` (sent by the Design demo): scrolls here, lights that jack, focuses its button.
+ * Listens on its own frame for `armak:trace-default` (sent by the install demo above as its last beat,
+ * detail { since, accepted }): traces the example jack without scrolling or moving focus, and sets
+ * `accepted`, unless the visitor has chosen or cleared a jack since `since` (their choice stands).
  */
 import DemoFrame from './DemoFrame.astro';
 import OfficePlan from './OfficePlan.astro';
@@ -19,20 +26,25 @@ import { signature, isShown } from '../../data/content';
 
 const TRUNK_Y = 128;
 const RACK_X = 73;
-const CLOSET_Y = 62;
+// The closet leg (rack in the plan: x 64-82, y 18-62, top unit 18-28): up from the trunk to just below the
+// rack, over to the rack's right side, up the side to the panel row in the top unit, and into the panel
+const CLOSET_Y = 68;
+const SIDE_X = 78;
+const PANEL_Y = 23;
+const PANEL_X = 70;
 
 // Plan viewBox 400 x 262. Jack positions match the Design demo's drops exactly.
 const jacks = [
-  { id: '2B-15', port: 'B-15', x: 100, y: 72 },
-  { id: '2B-14', port: 'B-14', x: 176, y: 72 },
-  { id: '2C-03', port: 'B-03', x: 300, y: 84 },
-  { id: '2A-07', port: 'B-07', x: 206, y: 166 },
+  { id: '2A-A15', port: 'A-15', x: 100, y: 72 },
+  { id: '2A-A14', port: 'A-14', x: 176, y: 72 },
+  { id: '2A-A03', port: 'A-03', x: 300, y: 84 },
+  { id: '2A-A07', port: 'A-07', x: 206, y: 166 },
 ].map((j) => ({
   ...j,
   legs: [
     `M${j.x} ${j.y} V${TRUNK_Y}`,
     `M${j.x} ${TRUNK_Y} H${RACK_X}`,
-    `M${RACK_X} ${TRUNK_Y} V${CLOSET_Y}`,
+    `M${RACK_X} ${TRUNK_Y} V${CLOSET_Y} H${SIDE_X} V${PANEL_Y} H${PANEL_X}`,
   ],
 }));
 const first = jacks[0];
@@ -74,6 +86,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
               aria-pressed={j.id === first.id ? 'true' : 'false'}
               aria-label={`Trace jack ${j.id}`}
               data-tr-jack={j.id}
+              data-tr-default={j.id === first.id ? '' : undefined}
               data-port={j.port}
               data-x={j.x}
               data-y={j.y}
@@ -92,7 +105,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
 
     <div class="tr__side">
       <div class="tr__panel">
-        <span class="t-readout tr__panel-name">IDF2-B</span>
+        <span class="t-readout tr__panel-name">2A-A</span>
         <div class="tr__ports" aria-hidden="true">
           {Array.from({ length: 24 }, (_, i) => {
             const p = `B-${String(i + 1).padStart(2, '0')}`;
@@ -116,7 +129,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
           </div>
           <div class="tr__row tr__row--data" role="row" data-tr-row>
             <span class="t-readout" role="cell" data-tr-cell="jack">{first.id}</span>
-            <span class="t-readout" role="cell" data-tr-cell="panel">IDF2-B</span>
+            <span class="t-readout" role="cell" data-tr-cell="panel">2A-A</span>
             <span class="t-readout" role="cell" data-tr-cell="port">{first.port}</span>
             <span class="t-readout tr__pass" role="cell" data-tr-cell="result">PASS</span>
           </div>
@@ -129,7 +142,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
 </DemoFrame>
 
 <script>
-  import { bindReplay, announce, fitSvgText, prefersReducedMotion, moveAlong } from '../../scripts/demo';
+  import { bindReplay, announce, fitSvgText, prefersReducedMotion, easeInOut } from '../../scripts/demo';
 
   const EASE_OUT = 'cubic-bezier(0.16, 1, 0.3, 1)';
   const HINT = 'Choose a jack to trace its cable.';
@@ -138,13 +151,65 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
   const LEGS: [number, number][] = [
     [0, 120],
     [120, 560],
-    [560, 700],
+    [560, 760],
   ];
-  const ARRIVE = 700;
-  // Where the legs turn (same plan as the Design demo): the ceiling trunk and the rack in the closet
+  const ARRIVE = 760;
+  // Where the legs turn (same plan as the Design demo): the ceiling trunk and the rack in the closet, then up
+  // the rack's side to the panel row (the same corners as the markup's closet leg)
   const TRUNK_Y = 128;
   const RACK_X = 73;
-  const CLOSET_Y = 62;
+  const CLOSET: [number, number][] = [
+    [RACK_X, TRUNK_Y],
+    [RACK_X, 68],
+    [78, 68],
+    [78, 23],
+    [70, 23],
+  ];
+
+  /** The time (0-1) at which easeInOut reaches `f`, by halving: the curve only rises */
+  const timeFor = (f: number) => {
+    let lo = 0;
+    let hi = 1;
+    for (let k = 0; k < 30; k++) {
+      const mid = (lo + hi) / 2;
+      if (easeInOut(mid) < f) lo = mid;
+      else hi = mid;
+    }
+    return (lo + hi) / 2;
+  };
+
+  /**
+   * Samples along a leg with corners, eased in and out over the leg: `t` is the share of the leg's time, `f`
+   * the share of its length drawn by then, `p` the point reached. Each corner gets a sample of its own, so a
+   * dot moved straight between samples turns the corner exactly when the line does.
+   */
+  const sampleLeg = (pts: [number, number][], n = 16) => {
+    const lens = pts.slice(1).map((p, i) => Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]));
+    const total = lens.reduce((a, b) => a + b, 0) || 1;
+    const pointAt = (d: number): [number, number] => {
+      let rest = d;
+      for (let i = 0; i < lens.length; i++) {
+        if (rest <= lens[i] || i === lens.length - 1) {
+          const k = lens[i] ? Math.min(1, Math.max(0, rest / lens[i])) : 0;
+          return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * k, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * k];
+        }
+        rest -= lens[i];
+      }
+      return pts[pts.length - 1];
+    };
+    const ts = Array.from({ length: n + 1 }, (_, k) => k / n);
+    let acc = 0;
+    for (let i = 0; i < lens.length - 1; i++) {
+      acc += lens[i];
+      ts.push(timeFor(acc / total));
+    }
+    ts.sort((a, b) => a - b);
+    return ts.map((t) => {
+      const f = t >= 1 ? 1 : easeInOut(t);
+      return { t, f, p: pointAt(f * total) };
+    });
+  };
+  const CLOSET_SAMPLES = sampleLeg(CLOSET);
 
   document.querySelectorAll<HTMLElement>('[data-demo="trace"]').forEach((root) => {
     const tr = root.querySelector<HTMLElement>('#trace')!;
@@ -173,7 +238,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
 
     const fillRow = (id: string | null, port: string | null) => {
       cell('jack').textContent = id ?? '—';
-      cell('panel').textContent = id ? 'IDF2-B' : '—';
+      cell('panel').textContent = id ? '2A-A' : '—';
       cell('port').textContent = port ?? '—';
       cell('result').textContent = id ? 'PASS' : '—';
       cell('result').classList.toggle('tr__pass', !!id);
@@ -222,10 +287,27 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
       const route = routes.find((r) => r.dataset.trRoute === id)!;
       const segs = [...route.querySelectorAll<SVGPathElement>('.tr__seg')];
       const next: Animation[] = [];
-      // The tracer runs the whole route (jack → ceiling → rack → closet) on the legs' timing, then fades out
+      // The tracer runs the whole route (jack → ceiling → closet → up the rack side → panel row) on the legs'
+      // timing, then fades out: one Web Animation on transform, no script per frame. The first two legs ease
+      // out into their corner; on the closet leg it follows the same eased samples as the line.
       const x = Number(btn.dataset.x);
       const y = Number(btn.dataset.y);
-      next.push(moveAlong(head, [[x, y], [x, TRUNK_Y], [RACK_X, TRUNK_Y], [RACK_X, CLOSET_Y]], [0, LEGS[0][1], LEGS[1][1], LEGS[2][1]], EASE_OUT));
+      const [c0, c1] = LEGS[2];
+      const at = (px: number, py: number) => `translate(${px.toFixed(2)}px, ${py.toFixed(2)}px)`;
+      next.push(
+        head.animate(
+          [
+            { transform: at(x, y), offset: 0, easing: EASE_OUT },
+            { transform: at(x, TRUNK_Y), offset: LEGS[0][1] / ARRIVE, easing: EASE_OUT },
+            ...CLOSET_SAMPLES.map((s) => ({
+              transform: at(s.p[0], s.p[1]),
+              offset: Math.min(1, (c0 + s.t * (c1 - c0)) / ARRIVE),
+              easing: 'linear',
+            })),
+          ],
+          { duration: ARRIVE, fill: 'both' },
+        ),
+      );
       next.push(
         head.animate(
           [{ opacity: 0, offset: 0 }, { opacity: 1, offset: 0.06 }, { opacity: 1, offset: 0.92 }, { opacity: 0, offset: 1 }],
@@ -234,14 +316,17 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
       );
       segs.forEach((seg, i) => {
         const [from, to] = LEGS[i];
+        const closet = i === LEGS.length - 1;
         next.push(
           seg.animate(
             [
               { strokeDashoffset: 1, opacity: 0, offset: 0 },
               { strokeDashoffset: 1, opacity: 1, offset: 0.001 },
-              { strokeDashoffset: 0, opacity: 1, offset: 1 },
+              ...(closet
+                ? CLOSET_SAMPLES.filter((s) => s.t > 0.001).map((s) => ({ strokeDashoffset: 1 - s.f, opacity: 1, offset: s.t }))
+                : [{ strokeDashoffset: 0, opacity: 1, offset: 1 }]),
             ],
-            { delay: from, duration: to - from, easing: EASE_OUT, fill: 'backwards' },
+            { delay: from, duration: to - from, easing: closet ? 'linear' : EASE_OUT, fill: 'backwards' },
           ),
         );
         // The word for this leg lights as the leg starts
@@ -257,7 +342,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
         // Class takes over at the end of the fade, so a cancelled run never leaves a half state
         setTimeout(() => mine === token && w.classList.add('is-lit'), from + 160);
       });
-      // Record row: one clip-path wipe, 700-900 ms
+      // Record row: one clip-path wipe, 760-960 ms
       next.push(
         row.animate(
           [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }],
@@ -287,8 +372,13 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
       } else start(btn);
     };
 
+    // When the visitor last chose or cleared a jack (here or from the Design demo): the install demo's last
+    // beat never overrides that
+    let visitorAt = -Infinity;
+
     jacks.forEach((b) =>
       b.addEventListener('click', () => {
+        visitorAt = performance.now();
         // Pressing the lit jack again turns it off
         if (b.getAttribute('aria-pressed') === 'true') {
           clear();
@@ -298,6 +388,7 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
     );
 
     bindReplay(root, () => {
+      visitorAt = performance.now();
       clear();
       announce(root, 'Trace cleared');
     });
@@ -308,14 +399,31 @@ const pct = (v: number, max: number) => `${((v / max) * 100).toFixed(2)}%`;
       const btn = jacks.find((b) => b.dataset.trJack === id);
       if (!btn) return;
       requestAnimationFrame(() => {
+        // Stamped here, a frame later: the step strip restarts the install demo on this same event, and that
+        // run's start must come before this choice, so its last beat leaves this jack alone
+        visitorAt = performance.now();
         tr.scrollIntoView({ block: 'nearest', behavior: prefersReducedMotion() ? 'auto' : 'smooth' });
         if (btn.getAttribute('aria-pressed') !== 'true') choose(btn);
         btn.focus({ preventScroll: true });
       });
     });
 
-    // Script is running: drop the no-JS example so the visitor starts from a choice
-    clear();
+    // The install demo above sends this to its own frame's neighbour as its last beat ("anyone can trace a
+    // connection in seconds"): trace the example jack (the one shown without scripts), here, without scrolling
+    // or moving focus. Tracing it again when it is already lit replays the trace.
+    root.addEventListener('armak:trace-default', (e) => {
+      const ask = (e as CustomEvent<{ since?: number; accepted?: boolean }>).detail;
+      if (ask && visitorAt > (ask.since ?? -Infinity)) return;
+      const btn = jacks.find((b) => b.dataset.trDefault !== undefined) ?? jacks[0];
+      if (!btn) return;
+      if (ask) ask.accepted = true;
+      choose(btn);
+    });
+
+    // Script is running: drop the no-JS example so the visitor starts from a choice. Under reduced motion the
+    // example stays: it is the finished picture of the install demo above, whose last beat traces this jack.
+    if (prefersReducedMotion()) current = jacks.find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.trJack ?? null;
+    else clear();
   });
 </script>
 

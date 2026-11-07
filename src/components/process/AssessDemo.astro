@@ -4,7 +4,8 @@
  * A technician walks the sample office from the lobby entrance to the telecom closet. At each stop the
  * walker pauses, the room is shaded as surveyed, the finding is marked on the plan itself (the old
  * cameras and keypad, the unlabeled Cat 5e runs, the open ceiling and the wall that needs conduit, the
- * power panel, the crowded rack), a numbered pin drops, and the finding writes itself into the report,
+ * power panel and its dedicated circuit traced to the receptacle beside the rack, the crowded rack),
+ * a numbered pin drops, and the finding writes itself into the report,
  * line by line. Teaches: the site is documented as it really is before anything is priced.
  * Motion: one Web Animation moves the walker (transform) and one draws the path (stroke-dashoffset), so
  * nothing runs per frame in script; everything else is a class switched on a timer.
@@ -28,6 +29,10 @@ const stops = [
 const points: [number, number][] = [[340, 248], ...stops.map((s) => [s.x, s.y] as [number, number])];
 const walk = 'M' + points.map(([x, y]) => `${x} ${y}`).join(' L');
 const last = points[points.length - 1];
+
+// Stop 4's circuit: from the top of the ELEC panel up the west wall into the closet, then along its south wall
+// to the receptacle beside the rack (OfficePlan's `receptacle`, centre 85.5, 75)
+const circuit = 'M15 118 V75 H82';
 ---
 
 <DemoFrame
@@ -43,7 +48,7 @@ const last = points[points.length - 1];
         </pattern>
       </defs>
 
-      <OfficePlan seen={stops.map((s) => s.room).filter(Boolean)} />
+      <OfficePlan seen={stops.map((s) => s.room).filter(Boolean)} receptacle />
 
       <!-- electrical panel on the west wall -->
       <rect x="10" y="118" width="10" height="22" class="as__panel" />
@@ -74,9 +79,20 @@ const last = points[points.length - 1];
         <text x="148" y="148" class="as__note" text-anchor="middle">OPEN CEILING</text>
         <path class="as__conduit" d="M282 114 H388" pathLength="1" />
       </g>
-      <!-- 4 · the power panel -->
+      <!-- 4 · the power panel, and its dedicated circuit traced along the walls to the receptacle beside the rack
+           (a dashed line is how a drawing shows a circuit; it draws through a mask so the dashes stay put) -->
       <g class="as__mark as__mark--rings is-on" data-as-mark="3">
         <rect x="5" y="113" width="20" height="32" rx="2" />
+        <g class="as__power">
+          <mask id="as-circuit-draw" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="262">
+            <path class="as__circuit-draw" d={circuit} pathLength="1" />
+          </mask>
+          <path class="as__circuit" d={circuit} mask="url(#as-circuit-draw)" />
+          <g class="as__recept-fill">
+            <circle cx="85.5" cy="75" r="3.5" />
+            <path d="M83 73.5 H88 M83 76.5 H88" />
+          </g>
+        </g>
       </g>
       <!-- 5 · the rack: three of four units taken -->
       <g class="as__mark as__mark--rack is-on" data-as-mark="4">
@@ -87,7 +103,7 @@ const last = points[points.length - 1];
 
       <!-- the walk -->
       <path class="as__walk" d={walk} pathLength="1" data-as-walk data-points={JSON.stringify(points)} />
-      <circle class="as__walker" r="6" cx="0" cy="0" style={`transform: translate(${last[0]}px, ${last[1]}px)`} data-as-walker />
+      <circle class="as__walker" r="6" cx="0" cy="0" style={`transform: translate(${last[0]}px, ${last[1]}px); --as-end: translate(${last[0]}px, ${last[1]}px)`} data-as-walker />
 
       <!-- pins -->
       {stops.map((s, i) => (
@@ -123,6 +139,8 @@ const last = points[points.length - 1];
   const PAUSE = 300; // ms the walker stops at each finding
   const LEAD = 250; // ms before the walker sets off
   const EASE = 'cubic-bezier(0.65, 0, 0.35, 1)'; // --ease-in-out: sets off and comes to a stop on every leg
+  const POWER = 4; // the walk point of stop 4 (Power): the walker waits there while the circuit is traced to the rack
+  const POWER_HOLD = 500; // ms added to that stop: ring 0–520, circuit draws 250–650, receptacle fills 650–870 (CSS)
 
   document.querySelectorAll<HTMLElement>('[data-demo="assess"]').forEach((root) => {
     const box = root.querySelector<HTMLElement>('.as')!;
@@ -143,6 +161,14 @@ const last = points[points.length - 1];
     const lengths = points.slice(1).map(([x, y], i) => Math.hypot(x - points[i][0], y - points[i][1]));
     const total = lengths.reduce((a, b) => a + b, 0) || 1;
     const schedule = walkSchedule(points, SPEED, PAUSE, LEAD); // arrive / leave per point
+    // Stop 4 holds longer, and everything after it moves on by the same amount (stops 1 to 3 keep their times)
+    if (schedule[POWER]) {
+      schedule[POWER].leave += POWER_HOLD;
+      for (let i = POWER + 1; i < schedule.length; i++) {
+        schedule[i].arrive += POWER_HOLD;
+        schedule[i].leave += POWER_HOLD;
+      }
+    }
     const end = schedule[schedule.length - 1].leave;
     const placeWalker = ([x, y]: [number, number]) => {
       walker.style.transform = `translate(${x}px, ${y}px)`;
@@ -276,8 +302,8 @@ const last = points[points.length - 1];
   }
 
   /* Rings around the things found: they close in from a little larger, like a circle drawn by hand */
-  .as__mark--rings circle,
-  .as__mark--rings rect {
+  .as__mark--rings > circle,
+  .as__mark--rings > rect {
     fill: none;
     stroke: var(--ink);
     stroke-width: 1.5;
@@ -287,17 +313,61 @@ const last = points[points.length - 1];
     transition: transform 520ms var(--ease-out);
   }
 
-  .as__mark--rings.is-on circle,
-  .as__mark--rings.is-on rect {
+  .as__mark--rings.is-on > circle,
+  .as__mark--rings.is-on > rect {
     transform: none;
   }
 
-  .as__mark--rings.is-on circle:nth-child(2) {
+  .as__mark--rings.is-on > circle:nth-child(2) {
     transition-delay: 90ms;
   }
 
-  .as__mark--rings.is-on circle:nth-child(3) {
+  .as__mark--rings.is-on > circle:nth-child(3) {
     transition-delay: 180ms;
+  }
+
+  /* Stop 4: the dedicated circuit, a dashed ink line traced from the panel along the walls to the rack.
+     The dashes are fixed; a solid stroke in the mask draws over them (stroke-dashoffset), so they never crawl. */
+  .as__circuit {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.25;
+    stroke-dasharray: 3 2.5;
+  }
+
+  .as__circuit-draw {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 6;
+    stroke-dasharray: 1 1;
+    stroke-dashoffset: 1;
+    transition: stroke-dashoffset 400ms var(--ease-in-out) 250ms;
+  }
+
+  .as__mark.is-on .as__circuit-draw {
+    stroke-dashoffset: 0;
+  }
+
+  /* ... and the receptacle it feeds fills in once the line reaches it */
+  .as__recept-fill circle {
+    fill: var(--ink);
+    stroke: var(--ink);
+    stroke-width: 1;
+  }
+
+  .as__recept-fill path {
+    fill: none;
+    stroke: var(--white);
+    stroke-width: 1;
+  }
+
+  .as__recept-fill {
+    opacity: 0;
+    transition: opacity 220ms ease 650ms;
+  }
+
+  .as__mark.is-on .as__recept-fill {
+    opacity: 1;
   }
 
   /* The old runs: thin, faint, drawn from the desks back to the closet */
@@ -521,6 +591,62 @@ const last = points[points.length - 1];
   /* The plan's room floors come from OfficePlan (its own scope), so the scoped * above does not reach them */
   .as--instant :global(.plan__room) {
     transition: none !important;
+  }
+
+  /* Paper never waits for the walk: print the finished walk even when the script has armed it and it has not
+     played yet (or is mid-run). The shaded rooms are the walk's own: lobby, open office, closet. */
+  @media print {
+    /* (not `transform` on the pins: their transform attribute places them) */
+    .as__mark,
+    .as__pin,
+    .as__done,
+    .as__recept-fill {
+      opacity: 1 !important;
+      transition: none !important;
+      animation: none !important;
+    }
+
+    .as__done {
+      transform: none !important;
+    }
+
+    .as__mark--rings > circle,
+    .as__mark--rings > rect,
+    .as__pin circle {
+      transform: none !important;
+      animation: none !important;
+    }
+
+    .as__old,
+    .as__conduit,
+    .as__circuit-draw,
+    .as__walk,
+    .as--armed .as__done :global(svg path) {
+      stroke-dashoffset: 0 !important;
+    }
+
+    .as__mark--rack rect {
+      opacity: 0.75 !important;
+    }
+
+    .as__walker {
+      transform: var(--as-end) !important;
+    }
+
+    .as--armed .as__item-title,
+    .as--armed .as__item-detail {
+      clip-path: none !important;
+    }
+
+    .as__num {
+      background: var(--ink) !important;
+    }
+
+    .as :global(.plan__room[data-room='lobby']),
+    .as :global(.plan__room[data-room='open']),
+    .as :global(.plan__room[data-room='closet']) {
+      fill-opacity: 0.05 !important;
+    }
   }
 
   /* Wide stage: plan left, findings right */

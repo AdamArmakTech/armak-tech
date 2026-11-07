@@ -8,6 +8,8 @@
  *
  * Server-renders the finished PASSING report (works without JS / under reduced motion);
  * the script resets it and plays the test once when it scrolls into view.
+ * The map draws the certifier too: the remote at the wall jack (its light shows the wire-map verdict) and the
+ * main unit at the patch panel, which sends every test signal. Both variants play the same beats (about 6.5 s).
  * Values are illustrative and labeled SAMPLE.
  */
 import { Play, RotateCcw, ArrowDown, ArrowRight } from '@lucide/astro';
@@ -27,10 +29,17 @@ const full = variant === 'full';
 // Stable id (no random part, so builds are repeatable): a page shows at most one card of each variant.
 const uid = `ct-${variant}`;
 
-/* ── Wire map geometry (viewBox 320 × 174) ── */
+/* ── Wire map geometry (viewBox 320 × 210: the wire map, and under it the two halves of the certifier) ── */
 const pinY = (i: number) => 30 + i * 19;
 const X1 = 48;
 const X2 = 272;
+const VB_H = 210;
+// Each end's port (the 8 pins sit in it), and the tester plugged into it by a short cord:
+// the main unit at the patch panel, the remote at the wall jack (a certifier is these two units).
+const PORT = { top: 20, bottom: 172, half: 10 };
+const UNIT_TOP = 181;
+// Near-end crosstalk: the short stretch of a pair, next to one end, where the coupled signal shows
+const GHOST = { from: 8, to: 44 };
 const curve = (from: number, to: number) =>
   `M${X1} ${pinY(from)} C 160 ${pinY(from)}, 160 ${pinY(to)}, ${X2} ${pinY(to)}`;
 
@@ -48,14 +57,14 @@ const pins = [
   ...p,
   i,
   dPass: curve(i, i),
-  // Failing cable: pins 3 and 6 are crossed (a real wire-map fault)
+  // Failing cable: pins 3 and 6 are reversed (a real wire-map fault)
   dFail: i === 2 ? curve(2, 5) : i === 5 ? curve(5, 2) : curve(i, i),
   bad: i === 2 || i === 5,
   stroke: p.striped ? `url(#${uid}-${p.color.replace(/\W/g, '')})` : p.color,
-  // The four twisted pairs (T568B): 1-2, 3-6, 4-5, 7-8. The crosstalk check lights them one at a time.
+  // The four twisted pairs (T568B): 1-2, 3-6, 4-5, 7-8. The crosstalk check drives one pair and listens on another.
   pair: i <= 1 ? 'a' : i === 2 || i === 5 ? 'b' : i === 3 || i === 4 ? 'c' : 'd',
 }));
-// The signal pulses for the length, crosstalk, loss and echo checks run on pin 4 (the middle wire)
+// The signal pulses for the length, loss and echo checks run on pin 4 (the middle wire), sent from the main unit
 const pulseGeom = { x1: X1, x2: X2, y: pinY(3) };
 const stripeColors = [...new Set(pins.filter((p) => p.striped).map((p) => p.color))];
 
@@ -78,7 +87,7 @@ const checks: Check[] = [
     name: 'Wire map',
     plain: 'Every wire lands on the right pin',
     passText: '8 / 8 correct',
-    failText: 'Pins 3 & 6 crossed',
+    failText: 'Pins 3 & 6 reversed',
     explain:
       'A network cable has 8 small wires. Each one must connect to the matching pin at both ends, in the standard color order. One wire in the wrong spot and the connection drops out or never works at all.',
     slug: 'termination',
@@ -150,7 +159,7 @@ const barPos = (b: Bar) =>
     <span class="t-meta">Cable test: live demo</span>
     <span class="ct__sample t-meta">Sample</span>
   </header>
-  <p class="ct__sub t-meta">Cable <span class="t-readout">IDF2-A-024</span>, Cat 6A permanent link</p>
+  <p class="ct__sub t-meta">Cable <span class="t-readout">2A-A24</span>, Cat 6A permanent link</p>
 
   {full && (
     <div class="ct__controls">
@@ -169,7 +178,7 @@ const barPos = (b: Bar) =>
 
   <!-- Wire map: wall jack (left) ↔ patch panel (right) -->
   <div class="ct__map">
-    <svg viewBox="0 0 320 174" role="img" data-fit-text aria-label="Wire map: the 8 wires connecting wall jack pins to patch panel pins">
+    <svg viewBox={`0 0 320 ${VB_H}`} role="img" data-fit-text aria-label="Wire map: the 8 wires connecting wall jack pins to patch panel pins">
       <defs>
         {stripeColors.map((c) => (
           <pattern id={`${uid}-${c.replace(/\W/g, '')}`} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
@@ -181,6 +190,31 @@ const barPos = (b: Bar) =>
       <text x={X1} y="12" class="ct__map-label t-readout">Wall jack</text>
       <text x={X2} y="12" class="ct__map-label t-readout" text-anchor="end">Patch panel</text>
 
+      <!-- The certifier: the remote plugged into the wall jack, the main unit into the patch panel. Drawn under the wires. -->
+      <g class="ct__kit" aria-hidden="true">
+        {[X1, X2].map((x) => (
+          <>
+            <rect class="ct__port" x={x - PORT.half} y={PORT.top} width={PORT.half * 2} height={PORT.bottom - PORT.top} rx="5" />
+            <path class="ct__cord" d={`M${x} ${PORT.bottom} V${UNIT_TOP}`} />
+          </>
+        ))}
+        <g class="ct__remote">
+          <rect class="ct__unit" x={X1 - 18} y={UNIT_TOP} width="36" height="23" rx="4" />
+          <rect class="ct__plug" x={X1 - 4} y={UNIT_TOP - 2.5} width="8" height="3" rx="1" />
+          <path class="ct__grille" d={`M${X1 - 11} ${UNIT_TOP + 8.5}h9M${X1 - 11} ${UNIT_TOP + 14.5}h9`} />
+          <circle class="ct__led" cx={X1 + 8} cy={UNIT_TOP + 11.5} r="3.6" />
+          <circle class="ct__led ct__led--pass is-on" cx={X1 + 8} cy={UNIT_TOP + 11.5} r="3.6" data-ct-led="pass" />
+          <circle class="ct__led ct__led--fail" cx={X1 + 8} cy={UNIT_TOP + 11.5} r="3.6" data-ct-led="fail" />
+        </g>
+        <g class="ct__main">
+          <rect class="ct__unit" x={X2 - 34} y={UNIT_TOP} width="68" height="25" rx="4" />
+          <rect class="ct__plug" x={X2 - 4} y={UNIT_TOP - 2.5} width="8" height="3" rx="1" />
+          <rect class="ct__screen" x={X2 - 28} y={UNIT_TOP + 5} width="38" height="15" rx="2" />
+          <circle class="ct__key" cx={X2 + 21} cy={UNIT_TOP + 8.5} r="2.4" />
+          <circle class="ct__key" cx={X2 + 21} cy={UNIT_TOP + 16.5} r="2.4" />
+        </g>
+      </g>
+
       {pins.map((p) => (
         <g class="ct__wire is-drawn" data-wire={p.i} data-pair={p.pair} data-bad={p.bad ? '' : undefined}>
           <path class="ct__wire-under" d={p.dPass} data-d-pass={p.dPass} data-d-fail={p.dFail} pathLength="1" />
@@ -188,6 +222,24 @@ const barPos = (b: Bar) =>
           <title>{`Pin ${p.n}: ${p.name}`}</title>
         </g>
       ))}
+
+      <!-- Near-end crosstalk (NEXT): the stretch of a listening pair beside the end that drives it, where the leaked
+           signal shows. One group per pair and end; the script shows one at a time. -->
+      {(['main', 'remote'] as const).flatMap((end) =>
+        ['a', 'b', 'c', 'd'].map((pair) => (
+          <g class="ct__xt" data-xt-pair={pair} data-xt-end={end} aria-hidden="true">
+            {pins.filter((p) => p.pair === pair).map((p) => (
+              <path
+                class="ct__xt-line"
+                d={end === 'main'
+                  ? `M${X2 - GHOST.to} ${pinY(p.i)} H${X2 - GHOST.from}`
+                  : `M${X1 + GHOST.from} ${pinY(p.i)} H${X1 + GHOST.to}`}
+                style={`stroke: ${p.stroke}`}
+              />
+            ))}
+          </g>
+        )),
+      )}
 
       <!-- The tester's signal, shown while a check runs: out and back for length, fading for loss, an echo for return loss -->
       <circle class="ct__pulse" r="4.5" cx="0" cy="0" data-ct-pulse data-ct-geom={JSON.stringify(pulseGeom)} />
@@ -280,8 +332,15 @@ const barPos = (b: Bar) =>
 <script>
   import { fitSvgText, finished, prefersReducedMotion, sleep, countTo, moveAlong, at } from '../../scripts/demo';
 
-  const CHECK_MS = 650; // how long each of the four measurements runs
+  const CHECK_MS = 650; // how long the length, insertion loss and return loss measurements run
   const FADE_MS = 120; // the signal dot fades out on the wire this long before its move is cancelled (a cancelled move drops it at the drawing's corner)
+  // Crosstalk (NEXT): the main unit drives each pair in turn and listens on each neighbour, the six pair
+  // combinations; then the remote does the same from its end (one quick beat).
+  const NEXT_STEP_MS = 150;
+  const NEXT_PAIRS: [string, string][] = [['a', 'b'], ['a', 'c'], ['a', 'd'], ['b', 'c'], ['b', 'd'], ['c', 'd']];
+  const NEXT_REMOTE_MS = 250;
+  const NEXT_MS = NEXT_PAIRS.length * NEXT_STEP_MS + NEXT_REMOTE_MS;
+  const CHECKS = ['length', 'next', 'il', 'rl'];
 
   document.querySelectorAll<HTMLElement>('[data-ct]').forEach((root) => {
     fitSvgText(root);
@@ -293,6 +352,8 @@ const barPos = (b: Bar) =>
     const live = root.querySelector<HTMLElement>('[data-ct-live]')!;
     const pulse = root.querySelector<SVGCircleElement>('[data-ct-pulse]')!;
     const echo = root.querySelector<SVGCircleElement>('[data-ct-echo]')!;
+    const ghosts = [...root.querySelectorAll<SVGGElement>('.ct__xt')];
+    const leds = [...root.querySelectorAll<SVGCircleElement>('[data-ct-led]')];
     const geom = JSON.parse(pulse.dataset.ctGeom || '{"x1":48,"x2":272,"y":87}') as { x1: number; x2: number; y: number };
     const startDelay = Number(root.dataset.startDelay || 0);
     let mode: 'pass' | 'fail' = 'pass';
@@ -301,50 +362,74 @@ const barPos = (b: Bar) =>
 
     const say = (text: string) => (live.textContent = text);
 
+    /** The remote's light: off, green once the wire map passes, red when it fails */
+    const setLed = (state: 'off' | 'pass' | 'fail') => leds.forEach((l) => l.classList.toggle('is-on', l.dataset.ctLed === state));
+
+    /** Shows the crosstalk stretch of one pair at one end (or every pair at that end), hides the rest */
+    const showGhost = (end: 'main' | 'remote' | null, pair?: string) =>
+      ghosts.forEach((g) => g.classList.toggle('is-on', g.dataset.xtEnd === end && (!pair || g.dataset.xtPair === pair)));
+
     const stopPulses = () => {
       // Cancelling a move drops the dot at the drawing's origin, so nothing may fade there: snap, then restore
-      pulse.style.transition = 'none';
-      echo.style.transition = 'none';
+      const snap = [pulse, echo, ...ghosts];
+      snap.forEach((el) => (el.style.transition = 'none'));
       anims.forEach((a) => a.cancel());
       anims = [];
       pulse.classList.remove('is-on');
       echo.classList.remove('is-on');
+      showGhost(null);
       delete root.dataset.pair;
       void root.offsetWidth;
-      pulse.style.transition = '';
-      echo.style.transition = '';
+      snap.forEach((el) => (el.style.transition = ''));
     };
 
     /**
-     * What the tester does during each check, drawn on the wire map:
+     * What the tester does during each check, drawn on the wire map. Every signal leaves from the main unit
+     * (the patch panel end, x2) the way a certifier sends it:
      *  length    a signal runs to the far end and back (the tester times it)
-     *  next      the four pairs light one at a time (crosstalk is measured between pairs)
+     *  next      the main unit drives one pair (it stays bright) and listens on a neighbour: what leaks shows on
+     *            the neighbour's first stretch beside the main unit. Six pair combinations, then the remote
+     *            repeats it from the jack end.
      *  il        the signal fades as it travels (insertion loss)
      *  rl        the signal goes out and a smaller echo comes back (return loss)
      */
-    const showCheck = (id: string, alive: () => boolean) => {
+    const showCheck = (id: string, alive: () => boolean, row?: HTMLElement) => {
       const { x1, x2, y } = geom;
       const half = CHECK_MS / 2;
       if (id === 'length') {
         pulse.classList.add('is-on');
-        anims.push(moveAlong(pulse, [[x1, y], [x2, y], [x1, y]], [0, half, CHECK_MS], 'ease-in-out'));
+        anims.push(moveAlong(pulse, [[x2, y], [x1, y], [x2, y]], [0, half, CHECK_MS], 'ease-in-out'));
         at(CHECK_MS - FADE_MS, alive, () => pulse.classList.remove('is-on'));
       } else if (id === 'next') {
-        ['a', 'b', 'c', 'd'].forEach((p, i) => at(i * (CHECK_MS / 4), alive, () => (root.dataset.pair = p)));
-        at(CHECK_MS, alive, () => delete root.dataset.pair);
+        NEXT_PAIRS.forEach(([driven, listen], k) =>
+          at(k * NEXT_STEP_MS, alive, () => {
+            root.dataset.pair = driven;
+            showGhost('main', listen);
+            if (row) setRow(row, 'running', `${k + 1} / ${NEXT_PAIRS.length}`);
+          }),
+        );
+        // The remote's turn: every pair dims and the leak shows beside the remote instead
+        at(NEXT_PAIRS.length * NEXT_STEP_MS, alive, () => {
+          root.dataset.pair = 'x';
+          showGhost('remote');
+        });
+        at(NEXT_MS - FADE_MS, alive, () => {
+          showGhost(null);
+          delete root.dataset.pair;
+        });
       } else if (id === 'il') {
         pulse.classList.add('is-on');
-        anims.push(moveAlong(pulse, [[x1, y], [x2, y]], [0, CHECK_MS - 40], 'linear'));
+        anims.push(moveAlong(pulse, [[x2, y], [x1, y]], [0, CHECK_MS - 40], 'linear'));
         // The signal loses strength along the run (1 to 0.2 over the first 80%), then goes out before the move is cancelled
         anims.push(pulse.animate([{ opacity: 1 }, { opacity: 0.2, offset: 0.8 }, { opacity: 0 }], { duration: CHECK_MS - 40, easing: 'linear', fill: 'both' }));
         at(CHECK_MS - FADE_MS, alive, () => pulse.classList.remove('is-on'));
       } else if (id === 'rl') {
         pulse.classList.add('is-on');
-        anims.push(moveAlong(pulse, [[x1, y], [x2, y]], [0, half], 'ease-out'));
+        anims.push(moveAlong(pulse, [[x2, y], [x1, y]], [0, half], 'ease-out'));
         at(half - 20, alive, () => {
           pulse.classList.remove('is-on');
           echo.classList.add('is-on');
-          anims.push(moveAlong(echo, [[x2, y], [x1, y]], [0, half], 'ease-out'));
+          anims.push(moveAlong(echo, [[x1, y], [x2, y]], [0, half], 'ease-out'));
         });
         at(CHECK_MS - FADE_MS, alive, () => echo.classList.remove('is-on'));
       }
@@ -394,8 +479,9 @@ const barPos = (b: Bar) =>
         if (mode === 'pass') setRow(row, 'pass', row.dataset.passText);
         else setRow(row, i === 0 ? 'fail' : 'skip', row.dataset.failText);
       });
+      setLed(mode);
       setResult(true);
-      say(mode === 'pass' ? 'Result: pass. All checks passed.' : 'Result: fail. Pins 3 and 6 are crossed.');
+      say(mode === 'pass' ? 'Result: pass. All checks passed.' : 'Result: fail. Pins 3 and 6 are reversed.');
       requestAnimationFrame(() => root.classList.remove('ct--instant'));
     };
 
@@ -406,6 +492,7 @@ const barPos = (b: Bar) =>
       wires.forEach((w) => w.classList.remove('is-drawn', 'is-bad'));
       marks.forEach((m) => m.classList.remove('is-shown', 'is-bad'));
       rows.forEach((row) => setRow(row, 'idle', '—'));
+      setLed('off');
       setResult(false);
       // Force a reflow so the next state change animates from the reset state
       void root.offsetWidth;
@@ -439,25 +526,31 @@ const barPos = (b: Bar) =>
       if (rows[0]) {
         setRow(rows[0], mode === 'pass' ? 'pass' : 'fail', mode === 'pass' ? rows[0].dataset.passText : rows[0].dataset.failText);
       }
-      say(mode === 'pass' ? 'Wire map: passed' : 'Wire map: failed, pins 3 and 6 crossed');
+      setLed(mode); // the remote at the jack shows the wire-map verdict
+      say(mode === 'pass' ? 'Wire map: passed' : 'Wire map: failed, pins 3 and 6 reversed');
 
       // 2–5 · The rest (skipped when the wiring is wrong — a real tester stops too). While each runs, the
-      // wire map shows what is being measured and the readout counts up to its value.
-      for (const row of rows.slice(1)) {
+      // wire map shows what is being measured and the readout counts up to its value. The compact card has
+      // no check rows but draws the same measurements on its map.
+      for (const check of CHECKS) {
+        const row = rows.find((r) => r.dataset.check === check);
         await sleep(mode === 'pass' ? 300 : 160);
         if (!alive()) return;
         if (mode === 'fail') {
-          setRow(row, 'skip', row.dataset.failText);
+          if (row) setRow(row, 'skip', row.dataset.failText);
           continue;
         }
-        setRow(row, 'running', '—');
-        showCheck(row.dataset.check || '', alive);
-        countValue(row, alive);
-        await sleep(CHECK_MS);
+        if (row) setRow(row, 'running', '—');
+        showCheck(check, alive, row);
+        // Crosstalk's readout tallies the six pair combinations instead (in showCheck)
+        if (row && check !== 'next') countValue(row, alive);
+        await sleep(check === 'next' ? NEXT_MS : CHECK_MS);
         if (!alive()) return;
         stopPulses();
-        setRow(row, 'pass', row.dataset.passText);
-        say(`${row.querySelector('.ct__check-term')?.textContent}: passed`);
+        if (row) {
+          setRow(row, 'pass', row.dataset.passText);
+          say(`${row.querySelector('.ct__check-term')?.textContent}: passed`);
+        }
       }
 
       await sleep(350);
@@ -724,6 +817,84 @@ const barPos = (b: Bar) =>
     fill: var(--steel);
   }
 
+  /* The certifier, drawn still: each end's port, a short cord, the remote (jack end) and the main unit (panel end) */
+  .ct__port {
+    fill: var(--white);
+    stroke: var(--steel);
+    stroke-width: 1;
+  }
+
+  .ct__cord {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 2.5;
+  }
+
+  .ct__unit {
+    fill: var(--white);
+    stroke: var(--ink);
+    stroke-width: 1.5;
+  }
+
+  .ct__plug {
+    fill: var(--ink);
+  }
+
+  .ct__screen {
+    fill: var(--paper-sunken);
+    stroke: var(--ink);
+    stroke-width: 1;
+  }
+
+  .ct__key,
+  .ct__grille {
+    fill: none;
+    stroke: var(--steel);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+  }
+
+  /* The remote's light: off (grey), green once the wire map passes, red when it fails. Two lit copies sit on the
+     grey one and fade in (opacity), so no colour is animated. */
+  .ct__led {
+    fill: var(--hairline-strong);
+  }
+
+  .ct__led--pass,
+  .ct__led--fail {
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .ct__led--pass {
+    fill: var(--pass);
+  }
+
+  .ct__led--fail {
+    fill: var(--signal);
+  }
+
+  .ct__led.is-on {
+    opacity: 1;
+  }
+
+  /* Near-end crosstalk: the listening pair's first stretch beside the driving end shows the leak, fainter than
+     the driven pair, brighter than the pairs stepped back */
+  .ct__xt {
+    opacity: 0;
+    transition: opacity 120ms ease;
+  }
+
+  .ct__xt.is-on {
+    opacity: 0.6;
+  }
+
+  .ct__xt-line {
+    fill: none;
+    stroke-width: 5;
+    stroke-linecap: round;
+  }
+
   .ct__wire-under,
   .ct__wire-line {
     fill: none;
@@ -764,7 +935,8 @@ const barPos = (b: Bar) =>
   .ct[data-pair='a'] .ct__wire:not([data-pair='a']),
   .ct[data-pair='b'] .ct__wire:not([data-pair='b']),
   .ct[data-pair='c'] .ct__wire:not([data-pair='c']),
-  .ct[data-pair='d'] .ct__wire:not([data-pair='d']) {
+  .ct[data-pair='d'] .ct__wire:not([data-pair='d']),
+  .ct[data-pair='x'] .ct__wire {
     opacity: 0.22;
   }
 
@@ -1455,6 +1627,30 @@ const barPos = (b: Bar) =>
   @media (max-width: 639px) {
     .ct__map svg {
       --u: 1.2;
+    }
+  }
+
+  /* Paper shows the finished drawing, even when the card was printed before (or while) its test ran */
+  @media print {
+    .ct .ct__wire,
+    .ct .ct__wire path,
+    .ct .ct__pin-mark,
+    .ct .ct__result {
+      opacity: 1 !important;
+      stroke-dashoffset: 0 !important;
+      transform: none !important;
+      transition: none !important;
+      animation: none !important;
+    }
+
+    .ct .ct__pulse,
+    .ct .ct__xt {
+      opacity: 0 !important;
+    }
+
+    .ct[data-mode='pass'] .ct__led--pass,
+    .ct[data-mode='fail'] .ct__led--fail {
+      opacity: 1 !important;
     }
   }
 

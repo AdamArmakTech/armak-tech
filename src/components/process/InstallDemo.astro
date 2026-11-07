@@ -6,6 +6,22 @@
  * Teaches: a clean, labeled install is traceable and easy to change; work is planned around the
  * business. The slider works without JS animation; the script auto-sweeps it once, then hands over.
  *
+ * The dressed rack is drawn the way a contractor builds it (front elevation, top to bottom): fiber
+ * enclosure (the white backbone lands on it; white jumpers run down the rack side to the switch's two
+ * uplink ports), patch panel A (one row of 24: A-01 to A-12 terminated, A-13 to A-24 spare), horizontal
+ * manager, switch SW-1, firewall (one green cord to the switch), room to grow, UPS. The carrier arrives
+ * at a demarc box on the backboard beside the rack; the orange cord runs from it to the firewall's WAN
+ * port. Horizontal drops run down the back of the rack to the back of the panel; patch cords drop
+ * straight through the manager to the switch port below, so nothing crosses the spare ports.
+ *
+ * Motion (script only; about 7.9 s, see the run below): before holds; the split sweeps to after; the
+ * three phases are drawn as they light: pre-staged (the panel's printed label strip wipes in and the
+ * labels arrive), after-hours install (the drops come down in two bundles and are tied, the backbone
+ * lands), phased cutover (three groups of four cords patch through and their link lights come on, then
+ * the firewall link, the uplinks and the carrier hand-off); the split eases back to half and the colour
+ * key rises; last, the trace demo below traces its example jack. Every mark is server-rendered in its
+ * finished place: without scripts, under reduced motion and in print the finished closet shows.
+ *
  * Cable colours: cable jacket colours in this drawing code a drop's purpose (owner, 2026-11-06).
  * They are not status colours, so DESIGN.md rule 7 (red = next action, green = PASS only) does not
  * apply to them. Meanings follow the TIA-606 termination-field colours (see the legend).
@@ -20,10 +36,27 @@ const showHeadroom = signature.items.rackHeadroom.confirmed === 'yes';
 // Stable id (no random part, so builds are repeatable): rendered once per page.
 const uid = 'in-demo';
 
-// Geometry (viewBox 400 × 215)
-const portX = (i: number) => 133 + i * 11; // 12 ports per row
-const PANEL_TOP = 32; // top-row ports y
-const SWITCH_TOP = 104; // switch top-row ports y
+// Geometry (viewBox 400 × 258). Numbers are rounded to 0.1 so the markup stays clean.
+const r1 = (v: number) => Math.round(v * 10) / 10;
+const pX = (i: number) => r1(133 + i * 5.6); // port i (0-based) on the panel and the switch: left edge, 4 wide
+const pC = (i: number) => r1(pX(i) + 2); // its centre
+const FE_Y = 12; // fiber enclosure, 12 tall
+const ADAPTERS = [244, 250, 256, 262]; // fiber adapter centres on the enclosure (4 × 4)
+const PANEL_Y = 40; // patch panel A, 15 tall
+const STRIP_Y = 43.5; // its printed label strip, above the ports
+const PANEL_TOP = 47; // panel ports y (6 tall)
+const HM_Y = 59; // horizontal manager, 12 tall
+const SW_Y = 75; // switch SW-1, 16 tall
+const SWITCH_TOP = 79; // switch ports y (6 tall)
+const SW_PORTS = 20; // RJ45 ports; two SFP uplink cages sit at the right end
+const SFP_X = 254; // SFP cages, 8 × 4
+const SFP_Y = [78, 84];
+const LED_Y = SW_Y + 1.5; // link lights above the switch ports
+const FW_Y = 101; // firewall, 12 tall
+const FW_PORT_Y = 105; // its ports (6 tall)
+const FW_LAN = [16, 17, 18, 19].map(pX); // four LAN ports, in line with switch ports 17 to 20
+const WAN_X = 252; // the WAN port, 5 wide
+const DEMARC = { x: 364, y: 97, w: 28, h: 22, jx: 369, jy: 105 }; // the carrier's box on the backboard; jack 6 × 6
 const LABEL_X = 284; // right-hand label column, just outside the rack rail
 
 // Deterministic "random" for the tangled version
@@ -50,37 +83,36 @@ const oldWires = [
   { d: 'M240 0 C 252 56, 214 94, 232 136', tail: 'M232 136 C 236 146, 228 152, 233 164' }, // another loose end
 ];
 
+// Tangled version: feeds land on random panel ports from above, cords loop down and back up to random switch ports
 const messyFeeds = Array.from({ length: 14 }, () => {
   const x0 = 110 + rand() * 180;
-  const p = portX(Math.floor(rand() * 12)) + 4;
+  const p = pC(Math.floor(rand() * 12) * 2);
   return { d: `M${x0.toFixed(1)} 0 C ${(x0 + (rand() - 0.5) * 140).toFixed(1)} 20, ${(p + (rand() - 0.5) * 120).toFixed(1)} 6, ${p} ${PANEL_TOP}`, c: pick(messColors) };
 });
 const messyCords = Array.from({ length: 11 }, () => {
-  const a = portX(Math.floor(rand() * 12)) + 4;
-  const b = portX(Math.floor(rand() * 12)) + 4;
+  const a = pC(Math.floor(rand() * 12) * 2);
+  const b = pC(Math.round((Math.floor(rand() * 12) * (SW_PORTS - 1)) / 11));
   const sag = 150 + rand() * 50;
   const side = (rand() - 0.5) * 160;
-  return { d: `M${a} 39 C ${(a + side).toFixed(1)} ${sag.toFixed(1)}, ${(b - side).toFixed(1)} ${(sag - 20).toFixed(1)}, ${b} ${SWITCH_TOP}`, c: pick(messColors) };
+  return { d: `M${a} ${PANEL_TOP + 6} C ${(a + side).toFixed(1)} ${sag.toFixed(1)}, ${(b - side).toFixed(1)} ${(sag - 20).toFixed(1)}, ${b} ${SWITCH_TOP}`, c: pick(messColors) };
 });
 
-// Dressed version: 4 bundles of 6 feeding the panel from above, 12 short cords straight down
-const bundles = [0, 1, 2, 3].map((k) => ({
-  lines: Array.from({ length: 6 }, (_, j) => 140 + k * 33 + j * 3),
-  tie: 136 + k * 33,
-  label: `A-${String(k * 6 + 1).padStart(2, '0')}–${String(k * 6 + 6).padStart(2, '0')}`,
-  x: 147 + k * 33,
-}));
-type Cable = 'blue' | 'green' | 'orange' | 'white';
-// Colour by purpose, grouped so the order looks intentional: blue horizontal drops first, then
-// green equipment links, then the orange carrier hand-off and white backbone together.
-const feedColors: Cable[][] = [
-  ['blue', 'blue', 'blue', 'blue', 'blue', 'blue'],
-  ['blue', 'blue', 'blue', 'blue', 'blue', 'blue'],
-  ['blue', 'blue', 'blue', 'blue', 'green', 'green'],
-  ['orange', 'orange', 'white', 'white', 'green', 'green'],
+// Dressed version. Twelve horizontal drops (blue) in two tied bundles of six run down the back of the rack,
+// behind the fiber enclosure, to the back of panel ports A-01 to A-12. In the build-up bundle k comes down
+// 150 ms after bundle k-1, its six cables 25 ms apart.
+const drops = Array.from({ length: 12 }, (_, i) => ({ x: pC(i), d: Math.floor(i / 6) * 150 + (i % 6) * 25 }));
+const bundles = [0, 1].map((k) => ({ x: r1(pC(k * 6) - 2.5), w: r1(pC(k * 6 + 5) - pC(k * 6) + 5), d: k * 150 }));
+// Twelve short blue patch cords, each straight down from its panel port through the manager to the switch
+// port below it. Cut over in three groups of four (g), 30 ms apart inside a group (j); each cord's link light
+// comes on after the cord lands, 20 ms apart.
+const cords = Array.from({ length: 12 }, (_, i) => ({ x: pC(i), g: Math.floor(i / 4), j: i % 4 }));
+// Two white fiber jumpers from the enclosure's adapters down the rack's right side to the SFP uplinks
+// (the inner one to the upper cage, the outer one to the lower cage, so they never cross)
+const uplinks = [
+  { d: `M${ADAPTERS[2]} ${FE_Y + 8} V30.5 H274 V${SFP_Y[0] + 2} H${SFP_X + 8}`, delay: 120 },
+  { d: `M${ADAPTERS[3]} ${FE_Y + 8} V27 H277.5 V${SFP_Y[1] + 2} H${SFP_X + 8}`, delay: 160 },
 ];
-const cordColor = (i: number): Cable => (i < 7 ? 'blue' : i < 9 ? 'green' : i === 9 ? 'orange' : 'white');
-const cords = Array.from({ length: 12 }, (_, i) => ({ x: portX(i) + 4, color: cordColor(i) }));
+type Cable = 'blue' | 'green' | 'orange' | 'white';
 
 // TIA-606 termination-field colour meanings (plain words, one row per colour)
 const legend: { color: Cable; text: string }[] = [
@@ -103,30 +135,39 @@ const steps = installPhases;
 >
   <div class="in">
     <div class="in__compare">
-      <svg class="in__rack" viewBox={`0 0 400 ${H}`} role="img" data-fit-text aria-label="A network rack shown two ways: on the left, tangled unlabeled cables in mixed colors plus old unused cables; on the right, neatly bundled, labeled, color-coded cables with short patch cords and a color key: blue horizontal drops, green network equipment, orange carrier hand-off, white backbone">
+      <svg class="in__rack" viewBox={`0 0 400 ${H}`} role="img" data-fit-text data-demo-control aria-label="A network rack shown two ways: on the left, tangled unlabeled cables in mixed colors plus old unused cables; on the right, neatly bundled, labeled, color-coded cables with short patch cords and a color key: blue horizontal drops, green network equipment, orange carrier hand-off, white backbone">
         <defs>
           <clipPath id={`${uid}-before`}><rect x="0" y="0" width="200" height={H} data-in-clip-before /></clipPath>
           <clipPath id={`${uid}-after`}><rect x="200" y="0" width="200" height={H} data-in-clip-after /></clipPath>
         </defs>
 
-        <!-- rack + equipment (shared by both versions) -->
+        <!-- rack + equipment (shared by both versions: the same closet, installed two ways) -->
         <g class="in__gear">
           <rect x="120" y="8" width="8" height="205" class="in__rail" />
           <rect x="272" y="8" width="8" height="205" class="in__rail" />
-          <rect x="128" y="28" width="144" height="30" />
-          <rect x="128" y="64" width="144" height="14" />
-          <rect x="128" y="100" width="144" height="30" />
+          <!-- fiber enclosure -->
+          <rect x="128" y={FE_Y} width="144" height="12" />
+          {ADAPTERS.map((cx) => <rect x={cx - 2} y={FE_Y + 4} width="4" height="4" class="in__port" />)}
+          <!-- patch panel A: one row of 24 ports -->
+          <rect x="128" y={PANEL_Y} width="144" height="15" />
+          {Array.from({ length: 24 }, (_, i) => <rect x={pX(i)} y={PANEL_TOP} width="4" height="6" class="in__port" />)}
+          <!-- horizontal manager: a finger every second port -->
+          <rect x="128" y={HM_Y} width="144" height="12" />
+          {Array.from({ length: 13 }, (_, k) => <line x1={r1(pX(k * 2) - 0.8)} y1={HM_Y} x2={r1(pX(k * 2) - 0.8)} y2={HM_Y + 6} />)}
+          <!-- switch SW-1: 20 ports and two SFP uplink cages -->
+          <rect x="128" y={SW_Y} width="144" height="16" />
+          {Array.from({ length: SW_PORTS }, (_, i) => <rect x={pX(i)} y={SWITCH_TOP} width="4" height="6" class="in__port" />)}
+          {SFP_Y.map((y) => <rect x={SFP_X} y={y} width="8" height="4" class="in__port" />)}
+          <!-- firewall: four LAN ports and the WAN port -->
+          <rect x="128" y={FW_Y} width="144" height="12" />
+          {FW_LAN.map((x) => <rect x={x} y={FW_PORT_Y} width="4" height="6" class="in__port" />)}
+          <rect x={WAN_X} y={FW_PORT_Y} width="5" height="6" class="in__port" />
           <rect x="128" y="160" width="144" height="36" />
           <text x="138" y="178" dy="0.35em" class="in__unit">UPS</text>
-          {Array.from({ length: 12 }, (_, i) => (
-            <g>
-              <rect x={portX(i)} y={PANEL_TOP} width="8" height="7" class="in__port" />
-              <rect x={portX(i)} y={PANEL_TOP + 13} width="8" height="7" class="in__port" />
-              <rect x={portX(i)} y={SWITCH_TOP} width="8" height="7" class="in__port" />
-              <rect x={portX(i)} y={SWITCH_TOP + 13} width="8" height="7" class="in__port" />
-            </g>
-          ))}
-          {Array.from({ length: 8 }, (_, i) => <line x1={138 + i * 17} y1="64" x2={138 + i * 17} y2="70" />)}
+          <!-- the carrier's line comes in to its demarc box on the backboard, beside the rack -->
+          <path d={`M384 0 V${DEMARC.y}`} class="in__carrier" />
+          <rect x={DEMARC.x} y={DEMARC.y} width={DEMARC.w} height={DEMARC.h} />
+          <rect x={DEMARC.jx} y={DEMARC.jy} width="6" height="6" class="in__port" />
         </g>
 
         <!-- BEFORE: tangled, unlabeled -->
@@ -152,31 +193,62 @@ const steps = installPhases;
           </text>
         </g>
 
-        <!-- AFTER: dressed bundles, labels, short cords -->
+        <!-- AFTER: dressed bundles, labels, short cords. Marks carry the beat that draws them (in__b1 pre-staged,
+             in__b2 after-hours install, in__g0..g3 the cutover groups) and --d, their delay inside that beat. -->
         <g clip-path={`url(#${uid}-after)`} class="in__after">
-          {bundles.map((b, k) => (
-            <g>
-              {b.lines.map((x, j) => (
-                <>
-                  {feedColors[k][j] === 'white' && <line x1={x} y1="0" x2={x} y2={PANEL_TOP} class="in__feed in__under" />}
-                  <line x1={x} y1="0" x2={x} y2={PANEL_TOP} class={`in__feed in__c--${feedColors[k][j]}`} />
-                </>
-              ))}
-              <rect x={b.tie} y="11" width="24" height="3" class="in__tie" />
-              <rect x={b.tie} y="21" width="24" height="3" class="in__tie" />
-            </g>
+          <!-- backbone: fiber from the ceiling onto the top of the fiber enclosure -->
+          <path d={`M246 0 V${FE_Y}`} pathLength="1" class="in__draw in__b2 in__feed in__under" style="--d:300ms" />
+          <path d={`M246 0 V${FE_Y}`} pathLength="1" class="in__draw in__b2 in__feed in__c--white" style="--d:300ms" />
+          <!-- twelve horizontal drops in two tied bundles of six -->
+          {drops.map((p) => (
+            <path d={`M${p.x} 0 V${PANEL_Y}`} pathLength="1" class="in__draw in__b2 in__feed in__c--blue" style={`--d:${p.d}ms;--t:380ms`} />
           ))}
-          {cords.map((c) => (
+          {bundles.map((b) => (
             <>
-              {c.color === 'white' && <line x1={c.x} y1="39" x2={c.x} y2={SWITCH_TOP} class="in__cord in__under" />}
-              <line x1={c.x} y1="39" x2={c.x} y2={SWITCH_TOP} class={`in__cord in__c--${c.color}`} />
+              <rect x={b.x} y="3" width={b.w} height="3" class="in__tie in__b2" style={`--d:${b.d + 420}ms`} />
+              <rect x={b.x} y={FE_Y + 13.5} width={b.w} height="2.5" class="in__tie in__b2" style={`--d:${b.d + 460}ms`} />
             </>
           ))}
-          <!-- labels sit outside the rails, level with what they name (room for phone-size text) -->
-          <text x="116" y={PANEL_TOP + 2.5} dy="0.35em" class="in__label" text-anchor="end">A-01</text>
-          <text x={LABEL_X} y={PANEL_TOP + 2.5} dy="0.35em" class="in__label">A-12</text>
-          <text x={LABEL_X} y={PANEL_TOP + 17.5} dy="0.35em" class="in__label">A-13 … A-24<tspan x={LABEL_X} dy="1.2em" class="in__words">Spare</tspan></text>
-          <text x={LABEL_X} y={SWITCH_TOP + 3.5} dy="0.35em" class="in__label">SW-1<tspan x={LABEL_X} dy="1.2em" class="in__note">ports 1–12</tspan></text>
+          <!-- the fiber enclosure again, in front of the drops that run down behind it -->
+          <g class="in__gear">
+            <rect x="128" y={FE_Y} width="144" height="12" />
+            {ADAPTERS.map((cx) => <rect x={cx - 2} y={FE_Y + 4} width="4" height="4" class="in__port" />)}
+          </g>
+          <!-- panel A's printed label strip, one label per port; it wipes in left to right -->
+          <path d={`M132 ${STRIP_Y} H268`} pathLength="1" class="in__draw in__b1 in__strip" style="--t:400ms" />
+          {Array.from({ length: 24 }, (_, i) => (
+            <path d={`M${r1(pC(i) - 1.3)} ${STRIP_Y} h2.6`} class="in__mark in__fade in__b1" style={`--d:${Math.round(((pC(i) - 132) / 136) * 400)}ms`} />
+          ))}
+          <!-- patch cords, cut over in three groups of four -->
+          {cords.map((c) => (
+            <path d={`M${c.x} ${PANEL_TOP + 6} V${SWITCH_TOP}`} pathLength="1" class={`in__draw in__cord in__c--blue in__g${c.g}`} style={`--d:${c.j * 30}ms;--t:280ms`} />
+          ))}
+          <!-- network gear: one short cord inside the rack, firewall LAN port to switch port 20 -->
+          <path d={`M${pC(SW_PORTS - 1)} ${SWITCH_TOP + 6} V${FW_PORT_Y}`} pathLength="1" class="in__draw in__cord in__c--green in__g3" style="--t:280ms" />
+          <!-- backbone: white jumpers from the enclosure down the rack side to the switch's uplinks -->
+          {uplinks.map((u) => (
+            <>
+              <path d={u.d} pathLength="1" class="in__draw in__fiber in__under in__g3" style={`--d:${u.delay}ms`} />
+              <path d={u.d} pathLength="1" class="in__draw in__fiber in__c--white in__g3" style={`--d:${u.delay}ms`} />
+            </>
+          ))}
+          <!-- carrier hand-off: from the demarc's jack to the firewall's WAN port -->
+          <path d={`M${DEMARC.jx + 3} ${FW_PORT_Y + 3} H${WAN_X + 2.5}`} pathLength="1" class="in__draw in__cord in__c--orange in__g3" style="--d:240ms" />
+          <!-- link lights: each comes on once its cord is patched -->
+          {cords.map((c) => (
+            <rect x={r1(c.x - 1.6)} y={LED_Y} width="3.2" height="1.8" class={`in__led in__fade in__g${c.g}`} style={`--d:${380 + c.j * 20}ms`} />
+          ))}
+          <rect x={r1(pC(SW_PORTS - 1) - 1.6)} y={LED_Y} width="3.2" height="1.8" class="in__led in__fade in__g3" style="--d:300ms" />
+          {SFP_Y.map((y, k) => (
+            <rect x={SFP_X - 3.4} y={y + 1.1} width="2.4" height="1.8" class="in__led in__fade in__g3" style={`--d:${440 + k * 20}ms`} />
+          ))}
+          <rect x={WAN_X + 1.3} y={FW_Y + 1.3} width="2.4" height="1.8" class="in__led in__fade in__g3" style="--d:540ms" />
+          <!-- labels sit outside what they name (room for phone-size text): A-01 and A-12 bracket the terminated
+               ports above the panel, the spare range and the switch sit in the column right of the rack -->
+          <text x="116" y="32" dy="0.35em" class="in__label in__fade in__b1" text-anchor="end">A-01</text>
+          <text x="202" y="32" dy="0.35em" class="in__label in__fade in__b1" style="--d:200ms">A-12</text>
+          <text x={LABEL_X} y={PANEL_TOP + 3} dy="0.35em" class="in__label in__fade in__b1" style="--d:300ms">A-13 … A-24<tspan x={LABEL_X} dy="1.2em" class="in__words">Spare</tspan></text>
+          <text x={LABEL_X} y={SWITCH_TOP + 3} dy="0.35em" class="in__label in__fade in__b1" style="--d:360ms">SW-1<tspan x={LABEL_X} dy="1.2em" class="in__note">ports 1–12</tspan></text>
           <text x={LABEL_X} y="160" class="in__tag in__tag--good">After</text>
           <text x={LABEL_X} y="160" class="in__words">
             <tspan x={LABEL_X} dy="1.3em">Dressed, labeled,</tspan>
@@ -196,28 +268,35 @@ const steps = installPhases;
 
           {showHeadroom && (
             <g>
-              <rect x="132" y="134" width="136" height="22" class="in__room" />
-              <text x={LABEL_X} y="140" dy="0.35em" class="in__words in__words--ink">Room to grow</text>
+              <rect x="132" y="118" width="136" height="36" class="in__room" />
+              <text x={LABEL_X} y="136" dy="0.35em" class="in__words in__words--ink">Room to grow</text>
             </g>
           )}
 
-          <!-- callouts in the empty left margin (x 8 to 112); leaders end in a small dot -->
+          <!-- callouts in the empty left margin (x 8 to 112); leaders end in a small dot. Each arrives with the
+               beat that draws what it names: the bundles' top tie, the first cord in the manager, the label strip. -->
           <g class="in__callouts">
-            <path d="M106 12 H136" class="in__leader" />
-            <circle cx="136" cy="12" r="2" class="in__dot" />
+            <g class="in__fade in__b2" style="--d:500ms">
+            <path d="M106 4.5 H136" class="in__leader" />
+            <circle cx="138" cy="4.5" r="2" class="in__dot" />
             <text x="14" y="8" dy="0.35em" class="in__words in__words--ink"><tspan x="14">Dressed in</tspan><tspan x="14" dy="1.15em">bundles</tspan></text>
+            </g>
 
-            <path d="M108 72 H137" class="in__leader" />
-            <circle cx="137" cy="72" r="2" class="in__dot" />
+            <g class="in__fade in__g0" style="--d:200ms">
+            <path d={`M108 72 V65 H${pC(0) - 2}`} class="in__leader" />
+            <circle cx={pC(0)} cy="65" r="2" class="in__dot" />
             <text x="14" y="66" dy="0.35em" class="in__words in__words--ink"><tspan x="14">Short patch</tspan><tspan x="14" dy="1.15em">cords</tspan></text>
+            </g>
 
-            <path d="M102 98 V47 H131" class="in__leader" />
-            <circle cx="133" cy="47" r="2" class="in__dot" />
+            <g class="in__fade in__b1" style="--d:300ms">
+            <path d={`M102 98 V${STRIP_Y} H130`} class="in__leader" />
+            <circle cx="132" cy={STRIP_Y} r="2" class="in__dot" />
             <text x="14" y="94" dy="0.35em" class="in__words in__words--ink">
               {labelsAtBothEnds
                 ? [<tspan x="14">Labeled at</tspan>, <tspan x="14" dy="1.15em">both ends</tspan>]
                 : [<tspan x="14">Every port</tspan>, <tspan x="14" dy="1.15em">labeled</tspan>]}
             </text>
+            </g>
           </g>
         </g>
 
@@ -254,12 +333,20 @@ const steps = installPhases;
 <script>
   import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText } from '../../scripts/demo';
 
+  /** Classes on .in that keep each beat's marks hidden until the run reaches it (see the CSS): pre-staged,
+   *  after-hours install, then the cutover's three groups of four cords and the core links. */
+  const BEATS = ['in--b1', 'in--b2', 'in--g0', 'in--g1', 'in--g2', 'in--g3'];
+
   document.querySelectorAll<HTMLElement>('[data-demo="install"]').forEach((root) => {
     const range = root.querySelector<HTMLInputElement>('[data-in-range]')!;
     const clipBefore = root.querySelector<SVGRectElement>('[data-in-clip-before]')!;
     const clipAfter = root.querySelector<SVGRectElement>('[data-in-clip-after]')!;
     const divider = root.querySelector<SVGGElement>('[data-in-divider]')!;
     const steps = [...root.querySelectorAll<HTMLElement>('[data-in-step]')];
+    // The build-up's classes live on .in: this component's styles are scoped and do not reach the frame around it
+    const inEl = root.querySelector<HTMLElement>('.in')!;
+    // The trace demo drawn under this one, in the same panel (its last beat traces the example jack)
+    const traceRoot = root.closest('.in-pair')?.querySelector<HTMLElement>('[data-demo="trace"]') ?? null;
 
     fitSvgText(root);
 
@@ -280,32 +367,62 @@ const steps = installPhases;
       setSplit(Number(range.value));
     });
 
-    // Dragging on the picture itself: pointer capture, split follows the pointer exactly, no easing.
+    // Dragging on the picture itself: pointer capture, split follows the pointer exactly, no easing. A drag
+    // ends the automatic sweep and leaves the split where the visitor put it (the run's other beats carry on).
+    // The svg carries data-demo-control, so a press on it hands the step strip over to the visitor.
     const svg = root.querySelector<SVGSVGElement>('.in__rack')!;
     let dragging = false;
+    // A finger waits for a sideways move (or a plain tap) before it takes the split, so a scroll that
+    // happens to start on the drawing leaves the split alone (touch-action: pan-y keeps sideways moves here)
+    let pending: { id: number; x: number; y: number } | null = null;
     const splitFromPointer = (e: PointerEvent) => {
       const r = svg.getBoundingClientRect();
       if (r.width > 0) setSplit(((e.clientX - r.left) / r.width) * 100);
     };
-    svg.addEventListener('pointerdown', (e) => {
-      if (e.button !== 0) return;
+    const beginDrag = (e: PointerEvent) => {
+      pending = null;
       dragging = true;
       sweeping = false;
-      svg.setPointerCapture(e.pointerId);
-      root.classList.add('in--dragging');
+      try {
+        svg.setPointerCapture(e.pointerId);
+      } catch {
+        /* the pointer is already gone: the split still follows this event */
+      }
+      inEl.classList.add('in--dragging');
       splitFromPointer(e);
+    };
+    svg.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      if (e.pointerType === 'touch') pending = { id: e.pointerId, x: e.clientX, y: e.clientY };
+      else beginDrag(e);
     });
     svg.addEventListener('pointermove', (e) => {
-      if (dragging) splitFromPointer(e);
+      if (dragging) return splitFromPointer(e);
+      if (!pending || e.pointerId !== pending.id) return;
+      const dx = Math.abs(e.clientX - pending.x);
+      const dy = Math.abs(e.clientY - pending.y);
+      if (dx > 6 && dx > dy) beginDrag(e);
+      else if (dy > 10) pending = null; // a scroll: not ours
     });
     const endDrag = (e: PointerEvent) => {
       if (!dragging) return;
       dragging = false;
-      root.classList.remove('in--dragging');
+      inEl.classList.remove('in--dragging');
       if (svg.hasPointerCapture(e.pointerId)) svg.releasePointerCapture(e.pointerId);
     };
-    svg.addEventListener('pointerup', endDrag);
-    svg.addEventListener('pointercancel', endDrag);
+    svg.addEventListener('pointerup', (e) => {
+      // A tap that never moved: the split jumps to it, as a press of a mouse does
+      if (pending && e.pointerId === pending.id) {
+        pending = null;
+        sweeping = false;
+        splitFromPointer(e);
+      }
+      endDrag(e);
+    });
+    svg.addEventListener('pointercancel', (e) => {
+      if (pending && e.pointerId === pending.id) pending = null;
+      endDrag(e);
+    });
     svg.addEventListener('lostpointercapture', endDrag);
 
     const tween = (from: number, to: number, ms: number, alive: () => boolean) =>
@@ -325,41 +442,65 @@ const steps = installPhases;
     // Decided once per demo: reset() hides the parts for the animation, so a setting changed later must not leave it blank.
     const reduced = prefersReducedMotion();
 
-    // The colour key rises in row by row once the sweep reaches the dressed side
-    const inEl = root.querySelector<HTMLElement>('.in')!;
-
+    /** Hide every beat's marks, the colour key and the phase rows at once (no transitions), and show the closet before. */
     const reset = () => {
-      root.classList.add('in--instant');
-      inEl.classList.add('in--quick', 'in--lg-off');
+      inEl.classList.add('in--instant', 'in--lg-off', ...BEATS);
       setSplit(100);
       steps.forEach((s) => s.classList.remove('is-on'));
-      void root.offsetWidth;
-      root.classList.remove('in--instant');
-      inEl.classList.remove('in--quick');
+      void inEl.offsetWidth; // commit the hidden state before transitions come back
+      inEl.classList.remove('in--instant');
     };
+    /** A beat's marks draw in on their own CSS transitions and delays (--d), so no timer runs per mark */
+    const show = (beat: string) => inEl.classList.remove(beat);
+    const phase = (i: number) => steps[i]?.classList.add('is-on');
 
+    // About 7.9 s. Times are from the start of the run.
     const run = createRun(async (alive) => {
       if (reduced) return;
+      const since = performance.now();
       reset();
       sweeping = true;
       announce(root, 'Before: tangled, unlabeled cables');
+      // 0-600: the tangled closet holds; 600-2300: the split sweeps to the dressed one
       await sleep(600);
       if (!alive()) return;
       await tween(100, 0, 1700, alive);
       if (!alive()) return;
       announce(root, 'After: dressed and labeled');
+      // 2300 Pre-staged: the panel's printed label strip wipes in (400 ms), the labels arrive
+      show('in--b1');
+      phase(0);
+      await sleep(500);
+      if (!alive()) return;
+      // 2800 After-hours install: the drops come down in two bundles and are tied; the backbone lands
+      show('in--b2');
+      phase(1);
+      await sleep(800);
+      if (!alive()) return;
+      // 3600 Phased cutover: three groups of four cords, 600 ms apart, each group's link lights 20 ms apart;
+      // 5400 the core: the firewall link, the two uplinks, the carrier hand-off and their lights
+      phase(2);
+      for (const g of ['in--g0', 'in--g1', 'in--g2', 'in--g3']) {
+        show(g);
+        await sleep(600);
+        if (!alive()) return;
+      }
+      // 6000-6650: back to half and half (unless the visitor has the split); the colour key rises
+      announce(root, 'Pre-staged, installed after hours, cut over in phases');
       inEl.classList.remove('in--lg-off');
-      await sleep(400);
-      if (!alive()) return; // a replay has taken over; don't touch its sweep
       await tween(0, 50, 650, alive);
       if (!alive()) return;
       sweeping = false;
-      for (const s of steps) {
-        await sleep(420);
-        if (!alive()) return;
-        s.classList.add('is-on');
+      // 6650-7850: "anyone can trace a connection in seconds": the trace demo below traces its example jack,
+      // unless the visitor has chosen or cleared a jack there since this run began
+      if (traceRoot) {
+        const ask = { since, accepted: false };
+        traceRoot.dispatchEvent(new CustomEvent('armak:trace-default', { detail: ask }));
+        if (ask.accepted) {
+          await sleep(1200);
+          if (!alive()) return;
+        }
       }
-      announce(root, 'Pre-staged, installed after hours, cut over in phases');
       finished(root);
     });
 
@@ -505,11 +646,6 @@ const steps = installPhases;
     transform: translateY(4px);
   }
 
-  .in--quick .in__lg {
-    transition: none;
-    transition-delay: 0s;
-  }
-
   .in__lgtext {
     font-family: var(--font-sans);
     font-size: clamp(9px, calc(var(--u, 1) * 9.5px), 11.5px);
@@ -534,6 +670,124 @@ const steps = installPhases;
   .in__cord {
     stroke-width: 2.25;
     stroke-linecap: round;
+  }
+
+  .in__after path {
+    fill: none;
+  }
+
+  /* Fiber jumpers: thinner than copper cords; white, so a steel edge sits underneath */
+  .in__fiber {
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .in__fiber.in__under {
+    stroke-width: 2.5;
+  }
+
+  /* The carrier's own line into its demarc box: not one of Armak's coded cables */
+  .in__carrier {
+    fill: none;
+    stroke: var(--steel);
+    stroke-width: 1.5;
+  }
+
+  /* Panel A's printed label strip and its labels, one per port */
+  .in__strip {
+    stroke: var(--paper-sunken);
+    stroke-width: 4;
+  }
+
+  .in__mark {
+    stroke: var(--ink);
+    stroke-width: 1;
+  }
+
+  /* Link lights on the switch and the firewall: lit means the link is up */
+  .in__led {
+    fill: var(--pass);
+  }
+
+  /* The build-up (script only). Each beat's marks wait hidden under a class on .in that the run removes at that
+     beat: in--b1 pre-staged, in--b2 after-hours install, in--g0 to in--g3 the cutover. Lines draw along their
+     length (stroke-dashoffset, pathLength 1), labels and lights fade in, ties close; --d is a mark's delay inside
+     its beat and --t a line's draw time. Without scripts, under reduced motion and in print no beat class is set,
+     so the finished closet shows. */
+  .in__draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    transition:
+      stroke-dashoffset var(--t, 300ms) var(--ease-out) var(--d, 0ms),
+      opacity 1ms linear var(--d, 0ms);
+  }
+
+  .in__fade {
+    transition: opacity 240ms ease var(--d, 0ms);
+  }
+
+  .in__tie {
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      opacity 200ms ease var(--d, 0ms),
+      transform 260ms var(--ease-out) var(--d, 0ms);
+  }
+
+  .in--b1 .in__b1,
+  .in--b2 .in__b2,
+  .in--g0 .in__g0,
+  .in--g1 .in__g1,
+  .in--g2 .in__g2,
+  .in--g3 .in__g3 {
+    opacity: 0;
+  }
+
+  .in--b1 .in__draw.in__b1,
+  .in--b2 .in__draw.in__b2,
+  .in--g0 .in__draw.in__g0,
+  .in--g1 .in__draw.in__g1,
+  .in--g2 .in__draw.in__g2,
+  .in--g3 .in__draw.in__g3 {
+    stroke-dashoffset: 1;
+  }
+
+  .in--b2 .in__tie.in__b2 {
+    transform: scaleX(0.5);
+  }
+
+  /* Print: the finished closet, whatever state the run left it in (the split back at half and half) */
+  @media print {
+    .in__b1,
+    .in__b2,
+    .in__g0,
+    .in__g1,
+    .in__g2,
+    .in__g3,
+    .in__lg {
+      opacity: 1 !important;
+      stroke-dashoffset: 0 !important;
+      transform: none !important;
+    }
+
+    .in__step {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    [data-in-clip-before] {
+      width: 200px;
+    }
+
+    [data-in-clip-after] {
+      x: 200px;
+      width: 200px;
+    }
+
+    .in__divider {
+      transform: translate(200px, 0);
+    }
   }
 
   .in__room {

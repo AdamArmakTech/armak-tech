@@ -32,6 +32,37 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
   on their side too (the site shows the box either way); (3) done: /privacy/ approved 2026-11-05 evening (ad9466b).
 
 ## Done
+- **The "robust, accurate, beefy" round, as it ended — 2026-11-06 night.** Five of the seven builders finished
+  (CableTest; Assess + Support + OfficePlan; the explorer's years-from-now view + BuildingSvg; Install + Trace; the
+  Design plan was mid-edit). The owner, watching the dev server live in the browser pane: "you implimented the AI
+  slop into the design ui again". The round was stopped there (the sceptics and proofreader never ran). What he saw:
+  the site plan with its Wi-Fi cells as big tinted discs and darker overlap lenses (my brief had asked for the
+  lenses), then, from the half-edited file, black shapes over the floor. Done by hand instead: DesignDemo reverted
+  to d43d7b8 and redone with restraint: four access points placed so every neighbouring cell overlaps (asserted at
+  build time), drawn as thin dashed rings with a 4% wash; two cables into each access point (23 routes, the count
+  follows the drawing); camera views as light 90-degree fans (ink at 6%) instead of telephoto wedges; the beats and
+  timings unchanged. Kept from the builders, checked at 1440 and 375: the closet's "after" rack in the right order
+  (fiber enclosure with white uplinks, 12 blue drops in two bundles into panel A with "A-13 … A-24 Spare" now true,
+  horizontal manager, switch, firewall with the green cord, room to grow, UPS; a demarc box on the backboard with the
+  orange cord to the firewall; the phased cutover drawn in three groups with link lights; the trace demo's last leg
+  up the rack side and a final beat where the install demo asks it to trace its example jack); the move request's
+  cable manager, tucked slack, and a test pulse to a drawn desk jack; the site walk's power run from the panel to a
+  receptacle beside the rack (OfficePlan has the symbol); the two-unit certifier on the cable test with NEXT as six
+  pair combinations ("1 / 6" tally) and a remote-end repeat; the years-from-now view as a 9 s numbered sequence tied
+  to its list rows, with IDF-2's patch panel and UPS, the white backbone told from the blue horizontal, the carrier
+  line through conduit to a demarc, zone cabling with the home run kept blue, a new camera on a ceiling jack.
+  - Owner answers applied the same night: "Yes, one scheme": closet 2A, patch panel A, link code on both ends:
+    jacks 2A-A15, 2A-A14, 2A-A03, 2A-A07 on ports A-15, A-14, A-03, A-07 (Design, Trace; the trace panel reads
+    2A-A), the move 2A-A14 → 2A-A22 with record rows 2A-A13/A-13, 2A-A21/A-21 (Support), the test cable 2A-A24
+    (CableTest, styleguide sample); 32 replacements, nothing of the old IDF2-B / 2B-14 / 3A-02 scheme left. "Yes,
+    reversed": the failing cable reads "Pins 3 & 6 reversed" (and the screen-reader lines say reversed).
+  - Not done: the About chart redraw (waits on his answer about the old drawing) and the small motion robustness
+    fixes (reveal failsafe marking, split-heading watchdog, Numbers keyed to its counts, partner images decoded
+    first): one Sonnet worker, later.
+  - Checks: astro check 0 errors; build 19 pages; 19 pages at 320/360/390 with no sideways scroll; at 375 every
+    stacked demo plays and nothing crosses the edge; reduced motion shows the finished picture of every demo
+    (Playwright); the desktop strip and the explorer lap unchanged. Screenshots in
+    `ai/exports/beef-2026-11-06.pdf`. Nothing pushed.
 - **Motion survey and the "robust, accurate, beefy" build — 2026-11-06 night (in progress at the time of writing).**
   The owner, on the preview: "the animations need to be more robust and accurate and more beefy". A read-only
   survey workflow (five lenses: the strip and its demos, the rest of the home page, the other pages, robustness,

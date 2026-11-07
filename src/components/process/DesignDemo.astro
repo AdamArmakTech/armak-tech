@@ -24,28 +24,44 @@ const drops = [
   [118, 206], [146, 206], [178, 206], [206, 206],
   [100, 72], [176, 72], [300, 84], [330, 216],
 ];
+// Four access points, one per area, placed so every neighbouring pair of cells overlaps and every desk, jack and
+// the reception counter sits inside a cell: the caption's "no dead zones" is true in the drawing.
 const aps = [
-  { x: 150, y: 190, r: 82 },
-  { x: 255, y: 62, r: 78 },
-  { x: 330, y: 200, r: 72 },
+  { x: 155, y: 60, r: 100 }, // office
+  { x: 305, y: 60, r: 100 }, // conference
+  { x: 110, y: 185, r: 100 }, // open office, west
+  { x: 300, y: 195, r: 100 }, // open office east, hall and lobby
 ];
+// Checked at build time, so a later move of one access point cannot quietly open a gap
+aps.forEach((a, i) => {
+  const overlaps = aps.some((b, j) => j !== i && Math.hypot(a.x - b.x, a.y - b.y) < a.r + b.r - 4);
+  if (!overlaps) throw new Error(`DesignDemo: access point ${i + 1} overlaps no neighbouring cell`);
+});
+
+/** A camera's view: a fan from the lens, `from` to `to` degrees (clockwise on screen), radius `r`. */
+const fan = (cx: number, cy: number, r: number, from: number, to: number) => {
+  const p = (deg: number) => [cx + r * Math.cos((deg * Math.PI) / 180), cy + r * Math.sin((deg * Math.PI) / 180)].map((v) => v.toFixed(1)).join(' ');
+  return `M${cx} ${cy} L${p(from)} A${r} ${r} 0 0 1 ${p(to)} Z`;
+};
+// A fixed dome sees about 90 degrees, not the narrow wedge of a telephoto lens; each fan stays inside its room
 const cams = [
-  { x: 384, y: 168, cone: '384,168 330,250 386,250' }, // lobby → entrance
-  { x: 16, y: 244, cone: '16,244 130,150 150,214' }, // open office corner
-  { x: 286, y: 116, cone: '286,116 180,150 240,190' }, // hallway over the open office
+  { x: 384, y: 168, view: fan(384, 168, 76, 95, 185) }, // lobby → the entrance
+  { x: 16, y: 244, view: fan(16, 244, 96, -85, 0) }, // open office corner → the desks
+  { x: 286, y: 116, view: fan(286, 116, 86, 95, 180) }, // hallway → over the open office
 ];
 
 // Four drops are the same jacks the Trace demo lets you pick
 const linked = [
-  { id: '2B-15', x: 100, y: 72 },
-  { id: '2B-14', x: 176, y: 72 },
-  { id: '2C-03', x: 300, y: 84 },
-  { id: '2A-07', x: 206, y: 166 },
+  { id: '2A-A15', x: 100, y: 72 },
+  { id: '2A-A14', x: 176, y: 72 },
+  { id: '2A-A03', x: 300, y: 84 },
+  { id: '2A-A07', x: 206, y: 166 },
 ];
 
 // Every device gets a branch from the ceiling trunk down (or up) to it; the trunk runs out from the rack.
 // Branches are drawn in the order the trunk reaches them (left to right), so each has a rank.
-const devices = [...drops.map(([x, y]) => ({ x, y })), ...aps, ...cams];
+// Two cables to each access point (content.ts twoDropsPerAp): a doubled branch, 4 units apart, under one device
+const devices = [...drops.map(([x, y]) => ({ x, y })), ...aps.flatMap((a) => [{ x: a.x - 2, y: a.y }, { x: a.x + 2, y: a.y }]), ...cams];
 const rankOf = (i: number) => devices.filter((e, j) => e.x < devices[i].x || (e.x === devices[i].x && j < i)).length;
 const branches = devices.map((d, i) => ({ d: `M${d.x} ${TRUNK_Y} V${d.y}`, rank: rankOf(i) }));
 const trunk = `M${RACK.x} ${RACK.y} V${TRUNK_Y} H${TRUNK_END}`;
@@ -73,7 +89,7 @@ const layers = [
         </g>
         <!-- camera views, each opening from its camera -->
         <g class="ds__layer is-on" data-ds-layer="cams">
-          {cams.map((c, i) => <polygon class="ds__cone" style={`--i:${i}; transform-origin: ${c.x}px ${c.y}px`} points={c.cone} />)}
+          {cams.map((c, i) => <path class="ds__cone" style={`--i:${i}; transform-origin: ${c.x}px ${c.y}px`} d={c.view} />)}
         </g>
 
         <OfficePlan />
@@ -262,7 +278,8 @@ const layers = [
       // 12 drops snap in 25 ms apart; the count ticks with them
       if (!(await beat(['drops'], 'drops', DROP_STEP, 90, 12 * DROP_STEP + 180, 'Data drops placed', alive))) return;
       // each access point lands, then its coverage spreads out
-      if (!(await beat(['wifi', 'wifi-dev'], 'wifi', AP_STEP, 120, 3 * AP_STEP + 340, 'Wi-Fi coverage placed', alive))) return;
+      const apCount = Number(chipFor('wifi').querySelector<HTMLElement>('[data-ds-count]')!.dataset.dsCount);
+      if (!(await beat(['wifi', 'wifi-dev'], 'wifi', AP_STEP, 120, apCount * AP_STEP + 340, 'Wi-Fi coverage placed', alive))) return;
       // each camera lands and its view opens
       if (!(await beat(['cams', 'cams-dev'], 'cams', CAM_STEP, 100, 3 * CAM_STEP + 280, 'Cameras placed', alive))) return;
       staticChip.classList.add('is-on');
@@ -348,9 +365,9 @@ const layers = [
 
   /* Wi-Fi coverage spreads out from each access point, one after another */
   .ds__cover {
-    fill: color-mix(in srgb, var(--c-wifi) 13%, transparent);
-    stroke: color-mix(in srgb, var(--c-wifi) 45%, transparent);
-    stroke-width: 1;
+    fill: color-mix(in srgb, var(--c-wifi) 4%, transparent); /* a wash, not a disc: the rings crossing show the overlap */
+    stroke: color-mix(in srgb, var(--c-wifi) 60%, transparent);
+    stroke-width: 1.25;
     stroke-dasharray: 3 3;
     transform-box: fill-box;
     transform-origin: center;
@@ -380,7 +397,7 @@ const layers = [
 
   /* Each camera lands, then its view opens out from the camera */
   .ds__cone {
-    fill: color-mix(in srgb, var(--c-cams) 10%, transparent);
+    fill: color-mix(in srgb, var(--c-cams) 6%, transparent); /* light: a view, not a shape */
     stroke: none;
     transform-box: view-box;
     transition:

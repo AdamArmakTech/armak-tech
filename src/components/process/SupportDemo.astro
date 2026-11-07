@@ -1,35 +1,58 @@
 ---
 /**
  * Support — "A move request" (MAC: move, add, change).
- * Four beats: the ticket comes in; the as-built record is looked up and the two ports it names light on
- * the panel; the patch cord is unplugged from A-14, carried across and plugged into A-22 (one cord, really
- * moving); the link is tested (a pulse runs down the new cord and back), the record row is updated and
- * the ticket closes. Teaches: support is quick and tidy because the install was labeled and documented.
- * Server-renders the finished state (no-JS / reduced motion).
+ * Five beats (about 5.2 s): the ticket comes in (850 ms); the as-built record is looked up and the two ports
+ * it names light on the panel (1150 ms); the patch cord is unplugged from A-14, carried across, plugged into
+ * A-22 and its slack dressed behind the horizontal manager's fingers (1100 ms, one cord, really moving; the
+ * switch port's link light goes out while it is unplugged); the link is tested at the new desk: a pulse runs
+ * from the switch up the cord, out the back of the panel along A-22's horizontal cable to the desk jack 2A-A22
+ * and back, and the link light comes on (900 ms); the record row is updated and the ticket closes (800 ms).
+ * Teaches: support is quick and tidy because the install was labeled and documented.
+ * Server-renders the finished state (no-JS / reduced motion); prints finished (see the @media print block).
  */
 import DemoFrame from './DemoFrame.astro';
 import { Check } from '@lucide/astro';
 
-// Panel / switch geometry (viewBox 300 × 133): 12 ports per row
+// Panel / manager / switch geometry (viewBox 360 × 150): 12 ports per row. The rack reads top to bottom the way
+// the Install drawing has it: patch panel, horizontal cable manager, switch. Right of the panel, the desk jack the
+// moved desk plugs into, at the far end of A-22's horizontal cable (broken line: the run is longer than drawn).
 const px = (i: number) => 22 + i * 22;
 const OLD = 1; // panel A-14 = bottom row, index 1
 const NEW = 9; // panel A-22 = bottom row, index 9
 const cx = (i: number) => px(i) + 6;
 const PANEL_Y = 15; // patch panel box top
-const SWITCH_Y = 82; // switch box top
+const MGR_Y = 73; // horizontal cable manager: channel top (below the port labels)
+const MGR_H = 16;
+const CH = MGR_Y + MGR_H / 2; // where a dressed cord runs across, behind the fingers
+const SWITCH_Y = 96; // switch box top
 const CORD_TOP = PANEL_Y + 32; // just below the panel's bottom-row port
 const CORD_END = SWITCH_Y + 5; // top of the switch's top-row port
-const BEND = 23; // how far the cord hangs before it turns
-/** The one cord that moves: from a panel port (its top end) down to the switch port it stays on. */
-const cord = (tx: number, ty: number) => `M${tx} ${ty} C ${tx} ${ty + BEND}, ${cx(OLD)} ${CORD_END - BEND}, ${cx(OLD)} ${CORD_END}`;
+const BEND = 30; // how far a loose cord hangs before it turns
+const R = 7; // corner radius of a dressed cord
+// (While it is loose, the script draws the cord as one curve from the plug down to the switch port, hanging BEND.)
+/** The moving cord dressed: down from the panel port into the manager, across behind the fingers, down to the switch. */
+const dressed = (tx: number, ty: number) =>
+  `M${tx} ${ty} V${CH - R} Q${tx} ${CH} ${tx - R} ${CH} H${cx(OLD) + R} Q${cx(OLD)} ${CH} ${cx(OLD)} ${CH + R} V${CORD_END}`;
 const otherCords = [0, 2, 3, 4, 5].map((i) => `M${cx(i)} ${CORD_TOP} V${CORD_END}`);
-const geom = { xOld: cx(OLD), xNew: cx(NEW), top: CORD_TOP, end: CORD_END, bend: BEND };
+// Manager fingers sit between the port columns, so every straight drop passes through a slot
+const fingers = Array.from({ length: 13 }, (_, i) => 17 + i * 22);
+// A-22's horizontal cable: behind the panel (hidden line) from the port to the panel's end, then out to the desk jack
+const RUN_Y = PANEL_Y + 33;
+const JACK = { x: 324, y: RUN_Y }; // centre of the desk jack in the wall plate
+const runHidden = `M${cx(NEW)} ${PANEL_Y + 30} V${RUN_Y} H290`;
+const runOut = `M290 ${RUN_Y} H299 M303 ${RUN_Y} H312`;
+const runBreak = `M297 ${RUN_Y + 4} L301 ${RUN_Y - 4} M301 ${RUN_Y + 4} L305 ${RUN_Y - 4}`;
+// The test pulse's way out past the cord's top end: through the port to the back, along the run, to the jack
+const run: [number, number][] = [[cx(NEW), CORD_TOP], [cx(NEW), RUN_Y], [290, RUN_Y], [312, RUN_Y], [JACK.x, JACK.y]];
+const geom = { xOld: cx(OLD), xNew: cx(NEW), top: CORD_TOP, end: CORD_END, bend: BEND, ch: CH, r: R, run };
+// The link light beside the switch port the cord stays on
+const LED = { x: px(OLD) + 17, y: SWITCH_Y + 10 };
 
 const records = [
-  { jack: '2B-13', port: 'A-13', key: '' },
-  { jack: '2B-14', port: 'A-14', key: 'from' },
-  { jack: '3A-01', port: 'A-21', key: '' },
-  { jack: '3A-02', port: 'A-22', key: 'to' },
+  { jack: '2A-A13', port: 'A-13', key: '' },
+  { jack: '2A-A14', port: 'A-14', key: 'from' },
+  { jack: '2A-A21', port: 'A-21', key: '' },
+  { jack: '2A-A22', port: 'A-22', key: 'to' },
 ];
 
 const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
@@ -54,7 +77,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
             <span class="t-meta">Ticket <span class="t-readout">MAC-0417</span></span>
             <span class="sp__status t-meta" data-sp-status data-state="done">Done</span>
           </div>
-          <p class="sp__ticket-body">Move desk <strong>2B-14</strong> to <strong>3A-02</strong></p>
+          <p class="sp__ticket-body">Move desk <strong>2A-A14</strong> to <strong>2A-A22</strong></p>
         </div>
 
         <table class="sp__records">
@@ -74,7 +97,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       </div>
 
       <div class="sp__right">
-        <svg class="sp__panel" viewBox="0 0 300 133" role="img" data-fit-text aria-label="Patch panel A above a network switch; the patch cord for the moved desk goes from port A-22 down to the switch">
+        <svg class="sp__panel" viewBox="0 0 360 150" role="img" data-fit-text aria-label="Patch panel A above a network switch; the patch cord for the moved desk goes from port A-22 down to the switch">
           <!-- panel A -->
           <rect x="10" y={PANEL_Y} width="280" height="36" class="sp__box" />
           <text x="10" y={PANEL_Y - 5} class="sp__tiny t-readout">Patch panel A</text>
@@ -94,13 +117,38 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
             </g>
           ))}
 
+          <!-- horizontal cable manager between the panel and the switch: the channel, then its fingers (drawn later, in front) -->
+          <rect x="10" y={MGR_Y} width="280" height={MGR_H} class="sp__box sp__mgr" />
+
+          <!-- A-22's horizontal cable (blue: a horizontal drop), hidden behind the panel, then out to the desk jack -->
+          <path d={runHidden} class="sp__run sp__run--hidden" />
+          <path d={runOut} class="sp__run" />
+          <path d={runBreak} class="sp__break" />
+          <rect x={JACK.x - 12} y={JACK.y - 18} width="24" height="32" rx="2" class="sp__box" />
+          <rect x={JACK.x - 6} y={JACK.y - 5} width="12" height="10" class="sp__port" />
+          <text x={JACK.x} y={JACK.y - 23} text-anchor="middle" class="sp__tiny t-readout">2A-A22</text>
+
           <!-- cords already in place -->
           {otherCords.map((d) => <path d={d} class="sp__cord sp__cord--static" />)}
 
-          <!-- the move: one cord, its top end carried from A-14 to A-22 (the plug rides on the end) -->
-          <path d={cord(cx(NEW), CORD_TOP)} class="sp__cord sp__cord--move" data-sp-cord data-geom={JSON.stringify(geom)} />
+          <!-- the move: one cord, its top end carried from A-14 to A-22 (the plug rides on the end); dressed, it runs
+               behind the manager's fingers, so it sits before them here (the script brings it in front while it is loose) -->
+          <path d={dressed(cx(NEW), CORD_TOP)} class="sp__cord sp__cord--move" data-sp-cord data-geom={JSON.stringify(geom)} />
+          <!-- print only: the finished cord and plug, whatever the script has done to the moving ones -->
+          <path d={dressed(cx(NEW), CORD_TOP)} class="sp__cord sp__cord--move sp__print" aria-hidden="true" />
+          <rect class="sp__plug sp__print" x={cx(NEW) - 4} y={CORD_TOP - 5} width="8" height="6" rx="1" aria-hidden="true" />
+          <g class="sp__fingers" data-sp-fingers>
+            {fingers.map((x) => <rect x={x - 2} y={MGR_Y - 2} width="4" height={MGR_H + 4} rx="1" />)}
+          </g>
           <rect class="sp__plug" x="-4" y="-5" width="8" height="6" rx="1" style={`transform: translate(${cx(NEW)}px, ${CORD_TOP}px)`} data-sp-plug />
-          <!-- the test pulse that runs the new cord after the move -->
+
+          <!-- the switch port's link light: off while the cord is out, green once the new link tests good -->
+          <g class="sp__led is-on" data-sp-led>
+            <circle cx={LED.x} cy={LED.y} r="2.4" class="sp__led-off" />
+            <circle cx={LED.x} cy={LED.y} r="2.4" class="sp__led-on" />
+          </g>
+
+          <!-- the test pulse: switch, cord, panel, out the back, along the run to the desk jack and back -->
           <circle class="sp__pulse" r="3.5" cx="0" cy="0" data-sp-pulse />
 
           <!-- port highlights + labels -->
@@ -116,7 +164,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
 
         <ul role="list" class="sp__checks">
           <li class="is-on" data-sp-check><span aria-hidden="true"><Check size={14} stroke-width={2.25} /></span> Link tested at the new desk</li>
-          <li class="is-on" data-sp-check><span aria-hidden="true"><Check size={14} stroke-width={2.25} /></span> Record updated: 3A-02 → A-22</li>
+          <li class="is-on" data-sp-check><span aria-hidden="true"><Check size={14} stroke-width={2.25} /></span> Record updated: 2A-A22 → A-22</li>
         </ul>
       </div>
     </div>
@@ -124,11 +172,52 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
 </DemoFrame>
 
 <script>
-  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText, frames, easeOut, easeInOut, moveAlong, bezierPoints, evenTimes, at } from '../../scripts/demo';
+  import { createRun, onFirstView, bindReplay, announce, finished, sleep, prefersReducedMotion, fitSvgText, frames, easeOut, easeInOut, moveAlong, bezierPoints, at } from '../../scripts/demo';
 
-  const MOVE_MS = 900; // unplug, carry across, plug in
+  type P = [number, number];
+
+  // Re-patch, in ms from its start (one frames() loop, the cord's path redrawn each frame)
+  const MOVE_MS = 1100;
+  const LIFT_END = 200; // the plug is pulled down out of A-14
+  const CARRY_END = 700; // ... carried across to A-22
+  const PUSH_END = 880; // ... pushed up into A-22
+  const TUCK_FROM = 900; // then the slack is dressed into the manager, behind its fingers, until MOVE_MS
   const LIFT = 12; // how far the plug is pulled down out of the port before it is carried across
-  const PULSE_MS = 560; // test pulse: down the cord and back
+  const N = 64; // points per cord shape while it is being dressed
+  // Test: the pulse goes switch → cord → panel → out the back → along the run to the desk jack, and back
+  const PULSE_LEG = 360; // one way
+  const PULSE_DWELL = 60; // it touches the jack before it comes back
+  const TEST_MS = 900;
+
+  /** A quadratic corner as n + 1 points */
+  const quad = (a: P, c: P, b: P, n = 6): P[] =>
+    Array.from({ length: n + 1 }, (_, i) => {
+      const t = i / n;
+      const u = 1 - t;
+      return [u * u * a[0] + 2 * u * t * c[0] + t * t * b[0], u * u * a[1] + 2 * u * t * c[1] + t * t * b[1]] as P;
+    });
+
+  /** Distance along a polyline at each of its points */
+  const along = (pts: P[]) => {
+    const acc = [0];
+    for (let i = 1; i < pts.length; i++) acc.push(acc[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    return acc;
+  };
+
+  /** The same line as n points evenly spaced along it, so two shapes can be blended point by point */
+  const resample = (pts: P[], n: number): P[] => {
+    const acc = along(pts);
+    const total = acc[acc.length - 1] || 1;
+    const out: P[] = [];
+    let j = 1;
+    for (let k = 0; k < n; k++) {
+      const s = (total * k) / (n - 1);
+      while (j < acc.length - 1 && acc[j] < s) j++;
+      const f = Math.min(1, Math.max(0, (s - acc[j - 1]) / (acc[j] - acc[j - 1] || 1)));
+      out.push([pts[j - 1][0] + (pts[j][0] - pts[j - 1][0]) * f, pts[j - 1][1] + (pts[j][1] - pts[j - 1][1]) * f]);
+    }
+    return out;
+  };
 
   document.querySelectorAll<HTMLElement>('[data-demo="support"]').forEach((root) => {
     fitSvgText(root);
@@ -146,13 +235,44 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     const markFrom = root.querySelector<SVGGElement>('[data-sp-mark="from"]')!;
     const markTo = root.querySelector<SVGGElement>('[data-sp-mark="to"]')!;
     const checks = [...root.querySelectorAll<HTMLElement>('[data-sp-check]')];
-    const g = JSON.parse(cordEl.dataset.geom || '{}') as { xOld: number; xNew: number; top: number; end: number; bend: number };
+    const fingers = root.querySelector<SVGGElement>('[data-sp-fingers]')!;
+    const led = root.querySelector<SVGGElement>('[data-sp-led]')!;
+    const g = JSON.parse(cordEl.dataset.geom || '{}') as { xOld: number; xNew: number; top: number; end: number; bend: number; ch: number; r: number; run: P[] };
     let anims: Animation[] = [];
 
-    const cord = (tx: number, ty: number) => `M${tx} ${ty} C ${tx} ${ty + g.bend}, ${g.xOld} ${g.end - g.bend}, ${g.xOld} ${g.end}`;
-    const placeCord = (tx: number, ty: number) => {
-      cordEl.setAttribute('d', cord(tx, ty));
+    // The two shapes of the moving cord: loose (and the straight drop it starts as), and dressed (same as the server's)
+    const hanging = (tx: number, ty: number) => `M${tx} ${ty} C ${tx} ${ty + g.bend}, ${g.xOld} ${g.end - g.bend}, ${g.xOld} ${g.end}`;
+    const dressed = (tx: number, ty: number) =>
+      `M${tx} ${ty} V${g.ch - g.r} Q${tx} ${g.ch} ${tx - g.r} ${g.ch} H${g.xOld + g.r} Q${g.xOld} ${g.ch} ${g.xOld} ${g.ch + g.r} V${g.end}`;
+    const hangingPts = (tx: number, ty: number): P[] => bezierPoints([tx, ty], [tx, ty + g.bend], [g.xOld, g.end - g.bend], [g.xOld, g.end], N);
+    const dressedPts = (tx: number, ty: number): P[] => [
+      [tx, ty],
+      ...quad([tx, g.ch - g.r], [tx, g.ch], [tx - g.r, g.ch]),
+      ...quad([g.xOld + g.r, g.ch], [g.xOld, g.ch], [g.xOld, g.ch + g.r]),
+      [g.xOld, g.end],
+    ];
+
+    // Dressing the cord: the loose curve at A-22 blends, point by point, into the dressed route
+    const loose = resample(hangingPts(g.xNew, g.top), N);
+    const tidy = resample(dressedPts(g.xNew, g.top), N);
+    const blend = (e: number) =>
+      'M' + loose.map(([x, y], i) => `${(x + (tidy[i][0] - x) * e).toFixed(1)} ${(y + (tidy[i][1] - y) * e).toFixed(1)}`).join(' L');
+
+    // The test pulse: up the dressed cord from the switch, then the run to the jack; constant speed, then back
+    const pulseOut: P[] = [...dressedPts(g.xNew, g.top).reverse(), ...(g.run || []).slice(1)];
+    const pulseAt = along(pulseOut);
+    const pulseLen = pulseAt[pulseAt.length - 1] || 1;
+    const outTimes = pulseAt.map((s) => (s / pulseLen) * PULSE_LEG);
+    const pulsePts = [...pulseOut, ...[...pulseOut].reverse()];
+    const pulseTimes = [...outTimes, ...[...outTimes].reverse().map((t) => PULSE_LEG + PULSE_DWELL + (PULSE_LEG - t))];
+    const PULSE_MS = pulseTimes[pulseTimes.length - 1];
+
+    const placePlug = (tx: number, ty: number) => {
       plug.style.transform = `translate(${tx}px, ${ty}px)`;
+    };
+    const placeCord = (tx: number, ty: number) => {
+      cordEl.setAttribute('d', hanging(tx, ty));
+      placePlug(tx, ty);
     };
 
     const setStage = (n: number) =>
@@ -178,7 +298,9 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       setStatus('open');
       rows.forEach((r) => r.classList.remove('is-hit', 'is-scan'));
       updated.classList.remove('is-on');
-      placeCord(g.xOld, g.top);
+      placeCord(g.xOld, g.top); // a straight drop from A-14 through a manager slot to the switch
+      fingers.after(cordEl); // loose cords hang in front of the manager
+      led.classList.add('is-on'); // the old desk's link is up
       pulse.classList.remove('is-on');
       markFrom.classList.remove('is-on', 'is-free');
       markTo.classList.remove('is-on', 'is-live');
@@ -196,7 +318,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       // 1 · Request: the ticket comes in
       setStage(0);
       ticket.classList.add('is-on');
-      announce(root, 'Request: move desk 2B-14 to 3A-02');
+      announce(root, 'Request: move desk 2A-A14 to 2A-A22');
       await sleep(850);
       if (!alive()) return;
 
@@ -214,42 +336,80 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       at(390, alive, () => {
         rowTo.classList.add('is-hit');
         markTo.classList.add('is-on');
-        announce(root, 'Record: 2B-14 is panel port A-14, 3A-02 is A-22');
+        announce(root, 'Record: 2A-A14 is panel port A-14, 2A-A22 is A-22');
       });
       await sleep(1150);
       if (!alive()) return;
 
-      // 3 · Re-patch: unplug from A-14, carry the cord across, plug into A-22. One cord, redrawn each frame.
+      // 3 · Re-patch: unplug from A-14, carry the cord across, plug into A-22, then dress the slack into the
+      // manager. One cord, its path redrawn each frame (one attribute), inside one token-guarded frames() loop.
       setStage(2);
+      let freed = false;
+      let seated = false;
+      let tucked = false;
       await frames(
         MOVE_MS,
         (t) => {
-          const lift = t < 0.22 ? easeOut(t / 0.22) : t < 0.78 ? 1 : 1 - easeOut((t - 0.78) / 0.22);
-          const carry = t < 0.22 ? 0 : t < 0.78 ? easeInOut((t - 0.22) / 0.56) : 1;
-          placeCord(g.xOld + (g.xNew - g.xOld) * carry, g.top + LIFT * lift);
+          const ms = t * MOVE_MS;
+          if (ms < TUCK_FROM) {
+            let tx = g.xNew;
+            let ty = g.top;
+            if (ms < LIFT_END) {
+              tx = g.xOld;
+              ty = g.top + LIFT * easeOut(ms / LIFT_END);
+            } else if (ms < CARRY_END) {
+              tx = g.xOld + (g.xNew - g.xOld) * easeInOut((ms - LIFT_END) / (CARRY_END - LIFT_END));
+              ty = g.top + LIFT;
+            } else if (ms < PUSH_END) {
+              ty = g.top + LIFT * (1 - easeOut((ms - CARRY_END) / (PUSH_END - CARRY_END)));
+            }
+            placeCord(tx, ty);
+          } else {
+            if (!tucked) {
+              tucked = true;
+              placePlug(g.xNew, g.top);
+              fingers.before(cordEl); // from here the cord runs behind the fingers
+            }
+            cordEl.setAttribute('d', blend(easeInOut((ms - TUCK_FROM) / (MOVE_MS - TUCK_FROM))));
+          }
+          if (!freed && ms >= LIFT_END) {
+            freed = true;
+            markFrom.classList.add('is-free'); // A-14 is free the moment the plug is out
+            led.classList.remove('is-on'); // and the switch port loses its link
+          }
+          if (!seated && ms >= PUSH_END) {
+            seated = true;
+            markTo.classList.add('is-live');
+          }
         },
         alive,
       );
       if (!alive()) return;
-      placeCord(g.xNew, g.top);
+      // Exactly the server's finished shape, whatever frames the browser managed to draw
+      cordEl.setAttribute('d', dressed(g.xNew, g.top));
+      placePlug(g.xNew, g.top);
+      if (!tucked) fingers.before(cordEl);
       markFrom.classList.add('is-free');
       markTo.classList.add('is-live');
+      led.classList.remove('is-on');
       announce(root, 'Patch cord moved to A-22');
-      await sleep(350);
+      await sleep(150);
       if (!alive()) return;
 
-      // 4 · Test & update: a pulse runs the new cord and back, then the record is updated
+      // 4 · Test: the pulse runs from the switch up the cord, through A-22 out the back of the panel, along the
+      // horizontal cable to the desk jack, and back; the switch port's link light comes on
       setStage(3);
-      const out = bezierPoints([g.xNew, g.top], [g.xNew, g.top + g.bend], [g.xOld, g.end - g.bend], [g.xOld, g.end], 12);
-      const back = [...out].reverse();
       pulse.classList.add('is-on');
-      anims.push(moveAlong(pulse, [...out, ...back], [...evenTimes(13, PULSE_MS / 2, 0), ...evenTimes(13, PULSE_MS / 2, PULSE_MS / 2)], 'ease-in-out'));
+      anims.push(moveAlong(pulse, pulsePts, pulseTimes, 'linear'));
       await sleep(PULSE_MS);
       if (!alive()) return;
       pulse.classList.remove('is-on');
+      led.classList.add('is-on');
       checks[0].classList.add('is-on');
-      await sleep(420);
+      await sleep(Math.max(0, TEST_MS - PULSE_MS));
       if (!alive()) return;
+
+      // 5 · Update: the record row is written, the second check draws, the ticket closes
       updated.classList.add('is-on');
       checks[1].classList.add('is-on');
       await sleep(420);
@@ -257,6 +417,8 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
       setStatus('done');
       setStage(4);
       announce(root, 'Tested, record updated, ticket done');
+      await sleep(380); // the "Done" settle
+      if (!alive()) return;
       finished(root);
     });
 
@@ -514,6 +676,59 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     opacity: 1;
   }
 
+  /* The horizontal cable manager: a channel with fingers in front of it; cords drop through the slots and a
+     dressed cord runs across behind the fingers */
+  .sp__mgr {
+    fill: var(--paper-sunken);
+  }
+
+  .sp__fingers rect {
+    fill: var(--white);
+    stroke: var(--ink);
+    stroke-width: 1;
+  }
+
+  /* A-22's horizontal cable, in the install legend's colour for horizontal drops; dashed where it is hidden
+     behind the panel (a drawing's hidden line), broken where it is longer than drawn */
+  .sp__run {
+    fill: none;
+    stroke: var(--cable-blue);
+    stroke-width: 2;
+  }
+
+  .sp__run--hidden {
+    stroke-dasharray: 3 2.5;
+  }
+
+  .sp__break {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1;
+  }
+
+  /* The switch port's link light: a hollow ring while the link is down, green while it is up */
+  .sp__led-off {
+    fill: var(--white);
+    stroke: var(--steel);
+    stroke-width: 1;
+  }
+
+  .sp__led-on {
+    fill: var(--pass);
+    stroke: var(--pass);
+    stroke-width: 1;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+
+  .sp__led.is-on .sp__led-on {
+    opacity: 1;
+  }
+
+  .sp__print {
+    display: none;
+  }
+
   .sp__mark {
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -617,6 +832,82 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
     animation: none !important;
   }
 
+  /* Paper never waits for the demo: print the finished move even when the script has armed it and it has not
+     played yet (or is mid-run). The moving cord and plug give way to their finished print copies. */
+  @media print {
+    .sp *,
+    .sp :global(svg path) {
+      transition: none !important;
+      animation: none !important;
+    }
+
+    .sp__ticket {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    /* The status chip says "Done" only when the ticket is done; otherwise it is left off the page */
+    .sp__status:not([data-state='done']) {
+      visibility: hidden;
+    }
+
+    .sp__stage {
+      color: var(--ink) !important;
+    }
+
+    .sp__stage .sp__stage-dot {
+      border-color: var(--pass) !important;
+      background: var(--pass) !important;
+    }
+
+    .sp__row[data-sp-row] td {
+      background: color-mix(in srgb, var(--signal) 8%, var(--white));
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .sp--armed .sp__updated {
+      clip-path: none !important;
+    }
+
+    .sp__mark,
+    .sp__led-on,
+    .sp__checks li {
+      opacity: 1 !important;
+    }
+
+    .sp__mark--from rect {
+      stroke: var(--steel) !important;
+      stroke-dasharray: 3 2;
+    }
+
+    .sp__mark--from text {
+      fill: var(--steel) !important;
+    }
+
+    .sp__mark--to rect {
+      stroke: var(--pass) !important;
+    }
+
+    .sp__mark--to text {
+      fill: var(--pass) !important;
+    }
+
+    .sp--armed .sp__checks li :global(svg path) {
+      stroke-dashoffset: 0 !important;
+    }
+
+    [data-sp-cord],
+    [data-sp-plug],
+    [data-sp-pulse] {
+      display: none !important;
+    }
+
+    .sp__print {
+      display: inline !important;
+    }
+  }
+
   @container (min-width: 600px) {
     .sp__grid {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
@@ -681,7 +972,7 @@ const stages = ['Request', 'Look up', 'Re-patch', 'Test & update'];
 
     /* No-JS fallback for the label scale (the script sets the exact value) */
     .sp__panel {
-      --u: 1.02;
+      --u: 1.22;
       padding: 0;
     }
 

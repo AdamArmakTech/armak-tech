@@ -125,7 +125,7 @@ const roomButtons = [
                 <p class="bx-later-head" id="bx-later-head">Put in on day one for later:</p>
                 <ul role="list" class="bx-later-list" aria-labelledby="bx-later-head">
                   {laterItems.map((it) => (
-                    <li>
+                    <li data-later-key={it.key} data-later-num={it.num ?? undefined}>
                       <span class:list={['bx-later-num', { 'is-none': !it.num }]} aria-hidden="true">{it.num}</span>
                       <span class="bx-later-text">
                         <strong class="bx-later-title">{it.label}<span class="visually-hidden">.</span></strong>
@@ -189,7 +189,7 @@ const roomButtons = [
 </section>
 
 <script>
-  import { autoPlay, prefersReducedMotion } from '../../scripts/demo';
+  import { at, autoPlay, prefersReducedMotion } from '../../scripts/demo';
 
   const css = getComputedStyle(document.documentElement);
   const EASE_OUT = css.getPropertyValue('--ease-out').trim() || 'cubic-bezier(0.16, 1, 0.3, 1)';
@@ -323,29 +323,80 @@ const roomButtons = [
 
     /* ───────── B7: today / years from now ───────── */
 
-    // The text under the drawing comes in with it: the key at once, the heading as the drawing's numbered marks
-    // begin, then each list row with its number (the same 640 ms + 80 ms steps as BuildingSvg's CSS). Opacity and
-    // a 6 px rise only; cancelled when the switch goes back, skipped under reduced motion.
+    // The later view is a numbered sequence of about 9 s. Each item of "Put in on day one for later" gets one beat,
+    // in the list's order: its row comes in (6 px rise) and its number lands as BuildingSvg draws that step of the job
+    // (the svg gets `bx-b{n}`; its CSS plays the pieces marked bx-k{n}). The heading and the first line of the key come
+    // in at once; after the last item a closing beat (the svg's data-later-close) traces everything that stayed, and the
+    // key's second line ("…stays.") and the source note settle with it. `bx-seq` holds every piece back until its
+    // beat; it is set before data-when, so no frame shows the finished picture first. Every timer belongs to one run
+    // (laterRun, checked by alive()); stopLater() ends the run, cancels every Animation and drops the beat classes.
+    // Under reduced motion there is no sequence: the finished picture and the whole list show at once.
+    const BEAT_MS: Record<string, number> = {
+      cat6aDefault: 1000,
+      twoDropsPerAp: 1200,
+      spareFiberStrands: 1000,
+      emptyConduit: 1200,
+      zoneCabling: 1400,
+      ceilingGridJacks: 1000,
+      labelsAndAsBuilts: 800,
+    };
+    const LEAD_MS = 240; // the layers dim and the cabling turns blue first
+    const CLOSE_MS = 1200;
     let laterAnims: Animation[] = [];
+    let laterRun = 0;
+    const settleLater = () => svg.classList.remove('bx-seq', ...[...svg.classList].filter((c) => /^bx-b\d+$/.test(c)));
     const stopLater = () => {
+      laterRun++;
       laterAnims.forEach((a) => a.cancel());
       laterAnims = [];
+      settleLater();
+    };
+    /** Called before the svg turns to the later view: hold every later piece back until its beat (motion allowed only). */
+    const armLater = () => {
+      stopLater();
+      if (whenInfo && !prefersReducedMotion()) svg.classList.add('bx-seq');
     };
     const revealLater = () => {
-      stopLater();
-      if (!whenInfo || prefersReducedMotion()) return;
+      if (!whenInfo || !svg.classList.contains('bx-seq')) return;
+      const mine = laterRun;
+      const alive = () => mine === laterRun;
       const enter = (el: Element, delay: number, rise = false) =>
         laterAnims.push(
           el.animate(rise ? [{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }] : [{ opacity: 0 }, { opacity: 1 }], {
-            duration: rise ? 280 : 220,
+            duration: rise ? 280 : 240,
             delay,
             easing: rise ? EASE_OUT : 'ease',
             fill: 'backwards',
           }),
         );
-      whenInfo.querySelectorAll('.bx-later-caption, .bx-later-note').forEach((el) => enter(el, 0));
-      whenInfo.querySelectorAll('.bx-later-head').forEach((el) => enter(el, 560));
-      whenInfo.querySelectorAll('.bx-later-list > li').forEach((el, i) => enter(el, 640 + i * 80, true));
+      const keys = [...whenInfo.querySelectorAll('.bx-later-caption .bx-key')];
+      const rows = [...whenInfo.querySelectorAll<HTMLElement>('.bx-later-list > li')];
+      whenInfo.querySelectorAll('.bx-later-head').forEach((el) => enter(el, 0));
+      if (keys[0]) enter(keys[0], 0);
+
+      let t = LEAD_MS;
+      rows
+        .filter((row) => row.dataset.laterNum)
+        .forEach((row) => {
+          const n = Number(row.dataset.laterNum);
+          at(t, alive, () => svg.classList.add(`bx-b${n}`));
+          enter(row, t, true);
+          const num = row.querySelector('.bx-later-num');
+          if (num) {
+            laterAnims.push(
+              num.animate([{ transform: 'scale(0.4)' }, { transform: 'none' }], { duration: 320, delay: t, easing: EASE_OUT, fill: 'backwards' }),
+            );
+          }
+          t += BEAT_MS[row.dataset.laterKey ?? ''] ?? 1000;
+        });
+
+      const close = Number(svg.dataset.laterClose) || rows.length + 1;
+      at(t, alive, () => svg.classList.add(`bx-b${close}`));
+      rows.filter((row) => !row.dataset.laterNum).forEach((row) => enter(row, t, true));
+      keys.slice(1).forEach((el) => enter(el, t + 700));
+      whenInfo.querySelectorAll('.bx-later-note').forEach((el) => enter(el, t + 700));
+      // The end: every beat has played, so the plain later view (no bx-seq) is the same picture
+      at(t + CLOSE_MS, alive, settleLater);
     };
 
     const setWhen = (next: 'today' | 'later', { paintBase = true } = {}) => {
@@ -354,15 +405,16 @@ const roomButtons = [
       whenInputs.forEach((i) => (i.checked = i.value === next));
       if (next === 'later') {
         clearRoute({ paintBase: false });
+        armLater();
         svg.setAttribute('data-when', 'later');
         if (layerName) layerName.textContent = whenBox?.dataset.laterTitle ?? 'Years from now: cabling stays';
       } else {
+        stopLater();
         svg.removeAttribute('data-when');
         if (paintBase) paint(base.slugs, base.label);
       }
       if (whenInfo) whenInfo.hidden = next !== 'later';
       if (next === 'later') revealLater();
-      else stopLater();
       if (whenLive) {
         whenLive.textContent =
           next === 'later' ? `${whenBox?.dataset.laterLabel ?? 'Years from now'}: desks moved and devices replaced, but the cabling stays.` : 'Today.';
@@ -1025,6 +1077,19 @@ const roomButtons = [
   .bx-later-title {
     font-weight: 600;
     color: var(--ink);
+  }
+
+  /* The later view's text comes in beat by beat (script, Web Animations held back until their beat). In print it is
+     all there, even if the page is printed halfway through: !important outranks a running animation. */
+  @media print {
+    .bx-later-info .bx-key,
+    .bx-later-info .bx-later-head,
+    .bx-later-info .bx-later-note,
+    .bx-later-list > li,
+    .bx-later-num {
+      opacity: 1 !important;
+      transform: none !important;
+    }
   }
 
   /* ── Room buttons: pin a route ── */

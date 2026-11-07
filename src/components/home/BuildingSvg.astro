@@ -7,14 +7,25 @@
  *   building x 140–740 · ceilings L3 130 / L2 274 / L1 419 · floors L3 266 / L2 411 / L1 560
  *   cable trays run at ceiling + 10 · riser at x 195 from the MDF rack up to L3
  *
+ * Closets: the MDF rack (L1) and the IDF-2 cabinet (L2) each hold a patch panel at the top and a UPS at the bottom.
+ * The backbone between them is fiber in a white jacket (x 182); the horizontal cabling (closet to outlet) is solid:
+ * MDF to the L1 tray, IDF-2 to the L2 and L3 trays, all up the riser at x 195. The carrier's fiber comes in through a
+ * conduit sleeve in the wall to a demarc on the MDF backboard, and an orange hand-off cord runs to the firewall.
+ *
  * B7, "years from now" (BuildingExplorer sets data-when="later" on the svg). What changes is drawn in ink, what
- * stays in blue. (a) Two open-office desks slide into a group of three and leave a dashed ghost; (b) the L3 office
- * access point, the conference display and an outside camera fade out and new ones appear; (c) the riser, the trays
- * and every untouched drop trace once, and the numbered marks fade in one by one. The numbers come from the
- * explorer's "Put in on day one for later" list (`laterNums`), so the drawing never shows a number the list does not.
- * CSS transitions only (transform, opacity, stroke-dashoffset): flipping back turns round from wherever things are,
- * and reduced motion shows the end state at once. Later-view text and numbers are sized in screen pixels via --u
- * (fitSvgText), so they stay readable on a phone.
+ * stays in blue. A numbered sequence, one beat per item of the explorer's "Put in on day one for later" list
+ * (`laterNums`, so the drawing never shows a number the list does not), in its order:
+ *   Cat 6A          the conference display is swapped on the same drop (the drop traces blue)
+ *   Two cables/AP   the L3 office access point is replaced; its second cable lights blue up to the new one
+ *   Spare fiber     one more white strand lights beside the backbone, MDF up to IDF-2
+ *   Empty conduit   the conduit beside the riser, its pull string, then a new ink cable pulled up through it
+ *   Zone cabling    two desks slide; the old drops go, short ink runs come from the zone box, the home run stays blue
+ *   Ceiling jacks   a new camera clips onto a ceiling jack, with no new run
+ *   Labels          the label strips on the MDF and IDF-2 panels tick in
+ * then a last beat traces every untouched run (risers, backbone, trays, drops) once. CSS transitions only
+ * (transform, opacity, stroke-dashoffset), stepped by classes the explorer adds: flipping back turns round from
+ * wherever things are, and reduced motion shows the finished picture at once. Later-view text and numbers are sized
+ * in screen pixels via --u (fitSvgText), so they stay readable on a phone.
  */
 
 import { services, type ServiceSlug } from '../../data/site';
@@ -37,12 +48,31 @@ const desksL3 = [175, 280, 380].map((x) => [x, L3.floor]);
 const desksL2 = [255, 355, 455, 555, 655].map((x) => [x, L2.floor]);
 const desks = [...desksL3, ...desksL2];
 
+// B7, the "years from now" view is a numbered sequence (BuildingExplorer steps it, about 9 s). Beat n is the item
+// numbered n in the explorer's "Put in on day one for later" list; every piece that belongs to beat n carries
+// `bx-k bx-k{n}` and waits until the explorer puts `bx-b{n}` on the svg. The beat after the last number (closeBeat)
+// traces what stays. A piece's own start inside its beat is `--t` (ms); see the B7 CSS below for the roles.
+const beatNums = Object.values(laterNums).map(Number).filter((n) => n > 0);
+const closeBeat = (beatNums.length ? Math.max(...beatNums) : 0) + 1;
+const beatOf = (key: SignatureKey) => (laterNums[key] ? Number(laterNums[key]) : closeBeat);
+const kc = (b: number) => `bx-k bx-k${b}`;
+const B = {
+  display: beatOf('cat6aDefault'),
+  ap: beatOf('twoDropsPerAp'),
+  zone: beatOf('zoneCabling'),
+  cam: beatOf('ceilingGridJacks'),
+  close: closeBeat,
+};
+const hasZone = Boolean(laterNums.zoneCabling);
+const hasCam = Boolean(laterNums.ceilingGridJacks);
+
 // B7: in the "years from now" view two open-office desks slide right into a group of three with the desk at 655
-// (index into `desks` → viewBox units). Their phones, drops and jack dots go with them: with zone cabling a desk
-// moves with a short new run, so those two drops turn ink (new) while every other run stays blue (same cable).
+// (index into `desks` → viewBox units). With zone cabling a desk moves with a short new run: the two old drops go,
+// and new ink runs come from the zone box in the ceiling while the home run back to the closet stays blue.
 const deskMoves: Record<number, number> = { 5: 72, 6: 36 };
 const dxOf = (i: number) => deskMoves[i] ?? 0;
-const dxStyle = (i: number) => (dxOf(i) ? `--dx:${dxOf(i)}px` : undefined);
+const dxStyle = (i: number) => (dxOf(i) ? `--dx:${dxOf(i)}px;--t:300ms` : undefined);
+const moveCls = (i: number, ink = false) => (dxOf(i) ? `${kc(B.zone)} bx-slide${ink ? ' bx-ink' : ''}` : false);
 // The dashed ghost marks where the desk at 455 stood. The one at 555 moves only 36 and its old place is covered by
 // the new group, so it gets none.
 const ghost = { x: 455, f: L2.floor };
@@ -122,28 +152,44 @@ const routes = rooms
     };
   });
 
-// B7: what stays. Every run that nobody touched gets a soft blue band that traces it once: the riser from the MDF
-// up, the three trays out from the riser, then the drops (all but the two that moved with their desks).
+// B7: what stays. Every run that nobody touched gets a soft blue band that traces it once, in the last beat: the
+// risers out of the two closets and the fiber backbone between them, the three trays out from the riser, then the
+// drops (all but the two desks that moved, and the conference display's drop, which traces in beat 1: same drop).
+const displayDrop = drops[drops.length - 1];
+const stayRisers = [`M195 465 V${tray(L1.ceil)}`, `M195 326 V${tray(L3.ceil)}`, 'M182 465 V396'];
 const stayTrays = [L3, L2, L1].map((lv) => `M195 ${tray(lv.ceil)} H726`);
-const stayDrops = drops.filter((_, i) => !dxOf(i)).map((d) => `M${d.x} ${d.tray} V${d.y}`);
+const stayDrops = drops.filter((d, i) => !dxOf(i) && d !== displayDrop).map((d) => `M${d.x} ${d.tray} V${d.y}`);
+
+// B7: zone cabling. The zone box sits on the open-office tray at x 472–488; the new short runs leave its underside and
+// go to the two desks that moved (their jacks end at x 577 and 641, y 377).
+const zoneRuns = [
+  { from: 486, y: 295, to: 505 + dxOf(5) },
+  { from: 482, y: 298, to: 605 + dxOf(6) },
+].map((r) => `M${r.from} 291 V${r.y} H${r.to} V${L2.floor - 34}`);
 
 // B7: the numbered marks. `at` is the spot the leader starts from, `n` the number's centre (viewBox units). Placed so
 // the numbers, which grow to about 2.2× on a phone (--bs), clear each other, the walls and the ink labels.
-const keyMarks: { key: SignatureKey; at: [number, number]; n: [number, number] }[] = [
-  { key: 'cat6aDefault', at: [615, 150], n: [766, 150] }, // the conference display's drop: same drop, new display
-  { key: 'twoDropsPerAp', at: [352, 156], n: [382, 168] }, // the second cable beside the new L3 office access point
-  { key: 'spareFiberStrands', at: [183, 403], n: [114, 403] }, // spare strands between the IDF-2 cabinet and the MDF rack
-  { key: 'emptyConduit', at: [205, 310], n: [114, 310] }, // the empty conduit beside the riser
-  { key: 'zoneCabling', at: [480, 291], n: [480, 314] }, // the zone point in the open-office ceiling
-  { key: 'ceilingGridJacks', at: [660, 293], n: [676, 316] }, // a spare jack in the open-office ceiling
-  { key: 'labelsAndAsBuilts', at: [173, 474], n: [114, 458] }, // the labeled patch panels in the MDF rack
+// `m` is when, inside the item's beat, the dot and leader appear (the number follows 200 ms later).
+const keyMarks: { key: SignatureKey; at: [number, number]; n: [number, number]; m: number }[] = [
+  { key: 'cat6aDefault', at: [615, 150], n: [766, 150], m: 400 }, // the conference display's drop: same drop, new display
+  { key: 'twoDropsPerAp', at: [380, 148], n: [404, 172], m: 640 }, // the second cable to the new L3 office access point
+  { key: 'spareFiberStrands', at: [188, 403], n: [114, 403], m: 360 }, // a spare strand between the IDF-2 cabinet and the MDF rack
+  { key: 'emptyConduit', at: [215, 310], n: [114, 310], m: 500 }, // the empty conduit beside the riser
+  { key: 'zoneCabling', at: [476, 291], n: [480, 314], m: 120 }, // the zone box in the open-office ceiling
+  { key: 'ceilingGridJacks', at: [444, 291], n: [452, 360], m: 160 }, // the ceiling jack the new camera clips onto
+  { key: 'labelsAndAsBuilts', at: [173, 474], n: [114, 458], m: 0 }, // the labeled patch panels in the MDF rack
 ];
 const keyed = keyMarks
   .filter((m) => laterNums[m.key])
-  .map((m) => ({ ...m, num: laterNums[m.key]!, i: Math.max(0, Number(laterNums[m.key]) - 1) }));
+  .map((m) => ({ ...m, num: laterNums[m.key]!, b: Number(laterNums[m.key]) }));
+// Label strips on the patch panels, MDF first (two panels), then IDF-2; they tick in left to right, 50 ms apart
+const labelTicks = [
+  ...[471, 480].flatMap((y) => [176, 190, 204].map((x) => [x, y + 1.5])),
+  ...[161, 175, 189].map((x) => [x, 330.5]),
+];
 ---
 
-<svg class="bx" viewBox="0 0 880 620" xmlns="http://www.w3.org/2000/svg" role="img" data-fit-text aria-label="Cutaway drawing of a three-storey commercial building showing where each of the six systems runs: cabling, networking and Wi-Fi, cameras, access control, phones, and audio-video. The system selected in the tabs is highlighted. Choosing a room shows how its cables run back to the wiring closet that serves it, and the Today and Years from now switch shows what changes in a building over time and what stays." focusable="false">
+<svg class="bx" viewBox="0 0 880 620" xmlns="http://www.w3.org/2000/svg" role="img" data-fit-text data-later-close={closeBeat} aria-label="Cutaway drawing of a three-storey commercial building showing where each of the six systems runs: cabling, networking and Wi-Fi, cameras, access control, phones, and audio-video. The system selected in the tabs is highlighted. Choosing a room shows how its cables run back to the wiring closet that serves it, and the Today and Years from now switch shows what changes in a building over time and what stays." focusable="false">
   <defs>
     <pattern id="bx-hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
       <line x1="0" y1="0" x2="0" y2="8" class="bx-hatch-line" />
@@ -187,7 +233,7 @@ const keyed = keyMarks
 
     <!-- furniture (the two desks in deskMoves slide in the "years from now" view) -->
     {desks.map(([x, f], i) => (
-      <g class:list={['bx-furn bx-desk', { 'bx-mv': dxOf(i) > 0 }]} style={dxStyle(i)} data-desk>
+      <g class:list={['bx-furn bx-desk', moveCls(i, true)]} style={dxStyle(i)} data-desk>
         <rect x={x} y={f - 34} width="64" height="4" />
         <line x1={x + 4} y1={f - 30} x2={x + 4} y2={f} />
         <line x1={x + 60} y1={f - 30} x2={x + 60} y2={f} />
@@ -221,15 +267,21 @@ const keyed = keyMarks
   <!-- ───────────── B7, what stays and what moved: drawn under the system layers, shown only in the "years from now" view ───────────── -->
   <g class="bx-stay" aria-hidden="true">
     <g class="bx-glows">
-      <path class="bx-glow bx-glow--riser" pathLength="1" d={`M195 465 V${tray(L3.ceil)}`} />
-      {stayTrays.map((d) => <path class="bx-glow bx-glow--tray" pathLength="1" d={d} />)}
-      {stayDrops.map((d) => <path class="bx-glow bx-glow--drop" pathLength="1" d={d} />)}
-      <!-- the MDF patch panels -->
-      <rect class="bx-glow-box" x="167" y="467" width="56" height="22" />
+      <!-- beat 1: the conference display's drop is the same cable -->
+      <path class={`bx-glow bx-draw ${kc(B.display)}`} pathLength="1" style="--t:120ms;--dur-in:360ms" d={`M${displayDrop.x} ${displayDrop.tray} V${displayDrop.y}`} />
+      <!-- zone cabling: the home run from the IDF-2 up the riser and along the tray to the zone box stays -->
+      {hasZone && <path class={`bx-glow bx-draw ${kc(B.zone)}`} pathLength="1" style="--dur-in:440ms" d={`M195 326 V${tray(L2.ceil)} H472`} />}
+      <!-- the last beat: everything nobody touched -->
+      {stayRisers.map((d) => <path class={`bx-glow bx-draw ${kc(B.close)}`} pathLength="1" style="--dur-in:360ms" d={d} />)}
+      {stayTrays.map((d) => <path class={`bx-glow bx-draw ${kc(B.close)}`} pathLength="1" style="--t:240ms;--dur-in:440ms" d={d} />)}
+      {stayDrops.map((d) => <path class={`bx-glow bx-draw ${kc(B.close)}`} pathLength="1" style="--t:560ms;--dur-in:300ms" d={d} />)}
+      <!-- the patch panels in the MDF rack and the IDF-2 cabinet -->
+      <rect class={`bx-glow-box bx-in ${kc(B.close)}`} style="--t:560ms" x="167" y="467" width="56" height="22" />
+      <rect class={`bx-glow-box bx-in ${kc(B.close)}`} style="--t:560ms" x="152" y="327" width="56" height="9" />
     </g>
   </g>
   <g class="bx-ghosts" aria-hidden="true">
-    <g class="bx-ghost">
+    <g class={`bx-ghost bx-in ${kc(B.zone)}`} style="--t:200ms">
       <rect x={ghost.x} y={ghost.f - 34} width="64" height="4" />
       <line x1={ghost.x + 4} y1={ghost.f - 30} x2={ghost.x + 4} y2={ghost.f} />
       <line x1={ghost.x + 60} y1={ghost.f - 30} x2={ghost.x + 60} y2={ghost.f} />
@@ -240,20 +292,38 @@ const keyed = keyMarks
 
   <!-- ───────────── A-01 Structured cabling ───────────── -->
   <g class="bx-layer" data-layer="structured-cabling">
-    <path class="bx-trunk" d={`M195 465 V${tray(L3.ceil)}`} />
+    <!-- Horizontal cabling (closet to outlet): out of the MDF rack to the L1 tray, out of the IDF-2 cabinet to the L2
+         and L3 trays, then along the trays and down to each outlet -->
+    <path class="bx-trunk" d={`M195 465 V${tray(L1.ceil)}`} />
+    <path class="bx-trunk" d={`M195 326 V${tray(L3.ceil)}`} />
     <path class="bx-trunk" d={`M195 ${tray(L3.ceil)} H726`} />
     <path class="bx-trunk" d={`M195 ${tray(L2.ceil)} H726`} />
     <path class="bx-trunk" d={`M195 ${tray(L1.ceil)} H726`} />
-    {drops.map((d, i) => <path class:list={['bx-drop', { 'bx-mv': dxOf(i) > 0 }]} style={dxStyle(i)} d={`M${d.x} ${d.tray} V${d.y}`} />)}
-    {deskDots.map(([x, y], i) => (
-      <circle class:list={['bx-dot', { 'bx-mv': dxOf(i) > 0 }]} style={dxStyle(i)} cx={x} cy={y} r="2.5" />
+    {drops.map((d, i) => (
+      <path
+        class:list={['bx-drop', dxOf(i) > 0 && (hasZone ? `${kc(B.zone)} bx-out` : moveCls(i, true))]}
+        style={dxOf(i) ? (hasZone ? '--t:200ms' : dxStyle(i)) : undefined}
+        d={`M${d.x} ${d.tray} V${d.y}`}
+      />
     ))}
-    <!-- ISP fiber entrance -->
-    <path class="bx-fiber" d="M165 545 H58" />
+    {deskDots.map(([x, y], i) => (
+      <circle class:list={['bx-dot', moveCls(i, true)]} style={dxStyle(i)} cx={x} cy={y} r="2.5" />
+    ))}
+    <!-- Backbone (closet to closet): fiber from the MDF rack up to the IDF-2 cabinet, a white jacket (install legend) -->
+    <path class="bx-bb-edge" d="M182 465 V396" />
+    <path class="bx-bb-core" d="M182 465 V396" />
+    <!-- ISP fiber entrance: through a conduit sleeve in the wall to the demarc on the MDF backboard, then an orange
+         hand-off cord to the firewall in the rack -->
+    <path class="bx-fiber" d="M146 545 H58" />
+    <rect class="bx-outline" x="131" y="541" width="14" height="8" />
+    <rect class="bx-outline" x="146" y="534" width="15" height="20" />
+    <path class="bx-handoff" d="M161 540 C167 540 165 528 171 528" />
     <text x="40" y="536" class="bx-callout">ISP fiber</text>
     <g class="bx-fill">
       <rect x="171" y="471" width="48" height="5" />
       <rect x="171" y="480" width="48" height="5" />
+      <!-- IDF-2 patch panel -->
+      <rect x="156" y="329" width="48" height="5" />
     </g>
   </g>
 
@@ -264,12 +334,15 @@ const keyed = keyMarks
       <rect x="171" y="503" width="48" height="7" />
       <rect x="156" y="336" width="48" height="7" />
       <rect x="156" y="347" width="48" height="7" />
-      <!-- UPS -->
+      <!-- firewall (the carrier hand-off lands here) -->
+      <rect x="171" y="525" width="48" height="6" />
+      <!-- UPS, MDF and IDF-2 -->
       <rect x="171" y="538" width="48" height="16" />
+      <rect x="156" y="377" width="48" height="14" />
     </g>
     <!-- the L3 office access point (first) is replaced in the "years from now" view -->
     {aps.map(([x, c], i) => (
-      <g class:list={[{ 'bx-old': i === 0 }]} style={i === 0 ? '--d:360ms' : undefined}>
+      <g class={i === 0 ? `${kc(B.ap)} bx-out` : undefined}>
         <rect class="bx-fill" x={x - 12} y={c + 13} width="24" height="5" rx="2" />
         {wifiArcs(x, c).map((d) => <path class="bx-arc" d={d} />)}
       </g>
@@ -282,8 +355,8 @@ const keyed = keyMarks
     <polygon class="bx-cone" points="124,158 52,250 104,262" />
     <line x1="140" y1="152" x2="132" y2="152" />
     <rect class="bx-fill" x="116" y="148" width="17" height="9" rx="1.5" />
-    <!-- exterior, lower right toward parking (replaced in the "years from now" view) -->
-    <g class="bx-old" style="--d:520ms">
+    <!-- exterior, lower right toward parking -->
+    <g>
       <polygon class="bx-cone" points="760,447 836,540 784,556" />
       <line x1="740" y1="441" x2="748" y2="441" />
       <rect class="bx-fill" x="747" y="437" width="17" height="9" rx="1.5" />
@@ -321,7 +394,7 @@ const keyed = keyMarks
   <g class="bx-layer" data-layer="voip-unified-comms">
     <!-- desk phones: base + handset (they move with their desks) -->
     {desks.map(([x, f], i) => (
-      <g class:list={['bx-desk', { 'bx-mv': dxOf(i) > 0 }]} style={dxStyle(i)}>
+      <g class:list={['bx-desk', moveCls(i)]} style={dxStyle(i)}>
         <rect class="bx-fill" x={x + 48} y={f - 44} width="16" height="10" rx="2" />
         <rect class="bx-fill" x={x + 46} y={f - 49} width="20" height="4" rx="2" />
       </g>
@@ -342,7 +415,7 @@ const keyed = keyMarks
   <!-- ───────────── A-06 Audio & video ───────────── -->
   <g class="bx-layer" data-layer="audio-video">
     <!-- conference display (replaced in the "years from now" view) + soundbar + camera -->
-    <rect x="560" y="152" width="110" height="58" class="bx-outline bx-screen bx-old" style="--d:440ms" />
+    <rect x="560" y="152" width="110" height="58" class={`bx-outline bx-screen ${kc(B.display)} bx-out`} />
     <rect class="bx-fill" x="585" y="213" width="60" height="6" rx="1.5" />
     <rect class="bx-fill" x="609" y="146" width="12" height="5" rx="1" />
     <!-- ceiling speakers -->
@@ -389,63 +462,84 @@ const keyed = keyMarks
     ))}
   </g>
 
-  <!-- ───────────── B7, what changed: new devices in ink where the old ones were (same drop, same mount) ───────────── -->
+  <!-- ───────────── B7, what changed: new devices and new runs in ink ───────────── -->
   <g class="bx-news" aria-hidden="true">
     <!-- L3 offices: a new access point -->
-    <g class="bx-new" style="--d:420ms">
+    <g class={`bx-rise ${kc(B.ap)}`} style="--t:160ms">
       <path class="bx-new-fill" d="M316 143 H344 V145 Q344 153 330 153 Q316 153 316 145 Z" />
       <path class="bx-new-line" d="M321 161 Q330 168 339 161" />
       <path class="bx-new-line" d="M314 166 Q330 178 346 166" />
     </g>
     <!-- conference: a new display on the same drop -->
-    <g class="bx-new" style="--d:500ms">
+    <g class={`bx-rise ${kc(B.display)}`} style="--t:160ms">
       <rect class="bx-new-screen" x="548" y="155" width="134" height="55" rx="1" />
     </g>
-    <!-- outside, lower right: a new camera on the same mount -->
-    <g class="bx-new" style="--d:580ms">
-      <polygon class="bx-new-cone" points="770,447 840,538 790,556" />
-      <line class="bx-new-line" x1="740" y1="441" x2="749" y2="441" />
-      <path class="bx-new-line" d="M745 434 H777" />
-      <rect class="bx-new-fill" x="748" y="437" width="25" height="9" rx="2" />
-    </g>
+    <!-- open office: short new runs from the zone box to the two desks that moved -->
+    {hasZone && zoneRuns.map((d) => <path class={`bx-new-run bx-draw ${kc(B.zone)}`} pathLength="1" style="--t:760ms;--dur-in:480ms" d={d} />)}
+    <!-- open office: a new camera clips onto a ceiling jack that was put in on day one (no new run) -->
+    {hasCam && (
+      <>
+        <polygon class={`bx-new-cone bx-in ${kc(B.cam)}`} style="--t:480ms" points="433,304 330,398 392,404" />
+        <g class={`bx-rise ${kc(B.cam)}`} style="--t:240ms">
+          <line class="bx-new-line" x1="440" y1="293" x2="440" y2="296" />
+          <rect class="bx-new-fill" x="431" y="296" width="18" height="9" rx="2" />
+        </g>
+      </>
+    )}
   </g>
 
   <!-- What changed, in words. Long labels from 640 px up, a short "new" below that (sized in screen pixels via --u). -->
   <g class="bx-says" aria-hidden="true">
-    <text class="bx-txt bx-txt--l bx-say" x="487" y="343" text-anchor="middle" style="--d:420ms">desks moved</text>
-    <text class="bx-txt bx-txt--l bx-say" x="277" y="178" text-anchor="middle" style="--d:500ms"><tspan x="277">new</tspan><tspan x="277" dy="1.2em">access point</tspan></text>
-    <text class="bx-txt bx-txt--s bx-say" x="277" y="192" text-anchor="middle" style="--d:500ms">new</text>
-    <text class="bx-txt bx-txt--s bx-say" x="711" y="192" text-anchor="middle" style="--d:580ms">new</text>
-    <text class="bx-txt bx-txt--l bx-say" x="752" y="424" style="--d:660ms">new camera</text>
-    <text class="bx-txt bx-txt--s bx-say" x="756" y="426" style="--d:660ms">new</text>
+    <text class={`bx-txt bx-txt--l bx-in ${kc(B.zone)}`} x="591" y="343" text-anchor="middle" style="--t:800ms">desks moved</text>
+    <text class={`bx-txt bx-txt--l bx-in ${kc(B.ap)}`} x="277" y="178" text-anchor="middle" style="--t:400ms"><tspan x="277">new</tspan><tspan x="277" dy="1.2em">access point</tspan></text>
+    <text class={`bx-txt bx-txt--s bx-in ${kc(B.ap)}`} x="277" y="192" text-anchor="middle" style="--t:400ms">new</text>
+    <text class={`bx-txt bx-txt--s bx-in ${kc(B.display)}`} x="711" y="192" text-anchor="middle" style="--t:400ms">new</text>
+    {hasCam && (
+      <>
+        <text class={`bx-txt bx-txt--l bx-in ${kc(B.cam)}`} x="432" y="334" text-anchor="end" style="--t:480ms">new camera</text>
+        <text class={`bx-txt bx-txt--s bx-in ${kc(B.cam)}`} x="412" y="336" text-anchor="end" style="--t:480ms">new</text>
+      </>
+    )}
     <!-- under the L1 tray, kept clear of the LOBBY label so the two do not read as one phrase -->
-    <text class="bx-txt bx-txt--l bx-say" x="446" y="447" text-anchor="end" style="--d:1100ms">same cable</text>
+    <text class={`bx-txt bx-txt--l bx-in ${kc(B.close)}`} x="446" y="447" text-anchor="end" style="--t:700ms">same cable</text>
   </g>
 
   <!-- ───────────── B7, put in on day one: one numbered mark per item in the explorer's list (laterNums), in blue.
-       --i is the item's place in that list, so the marks fade in one by one in list order. ───────────── -->
+       Each mark is its own beat (bx-k{n}, n = the item's number), so the marks land one by one in list order, each
+       with the step of the job it stands for: the second cable off the tray into the new access point; a spare
+       strand beside the backbone (white jacket, blue edge); the conduit's two walls and dashed pull string, then a
+       new cable pulled up through it in ink; the zone box; the ceiling jacks; the panels' label strips. ───────────── -->
   <g class="bx-laters" aria-hidden="true">
     {keyed.map((m) => (
-      <g class="bx-later" style={`--i:${m.i}`}>
+      <g class={`bx-later ${kc(m.b)}`}>
         {m.key === 'cat6aDefault' && (
-          <text class="bx-txt bx-txt--l" x="783" y="147"><tspan x="783">same drop,</tspan><tspan x="783" dy="1.2em">new display</tspan></text>
+          <text class="bx-txt bx-txt--l bx-in" style={`--t:${m.m + 200}ms`} x="783" y="147"><tspan x="783">same drop,</tspan><tspan x="783" dy="1.2em">new display</tspan></text>
         )}
-        {m.key === 'twoDropsPerAp' && <path class="bx-mk" d="M352 140 V156" />}
-        {m.key === 'spareFiberStrands' && <path class="bx-mk" d="M183 396 V465" />}
-        {m.key === 'emptyConduit' && (
+        {m.key === 'twoDropsPerAp' && (
+          <path class="bx-mk bx-draw" pathLength="1" style="--t:520ms;--dur-in:400ms" d="M380 140 V148 H345" />
+        )}
+        {m.key === 'spareFiberStrands' && (
           <>
-            <path class="bx-mk bx-mk-dash" d="M205 465 V139" />
-            <circle class="bx-mk" cx="205" cy="135" r="3.5" />
+            <path class="bx-strand-edge bx-draw" pathLength="1" style="--dur-in:600ms" d="M188 465 V396" />
+            <path class="bx-strand-core bx-draw" pathLength="1" style="--dur-in:600ms" d="M188 465 V396" />
           </>
         )}
-        {m.key === 'zoneCabling' && <rect class="bx-mk-plate" x="472" y="277" width="16" height="14" />}
-        {m.key === 'ceilingGridJacks' && [440, 660].map((x) => <rect class="bx-mk-plate" x={x - 4} y="286" width="8" height="7" />)}
+        {m.key === 'emptyConduit' && (
+          <>
+            <path class="bx-conduit bx-in" d="M211.5 465 V139 M218.5 465 V139" />
+            <path class="bx-mk bx-mk-dash bx-in" d="M215 465 V139" />
+            <circle class="bx-mk bx-in" cx="215" cy="135" r="3.5" />
+            <path class="bx-new-run bx-draw" pathLength="1" style="--t:300ms;--dur-in:600ms" d="M215 465 V139" />
+          </>
+        )}
+        {m.key === 'zoneCabling' && <rect class="bx-mk-plate bx-in" x="472" y="277" width="16" height="14" />}
+        {m.key === 'ceilingGridJacks' && [440, 660].map((x) => <rect class="bx-mk-plate bx-in" x={x - 4} y="286" width="8" height="7" />)}
         {m.key === 'labelsAndAsBuilts' &&
-          [471, 480].map((y) => [176, 190, 204].map((x) => <rect class="bx-mk-tick" x={x} y={y + 1.5} width="6" height="2" />))}
-        <path class="bx-kl" d={`M${m.at[0]} ${m.at[1]} L${m.n[0]} ${m.n[1]}`} />
-        <circle class="bx-mk-dot" cx={m.at[0]} cy={m.at[1]} r="2.5" />
+          labelTicks.map(([x, y], j) => <rect class="bx-mk-tick bx-tick" style={`--t:${j * 50}ms`} x={x} y={y} width="6" height="2" />)}
+        <path class="bx-kl bx-draw" pathLength="1" style={`--t:${m.m}ms;--dur-in:240ms`} d={`M${m.at[0]} ${m.at[1]} L${m.n[0]} ${m.n[1]}`} />
+        <circle class="bx-mk-dot bx-in" style={`--t:${m.m}ms`} cx={m.at[0]} cy={m.at[1]} r="2.5" />
         <g class="bx-bal" style={`transform-origin:${m.n[0]}px ${m.n[1]}px`}>
-          <g class="bx-bal-in" style={`transform-origin:${m.n[0]}px ${m.n[1]}px`}>
+          <g class="bx-bal-in bx-pop" style={`transform-origin:${m.n[0]}px ${m.n[1]}px;--t:${m.m + 200}ms`}>
             <circle cx={m.n[0]} cy={m.n[1]} r="11" />
             <text class="bx-num" x={m.n[0]} y={m.n[1] + 4}>{m.num}</text>
           </g>
@@ -608,6 +702,24 @@ const keyed = keyMarks
     stroke-dasharray: 2 4;
   }
 
+  /* The backbone between the closets is fiber in a white jacket (the install legend's white): a white core over the
+     layer's own colour, so it reads as a white cable on the white sheet and stays apart from the solid horizontal runs.
+     Widths follow --u so the white core still shows on a phone. */
+  .bx-layer path.bx-bb-edge {
+    stroke-width: max(3.5px, calc(var(--u, 1) * 3px)) !important;
+  }
+
+  .bx-layer path.bx-bb-core {
+    stroke: var(--cable-white) !important;
+    stroke-width: max(1.5px, calc(var(--u, 1) * 1.25px)) !important;
+  }
+
+  /* The carrier's hand-off cord from the demarc to the firewall: orange, as in the install legend */
+  .bx-layer path.bx-handoff {
+    stroke: var(--cable-orange) !important;
+    stroke-width: max(2px, calc(var(--u, 1) * 1.5px)) !important;
+  }
+
   .bx-cone {
     fill: currentColor;
     fill-opacity: 0.06;
@@ -670,14 +782,21 @@ const keyed = keyMarks
   }
 
   /* ── B7: "years from now" view (rule 10: the Today / 10 years from now switch) ──
-     Ink = what changed, blue = what was put in on day one and stays. Plain transitions, not keyframes, so flipping
-     the switch fast turns round from wherever things are. Going to later, in three beats (times from the flip):
-       (a) 0–460 ms    the ghost appears where a desk stood and two desks slide into their new places
-       (b) 360–900 ms  the old access point, display and camera fade; the new ones drop in, 80 ms apart
-       (c) 520–1440 ms the cabling traces (riser, trays, drops) and the numbered marks fade in 80 ms apart
-     Going back to today everything leaves in about 600 ms: marks and words first, then the devices swap back and
-     the desks return, then the ghost goes. Each rule pair below: the plain rule is the way back, the later rule the
-     way there. */
+     Ink = what changed, blue = what was put in on day one and stays. The view is a numbered sequence that
+     BuildingExplorer steps (about 9 s): beat n is item n of the explorer's "Put in on day one for later" list, and the
+     beat after the last number traces what stays. Every piece of the later view belongs to one beat (`bx-k bx-k{n}`).
+     While the sequence runs the svg carries `bx-seq`, and the explorer adds `bx-b{n}` as each beat starts.
+
+     One switch per piece: `--off` is 1 when the piece's step has not happened (the Today view, or the later view before
+     its beat) and 0 once it has; `--go` is the opposite. The role classes turn that into motion, with plain CSS
+     transitions on transform, opacity and stroke-dashoffset only, so flipping the switch back turns round from wherever
+     things are. `--t` is the piece's start inside its beat (the way there only; the way back has no delay and is quick).
+       bx-in     fades in               bx-out    fades out (an old device)
+       bx-rise   a new device drops 6 units into place
+       bx-draw   a run draws itself (pathLength 1)   bx-slide  a desk slides by --dx
+       bx-pop    a number lands (scale 0.4 → 1)      bx-tick   a label strip ticks in from the left
+       bx-ink    a moved piece turns ink (switches at --t, does not fade)
+     Without bx-seq (reduced motion, or once the sequence has settled) the later view shows its finished picture. */
   :global(.bx[data-when='later']) .bx-layer:not([data-layer='structured-cabling']) {
     opacity: 0.22;
   }
@@ -687,20 +806,78 @@ const keyed = keyMarks
     color: var(--bx-active);
   }
 
-  /* (a) Desks, their phones, drops and jack dots slide by --dx and turn ink (the colour switches, it does not fade) */
-  .bx-mv {
-    transition: transform 380ms var(--ease-out) 120ms, stroke 0s 500ms;
+  .bx-k {
+    --off: 1;
+    --go: 0;
+    --ink-on: initial;
   }
 
-  :global(.bx[data-when='later']) .bx-mv {
-    transform: translateX(var(--dx, 0px));
-    transition: transform 420ms var(--ease-out) 40ms, stroke 0s 40ms;
+  :global(.bx[data-when='later']:not(.bx-seq)) .bx-k,
+  :global(.bx[data-when='later'].bx-b1) .bx-k1,
+  :global(.bx[data-when='later'].bx-b2) .bx-k2,
+  :global(.bx[data-when='later'].bx-b3) .bx-k3,
+  :global(.bx[data-when='later'].bx-b4) .bx-k4,
+  :global(.bx[data-when='later'].bx-b5) .bx-k5,
+  :global(.bx[data-when='later'].bx-b6) .bx-k6,
+  :global(.bx[data-when='later'].bx-b7) .bx-k7,
+  :global(.bx[data-when='later'].bx-b8) .bx-k8,
+  :global(.bx[data-when='later'].bx-b9) .bx-k9,
+  :global(.bx[data-when='later'].bx-b10) .bx-k10,
+  :global(.bx[data-when='later'].bx-b11) .bx-k11,
+  :global(.bx[data-when='later'].bx-b12) .bx-k12 {
+    --off: 0;
+    --go: 1;
+    --ink-on: var(--ink);
   }
 
-  :global(.bx[data-when='later']) .bx-furn.bx-mv,
-  :global(.bx[data-when='later']) .bx-drop.bx-mv,
-  :global(.bx[data-when='later']) .bx-dot.bx-mv {
-    stroke: var(--ink);
+  .bx-in {
+    opacity: var(--go, 1);
+    transition: opacity calc(260ms * var(--go, 1) + 160ms * var(--off, 0)) ease calc(var(--t, 0ms) * var(--go, 1));
+  }
+
+  .bx-out {
+    opacity: var(--off, 0);
+    transition: opacity calc(240ms * var(--go, 1) + 160ms * var(--off, 0)) ease calc(var(--t, 0ms) * var(--go, 1));
+  }
+
+  /* On the way back the device fades first, then jumps back up out of sight */
+  .bx-rise {
+    opacity: var(--go, 1);
+    transform: translateY(calc(var(--off, 0) * -6px));
+    transition:
+      opacity calc(240ms * var(--go, 1) + 160ms * var(--off, 0)) ease calc(var(--t, 0ms) * var(--go, 1)),
+      transform calc(360ms * var(--go, 1)) var(--ease-out) calc(var(--t, 0ms) * var(--go, 1) + 160ms * var(--off, 0));
+  }
+
+  /* pathLength 1: a dash as long as the run and a longer gap, so offset 1 hides it and 0 shows all of it */
+  .bx-draw {
+    stroke-dasharray: 1 2;
+    stroke-dashoffset: var(--off, 0);
+    transition: stroke-dashoffset calc(var(--dur-in, 400ms) * var(--go, 1) + 160ms * var(--off, 0)) var(--ease-in-out)
+      calc(var(--t, 0ms) * var(--go, 1));
+  }
+
+  .bx-slide {
+    transform: translateX(calc(var(--go, 1) * var(--dx, 0px)));
+    transition:
+      transform calc(460ms * var(--go, 1) + 320ms * var(--off, 0)) var(--ease-out) calc(var(--t, 0ms) * var(--go, 1)),
+      stroke 0s linear calc(var(--t, 0ms) * var(--go, 1));
+  }
+
+  .bx-furn.bx-ink {
+    stroke: var(--ink-on, var(--hairline-strong));
+  }
+
+  .bx-dot.bx-ink,
+  .bx-layer path.bx-drop.bx-ink {
+    stroke: var(--ink-on, currentColor);
+  }
+
+  .bx-tick {
+    transform: scaleX(var(--go, 1));
+    transform-box: fill-box;
+    transform-origin: 0 50%;
+    transition: transform calc(200ms * var(--go, 1) + 120ms * var(--off, 0)) var(--ease-out) calc(var(--t, 0ms) * var(--go, 1));
   }
 
   .bx-ghost {
@@ -708,35 +885,37 @@ const keyed = keyMarks
     stroke: var(--field-line);
     stroke-width: max(1.25px, calc(var(--u, 1) * 1.1px));
     stroke-dasharray: 4 3;
-    opacity: 0;
-    transition: opacity 200ms ease 380ms;
   }
 
-  :global(.bx[data-when='later']) .bx-ghost {
-    opacity: 1;
-    transition: opacity 200ms ease;
+  /* New runs (the zone runs, the cable pulled up the conduit): ink, the colour of what changed */
+  .bx-new-run {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: max(1.5px, calc(var(--u, 1) * 1.1px));
+    stroke-linejoin: round;
   }
 
-  /* (b) Old devices fade out (each sets its own --d), new ones drop 6 units into place */
-  .bx-old {
-    transition: opacity 200ms ease 120ms;
+  /* The empty conduit's two walls, put in on day one (blue, thin) */
+  .bx-conduit {
+    fill: none;
+    stroke: var(--armak-blue);
+    stroke-width: max(1px, calc(var(--u, 1) * 0.8px));
   }
 
-  :global(.bx[data-when='later']) .bx-old {
-    opacity: 0;
-    transition: opacity 200ms ease var(--d, 360ms);
+  /* The spare backbone strand: a white jacket like the backbone, its edge in the blue of what was put in on day one */
+  .bx-strand-edge,
+  .bx-strand-core {
+    fill: none;
   }
 
-  .bx-new {
-    opacity: 0;
-    transform: translateY(-6px);
-    transition: opacity 160ms ease, transform 0s 160ms;
+  .bx-strand-edge {
+    stroke: var(--armak-blue);
+    stroke-width: max(3.5px, calc(var(--u, 1) * 3px));
   }
 
-  :global(.bx[data-when='later']) .bx-new {
-    opacity: 1;
-    transform: none;
-    transition: opacity 240ms ease var(--d, 420ms), transform 360ms var(--ease-out) var(--d, 420ms);
+  .bx-strand-core {
+    stroke: var(--cable-white);
+    stroke-width: max(1.5px, calc(var(--u, 1) * 1.25px));
   }
 
   .bx-new-fill {
@@ -782,68 +961,22 @@ const keyed = keyMarks
     font-size: clamp(16px, calc(var(--u, 1) * 10.5px), 30px);
   }
 
-  .bx-say {
-    opacity: 0;
-    transition: opacity 120ms ease;
-  }
-
-  :global(.bx[data-when='later']) .bx-say {
-    opacity: 1;
-    transition: opacity 220ms ease var(--d, 600ms);
-  }
-
-  /* (c) What stays: a soft blue band traces each untouched run once. The group fades; the runs draw. */
+  /* What stays: a soft blue band traces each untouched run once (each run is a bx-draw in its beat). The band is one
+     group at 20%, so where two runs meet the blue does not double up. */
   .bx-glows {
-    opacity: 0;
-    transition: opacity 160ms ease;
-  }
-
-  :global(.bx[data-when='later']) .bx-glows {
     opacity: 0.2;
-    transition: opacity 160ms ease 520ms;
   }
 
   .bx-glow {
     fill: none;
     stroke: var(--armak-blue);
     stroke-width: clamp(8px, calc(var(--u, 1) * 7px), 20px);
-    /* pathLength 1: a dash as long as the run and a longer gap, so offset 1 hides it and 0 shows all of it */
-    stroke-dasharray: 1 2;
-    stroke-dashoffset: 1;
-    transition: stroke-dashoffset 0s 180ms;
-  }
-
-  :global(.bx[data-when='later']) .bx-glow {
-    stroke-dashoffset: 0;
-  }
-
-  :global(.bx[data-when='later']) .bx-glow--riser {
-    transition: stroke-dashoffset 360ms var(--ease-in-out) 560ms;
-  }
-
-  :global(.bx[data-when='later']) .bx-glow--tray {
-    transition: stroke-dashoffset 440ms var(--ease-out) 800ms;
-  }
-
-  :global(.bx[data-when='later']) .bx-glow--drop {
-    transition: stroke-dashoffset 280ms var(--ease-out) 1060ms;
   }
 
   .bx-glow-box {
     fill: none;
     stroke: var(--armak-blue);
     stroke-width: clamp(6px, calc(var(--u, 1) * 5px), 14px);
-  }
-
-  /* (c) The numbered marks, one by one in list order (--i), the same delays the explorer uses for its list */
-  .bx-later {
-    opacity: 0;
-    transition: opacity 120ms ease;
-  }
-
-  :global(.bx[data-when='later']) .bx-later {
-    opacity: 1;
-    transition: opacity 200ms ease calc(640ms + var(--i, 0) * 80ms);
   }
 
   /* Both scale round the number's centre (inline transform-origin, in viewBox units) */
@@ -856,14 +989,13 @@ const keyed = keyMarks
     transform: scale(var(--bs, 1));
   }
 
-  .bx-bal-in {
-    transform: scale(0.4);
-    transition: transform 0s 140ms;
-  }
-
-  :global(.bx[data-when='later']) .bx-bal-in {
-    transform: none;
-    transition: transform 320ms var(--ease-out) calc(640ms + var(--i, 0) * 80ms);
+  /* A number lands: it fades in as it grows from 0.4 to full size; on the way back it fades, then shrinks */
+  .bx-pop {
+    opacity: var(--go, 1);
+    transform: scale(calc(0.4 + 0.6 * var(--go, 1)));
+    transition:
+      opacity calc(160ms * var(--go, 1) + 120ms * var(--off, 0)) ease calc(var(--t, 0ms) * var(--go, 1)),
+      transform calc(320ms * var(--go, 1)) var(--ease-out) calc(var(--t, 0ms) * var(--go, 1) + 140ms * var(--off, 0));
   }
 
   .bx-bal circle {
@@ -1016,15 +1148,32 @@ const keyed = keyMarks
 
   @media (prefers-reduced-motion: reduce) {
     .bx-layer,
-    .bx-mv,
-    .bx-ghost,
-    .bx-old,
-    .bx-new,
-    .bx-say,
-    .bx-glows,
-    .bx-glow,
-    .bx-later,
-    .bx-bal-in {
+    .bx-in,
+    .bx-out,
+    .bx-rise,
+    .bx-draw,
+    .bx-slide,
+    .bx-pop,
+    .bx-tick {
+      transition: none !important;
+    }
+  }
+
+  /* Print: the later view prints finished, even if it is printed halfway through its sequence. Today is unchanged. */
+  @media print {
+    :global(.bx[data-when='later']) .bx-k {
+      --off: 0;
+      --go: 1;
+      --ink-on: var(--ink);
+    }
+
+    .bx-in,
+    .bx-out,
+    .bx-rise,
+    .bx-draw,
+    .bx-slide,
+    .bx-pop,
+    .bx-tick {
       transition: none !important;
     }
   }
