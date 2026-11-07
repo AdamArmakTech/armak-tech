@@ -55,7 +55,9 @@ Asked and answered in chat on 2026-11-05, four yes/no questions at a time. The w
     jacks 2A-A15, 2A-A14, 2A-A03, 2A-A07 on ports A-15, A-14, A-03, A-07 (Design, Trace; the trace panel reads
     2A-A), the move 2A-A14 → 2A-A22 with record rows 2A-A13/A-13, 2A-A21/A-21 (Support), the test cable 2A-A24
     (CableTest, styleguide sample); 32 replacements, nothing of the old IDF2-B / 2B-14 / 3A-02 scheme left. "Yes,
-    reversed": the failing cable reads "Pins 3 & 6 reversed" (and the screen-reader lines say reversed).
+    reversed": the failing cable reads "Pins 3 & 6 reversed" (and the screen-reader lines say reversed). "Network
+    connections": the install legend's green is relabelled (the TIA-606 meaning of green; purple would be
+    equipment), in the key, the drawing's description and the code comment.
   - Not done: the About chart redraw (waits on his answer about the old drawing) and the small motion robustness
     fixes (reveal failsafe marking, split-heading watchdog, Numbers keyed to its counts, partner images decoded
     first): one Sonnet worker, later.

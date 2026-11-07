@@ -72,17 +72,16 @@ below), `ai/plans/site-audit.md` (the October audit) and `ai/AGENTS.md` (rules).
   072cbdd (pushed 2026-11-06 night on "Update the preview"); it asks for the Vercel login first (Deployment
   Protection). Say "publish" to put it live: merge `intent-redesign` into `main` (fast-forward), push `main`, then
   open https://armak.tech and check it.
-- Answered 2026-11-06 night: one label scheme in every demo (closet 2A, panel A, code 2A-A14 on both ends: done)
-  and "Pins 3 & 6 reversed" (done). Still open, yes/no; the demos' words are owner-fixed, so nothing changes
+- Answered 2026-11-06 night: one label scheme in every demo (closet 2A, panel A, code 2A-A14 on both ends: done),
+  "Pins 3 & 6 reversed" (done), and the install legend's green relabelled "Network connections" (done; the
+  drawing's description says the same). Still open, yes/no; the demos' words are owner-fixed, so nothing changes
   until he answers:
-  1. The install legend's "Network gear" for green: keep it as Armak's plain-language colour code, or relabel green
-     "Network connections" (TIA-606 uses purple for equipment)?
-  2. Add two sample findings to the site walk (where the carrier line comes in; the longest run under 90 m)?
-  3. Keep both "Put in on day one" lists on the home page (the table under the steps and the explorer's numbered
+  1. Add two sample findings to the site walk (where the carrier line comes in; the longest run under 90 m)?
+  2. Keep both "Put in on day one" lists on the home page (the table under the steps and the explorer's numbered
      list), or only the explorer's?
-  4. Redraw the About chart as one jack with the access point swapped four times (the current drawing reads as one
+  3. Redraw the About chart as one jack with the access point swapped four times (the current drawing reads as one
      cable feeding four)? Not started; waits on this answer.
-  5. Should each tied bundle in the closet carry its range label ("A-01–06")? New words; left out for now.
+  4. Should each tied bundle in the closet carry its range label ("A-01–06")? New words; left out for now.
 - Approve deleting `src/components/services/PhotoBand.astro` and the `servicePhotos` block in
   `src/data/services-detail.ts` (no page uses either since the About page switched to the drawings, 2026-11-06).
 - The three session worktrees are merged into `intent-redesign` (about-page b9459cf, site-reveals d1486f0,

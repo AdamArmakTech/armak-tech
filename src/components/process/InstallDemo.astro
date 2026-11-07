@@ -117,7 +117,7 @@ type Cable = 'blue' | 'green' | 'orange' | 'white';
 // TIA-606 termination-field colour meanings (plain words, one row per colour)
 const legend: { color: Cable; text: string }[] = [
   { color: 'blue', text: 'Horizontal drops' },
-  { color: 'green', text: 'Network gear' },
+  { color: 'green', text: 'Network connections' },
   { color: 'orange', text: 'Carrier hand-off' },
   { color: 'white', text: 'Backbone' },
 ];
@@ -135,7 +135,7 @@ const steps = installPhases;
 >
   <div class="in">
     <div class="in__compare">
-      <svg class="in__rack" viewBox={`0 0 400 ${H}`} role="img" data-fit-text data-demo-control aria-label="A network rack shown two ways: on the left, tangled unlabeled cables in mixed colors plus old unused cables; on the right, neatly bundled, labeled, color-coded cables with short patch cords and a color key: blue horizontal drops, green network equipment, orange carrier hand-off, white backbone">
+      <svg class="in__rack" viewBox={`0 0 400 ${H}`} role="img" data-fit-text data-demo-control aria-label="A network rack shown two ways: on the left, tangled unlabeled cables in mixed colors plus old unused cables; on the right, neatly bundled, labeled, color-coded cables with short patch cords and a color key: blue horizontal drops, green network connections, orange carrier hand-off, white backbone">
         <defs>
           <clipPath id={`${uid}-before`}><rect x="0" y="0" width="200" height={H} data-in-clip-before /></clipPath>
           <clipPath id={`${uid}-after`}><rect x="200" y="0" width="200" height={H} data-in-clip-after /></clipPath>
@@ -223,7 +223,7 @@ const steps = installPhases;
           {cords.map((c) => (
             <path d={`M${c.x} ${PANEL_TOP + 6} V${SWITCH_TOP}`} pathLength="1" class={`in__draw in__cord in__c--blue in__g${c.g}`} style={`--d:${c.j * 30}ms;--t:280ms`} />
           ))}
-          <!-- network gear: one short cord inside the rack, firewall LAN port to switch port 20 -->
+          <!-- network connections: one short cord inside the rack, firewall LAN port to switch port 20 -->
           <path d={`M${pC(SW_PORTS - 1)} ${SWITCH_TOP + 6} V${FW_PORT_Y}`} pathLength="1" class="in__draw in__cord in__c--green in__g3" style="--t:280ms" />
           <!-- backbone: white jumpers from the enclosure down the rack side to the switch's uplinks -->
           {uplinks.map((u) => (
